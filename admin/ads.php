@@ -132,7 +132,7 @@ if ( isset($_REQUEST['ad_id']) && is_numeric( $_REQUEST['ad_id'] ) ) {
 		// CHECK THE EXTENSION TO MAKE SURE IT IS ALLOWED
 		$ALLOWED_EXT = array( 'jpg', 'jpeg', 'gif', 'png' );
 
-		if ( ! in_array( $ext, $ALLOWED_EXT ) && file_exists( $label['advertiser_file_type_not_supp'] . $ext ) ) {
+		if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
 			$error              .= "<strong><font color='red'>" . $label['advertiser_file_type_not_supp'] . " ($ext)</font></strong><br />";
 			$image_changed_flag = false;
 
