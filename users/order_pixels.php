@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -30,9 +31,9 @@
  */
 
 session_start();
-include( "../config.php" );
+require_once __DIR__ . "/../include/init.php";
 
-include( "login_functions.php" );
+require_once BASE_PATH . "/include/login_functions.php";
 
 //process_login();
 
@@ -45,7 +46,6 @@ include( "login_functions.php" );
 $BID             = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
 $_SESSION['BID'] = $BID;
 
-###############################
 if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != '' ) {
 
 	$_SESSION['MDS_order_id'] = $_REQUEST['order_id'];
@@ -53,9 +53,7 @@ if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != '' ) {
 	if ( ( ! is_numeric( $_REQUEST['order_id'] ) ) && ( $_REQUEST['order_id'] != 'temp' ) ) {
 		die();
 	}
-
 }
-################################
 /*
 
 Delete temporary order when the banner was changed.
@@ -64,34 +62,26 @@ Delete temporary order when the banner was changed.
 
 if ( ( isset( $_REQUEST['banner_change'] ) && $_REQUEST['banner_change'] != '' ) || ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) ) {
 
-
 	delete_temp_order( session_id() );
-
 }
-
-#################################
 
 $tmp_image_file = get_tmp_img_name();
 
-# load order from php
-# only allowed 1 new order per banner
+// load order from php
+// only allowed 1 new order per banner
 
-$sql = "SELECT * from orders where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' and status='new' and banner_id='$BID' ";
-//$sql = "SELECT * from orders where order_id=".$_SESSION[MDS_order_id];
+$sql          = "SELECT * from orders where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' and status='new' and banner_id='$BID' ";
 $order_result = mysqli_query( $GLOBALS['connection'], $sql );
 $order_row    = mysqli_fetch_array( $order_result );
 
 if ( ( $order_row['user_id'] != '' ) && $order_row['user_id'] != $_SESSION['MDS_ID'] ) { // do a test, just in case.
 
 	die( 'you do not own this order!' );
-
 }
 
 if ( ( $_SESSION["MDS_order_id"] == '' ) || ( USE_AJAX == 'YES' ) ) { // guess the order id
 	$_SESSION["MDS_order_id"] = $order_row["order_id"];
 }
-
-###############################
 
 $banner_data = load_banner_constants( $BID );
 
@@ -99,22 +89,13 @@ $banner_data = load_banner_constants( $BID );
 
 update_temp_order_timestamp();
 
-###############################
-
 $sql = "select block_id, status, user_id FROM blocks where banner_id='$BID' ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 while ( $row = mysqli_fetch_array( $result ) ) {
 	$blocks[ $row['block_id'] ] = $row['status'];
-	//if (($row[user_id] == $_SESSION['MDS_ID']) && ($row['status']!='ordered') && ($row['status']!='sold')) {
-	//	$blocks[$row[block_id]] = 'onorder';
-	//	$order_exists = true;
-	//}
-	//echo $row[block_id]." ";
 }
 
-###############################
-
-require( "header.php" );
+require_once BASE_PATH . "/html/header.php";
 
 ?>
 
@@ -158,7 +139,6 @@ require( "header.php" );
 			return curtop;
 		}
 
-
 		function is_browser_compatible() {
 
 			/*
@@ -200,7 +180,6 @@ require( "header.php" );
 
 		}
 
-		///////////////////////////////////////////////
 		var trip_count = 0;
 
 		function check_selection(OffsetX, OffsetY) {
@@ -222,10 +201,7 @@ require( "header.php" );
 
 			}
 
-			//////////////////////////////////////////////////
 			// Trip to the database.
-			//////////////////////////////////////////////////
-
 			var xmlhttp;
 
 			if (typeof XMLHttpRequest !== "undefined") {
@@ -310,12 +286,9 @@ require( "header.php" );
 			xmlhttp.send(null);
 		}
 
-		//////////////////////////////////////////
 		// Initialize
 		var block_str = "<?php echo $order_row["blocks"]; ?>";
 		trip_count = 0;
-
-		//////////////////////////////////
 
 		var pos;
 
@@ -337,8 +310,6 @@ require( "header.php" );
 			pos.y = curtop;
 			return pos;
 		}
-
-		///////////////////////////////////////////////////
 
 		function show_pointer(e) {
 			var button = document.getElementById('submit_button1');
@@ -395,8 +366,6 @@ require( "header.php" );
 		}
 
 		var i_count = 0;
-
-		///////////////////////
 
 		function show_pointer2(e) {
 			//function called when mouse is over the actual pointing image
@@ -457,7 +426,6 @@ require( "header.php" );
 				var tOffsetX = Math.floor(OffsetX / <?php echo $banner_data['BLK_WIDTH']; ?>) *<?php echo $banner_data['BLK_WIDTH']; ?>;
 				var tOffsetY = Math.floor(OffsetY / <?php echo $banner_data['BLK_HEIGHT']; ?>) *<?php echo $banner_data['BLK_HEIGHT']; ?>;
 
-
 				if (isNaN(OffsetX) || isNaN(OffsetY)) {
 					//alert ('naan');
 					return
@@ -490,7 +458,6 @@ require( "header.php" );
 
 		}
 
-		//////
 		function get_clicked_block() {
 
 			var pointer = document.getElementById('block_pointer');
@@ -509,8 +476,6 @@ require( "header.php" );
 			}
 			return clicked_block;
 		}
-
-		////////////////////
 
 		function do_block_click() {
 
@@ -541,9 +506,9 @@ require( "header.php" );
 		$low_x = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
 		$low_y = $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];
 
-		$sql = "SELECT block_info FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "' ";
+		$sql = "SELECT block_info FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-		$row        = mysqli_fetch_array( $result );
+		$row = mysqli_fetch_array( $result );
 
 		if ( mysqli_num_rows( $result ) > 0 ) {
 			$block_info = unserialize( $row['block_info'] );
@@ -563,9 +528,7 @@ require( "header.php" );
 					$low_y = $block['map_y'];
 					$init  = true;
 				}
-
 			}
-
 		}
 
 		//		if (($low_x == ($banner_data['G_WIDTH']*$banner_data['BLK_WIDTH'])) && ($low_y == ($banner_data['G_HEIGHT']*$banner_data['BLK_HEIGHT']))) {
@@ -586,7 +549,6 @@ require( "header.php" );
 		?>
 
 		function move_image_to_selection() {
-
 
 			var pointer = document.getElementById('block_pointer');
 			var pixelimg = document.getElementById('pixelimg');
@@ -632,14 +594,11 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 	if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
 		$error              .= "<strong><font color='red'>" . $label['advertiser_file_type_not_supp'] . " ($ext)</font></strong><br />";
 		$image_changed_flag = false;
-
 	}
 	if ( isset( $error ) ) {
 		//echo "<font color='red'>Error, image upload failed</font>";
 		echo $error;
-
 	} else {
-
 
 		// clean up is handled by the delete_temp_order($sid) function...
 
@@ -657,9 +616,7 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 				if ( strpos( $file, 'tmp_' . md5( session_id() ) ) !== false ) {
 					unlink( $uploaddir . $file );
 				}
-
 			}
-
 		}
 
 		$uploadfile = $uploaddir . "tmp_" . md5( session_id() ) . ".$ext";
@@ -688,8 +645,7 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 				echo "</font></strong>";
 				unlink( $tmp_image_file );
 				unset( $tmp_image_file );
-
-			} elseif ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
+			} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
 
 				$label['min_pixels_required'] = str_replace( '%COUNT%', $pixel_count, $label['min_pixels_required'] );
 				$label['min_pixels_required'] = str_replace( '%MIN_PIXELS%', $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'], $label['min_pixels_required'] );
@@ -698,16 +654,12 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 				echo "</font></strong>";
 				unlink( $tmp_image_file );
 				unset( $tmp_image_file );
-
 			}
-
 		} else {
 			//echo "Possible file upload attack!\n";
 			echo $label['pixel_upload_failed'];
 		}
-
 	}
-
 }
 
 // pointer.png
@@ -716,13 +668,11 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 
     <span id="block_pointer" onmousemove="show_pointer2(event)" onclick="do_block_click(event);" style='cursor: pointer;position:absolute;left:0px; top:0px;background:transparent; visibility:hidden '><img src="get_pointer_graphic.php?BID=<?php echo $BID; ?>" alt=""/></span>
 
-
     <p>
 		<?php
 		show_nav_status( 1 );
 		?>
     </p>
-
 
     <p id="select_status"><?php echo( isset( $cannot_sel ) ? $cannot_sel : "" ); ?></p>
 
@@ -752,7 +702,6 @@ if ( mysqli_num_rows( $res ) > 1 ) {
 
 if ( isset( $order_exists ) && $order_exists ) {
 	echo "<p>" . $label['advertiser_order_not_confirmed'] . "</p>";
-
 }
 ?>
 
@@ -761,7 +710,6 @@ if ( isset( $order_exists ) && $order_exists ) {
 $has_packages = banner_get_packages( $BID );
 if ( $has_packages ) {
 	display_package_options_table( $BID, '', false );
-
 } else {
 	display_price_table( $BID );
 }
@@ -775,7 +723,7 @@ if ( $has_packages ) {
     <form method='post' action="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>" enctype="multipart/form-data">
         <strong><?php $label['upload_your_pix']; ?></strong> <input type='file' name='graphic' style=' font-size:14px;'/><br/>
         <input type='hidden' name='BID' value='<?php echo $BID; ?>'/>
-        <input type='submit' value='<?php echo $f2->rmnl($label['pix_upload_button']); ?>' style=' font-size:18px;' />
+        <input type='submit' value='<?php echo $f2->rmnl( $label['pix_upload_button'] ); ?>' style=' font-size:18px;'/>
 
 		<?php
 
@@ -790,9 +738,7 @@ if ( ! $tmp_image_file ) {
 	?>
 
 	<?php
-
 } else {
-
 
 	?>
 
@@ -825,18 +771,18 @@ if ( ! $tmp_image_file ) {
     </p>
 	<?php //echo $label['advertiser_select_instructions']; ?>
 
-
     <form method="post" action="order_pixels.php" name='pixel_form'>
         <input type="hidden" name="jEditOrder" value="true">
 
         <p>
-            <input type="button" class='big_button' <?php if (isset($_REQUEST['order_id']) && $_REQUEST['order_id']!='temp') { echo 'disabled'; } ?> name='submit_button1' id='submit_button1' value='<?php echo $f2->rmnl($label['advertiser_write_ad_button']); ?>' onclick="make_selection(event);">
+            <input type="button" class='big_button' <?php if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != 'temp' ) {
+				echo 'disabled';
+			} ?> name='submit_button1' id='submit_button1' value='<?php echo $f2->rmnl( $label['advertiser_write_ad_button'] ); ?>' onclick="make_selection(event);">
 
         </p>
 
         <input type="hidden" value="1" name="select">
         <input type="hidden" value="<?php echo $BID; ?>" name="BID">
-
 
         <img style="cursor: pointer;" id="pixelimg" <?php if ( ( USE_AJAX == 'YES' ) || ( USE_AJAX == 'SIMPLE' ) ) { ?> onmousemove="show_pointer(event)"  <?php } ?> type="image" name="map" value='Select Pixels.' width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" src="show_selection.php?BID=<?php echo $BID; ?>&amp;gud=<?php echo time(); ?>" alt=""/>
 
@@ -850,7 +796,9 @@ if ( ! $tmp_image_file ) {
             <input type="hidden" name="selected_pixels" value=''>
             <input type="hidden" name="order_id" value="<?php echo $_SESSION['MDS_order_id']; ?>">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
-            <input type="submit" class='big_button' <?php if (isset($_REQUEST['order_id']) && $_REQUEST['order_id']!='temp') { echo 'disabled'; } ?> name='submit_button2' id='submit_button2' value='<?php echo $f2->rmnl($label['advertiser_write_ad_button']); ?>' onclick="make_selection(event);">
+            <input type="submit" class='big_button' <?php if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != 'temp' ) {
+				echo 'disabled';
+			} ?> name='submit_button2' id='submit_button2' value='<?php echo $f2->rmnl( $label['advertiser_write_ad_button'] ); ?>' onclick="make_selection(event);">
             <hr/>
         </form>
 
@@ -874,6 +822,6 @@ if ( ! $tmp_image_file ) {
 	<?php
 }
 
-require "footer.php";
+require_once BASE_PATH . "/html/footer.php";
 
 ?>

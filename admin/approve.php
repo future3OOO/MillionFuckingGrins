@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright      (C) Copyright 2020 Ryan Rhode, All rights reserved.
- * @author         Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -29,12 +30,12 @@
  *
  */
 
-require( "../config.php" );
+require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
 // edit this file to change the style of the mouseover box!
-require( BASE_PATH . '/mouseover_box.htm' );
+require( BASE_PATH . '/html/mouseover_box.htm' );
 
 echo '<script>';
 require( BASE_PATH . '/include/mouseover_js.inc.php' );
@@ -106,43 +107,15 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 }
 
 ?>
-<?php echo $f2->get_doc(); ?>
-
-<script>
-	function confirmLink(theLink, theConfirmMsg) {
-		if (theConfirmMsg === '') {
-			return true;
-		}
-
-		var is_confirmed = confirm(theConfirmMsg + '\n');
-		if (is_confirmed) {
-			theLink.href += '&is_js_confirmed=1';
-		}
-
-		return is_confirmed;
-	}
-
-	function checkBoxes(checkbox, name) {
-		var state, boxes, count, i;
-		state = checkbox.checked;
-		boxes = eval("document.form1.elements['" + name + "']");
-		count = boxes.length;
-		for (i = 0; i < count; i++) {
-			boxes[i].checked = state;
-		}
-	}
-</script>
-
-</head>
 
 <h3>Remember to process your Grid Image(s) <a href="process.php">here</a></h3>
 
-<form name="bidselect" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form name="bidselect" method="post" action="approve.php">
     <input type="hidden" name="old_order_id" value="<?php //echo $order_id; ?>">
     <input type="hidden" value="<?php echo $_REQUEST['app']; ?>" name="app">
     <label>
         Select Grid:
-        <select name="BID" onchange="document.bidselect.submit()">
+        <select name="BID" onchange="mds_submit(this)">
             <option value='all'
 				<?php if ( $f2->bid( $_REQUEST['BID'] ) == 'all' ) {
 					echo 'selected';
@@ -159,13 +132,11 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';
-
 				}
 
 				echo '
                     <option
                     ' . $sel . ' value=' . $row['banner_id'] . '>' . $row['name'] . '</option>';
-
 			}
 			?>
         </select>
@@ -191,7 +162,7 @@ if ( $_REQUEST['edit_links'] != '' ) {
 
 	?>
     <h3>Edit Links:</h3>
-    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+    <form method="post" action="approve.php">
         <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
         <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
         <input type="hidden" name="user_id" value="<?php echo $_REQUEST['user_id']; ?>">
@@ -226,7 +197,6 @@ if ( $_REQUEST['edit_links'] != '' ) {
     </form>
 
 	<?php
-
 }
 
 $bid_sql2 = " AND blocks.banner_id=$BID ";
@@ -237,8 +207,8 @@ if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
 
 // whitelist $_REQUEST['app'] value
 $Y_or_N = 'N';
-if(isset($_REQUEST['app'])) {
-	if ($_REQUEST['app'] == 'Y') {
+if ( isset( $_REQUEST['app'] ) ) {
+	if ( $_REQUEST['app'] == 'Y' ) {
 		$Y_or_N = 'Y';
 	}
 }
@@ -318,14 +288,14 @@ if ( $count > $records_per_page ) {
 		$i = 0;
 		while ( ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) && ( $i < $records_per_page ) ) {
 
-		    $banner_data = load_banner_constants($row['banner_id']);
+			$banner_data = load_banner_constants( $row['banner_id'] );
 
-		    $blocks = explode(',', $row['blocks']);
-		    $coords = "";
-		    foreach($blocks as $block) {
-		        $pos = get_block_position($block, $row['banner_id']);
-		        $coords .= ($pos['x'] / $banner_data['block_width']) . ',' . ($pos['y'] / $banner_data['block_height'] ) . "<br />\n";
-            }
+			$blocks = explode( ',', $row['blocks'] );
+			$coords = "";
+			foreach ( $blocks as $block ) {
+				$pos    = get_block_position( $block, $row['banner_id'] );
+				$coords .= ( $pos['x'] / $banner_data['block_width'] ) . ',' . ( $pos['y'] / $banner_data['block_height'] ) . "<br />\n";
+			}
 
 			$i ++;
 			?>
@@ -357,12 +327,12 @@ if ( $count > $records_per_page ) {
                 <td><span style="font-family: Arial,serif; font-size: x-small; "><?php
 						if ( $row['approved'] == 'N' ) {
 							?>
-                            <input type="button" style="font-size: 9px; background-color: #33FF66" value="Approve" onclick=" window.location='<?php echo $_SERVER['PHP_SELF']; ?>?action=approve&BID=<?php echo $row['banner_id']; ?>&user_id=<?php echo $row['user_id']; ?>&order_id=<?php echo $row['order_id']; ?>&offset=<?php $_REQUEST['offset']; ?>&app=<?php echo $_REQUEST['app']; ?>&do_it_now='+document.form1.do_it_now.checked "><?php
+                            <input type="button" style="font-size: 9px; background-color: #33FF66" value="Approve" onclick="mds_load_page('approve.php?action=approve&amp;BID=<?php echo $row['banner_id']; ?>&amp;user_id=<?php echo $row['user_id']; ?>&amp;order_id=<?php echo $row['order_id']; ?>&amp;offset=<?php $_REQUEST['offset']; ?>&amp;app=<?php echo $_REQUEST['app']; ?>&amp;do_it_now='+document.form1.do_it_now.checked, true)"><?php
 						}
 
 						if ( $row['approved'] != 'N' ) {
 							?>
-                            <input type="button" style="font-size: 9px;" value="Disapprove" onclick=" window.location='<?php echo $_SERVER['PHP_SELF']; ?>?action=disapprove&BID=<?php echo $row['banner_id']; ?>&user_id=<?php echo $row['user_id']; ?>&order_id=<?php echo $row['order_id']; ?>&offset=<?php $_REQUEST['offset']; ?>&app=<?php echo $_REQUEST['app']; ?>&do_it_now='+document.form1.do_it_now.checked "><?php
+                            <input type="button" style="font-size: 9px;" value="Disapprove" onclick="mds_load_page('approve.php?action=disapprove&amp;BID=<?php echo $row['banner_id']; ?>&amp;user_id=<?php echo $row['user_id']; ?>&amp;order_id=<?php echo $row['order_id']; ?>&amp;offset=<?php $_REQUEST['offset']; ?>&amp;app=<?php echo $_REQUEST['app']; ?>&amp;do_it_now='+document.form1.do_it_now.checked, true)"><?php
 						}
 
 						?>

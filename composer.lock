@@ -1,192 +1,291 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "c8c20bccb5b6d417ee1cadd3da037d23",
-    "packages": [
-        {
-            "name": "ezyang/htmlpurifier",
-            "version": "v4.12.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "a617e55bc62a87eec73bd456d146d134ad716f03"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/a617e55bc62a87eec73bd456d146d134ad716f03",
-                "reference": "a617e55bc62a87eec73bd456d146d134ad716f03",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2"
-            },
-            "require-dev": {
-                "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "HTMLPurifier": "library/"
-                },
-                "files": [
-                    "library/HTMLPurifier.composer.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Edward Z. Yang",
-                    "email": "admin@htmlpurifier.org",
-                    "homepage": "http://ezyang.com"
-                }
-            ],
-            "description": "Standards compliant HTML filter written in PHP",
-            "homepage": "http://htmlpurifier.org/",
-            "keywords": [
-                "html"
-            ],
-            "time": "2019-10-28T03:44:26+00:00"
-        },
-        {
-            "name": "imagine/imagine",
-            "version": "1.2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/avalanche123/Imagine.git",
-                "reference": "cb2361e5bb4410b681462d8e4f912bc5dabf84ab"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/cb2361e5bb4410b681462d8e4f912bc5dabf84ab",
-                "reference": "cb2361e5bb4410b681462d8e4f912bc5dabf84ab",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "2.2.*",
-                "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.4"
-            },
-            "suggest": {
-                "ext-gd": "to use the GD implementation",
-                "ext-gmagick": "to use the Gmagick implementation",
-                "ext-imagick": "to use the Imagick implementation"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Imagine\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bulat Shakirzyanov",
-                    "email": "mallluhuct@gmail.com",
-                    "homepage": "http://avalanche123.com"
-                }
-            ],
-            "description": "Image processing for PHP 5.3",
-            "homepage": "http://imagine.readthedocs.org/",
-            "keywords": [
-                "drawing",
-                "graphics",
-                "image manipulation",
-                "image processing"
-            ],
-            "time": "2019-12-04T09:55:33+00:00"
-        },
-        {
-            "name": "phpmailer/phpmailer",
-            "version": "v6.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "a8bf068f64a580302026e484ee29511f661b2ad3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/a8bf068f64a580302026e484ee29511f661b2ad3",
-                "reference": "a8bf068f64a580302026e484ee29511f661b2ad3",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-filter": "*",
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "doctrine/annotations": "^1.2",
-                "friendsofphp/php-cs-fixer": "^2.2",
-                "phpunit/phpunit": "^4.8 || ^5.7"
-            },
-            "suggest": {
-                "ext-mbstring": "Needed to send email in multibyte encoding charset",
-                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
-                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
-                "psr/log": "For optional PSR-3 debug logging",
-                "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
-                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PHPMailer\\PHPMailer\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1-only"
-            ],
-            "authors": [
-                {
-                    "name": "Marcus Bointon",
-                    "email": "phpmailer@synchromedia.co.uk"
-                },
-                {
-                    "name": "Jim Jagielski",
-                    "email": "jimjag@gmail.com"
-                },
-                {
-                    "name": "Andy Prevost",
-                    "email": "codeworxtech@users.sourceforge.net"
-                },
-                {
-                    "name": "Brent R. Matzelle"
-                }
-            ],
-            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2020-03-14T14:23:48+00:00"
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "e0314f9dfebec8465622944b31bbcb8d",
+  "packages": [
+    {
+      "name": "components/jquery",
+      "version": "3.5.1",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/components/jquery.git",
+        "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/components/jquery/zipball/b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
+        "reference": "b33e8f0f9a1cb2ae390cf05d766a900b53d2125b",
+        "shasum": ""
+      },
+      "type": "component",
+      "extra": {
+        "component": {
+          "scripts": [
+            "jquery.js"
+          ],
+          "files": [
+            "jquery.min.js",
+            "jquery.min.map",
+            "jquery.slim.js",
+            "jquery.slim.min.js",
+            "jquery.slim.min.map"
+          ]
         }
-    ],
-    "packages-dev": [],
-    "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
-    "prefer-stable": false,
-    "prefer-lowest": false,
-    "platform": {
-        "ext-mysqli": "*",
-        "ext-gd": "*",
-        "ext-json": "*",
-        "ext-iconv": "*",
-        "ext-mbstring": "*",
-        "ext-curl": "*"
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "JS Foundation and other contributors"
+        }
+      ],
+      "description": "jQuery JavaScript Library",
+      "homepage": "http://jquery.com",
+      "time": "2020-05-05T13:21:02+00:00"
     },
-    "platform-dev": []
+    {
+      "name": "ezyang/htmlpurifier",
+      "version": "v4.12.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/ezyang/htmlpurifier.git",
+        "reference": "a617e55bc62a87eec73bd456d146d134ad716f03"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/a617e55bc62a87eec73bd456d146d134ad716f03",
+        "reference": "a617e55bc62a87eec73bd456d146d134ad716f03",
+        "shasum": ""
+      },
+      "require": {
+        "php": ">=5.2"
+      },
+      "require-dev": {
+        "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-0": {
+          "HTMLPurifier": "library/"
+        },
+        "files": [
+          "library/HTMLPurifier.composer.php"
+        ]
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "LGPL-2.1-or-later"
+      ],
+      "authors": [
+        {
+          "name": "Edward Z. Yang",
+          "email": "admin@htmlpurifier.org",
+          "homepage": "http://ezyang.com"
+        }
+      ],
+      "description": "Standards compliant HTML filter written in PHP",
+      "homepage": "http://htmlpurifier.org/",
+      "keywords": [
+        "html"
+      ],
+      "time": "2019-10-28T03:44:26+00:00"
+    },
+    {
+      "name": "imagine/imagine",
+      "version": "1.2.3",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/avalanche123/Imagine.git",
+        "reference": "cb2361e5bb4410b681462d8e4f912bc5dabf84ab"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/avalanche123/Imagine/zipball/cb2361e5bb4410b681462d8e4f912bc5dabf84ab",
+        "reference": "cb2361e5bb4410b681462d8e4f912bc5dabf84ab",
+        "shasum": ""
+      },
+      "require": {
+        "php": ">=5.3.2"
+      },
+      "require-dev": {
+        "friendsofphp/php-cs-fixer": "2.2.*",
+        "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.4"
+      },
+      "suggest": {
+        "ext-gd": "to use the GD implementation",
+        "ext-gmagick": "to use the Gmagick implementation",
+        "ext-imagick": "to use the Imagick implementation"
+      },
+      "type": "library",
+      "extra": {
+        "branch-alias": {
+          "dev-develop": "0.7-dev"
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "Imagine\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Bulat Shakirzyanov",
+          "email": "mallluhuct@gmail.com",
+          "homepage": "http://avalanche123.com"
+        }
+      ],
+      "description": "Image processing for PHP 5.3",
+      "homepage": "http://imagine.readthedocs.org/",
+      "keywords": [
+        "drawing",
+        "graphics",
+        "image manipulation",
+        "image processing"
+      ],
+      "time": "2019-12-04T09:55:33+00:00"
+    },
+    {
+      "name": "jquery-form/form",
+      "version": "v4.2.2",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/jquery-form/form.git",
+        "reference": "4beae57bc92402e2d03ca66b5ae2942d0c94c695"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/jquery-form/form/zipball/4beae57bc92402e2d03ca66b5ae2942d0c94c695",
+        "reference": "4beae57bc92402e2d03ca66b5ae2942d0c94c695",
+        "shasum": ""
+      },
+      "require": {
+        "components/jquery": ">=1.7.2"
+      },
+      "type": "library",
+      "extra": {
+        "component": {
+          "scripts": [
+            "src/jquery.form.js"
+          ],
+          "shim": {
+            "deps": [
+              "jquery"
+            ]
+          }
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "(LGPL-2.1+ OR MIT)"
+      ],
+      "authors": [
+        {
+          "name": "Kevin Morris"
+        },
+        {
+          "name": "Mike Alsup"
+        }
+      ],
+      "description": "The jQuery Form Plugin allows you to easily and unobtrusively upgrade HTML forms to use AJAX.",
+      "homepage": "https://github.com/jquery-form/form",
+      "keywords": [
+        "ajax",
+        "form",
+        "html-form",
+        "jquery",
+        "jquery-form",
+        "jquery-plugin",
+        "json",
+        "json-form"
+      ],
+      "time": "2017-08-09T20:56:53+00:00"
+    },
+    {
+      "name": "phpmailer/phpmailer",
+      "version": "v6.1.5",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/PHPMailer/PHPMailer.git",
+        "reference": "a8bf068f64a580302026e484ee29511f661b2ad3"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/a8bf068f64a580302026e484ee29511f661b2ad3",
+        "reference": "a8bf068f64a580302026e484ee29511f661b2ad3",
+        "shasum": ""
+      },
+      "require": {
+        "ext-ctype": "*",
+        "ext-filter": "*",
+        "php": ">=5.5.0"
+      },
+      "require-dev": {
+        "doctrine/annotations": "^1.2",
+        "friendsofphp/php-cs-fixer": "^2.2",
+        "phpunit/phpunit": "^4.8 || ^5.7"
+      },
+      "suggest": {
+        "ext-mbstring": "Needed to send email in multibyte encoding charset",
+        "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+        "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+        "psr/log": "For optional PSR-3 debug logging",
+        "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+        "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "PHPMailer\\PHPMailer\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "LGPL-2.1-only"
+      ],
+      "authors": [
+        {
+          "name": "Marcus Bointon",
+          "email": "phpmailer@synchromedia.co.uk"
+        },
+        {
+          "name": "Jim Jagielski",
+          "email": "jimjag@gmail.com"
+        },
+        {
+          "name": "Andy Prevost",
+          "email": "codeworxtech@users.sourceforge.net"
+        },
+        {
+          "name": "Brent R. Matzelle"
+        }
+      ],
+      "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+      "time": "2020-03-14T14:23:48+00:00"
+    }
+  ],
+  "packages-dev": [],
+  "aliases": [],
+  "minimum-stability": "stable",
+  "stability-flags": [],
+  "prefer-stable": false,
+  "prefer-lowest": false,
+  "platform": {
+    "ext-mysqli": "*",
+    "ext-gd": "*",
+    "ext-json": "*",
+    "ext-iconv": "*",
+    "ext-mbstring": "*",
+    "ext-curl": "*",
+    "ext-bcmath": "*"
+  },
+  "platform-dev": []
 }

@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -76,24 +77,31 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 	if ( mysqli_num_rows( $result ) > 0 ) {
 		$_SESSION['MDS_LANG'] = $r_lang;
 		// save the requested language
-		@setcookie( "MDS_SAVED_LANG", $r_lang, 2147483647 );
-
+		@setcookie( "MDS_SAVED_LANG", $r_lang, [
+			'expires'  => time() + 86400,
+			'path'     => '/',
+			'secure'   => true,
+			'samesite' => 'Strict',
+		] );
 	} else {
 		$sql = "SELECT * FROM lang WHERE `is_default`='Y'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row                  = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 		$_SESSION['MDS_LANG'] = get_lang( $row["lang_code"] );
 		// save the requested language
-		@setcookie( "MDS_SAVED_LANG", get_lang( $row["lang_code"] ), 2147483647 );
+		@setcookie( "MDS_SAVED_LANG", get_lang( $row["lang_code"] ), [
+			'expires'  => time() + 86400,
+			'path'     => '/',
+			'secure'   => true,
+			'samesite' => 'Strict',
+		] );
 		//echo "Invalid language. Reverting to default language.";
 	}
-
-} elseif ( isset( $_SESSION['MDS_LANG'] ) && $_SESSION['MDS_LANG'] == '' ) {
+} else if ( isset( $_SESSION['MDS_LANG'] ) && $_SESSION['MDS_LANG'] == '' ) {
 
 	// get the default language, or saved language
 	if ( isset( $_COOKIE['MDS_SAVED_LANG'] ) && $_COOKIE['MDS_SAVED_LANG'] != '' ) {
 		$_SESSION['MDS_LANG'] = $_COOKIE['MDS_SAVED_LANG'];
-
 	} else {
 
 		// check if db is setup yet
@@ -109,16 +117,13 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 						setlocale( LC_TIME, $row['charset'] );
 					}
 				}
-
 			} else {
 				// no db so use defaults
 				$_SESSION['MDS_LANG'] = 'EN';
 				setlocale( LC_TIME, 'en_US.utf8' );
 			}
 		}
-
 	}
-
 }
 
 global $AVAILABLE_LANGS;
@@ -144,24 +149,25 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) ) {
 
 					if ( isset( $_COOKIE['MDS_SAVED_LANG'] ) && ! isset( $AVAILABLE_LANGS[ $_COOKIE['MDS_SAVED_LANG'] ] ) ) {
 						$_SESSION['MDS_LANG'] = get_default_lang();
-						@setcookie( "MDS_SAVED_LANG", $_SESSION['MDS_LANG'], 2147483647 );
-
+						@setcookie( "MDS_SAVED_LANG", $_SESSION['MDS_LANG'], [
+							'expires'  => time() + 86400,
+							'path'     => '/',
+							'secure'   => true,
+							'samesite' => 'Strict',
+						] );
 					} else if ( ! isset( $_COOKIE['MDS_SAVED_LANG'] ) ) {
 						$_SESSION['MDS_LANG'] = get_default_lang();
 					}
 				}
 
 				include dirname( __FILE__ ) . "/" . $LANG_FILES[ $_SESSION['MDS_LANG'] ];
-
 			} else {
 				$_SESSION['MDS_LANG'] = "EN";
 				include dirname( __FILE__ ) . "/english.php";
 			}
-
 		} else {
 			$DB_ERROR = mysqli_error( $GLOBALS['connection'] );
 		}
-
 	} else {
 		// no db so use defaults
 		$_SESSION['MDS_LANG'] = "EN";
@@ -169,8 +175,8 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) ) {
 	}
 }
 
-function mds_stripslashes(&$val, $key) {
-	$val = stripslashes($val);
+function mds_stripslashes( &$val, $key ) {
+	$val = stripslashes( $val );
 }
 
-array_walk($label, 'mds_stripslashes');
+array_walk( $label, 'mds_stripslashes' );

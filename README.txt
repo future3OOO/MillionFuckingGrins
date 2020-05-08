@@ -2,17 +2,25 @@
 INSTALLATION.
 
 	Make sure your hosting service meets the requirements.
-	https://milliondollarscript.com/hosting/
+	https://milliondollarscript.com/article/hosting/
 
 	You may find these online installation instructions useful:
-	https://milliondollarscript.com/docs/
+	https://milliondollarscript.com/article/docs/
 	
 	More help and support is available at the forum.
 	https://milliondollarscript.com/forums/
-	
+
+	You can also join the official Discord server.
+	https://discord.gg/9AjyZb6
+
 	Knowledge Base / FAQ
 	https://milliondollarscript.com/category/faq/
-	
+
+	Note: The documentation on the website is currently undergoing a rewrite. Sorry for the mess!
+
+	If you'd like me (the developer) to install it for you then you can order the install service here:
+	https://milliondollarscript.com/product/million-dollar-script-installation-service/
+
 #############################################################
 
 1. Setup your database.
@@ -372,7 +380,7 @@ the 1 with a 2, and so on..
 
 > I get error SQL when registering a new user
 
-Note: As of version 2.1 MySQL 5 is recommended.
+Note: As of version 2.1 MySQL 5.7 is recommended.
 
 This problem can also be solved by opening the file 'my.ini' in your MySQL 
 install folder - the config file. And commenting out the command near the 
@@ -386,7 +394,7 @@ top that turns on the 'strict' mode.
 > Fatal error: Allowed memory size of 8388608 bytes exhausted
 > (tried to allocate 3000 bytes)
 
-Note: As of version 2.1 the default memory limit is set to 32M.
+Note: As of version 2.1 the default memory limit is set to 128M.
 
 It looks like your PHP memory limit is set to 8MB and the script needs more. 
 Please contact your hosting service to increase the limit.
@@ -486,18 +494,38 @@ to help you with merging the new files.
  *
  */
 
-
 Acknowledgments
 
 PHPMailer
 https://github.com/PHPMailer/PHPMailer
 
-AREA Map code contributed by Martin Diekhoff,  http://www.onecentads.com/
+AREA Map code contributed by Martin Diekhoff
+http://www.onecentads.com/
 
 Imagine - Image manipulation library for PHP 5.3 inspired by Python's PIL and other image libraries.
 https://github.com/avalanche123/Imagine
 
 HTMLPurifier - HTML filtering solution
 http://htmlpurifier.org/
+
+jQuery JavaScript library
+https://jquery.com/
+
+jQuery Form Plugin
+https://github.com/jquery-form/form
+
+Tippy.js - Tooltip, popover, dropdown, and menu library
+https://github.com/atomiks/tippyjs
+
+Popper - Tooltip & Popover Positioning Engine (used by Tippy.js)
+https://popper.js.org/
+
+Image-Map - Responsive, dynamic image maps.
+https://github.com/clarketm/image-map
+
+Image Scale - Scale images to fit or fill any target container via two simple properties: scale and align
+https://github.com/gestixi/image-scale
+
+And of course anything else I might be missing.
 
 Thank you to everyone else who helps out!

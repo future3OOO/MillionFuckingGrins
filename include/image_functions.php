@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -28,8 +29,6 @@
  *        https://milliondollarscript.com/
  *
  */
-
-##################################################
 
 function publish_image( $BID ) {
 
@@ -52,9 +51,9 @@ function publish_image( $BID ) {
 
 	if ( OUTPUT_JPEG == 'Y' ) {
 		copy( $file_path . "temp/temp$BID.jpg", $dest . "main$BID.jpg" );
-	} elseif ( OUTPUT_JPEG == 'N' ) {
+	} else if ( OUTPUT_JPEG == 'N' ) {
 		copy( $file_path . "temp/temp$BID.png", $dest . "main$BID.png" );
-	} elseif ( ( OUTPUT_JPEG == 'GIF' ) ) {
+	} else if ( ( OUTPUT_JPEG == 'GIF' ) ) {
 		copy( $file_path . "temp/temp$BID.gif", $dest . "main$BID.gif" );
 	}
 
@@ -75,14 +74,14 @@ function publish_image( $BID ) {
 	while ( $row = mysqli_fetch_array( $r ) ) {
 		// set the 'date_published' only if it was not set before, date_published can only be set once.
 		$now = ( gmdate( "Y-m-d H:i:s" ) );
-		$sql = "UPDATE orders set `date_published`='$now' where order_id='" . intval($row['order_id']) . "' AND date_published IS NULL ";
+		$sql = "UPDATE orders set `date_published`='$now' where order_id='" . intval( $row['order_id'] ) . "' AND date_published IS NULL ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 		// update the published status, always updated to Y
-		$sql = "UPDATE orders SET `published`='Y' WHERE order_id='" . intval($row['order_id']) . "'  ";
+		$sql = "UPDATE orders SET `published`='Y' WHERE order_id='" . intval( $row['order_id'] ) . "'  ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		$sql = "UPDATE blocks set `published`='Y' where block_id='" . intval($row['block_id']) . "' AND banner_id='" . intval( $BID ) . "'";
+		$sql = "UPDATE blocks set `published`='Y' where block_id='" . intval( $row['block_id'] ) . "' AND banner_id='" . intval( $BID ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
 
@@ -90,12 +89,11 @@ function publish_image( $BID ) {
 	$sql = "SELECT block_id, order_id FROM blocks WHERE approved='N' AND status='sold' AND banner_id='" . intval( $BID ) . "' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	while ( $row = mysqli_fetch_array( $result ) ) {
-		$sql = "UPDATE blocks set `published`='N' where block_id='" . intval($row['block_id']) . "'  AND banner_id='" . intval( $BID ) . "'  ";
+		$sql = "UPDATE blocks set `published`='N' where block_id='" . intval( $row['block_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		$sql = "UPDATE orders set `published`='N' where order_id='" . intval($row['order_id']) . "'  AND banner_id='" . intval( $BID ) . "'  ";
+		$sql = "UPDATE orders set `published`='N' where order_id='" . intval( $row['order_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-
 	}
 
 	// update the time-stamp on the banner
@@ -103,24 +101,20 @@ function publish_image( $BID ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 }
 
-###################################################
-
 function process_image( $BID ) {
 
 	require_once( "output_grid.php" );
 
-	return output_grid(false, SERVER_PATH_TO_ADMIN . "temp/temp$BID", $BID, array(
+	return output_grid( false, SERVER_PATH_TO_ADMIN . "temp/temp$BID", $BID, array(
 		'background',
 		'orders',
 		'nfs_front',
 		'grid',
-	));
+	) );
 }
 
-###################################################
-
 function get_html_code( $BID ) {
-	$BID = intval($BID);
+	$BID = intval( $BID );
 
 	$sql = "SELECT * FROM banners WHERE banner_id='" . $BID . "'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
@@ -133,21 +127,17 @@ function get_html_code( $BID ) {
 		$b_row['block_height'] = 10;
 	}
 
-	$width = $b_row['grid_width'] * $b_row['block_width'];
+	$width  = $b_row['grid_width'] * $b_row['block_width'];
 	$height = $b_row['grid_height'] * $b_row['block_height'];
 
-	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '" style="width:' . $width . ';height:' . $height . ';" width="' . $width . '" height="' . $height . '"></iframe>';
+	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
 }
 
-####################################################
 function get_stats_html_code( $BID ) {
-	$BID = intval($BID);
+	$BID = intval( $BID );
 
 	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '" width="150" height="50"></iframe>';
 }
-
-#########################################################
-
 
 /**
  * Calculates restricted dimensions with a maximum of $goal_width by $goal_height

@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright      (C) Copyright 2020 Ryan Rhode, All rights reserved.
- * @author         Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -37,13 +38,13 @@
 error_reporting( 0 );
 define( 'DEBUG', false );
 define( 'MDS_LOG', false );
-define( 'MDS_LOG_FILE', dirname( __FILE__ ) . '/.mds.log' );
-define( 'VERSION_INFO', 'Version 2.1 (Oct 2010)' );
-define( 'BASE_HTTP_PATH', '' );
+define( 'MDS_LOG_FILE', __DIR__ . '/.mds.log' );
+define( 'VERSION_INFO', 'Version 2.1 (Apr 2020)' );
+define( 'BASE_HTTP_PATH', '/' );
 define( 'BASE_PATH', __DIR__ );
 define( 'SERVER_PATH_TO_ADMIN', __DIR__ . '/admin/' );
 define( 'UPLOAD_PATH', __DIR__ . '/upload_files/' );
-define( 'UPLOAD_HTTP_PATH', '' );
+define( 'UPLOAD_HTTP_PATH', '/upload_files/' );
 define( 'SITE_CONTACT_EMAIL', 'test@example.com' );
 define( 'SITE_LOGO_URL', 'https://milliondollarscript.com/logo.gif' );
 define( 'SITE_NAME', 'Million Dollar Script ' . VERSION_INFO );
@@ -57,7 +58,7 @@ define( 'MYSQL_PORT', 3306 );
 define( 'MYSQL_SOCKET', '' );
 define( 'ADMIN_PASSWORD', 'ok' );
 define( 'DATE_FORMAT', 'Y-M-d' );
-define( 'GMT_DIF', '6' );
+define( 'GMT_DIF', date_default_timezone_get() );
 define( 'DATE_INPUT_SEQ', 'YMD' );
 define( 'OUTPUT_JPEG', 'N' );
 define( 'JPEG_QUALITY', '75' );

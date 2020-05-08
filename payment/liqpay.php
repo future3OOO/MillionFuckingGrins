@@ -1,6 +1,36 @@
 <?php
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
-require_once "../config.php";
+require_once __DIR__ . "/../include/init.php";
 
 // https://www.liqpay.ua/en/doc/checkout
 // https://www.liqpay.ua/documentation/en/api/aquiring/checkout/
@@ -25,8 +55,6 @@ function liqpay_mail_error( $msg ) {
 
 	mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " LiqPay script. ", $msg, $headers );
 }
-
-#####################################################################################
 
 // https://www.liqpay.ua/documentation/en/api/callback
 // https://www.liqpay.ua/documentation/en/api/information/status/doc
@@ -141,7 +169,7 @@ if ( isset( $_POST['data'] ) && $_POST['data'] != '' ) {
 		$transaction['moment_part']         = filter_var( $data['moment_part'], FILTER_VALIDATE_BOOLEAN );
 		$transaction['transaction_id']      = filter_var( $data['transaction_id'], FILTER_VALIDATE_INT );
 
-		$sql = "SELECT * FROM orders WHERE order_id='" . intval($transaction['order_id']) . "'";
+		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $transaction['order_id'] ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or liqpay_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
 
@@ -150,7 +178,7 @@ if ( isset( $_POST['data'] ) && $_POST['data'] != '' ) {
 	}
 }
 
-###########################################################################
+#
 # Payment Object
 
 class LiqPay {
@@ -182,8 +210,8 @@ class LiqPay {
 	function install() {
 		echo "Installing LiqPay...<br>";
 
-		$liqpay_ipn_url     = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . 'payment/liqpay.php');
-		$liqpay_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className);
+		$liqpay_ipn_url     = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . 'payment/liqpay.php' );
+		$liqpay_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className );
 
 		$sql = "REPLACE INTO config (`key`, val) VALUES 
                 ('LIQPAY_ENABLED', 'N'),
@@ -217,7 +245,7 @@ class LiqPay {
 
 		$order_id = intval( $order_id );
 
-		$sql = "SELECT * FROM orders WHERE order_id='" . intval($order_id) . "'";
+		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order = mysqli_fetch_array( $result );
 
@@ -329,7 +357,7 @@ class LiqPay {
 	}
 
 	function save_config() {
-		$sql = "REPLACE INTO config (`key`, val) VALUES ('LIQPAY_TEST_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_test_mode']) . "'),('LIQPAY_PUBLIC_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_public_key']) . "'),('LIQPAY_PRIVATE_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_private_key']) . "'),('LIQPAY_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_currency']) . "'),('LIQPAY_IPN_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_ipn_url']) . "'),('LIQPAY_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_success_url']) . "')";
+		$sql = "REPLACE INTO config (`key`, val) VALUES ('LIQPAY_TEST_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_test_mode'] ) . "'),('LIQPAY_PUBLIC_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_public_key'] ) . "'),('LIQPAY_PRIVATE_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_private_key'] ) . "'),('LIQPAY_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_currency'] ) . "'),('LIQPAY_IPN_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_ipn_url'] ) . "'),('LIQPAY_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['liqpay_success_url'] ) . "')";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 

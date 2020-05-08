@@ -1,10 +1,11 @@
 <?php
 /**
- * @package        mds
- * @copyright      (C) Copyright 2020 Ryan Rhode, All rights reserved.
- * @author         Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
-*        it under the terms of the GNU General Public License as published by
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
  *
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -32,7 +33,7 @@
 ini_set( 'max_execution_time', 10000 );
 define( 'NO_HOUSE_KEEP', 'YES' );
 
-require( "../config.php" );
+require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
@@ -40,15 +41,14 @@ if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
 	$BID = $f2->bid( $_REQUEST['BID'] );
 } else {
 	$BID = 1;
-
 }
 
-$banner_data = load_banner_constants($BID);
+$banner_data = load_banner_constants( $BID );
 
 ?>
 <span onmouseout="hideBubble()" id="bubble" style="position:absolute;left:0; top:0; visibility:hidden; background-color:#FFFFFF; border: 1px solid #33CCFF;padding:3px; width:250px; font-family:Arial,serif; font-size:11px;"></span>
 
-<script language="JavaScript">
+<script>
 
 	function is_right_available(box, e) {
 		return (box.clientWidth + e.clientX + h_padding) < window.winWidth;
@@ -111,7 +111,6 @@ $banner_data = load_banner_constants($BID);
 
 	}
 
-	///////////////
 	function moveBox2() {
 
 		var box = document.getElementById('bubble');
@@ -163,7 +162,7 @@ $banner_data = load_banner_constants($BID);
 	function initFrameSize() {
 
 		var myWidth = 0, myHeight = 0;
-		if (typeof(window.innerWidth) === 'number') {
+		if (typeof (window.innerWidth) === 'number') {
 			//Non-IE
 			myWidth = window.innerWidth;
 			myHeight = window.innerHeight;
@@ -196,8 +195,6 @@ $banner_data = load_banner_constants($BID);
 
 		b = bubble.style;
 
-
-		//str=str+"hello: "+bubble.clientWidth;
 		document.getElementById('bubble').innerHTML = str;
 
 		initFrameSize();
@@ -209,36 +206,28 @@ $banner_data = load_banner_constants($BID);
 
 		if (mytop) {
 			// move to the top
-			//b.top=e.clientY-bubble.clientHeight-v_padding;
 			bubble.ypos = e.clientY - bubble.clientHeight - v_padding;
-			//alert(bubble.xpos);
 		}
 
 		if (myright) {
 			// move to the right
-			//b.left=e.clientX+h_padding;//+bubble.clientWidth;
 			bubble.xpos = e.clientX + h_padding;
 		}
 
 		if (myleft) {
 			// move to the left
-			//b.left=e.clientX-bubble.clientWidth-h_padding ;
 			bubble.xpos = e.clientX - bubble.clientWidth - h_padding;
 		}
 
-
 		if (mybot) {
 			// move to the bottom
-			//b.top=e.clientY+v_padding;
 			bubble.ypos = e.clientY + v_padding;
 		}
 
 		b.visibility = 'visible';
 
-		//bubble.style.top=e.clientY;
-		//bubble.style.left=e.clientX;
 		moveBox2()
-		//moveBox(bubble);
+
 		window.setTimeout("moveBox2()", <?php if ( ! is_numeric( ANIMATION_SPEED ) ) {
 			echo '10';
 		} else {
@@ -282,13 +271,9 @@ $banner_data = load_banner_constants($BID);
 
 	}
 
-	///////////////////////
-
 	/*
 
 	Block moving functions
-
-
 
 	*/
 
@@ -297,49 +282,44 @@ $banner_data = load_banner_constants($BID);
 
 	var BID = <?php echo $BID; ?>;
 
-		function bm_state_change(button) {
+	function bm_state_change(button) {
 
-			is_moving = false;
+		is_moving = false;
 
-			if (button === 'MOVE_ORDER') {
-				bm_move_block_state = false;
-				document.button_move_b.src = 'move_b.gif';
-				if (bm_move_order_state) {
-					bm_move_order_state = false;
-					document.button_move.src = 'move.gif';
-				} else {
-					bm_move_order_state = true;
-					document.button_move.src = 'move_down.gif';
-				}
-			}
-
-			if (button === 'MOVE_BLOCK') {
+		if (button === 'MOVE_ORDER') {
+			bm_move_block_state = false;
+			document.button_move_b.src = 'move_b.gif';
+			if (bm_move_order_state) {
 				bm_move_order_state = false;
 				document.button_move.src = 'move.gif';
-
-				if (bm_move_block_state) {
-					bm_move_block_state = false;
-					document.button_move_b.src = 'move_b.gif';
-				} else {
-					bm_move_block_state = true
-					document.button_move_b.src = 'move_b_down.gif';
-				}
-			}
-
-			//alert('state changed!')
-
-			if ((bm_move_block_state === true) || (bm_move_order_state === true)) {
-				document.body.style.cursor = 'move';
-
 			} else {
-				document.body.style.cursor = 'default';
-
+				bm_move_order_state = true;
+				document.button_move.src = 'move_down.gif';
 			}
+		}
 
+		if (button === 'MOVE_BLOCK') {
+			bm_move_order_state = false;
+			document.button_move.src = 'move.gif';
+
+			if (bm_move_block_state) {
+				bm_move_block_state = false;
+				document.button_move_b.src = 'move_b.gif';
+			} else {
+				bm_move_block_state = true
+				document.button_move_b.src = 'move_b_down.gif';
+			}
+		}
+
+		if ((bm_move_block_state === true) || (bm_move_order_state === true)) {
+			document.body.style.cursor = 'move';
+
+		} else {
+			document.body.style.cursor = 'default';
 
 		}
 
-	/////////////////////
+	}
 
 	var is_moving = false;
 
@@ -347,15 +327,10 @@ $banner_data = load_banner_constants($BID);
 
 	function do_block_click(banner_id) {
 
-
-		//var move_done = bm_move_block_state | bm_move_order_state;
-
-		//return move_done;
 		document.body.style.cursor = 'default';
 		is_moving = true;
 		var cb = get_clicked_block();
-		//var pointer = document.getElementById('block_pointer');
-//	document.pointer_img.src = 'move.gif';
+
 		if (bm_move_order_state) {
 			document.pointer_img.src = 'get_pointer_image2.php?BID=' + banner_id + '&block_id=' + cb;
 		} else {
@@ -365,8 +340,6 @@ $banner_data = load_banner_constants($BID);
 		cb_from = cb
 
 	}
-
-	//////////////
 
 	function put_pixels(e) {
 
@@ -386,34 +359,17 @@ $banner_data = load_banner_constants($BID);
 
 		document.move_form.submit();
 
-		document.pointer_img.src = 'pointer.png';
-
+		document.pointer_img.src = 'images/pointer.png';
 
 	}
 
-
-	///////////////////////
-
-
 	function show_pointer(e) {
-
-		//if (!browser_checked){
-		//	browser_compatible = is_browser_compatible();
-		//}
-
-		//if (!browser_compatible){
-		//	return false;
-		//}
-
-		//browser_checked=true;
-
 
 		var pixelimg = document.getElementById('pixelimg');
 
 		if (!pos) {
 			var pos = getObjCoords(pixelimg);
 		}
-
 
 		if (e.offsetX) {
 			var OffsetX = e.offsetX;
@@ -424,11 +380,8 @@ $banner_data = load_banner_constants($BID);
 
 		}
 
-		// OffsetX = Math.floor (OffsetX / 10)*10;
-		// OffsetY = Math.floor (OffsetY / 10)*10;
-
-	OffsetX = Math.floor (OffsetX / <?php echo $banner_data['BLK_WIDTH']; ?>)*<?php echo $banner_data['BLK_WIDTH']; ?>;
-	OffsetY = Math.floor (OffsetY / <?php echo $banner_data['BLK_HEIGHT']; ?>)*<?php echo $banner_data['BLK_HEIGHT']; ?>;
+		OffsetX = Math.floor(OffsetX / <?php echo $banner_data['BLK_WIDTH']; ?>) *<?php echo $banner_data['BLK_WIDTH']; ?>;
+		OffsetY = Math.floor(OffsetY / <?php echo $banner_data['BLK_HEIGHT']; ?>) *<?php echo $banner_data['BLK_HEIGHT']; ?>;
 
 		var pointer = document.getElementById('block_pointer');
 
@@ -439,9 +392,7 @@ $banner_data = load_banner_constants($BID);
 		} else {
 			pointer.style.visibility = 'visible';
 
-
 		}
-
 
 		if (pos.y + OffsetY) {
 
@@ -455,13 +406,9 @@ $banner_data = load_banner_constants($BID);
 
 		}
 
-
 		return true;
 
 	}
-
-	////////////
-
 
 	var pos;
 
@@ -475,8 +422,7 @@ $banner_data = load_banner_constants($BID);
 				curleft += obj.offsetLeft;
 				obj = obj.offsetParent;
 			}
-		}
-		else if (obj.y) {
+		} else if (obj.y) {
 			curtop += obj.y;
 			curleft += obj.x;
 		}
@@ -485,33 +431,28 @@ $banner_data = load_banner_constants($BID);
 		return pos;
 	}
 
-
-	//////////////////////////
-
 	function get_clicked_block() {
 
 		var pointer = document.getElementById('block_pointer');
 
-	var grid_width=<?php echo $banner_data['G_WIDTH']*$banner_data['BLK_WIDTH'];?>;
-	var grid_height=<?php echo $banner_data['G_HEIGHT']*$banner_data['BLK_HEIGHT'];?>;
+		var grid_width =<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];?>;
+		var grid_height =<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];?>;
 
-	var blk_width = <?php echo $banner_data['BLK_WIDTH']; ?>;
-	var blk_height = <?php echo $banner_data['BLK_HEIGHT']; ?>;
+		var blk_width = <?php echo $banner_data['BLK_WIDTH']; ?>;
+		var blk_height = <?php echo $banner_data['BLK_HEIGHT']; ?>;
 
 		var clicked_block = ((pointer.map_x) / blk_width) + ((pointer.map_y / blk_height) * (grid_width / blk_width));
 
 		if (clicked_block === 0) {
-			clicked_block = "0";// convert to string
+			// convert to string
+			clicked_block = "0";
 		}
-		//alert ('clicked block'+clicked_block)
+
 		return clicked_block;
 	}
 
-	////////////////
-
-
 </script>
-<span id='block_pointer' onclick="put_pixels(event);" style='cursor: pointer;position:absolute;left:0; top:0;background-color:#FFFFFF; visibility:hidden; '><img name='pointer_img' src='pointer.png'></span>
+<span id='block_pointer' onclick="put_pixels(event);" style='cursor: pointer;position:absolute;left:0; top:0;background-color:#FFFFFF; visibility:hidden; '><img name='pointer_img' src='images/pointer.png'></span>
 
 <form method='post' name="move_form" action='map_iframe.php'>
     <input name='cb_from' type="hidden" value="">
@@ -527,12 +468,10 @@ if ( isset( $_REQUEST['move_type'] ) && ! empty( $_REQUEST['move_type'] ) ) {
 	if ( $_REQUEST['move_type'] == 'B' ) {// move block
 
 		move_block( $_REQUEST['cb_from'], $_REQUEST['cb_to'], $BID );
-
 	} else {
 
 		move_order( $_REQUEST['cb_from'], $_REQUEST['cb_to'], $BID );
 	}
-
 }
 
 $sql = "SELECT * FROM blocks WHERE  banner_id='" . intval( $BID ) . "'";
@@ -540,84 +479,67 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 
 ?>
 
-<IMG name='button_move' SRC="move.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Order" onclick='bm_state_change("MOVE_ORDER")'>
-<IMG name='button_move_b' SRC="move_b.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Block" onclick='bm_state_change("MOVE_BLOCK")'>
+<IMG name='button_move' SRC="images/move.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Order" onclick='bm_state_change("MOVE_ORDER")'>
+<IMG name='button_move_b' SRC="images/move_b.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Block" onclick='bm_state_change("MOVE_BLOCK")'>
 <map name="main" id="main" onmousemove="cancelIt()">
 
 	<?php
 
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
-        $sql = "select * from users where ID='" . intval( $row['user_id'] ) . "'";
-        $res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-        $user_row = mysqli_fetch_array( $res );
+		$sql = "select * from users where ID='" . intval( $row['user_id'] ) . "'";
+		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$user_row = mysqli_fetch_array( $res );
 
-        $sql = "select * from orders where order_id='" . intval( $row['order_id'] ) . "'";
-        $res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-        $order_row = mysqli_fetch_array( $res );
+		$sql = "select * from orders where order_id='" . intval( $row['order_id'] ) . "'";
+		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$order_row = mysqli_fetch_array( $res );
 
-        if ( $order_row['days_expire'] > 0 ) {
+		if ( $order_row['days_expire'] > 0 ) {
 
-            //
+			if ( $order_row['published'] != 'Y' ) {
+				$time_start = strtotime( gmdate( 'r' ) );
+			} else {
+				$time_start = strtotime( $order_row['date_published'] . " GMT" );
+			}
 
-            //} else {
+			$elapsed_time = strtotime( gmdate( 'r' ) ) - $time_start;
+			$elapsed_days = floor( $elapsed_time / 60 / 60 / 24 );
 
-            if ( $order_row['published'] != 'Y' ) {
-                $time_start = strtotime( gmdate( 'r' ) );
-            } else {
-                $time_start = strtotime( $order_row['date_published'] . " GMT" );
-            }
+			$exp_time = ( $order_row['days_expire'] * 24 * 60 * 60 );
 
-            $elapsed_time = strtotime( gmdate( 'r' ) ) - $time_start;
-            $elapsed_days = floor( $elapsed_time / 60 / 60 / 24 );
+			$exp_time_to_go = $exp_time - $elapsed_time;
+			$exp_days_to_go = floor( $exp_time_to_go / 60 / 60 / 24 );
 
-            $exp_time = ( $order_row['days_expire'] * 24 * 60 * 60 );
+			$to_go = elapsedtime( $exp_time_to_go );
 
-            $exp_time_to_go = $exp_time - $elapsed_time;
-            $exp_days_to_go = floor( $exp_time_to_go / 60 / 60 / 24 );
+			$elapsed = elapsedtime( $elapsed_time );
 
-            $to_go = elapsedtime( $exp_time_to_go );
+			$days = "$elapsed passed<br> $to_go to go (" . $order_row['days_expire'] . ")";
 
-            $elapsed = elapsedtime( $elapsed_time );
+			if ( $order_row['published'] != 'Y' ) {
+				$days = "not published";
+			} else if ( $exp_time_to_go <= 0 ) {
+				$days .= 'Expired!';
+			}
+		} else {
 
-            $days = "$elapsed passed<br> $to_go to go (" . $order_row['days_expire'] . ")";
+			$days = "Never";
+		}
 
-            //	}
+		$alt_text = "<b>Customer:</b> " . $user_row['FirstName'] . " " . $user_row['LastName'] . " <br><b>Username:</b> " . $user_row['Username'] . "<br><b>Email:</b> " . $user_row['Email'] . "<br><b>Order</b> # : " . $row['order_id'] . " <br> <b>Block Status:</b> " . $row['status'] . "<br><b>Published:</b> " . $order_row['published'] . "<br><b>Approved:</b> " . $order_row['published'] . "<br><b>Expires:</b> " . $days . "<br><b>Click Count:</b> " . $row['click_count'] . "<br><b>Block ID:</b> " . $row['block_id'] . "<br><b>Co-ordinate:</b> x:" . $row['x'] . ", y:" . $row['y'] . "";
 
-            if ( $order_row['published'] != 'Y' ) {
-                $days = "not published";
-            } elseif ( $exp_time_to_go <= 0 ) {
-                $days .= 'Expired!';
-
-            }
-
-            //$days = $elapsed_time;
-
-        } else {
-
-            $days = "Never";
-
-        }
-
-        $alt_text = "<b>Customer:</b> " . $user_row['FirstName'] . " " . $user_row['LastName'] . " <br><b>Username:</b> " . $user_row['Username'] . "<br><b>Email:</b> " . $user_row['Email'] . "<br><b>Order</b> # : " . $row['order_id'] . " <br> <b>Block Status:</b> " . $row['status'] . "<br><b>Published:</b> " . $order_row['published'] . "<br><b>Approved:</b> " . $order_row['published'] . "<br><b>Expires:</b> " . $days . "<br><b>Click Count:</b> " . $row['click_count'] . "<br><b>Block ID:</b> " . $row['block_id'] . "<br><b>Co-ordinate:</b> x:" . $row['x'] . ", y:" . $row['y'] . "";
-
-        //if (strlen($row['image_data'])>0) {
-        ?>
+		?>
 
         <area
-                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.open('orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>', 'main', '');}return false;"
+                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.top.location='/admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
 
                 href="<?php echo( $row['url'] ); ?>"
 
                 onmousemove="showBubble(event, '<?php echo htmlspecialchars( str_replace( "'", "\'", ( $alt_text ) ) ); ?>', this)"
                 onmouseout="hideIt()"
 
-	shape="RECT" coords="<?php echo $row['x'];?>,<?php echo $row['y'];?>,<?php echo $row['x']+$banner_data['BLK_WIDTH'];?>,<?php echo $row['y']+$banner_data['BLK_HEIGHT'];?>"
-
-			<?php /*if ( ENABLE_MOUSEOVER == 'NO' ) { ?>
-                title="<?php echo htmlspecialchars( $alt_text ); ?>"
-                alt="<?php echo htmlspecialchars( $alt_text ); ?>"
-			<?php }*/ ?>
+                shape="RECT" coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
 
                 target="_blank">
 	<?php } ?>

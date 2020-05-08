@@ -1,6 +1,36 @@
 <?php
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
-require_once "../config.php";
+require_once __DIR__ . "/../include/init.php";
 
 // https://www.coinpayments.net/merchant-tools
 // https://github.com/sigismund/coinpayments
@@ -24,8 +54,6 @@ function coinpayments_mail_error( $msg ) {
 
 	mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " CoinPayments script. ", $msg, $headers );
 }
-
-#####################################################################################
 
 // https://www.coinpayments.net/merchant-tools-ipn
 if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
@@ -141,7 +169,7 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 			$transaction['received_amount']   = filter_var( $_POST['received_amount'], FILTER_VALIDATE_FLOAT );
 			$transaction['received_confirms'] = filter_var( $_POST['received_confirms'], FILTER_VALIDATE_INT );
 
-			$sql = "SELECT * FROM orders WHERE order_id='" . intval($transaction['invoice']) . "'";
+			$sql = "SELECT * FROM orders WHERE order_id='" . intval( $transaction['invoice'] ) . "'";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or coinpayments_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$row = mysqli_fetch_array( $result );
 
@@ -151,7 +179,7 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 	}
 }
 
-###########################################################################
+#
 # Payment Object
 
 class CoinPayments {
@@ -183,9 +211,9 @@ class CoinPayments {
 	function install() {
 		echo "Installing CoinPayments...<br>";
 
-		$coinpayments_ipn_url     = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . 'payment/coinpayments.php');
-		$coinpayments_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className);
-		$coinpayments_cancel_url  = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/");
+		$coinpayments_ipn_url     = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . 'payment/coinpayments.php' );
+		$coinpayments_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className );
+		$coinpayments_cancel_url  = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/" );
 
 		$sql = "REPLACE INTO config (`key`, val) VALUES 
                 ('COINPAYMENTS_ENABLED', 'N'),
@@ -229,7 +257,7 @@ class CoinPayments {
 
 		$order_id = intval( $order_id );
 
-		$sql = "SELECT * FROM orders WHERE order_id='" . intval($order_id) . "'";
+		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order = mysqli_fetch_array( $result );
 
@@ -271,7 +299,7 @@ class CoinPayments {
             <input type="hidden" name="cancel_url" value="<?php echo COINPAYMENTS_CANCEL_URL; ?>">
             <input type="hidden" name="ipn_url" value="<?php echo COINPAYMENTS_IPN_URL; ?>">
             <div style="text-align: center;">
-            <input type="image" src="<?php echo $buttons[ COINPAYMENTS_BUTTON ]; ?>" alt="Buy Now with CoinPayments.net">
+                <input type="image" src="<?php echo $buttons[ COINPAYMENTS_BUTTON ]; ?>" alt="Buy Now with CoinPayments.net">
             </div>
         </form>
 		<?php
@@ -448,7 +476,7 @@ class CoinPayments {
 	}
 
 	function save_config() {
-		$sql = "REPLACE INTO config (`key`, val) VALUES ('COINPAYMENTS_TEST_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_test_mode']) . "'),('COINPAYMENTS_PUBLIC_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_public_key']) . "'),('COINPAYMENTS_PRIVATE_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_private_key']) . "'),('COINPAYMENTS_MERCHANT_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_merchant_id']) . "'),('COINPAYMENTS_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_currency']) . "'),('COINPAYMENTS_IPN_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_mode']) . "'),('COINPAYMENTS_IPN_SECRET', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_secret']) . "'),('COINPAYMENTS_IPN_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_url']) . "'),('COINPAYMENTS_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_success_url']) . "'),('COINPAYMENTS_CANCEL_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_cancel_url']) . "'),('COINPAYMENTS_BUTTON', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_button']) . "')";
+		$sql = "REPLACE INTO config (`key`, val) VALUES ('COINPAYMENTS_TEST_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_test_mode'] ) . "'),('COINPAYMENTS_PUBLIC_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_public_key'] ) . "'),('COINPAYMENTS_PRIVATE_KEY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_private_key'] ) . "'),('COINPAYMENTS_MERCHANT_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_merchant_id'] ) . "'),('COINPAYMENTS_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_currency'] ) . "'),('COINPAYMENTS_IPN_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_mode'] ) . "'),('COINPAYMENTS_IPN_SECRET', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_secret'] ) . "'),('COINPAYMENTS_IPN_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_ipn_url'] ) . "'),('COINPAYMENTS_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_success_url'] ) . "'),('COINPAYMENTS_CANCEL_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_cancel_url'] ) . "'),('COINPAYMENTS_BUTTON', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['coinpayments_button'] ) . "')";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 

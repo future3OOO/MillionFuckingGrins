@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -29,35 +30,15 @@
  *
  */
 session_start();
-require "../config.php";
-
-include( 'login_functions.php' );
-/*
-COPYRIGHT 2008 - see www.milliondollarscript.com for a list of authors
-
-This file is part of the Million Dollar Script.
-
-Million Dollar Script is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Million Dollar Script is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with the Million Dollar Script.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
+require_once __DIR__ . "/../include/init.php";
+require_once BASE_PATH . "/include/login_functions.php";
 
 $submit = $_REQUEST['submit'];
 $email  = $_REQUEST['email'];
 ?>
 <?php echo $f2->get_doc();
 
-require( "header.php" );
+require_once BASE_PATH . "/html/header.php";
 
 ?>
     <div style='text-align:center;'>
@@ -83,7 +64,6 @@ function make_password() {
 
 if ( $email != '' ) {
 
-
 	$sql    = "select * from users where `Email`='" . mysqli_real_escape_string( $GLOBALS['connection'], $email ) . "'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	$row    = mysqli_fetch_array( $result );
@@ -93,7 +73,6 @@ if ( $email != '' ) {
 		if ( $row['Validated'] == '0' ) {
 			$label["advertiser_forgot_error1"] = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $label["advertiser_forgot_error1"] );
 			echo "<div style='text-align:center;'>" . $label["advertiser_forgot_error1"] . "</div>";
-
 		} else {
 			$pass    = make_password();
 			$md5pass = md5( $pass );
@@ -108,8 +87,8 @@ if ( $email != '' ) {
 			$subject = str_replace( "%SITE_NAME%", SITE_NAME, $subject );
 			//$subject = str_replace( "%MEMBERID%", trim( $row['Username'] ), $subject );
 
-        $message = $label["forget_pass_email_template"];
-        $message = str_replace( "%FNAME%", $row['FirstName'], $message );
+			$message = $label["forget_pass_email_template"];
+			$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 			$message = str_replace( "%LNAME%", $row['LastName'], $message );
 			$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
 			$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
@@ -117,14 +96,14 @@ if ( $email != '' ) {
 			$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 			$message = str_replace( "%PASSWORD%", $pass, $message );
 
-        $html_msg = $label["forget_pass_email_template_html"];
-        $html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
-        $html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
-        $html_msg = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_msg );
-        $html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
-        $html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
-        $html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
-        $html_msg = str_replace( "%PASSWORD%", $pass, $html_msg );
+			$html_msg = $label["forget_pass_email_template_html"];
+			$html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
+			$html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
+			$html_msg = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_msg );
+			$html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
+			$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
+			$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
+			$html_msg = str_replace( "%PASSWORD%", $pass, $html_msg );
 
 			if ( USE_SMTP == 'YES' ) {
 				$mail_id = queue_mail( $to, $row['FirstName'] . " " . $row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_msg, 6 );
@@ -137,7 +116,6 @@ if ( $email != '' ) {
 
 			echo "<p style='text-align:center;'>" . $str . "</p>";
 		}
-
 	} else {
 		echo "<div style='text-align:center;'>" . $label["advertiser_forgot_email_notfound"] . "</div>";
 	}
@@ -147,4 +125,4 @@ if ( $email != '' ) {
     <h3 style='text-align:center;'><a href="../"><?php echo $label["advertiser_forgot_go_back"]; ?></a></h3>
 <?php
 
-require( "footer.php" );
+require_once BASE_PATH . "/html/footer.php";

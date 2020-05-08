@@ -34,6 +34,19 @@ BEFORE ATTEMPTING AN UPGRADE. YOU SHOULD ALSO KNOW HOW TO RESTORE YOUR BACKUP
 JUST IN CASE THINGS GO WRONG.
 ================================================================================
 
+================================================================================
+Upgrading to the latest 2.1 from a previous 2.1 version.
+================================================================================
+Backup.
+Upload all files overwriting old files.
+You can also delete any old files that are no longer included if you'd like, for potential security fixes.
+Don't delete /admin/temp, /pixels, /upload_files or config.php.
+CSS files have moved to the css folder.
+Resave the Main Config in MDS admin.
+If you can't get there try to delete everything in the config.php file below the define lines. i.e. Everything below define( 'ERROR_REPORTING', 0 );
+Log into the admin to merge language file updates into any language files from the default.
+
+================================================================================
 UPGRADING FROM 2.0.15 TO 2.1
 ================================================================================
 No database changes in this release.

@@ -39,9 +39,9 @@ MDS 2.1 alpha
 - added variable filters for significant security improvements
 - converted UTF-8 and XML Transitional 
 - changed FCKEditor to CKEditor
-- update overlib
+- removed overlib
 - many other miscellaneous fixes / enhancements
-- see here for a list of additional changes: https://github.com/MillionDollarScript/MillionDollarScript/commits/dev
+- see here for a list of additional changes: https://gitlab.com/MillionDollarScript/MillionDollarScript
 
 MDS 2.0.15
 

@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -32,14 +33,14 @@
 session_start();
 define( 'NO_HOUSE_KEEP', 'YES' );
 // check the image selection.
-require( "../config.php" );
+require_once __DIR__ . "/../include/init.php";
 
 header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
 header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 global $f2;
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+$BID         = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
 $banner_data = load_banner_constants( $BID );
 
 // normalize...
@@ -68,13 +69,12 @@ function check_pixels( $in_str ) {
 		$BID = $f2->bid( $_REQUEST['BID'] );
 	} else {
 		$BID = 1;
-
 	}
 
 	// check if it is free
 	$available = true;
 
-	$sql = "SELECT block_id FROM blocks WHERE banner_id='" . intval($BID) . "' AND block_id IN(".mysqli_real_escape_string( $GLOBALS['connection'], $in_str) . ")";
+	$sql = "SELECT block_id FROM blocks WHERE banner_id='" . intval( $BID ) . "' AND block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ")";
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
@@ -90,7 +90,7 @@ function check_pixels( $in_str ) {
 
 		$selected = explode( ",", $in_str );
 		while ( $row = mysqli_fetch_array( $result ) ) {
-			$entries  = explode( ",", $row['blocks'] );
+			$entries = explode( ",", $row['blocks'] );
 			if ( ! empty( array_intersect( $entries, $selected ) ) ) {
 				echo js_out_prep( $label['check_sel_notavailable'] . " (E432)" );
 				$available = false;
@@ -102,9 +102,7 @@ function check_pixels( $in_str ) {
 	return $available;
 }
 
-#######################################################################
-## MAIN 
-#######################################################################
+// MAIN
 // return true, or false if the image can fit
 
 check_selection_main();
@@ -124,8 +122,8 @@ function check_selection_main() {
 	for ( $y = 0; $y < ( $size->getHeight() ); $y += $banner_data['BLK_HEIGHT'] ) {
 		for ( $x = 0; $x < ( $size->getWidth() ); $x += $banner_data['BLK_WIDTH'] ) {
 
-			$map_x = $x + intval($_REQUEST['map_x']);
-			$map_y = $y + intval($_REQUEST['map_y']);
+			$map_x = $x + intval( $_REQUEST['map_x'] );
+			$map_y = $y + intval( $_REQUEST['map_y'] );
 
 			$GRD_WIDTH  = $banner_data['BLK_WIDTH'] * $banner_data['G_WIDTH'];
 			$cb         = ( ( $map_x ) / $banner_data['BLK_WIDTH'] ) + ( ( $map_y / $banner_data['BLK_HEIGHT'] ) * ( $GRD_WIDTH / $banner_data['BLK_WIDTH'] ) );

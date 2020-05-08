@@ -1,48 +1,48 @@
 <?php
 /**
- * @package		mds
- * @copyright	(C) Copyright 2020 Ryan Rhode, All rights reserved.
- * @author		Ryan Rhode, ryan@milliondollarscript.com
- * @license		This program is free software; you can redistribute it and/or modify
- *		it under the terms of the GNU General Public License as published by
- *		the Free Software Foundation; either version 3 of the License, or
- *		(at your option) any later version.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
  *
- *		This program is distributed in the hope that it will be useful,
- *		but WITHOUT ANY WARRANTY; without even the implied warranty of
- *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *		GNU General Public License for more details.
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
  *
- *		You should have received a copy of the GNU General Public License along
- *		with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- *		Million Dollar Script
- *		A pixel script for selling pixels on your website.
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
  *
- *		For instructions see README.txt
+ *        For instructions see README.txt
  *
- *		Visit our website for FAQs, documentation, a list team members,
- *		to post any bugs or feature requests, and a community forum:
- * 		https://milliondollarscript.com/
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
  *
  */
 
 session_start();
-include ("../config.php");
+require_once __DIR__ . "/../include/init.php";
 
-include ("login_functions.php");
+require_once BASE_PATH . "/include/login_functions.php";
 
 process_login();
 
-
-require ("header.php");
+require_once BASE_PATH . "/html/header.php";
 
 if ( isset( $_REQUEST['cancel'] ) && $_REQUEST['cancel'] == 'yes' && isset( $_REQUEST['order_id'] ) ) {
 	if ( $_REQUEST['order_id'] == "temp" ) {
 
-		$sql = "SELECT * FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "'";
+		$sql = "SELECT * FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		if ( mysqli_num_rows( $result ) > 0 ) {
 			$row = mysqli_fetch_assoc( $result );
@@ -52,13 +52,13 @@ if ( isset( $_REQUEST['cancel'] ) && $_REQUEST['cancel'] == 'yes' && isset( $_RE
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			// delete associated temp order
-			$sql = "DELETE FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "'";
+			$sql = "DELETE FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "'";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			// delete associated uploaded image
 			$imagefile = get_tmp_img_name();
-			if(file_exists($imagefile)) {
-				unlink($imagefile);
+			if ( file_exists( $imagefile ) ) {
+				unlink( $imagefile );
 			}
 
 			// if deleted order is the current order unset current order id
@@ -66,50 +66,48 @@ if ( isset( $_REQUEST['cancel'] ) && $_REQUEST['cancel'] == 'yes' && isset( $_RE
 				unset( $_SESSION['MDS_order_id'] );
 			}
 		}
-
 	} else {
 
-	$sql = "SELECT * FROM orders WHERE user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND order_id='" . intval( $_REQUEST['order_id'] ) . "'";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-	if ( mysqli_num_rows( $result ) > 0 ) {
-		delete_order( intval( $_REQUEST['order_id'] ) );
+		$sql = "SELECT * FROM orders WHERE user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND order_id='" . intval( $_REQUEST['order_id'] ) . "'";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		if ( mysqli_num_rows( $result ) > 0 ) {
+			delete_order( intval( $_REQUEST['order_id'] ) );
 
-		// if deleted order is the current order unset current order id
-		if($_REQUEST['order_id'] == $_SESSION['MDS_order_id']) {
-			unset($_SESSION['MDS_order_id']);
+			// if deleted order is the current order unset current order id
+			if ( $_REQUEST['order_id'] == $_SESSION['MDS_order_id'] ) {
+				unset( $_SESSION['MDS_order_id'] );
+			}
 		}
 	}
-}
 }
 
 ?>
 
-<script language="JavaScript" type="text/javascript">
+    <script language="JavaScript" type="text/javascript">
 
-function confirmLink(theLink, theConfirmMsg)
-   {
-      
-       if (theConfirmMsg == '') {
-           return true;
-       }
+		function confirmLink(theLink, theConfirmMsg) {
 
-       var is_confirmed = confirm(theConfirmMsg + '\n');
-       if (is_confirmed) {
-           theLink.href += '&is_js_confirmed=1';
-       }
+			if (theConfirmMsg == '') {
+				return true;
+			}
 
-       return is_confirmed;
-   } // end of the 'confirmLink()' function
+			var is_confirmed = confirm(theConfirmMsg + '\n');
+			if (is_confirmed) {
+				theLink.href += '&is_js_confirmed=1';
+			}
 
-</script>
+			return is_confirmed;
+		} // end of the 'confirmLink()' function
 
-<h3><?php echo $label['advertiser_ord_history']; ?></h3>
+    </script>
 
-<p>
-<?php echo $label['advertiser_ord_explain']; ?>
-</p>
+    <h3><?php echo $label['advertiser_ord_history']; ?></h3>
 
-<h4><?php echo $label['advertiser_ord_hist_list']; ?></h4>
+    <p>
+		<?php echo $label['advertiser_ord_explain']; ?>
+    </p>
+
+    <h4><?php echo $label['advertiser_ord_hist_list']; ?></h4>
 
 <?php
 
@@ -121,8 +119,8 @@ while ( $row = mysqli_fetch_array( $result ) ) {
 	$orders[] = $row;
 }
 
-$sql = "SELECT * FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "' ORDER BY order_date DESC ";
-$result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']));
+$sql = "SELECT * FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ORDER BY order_date DESC ";
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 while ( $row = mysqli_fetch_array( $result ) ) {
 	$orders[] = $row;
 }
@@ -136,18 +134,18 @@ usort( $orders, "date_sort" );
 
 ?>
 
-<table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
-<tr>
-    <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_prderdate']; ?></font></b></td>
-    <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_custname']; ?></font></b></td>
-    <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_usernid'];?></font></b></td>
-	<td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_orderid']; ?></font></b></td>
-	<td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_quantity']; ?></font></b></td>
-	<td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_image']; ?></font></b></td>
-	<td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_amount']; ?></font></b></td>
-	<td><b><font face="Arial" size="2"><?php echo $label['advertiser_status']; ?></font></b></td>
-	</tr>
-<?php
+    <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
+        <tr>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_prderdate']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_custname']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_usernid']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_orderid']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_quantity']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_image']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_ord_amount']; ?></font></b></td>
+            <td><b><font face="Arial" size="2"><?php echo $label['advertiser_status']; ?></font></b></td>
+        </tr>
+		<?php
 
 		if (count($orders) == 0) {
 	echo '<td colspan="7">'.$label['advertiser_ord_noordfound'].' </td>';
@@ -268,12 +266,12 @@ usort( $orders, "date_sort" );
 
 	<?php
 	}
-?>
+		?>
 
-</table>
+    </table>
 
 <?php
 
-require ("footer.php");
+require_once BASE_PATH . "/html/footer.php";
 
 ?>

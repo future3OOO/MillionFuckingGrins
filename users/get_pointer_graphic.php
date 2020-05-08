@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -34,7 +35,7 @@ try {
 	session_start();
 	define( 'NO_HOUSE_KEEP', 'YES' );
 
-	require( '../config.php' );
+	require_once __DIR__ . "/../include/init.php";
 
 	$imagine = new Imagine\Gd\Imagine();
 
@@ -53,7 +54,7 @@ try {
 	if ( file_exists( $filename ) ) {
 		$image = $imagine->open( $filename );
 	} else {
-		$image = $imagine->open( __DIR__ . '/pointer.png' );
+		$image = $imagine->open( BASE_PATH . '/images/pointer.png' );
 	}
 
 	// autorotate
@@ -89,11 +90,11 @@ try {
 	} else if ( OUTPUT_JPEG == 'GIF' ) {
 		$ext     = "gif";
 		$mime    = "gif";
-		$options = array('flatten' => false);
+		$options = array( 'flatten' => false );
 	}
 	$image->show( $ext, $options );
-} catch(Exception $e) {
+} catch ( Exception $e ) {
 
-	error_log($e->getMessage());
-	error_log($e->getTraceAsString());
+	error_log( $e->getMessage() );
+	error_log( $e->getTraceAsString() );
 }

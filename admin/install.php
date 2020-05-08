@@ -1,266 +1,272 @@
 <?php
 /**
- * @package        mds
- * @copyright      (C) Copyright 2020 Ryan Rhode, All rights reserved.
- * @author         Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
- *		it under the terms of the GNU General Public License as published by
- *		the Free Software Foundation; either version 3 of the License, or
- *		(at your option) any later version.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
  *
- *		This program is distributed in the hope that it will be useful,
- *		but WITHOUT ANY WARRANTY; without even the implied warranty of
- *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *		GNU General Public License for more details.
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
  *
- *		You should have received a copy of the GNU General Public License along
- *		with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- *		Million Dollar Script
- *		A pixel script for selling pixels on your website.
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
  *
- *		For instructions see README.txt
+ *        For instructions see README.txt
  *
- *		Visit our website for FAQs, documentation, a list team members,
- *		to post any bugs or feature requests, and a community forum:
- * 		https://milliondollarscript.com/
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
  *
  */
 
-if (isset($_REQUEST['action']) && $_REQUEST['action']=='install') {
-	
-	save_db_config();
-	require("../config.php");
-	install_db();
+if ( isset( $_REQUEST['action'] ) ) {
 
+	if ( $_REQUEST['action'] == 'install' ) {
+		save_db_config();
+		require_once __DIR__ . "/../include/init.php";
+		install_db();
+	} else if ( $_REQUEST['action'] == 'delete' ) {
+		unlink( __DIR__ . '/install.php' );
+		echo "Deleted!";
+		exit;
+	}
 } else {
-	
-if(file_exists("../config.php")) {
-	require ("../config.php");
-} else {
-	echo "config.php not found. Maybe you have to rename config-default.php to config.php";
-	die();
-}
 
-require_once("../include/database.php");
+	if ( file_exists( "../config.php" ) ) {
+		require_once __DIR__ . "/../include/init.php";
+	} else {
+		echo "config.php not found. Maybe you have to rename config-default.php to config.php";
+		die();
+	}
 
+	require_once( "../include/database.php" );
 }
 $sql = "select * from users";
 if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) ) {
 	?>
-	<h2>Database successfully Installed.</h2>
-	<h3>Next Steps</h3>
-	<ol>
-		<li>Delete this file (/admin/install.php) from the server.</li>
-		<li><a target="_blank" href="<?php echo htmlspecialchars( BASE_HTTP_PATH, ENT_QUOTES, false ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking.</li>
-		<li>Install, enable and configure a payment module under Payment Modules.</li>
-		<li>Edit your grid settings under Manage Grids.</li>
-		<li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
-	</ol>
+    <h2>Database successfully Installed.</h2>
+    <h3>Next Steps</h3>
+    <ol>
+        <li><a target="_blank" href="install.php?action=delete">Click here</a> to delete this file (/admin/install.php) from the server.</li>
+        <li><a target="_blank" href="<?php echo htmlspecialchars( BASE_HTTP_PATH, ENT_QUOTES, false ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking.</li>
+        <li>Install, enable and configure a payment module under Payment Modules.</li>
+        <li>Edit your grid settings under Manage Grids.</li>
+        <li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
+    </ol>
 	<?php
 	die();
 }
 
 ?>
-<h2 style="text-align:center;">Million Dollar Script - Database Installation</h2>
-	<div style="font-family:'Arial', sans-serif;padding:10px;background-color:rgba(214,241,255,0.98);border-radius:10px;text-align:center;font-weight:bold;width:50%;margin:0 auto;line-height:1.5;">
-		Having issues installing and want the developer to do it for you?<br />
-		Want to <a target="_blank" href="https://milliondollarscript.com/article/wordpress-integration/">integrate with WordPress</a> and don't want to wait for MDS 3.0?<br />
-		<a target="_blank" href="https://milliondollarscript.com/product/million-dollar-script-installation-service/">Order the premium install service</a>!
-	</div>
-<p>
-Please fill in the form and click install.<br>
-Please make sure that the MySQL user has all the permissions to use the database (Admin privileges).<br>
-</p>
+    <h2 style="text-align:center;">Million Dollar Script - Database Installation</h2>
+    <div style="font-family:'Arial', sans-serif;padding:10px;background-color:rgba(214,241,255,0.98);border-radius:10px;text-align:center;font-weight:bold;width:50%;margin:0 auto;line-height:1.5;">
+        Having issues installing and want the developer to do it for you?<br/>
+        Want to <a target="_blank" href="https://milliondollarscript.com/article/wordpress-integration/">integrate with WordPress</a> and don't want to wait for MDS 3.0?<br/>
+        <a target="_blank" href="https://milliondollarscript.com/product/million-dollar-script-installation-service/">Order the premium install service</a>!
+    </div>
+    <p>
+        Please fill in the form and click install.<br>
+        Please make sure that the MySQL user has all the permissions to use the database (Admin privileges).<br>
+    </p>
 <?php
-if (is_writable("../config.php")) {
+if ( is_writable( "../config.php" ) ) {
 	echo "- config.php is writeable. (OK)<br>";
 } else {
 	echo "- Note: config.php is not writable. Give write permissions (666) to config.php if you want to save the changes<br>";
 }
-if (is_writable("../pixels/")) {
+if ( is_writable( "../pixels/" ) ) {
 	echo "- pixels/ directory is writeable. (OK)<br>";
 } else {
 	echo "- pixels/ directory is not writable. Give write permissions (777) to pixels/ directory<br>";
 }
 
-if (is_writable("temp/")) {
+if ( is_writable( "temp/" ) ) {
 	echo "- admin/temp directory is writeable. (OK)<br>";
 } else {
 	echo "- admin/temp directory is not writable. Give write permissions (777) to admin/temp directory<br>";
 }
 
-if (is_writable("../lang/english.php")) {
+if ( is_writable( "../lang/english.php" ) ) {
 	echo "- lang/english.php file is writeable. (OK)<br>";
 } else {
 	echo "- lang/english.php file is not writable. Give write permissions (666) to lang/english.php file<br>";
 }
 
-if (is_writable("../upload_files/docs/")) {
+if ( is_writable( "../upload_files/docs/" ) ) {
 	echo "- upload_files/docs/ directory is writeable. (OK)<br>";
 } else {
 	echo "- upload_files/docs/ directory is not writable. Give write permissions (777) to upload_files/docs/ directory<br>";
 }
 
-if (is_writable("../upload_files/images/")) {
+if ( is_writable( "../upload_files/images/" ) ) {
 	echo "- upload_files/images/ directory is writeable. (OK)<br>";
 } else {
 	echo "- upload_files/images/ directory is not writable. Give write permissions (777) to upload_files/docs/ directory<br>";
 }
 
 // check HTMLPurifier permissions
-if (is_writable("../vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer")) {
+if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer" ) ) {
 	echo "- /vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer is writeable. (OK)<br>";
 } else {
 	echo "- Note: /vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer is not writable. Give write permissions (try 755 or 777 if that doesn't work) to /vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer<br>";
 }
 
 ?>
-<form method="post" action="install.php">
-<input type="hidden" name="action" value="install">
+    <form method="post" action="install.php">
+        <input type="hidden" name="action" value="install">
 
- <?php 
-  
-  //print_r($_SERVER);
+		<?php
 
-  $scheme = $_SERVER['REQUEST_SCHEME'] . '://';
-  $host = $_SERVER['SERVER_NAME']; // hostname
-  $http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
-  $http_url = explode ("/", $http_url);
-  array_pop($http_url); // get rid of filename
-  array_pop($http_url); // get rid of /admin
-  $http_url = implode ("/", $http_url);
- // echo "<b> $http_url </b>";
-  $file_path = $_SERVER['SCRIPT_FILENAME']; // eg e:/apache/htdocs/ojo/admin/edit_config.php
-  $file_path = explode ("/", $file_path);
-  array_pop($file_path); // get rid of filename
-  array_pop($file_path); // get rid of /admin
-  $file_path = implode ("/", $file_path);
- // echo "<b> $file_path </b>";
+		//print_r($_SERVER);
 
- if (BASE_HTTP_PATH=='') {
-	$BASE_HTTP_PATH = $scheme.$host.$http_url."/";
+		$scheme   = $_SERVER['REQUEST_SCHEME'] . '://';
+		$host     = $_SERVER['SERVER_NAME']; // hostname
+		$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
+		$http_url = explode( "/", $http_url );
+		array_pop( $http_url ); // get rid of filename
+		array_pop( $http_url ); // get rid of /admin
+		$http_url = implode( "/", $http_url );
+		// echo "<b> $http_url </b>";
+		$file_path = $_SERVER['SCRIPT_FILENAME']; // eg e:/apache/htdocs/ojo/admin/edit_config.php
+		$file_path = explode( "/", $file_path );
+		array_pop( $file_path ); // get rid of filename
+		array_pop( $file_path ); // get rid of /admin
+		$file_path = implode( "/", $file_path );
+		// echo "<b> $file_path </b>";
 
- } else {
-	$BASE_HTTP_PATH = BASE_HTTP_PATH;
- }
+		if ( ! defined( 'BASE_HTTP_PATH' ) ) {
+			$BASE_HTTP_PATH = $scheme . $host . $http_url . "/";
+		} else {
+			$BASE_HTTP_PATH = BASE_HTTP_PATH;
+		}
 
- if (SERVER_PATH_TO_ADMIN=='') {
-	$SERVER_PATH_TO_ADMIN = str_replace('\\', '/', getcwd())."/";
- } else {
-	 $SERVER_PATH_TO_ADMIN = SERVER_PATH_TO_ADMIN;
- }
-$SERVER_PATH_TO_ADMIN = str_replace('\\', '/', $SERVER_PATH_TO_ADMIN);
+		if ( ! defined( 'SERVER_PATH_TO_ADMIN' ) ) {
+			$SERVER_PATH_TO_ADMIN = str_replace( '\\', '/', getcwd() ) . "/";
+		} else {
+			$SERVER_PATH_TO_ADMIN = SERVER_PATH_TO_ADMIN;
+		}
+		$SERVER_PATH_TO_ADMIN = str_replace( '\\', '/', $SERVER_PATH_TO_ADMIN );
 
- if (!defined('UPLOAD_PATH')) {
-	$dir = dirname(__FILE__);
-	$dir = preg_split ('%[/\\\]%', $dir);
-	$blank = array_pop($dir);
-	$dir = implode('/', $dir);
-	
-	define ('UPLOAD_PATH', $dir.'/upload_files/');
-}
-if (UPLOAD_PATH=='') {
-	$UPLOAD_PATH = str_replace('\\', '/', $file_path."/upload_files/");
-} else {
-	$UPLOAD_PATH = UPLOAD_PATH;
-}
-$UPLOAD_PATH = str_replace('\\', '/', $UPLOAD_PATH);
+		if ( ! defined( 'UPLOAD_PATH' ) ) {
+			$dir   = dirname( __FILE__ );
+			$dir   = preg_split( '%[/\\\]%', $dir );
+			$blank = array_pop( $dir );
+			$dir   = implode( '/', $dir );
 
-if (!defined('UPLOAD_HTTP_PATH')) {
+			define( 'UPLOAD_PATH', $dir . '/upload_files/' );
+		}
+		if ( UPLOAD_PATH == '' ) {
+			$UPLOAD_PATH = str_replace( '\\', '/', $file_path . "/upload_files/" );
+		} else {
+			$UPLOAD_PATH = UPLOAD_PATH;
+		}
+		$UPLOAD_PATH = str_replace( '\\', '/', $UPLOAD_PATH );
 
-	$host = $_SERVER['SERVER_NAME']; // hostname
-	$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
-	$http_url = explode ("/", $http_url);
-	array_pop($http_url); // get rid of filename
-	array_pop($http_url); // get rid of /admin
-	$http_url = implode ("/", $http_url);
+		if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
 
-	define ('UPLOAD_HTTP_PATH', $scheme.$host.$http_url."/upload_files/");
-}
-if (UPLOAD_HTTP_PATH=='') {
-	$UPLOAD_HTTP_PATH = $scheme . str_replace('\\', '/', $host.$http_url."/upload_files/");
-} else {
-	$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
-}
+			$host     = $_SERVER['SERVER_NAME']; // hostname
+			$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
+			$http_url = explode( "/", $http_url );
+			array_pop( $http_url ); // get rid of filename
+			array_pop( $http_url ); // get rid of /admin
+			$http_url = implode( "/", $http_url );
 
-  ?>
-  <p>&nbsp;</p>
-  <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
-    <tr>
-      <td colspan="2" bgcolor="#e6f2ea">
-      <p ><font face="Verdana" size="1"><b>Paths and Locations</b><br></font></td>
-    </tr>
-    <tr>
-      <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Site's HTTP URL (address)</font></td>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="base_http_path" size="49" value="<?php echo htmlentities($BASE_HTTP_PATH); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
-    </tr>
-   
-	 <tr>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Server Path to Admin</font></td>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="server_path_to_admin" size="49" value="<?php echo htmlentities($SERVER_PATH_TO_ADMIN); ?>" ><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN;?></b></font></td>
-    </tr>
-	<tr>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Path to upload directory</font></td>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="upload_path" size="55" value="<?php echo htmlentities($UPLOAD_PATH); ?>" ><br>Recommended: <b><?php echo $UPLOAD_PATH;?></b></font></td>
-    </tr>
-	<tr>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
-      <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="upload_http_path" size="55" value="<?php echo htmlentities($UPLOAD_HTTP_PATH); ?>" ><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH;?></b></font></td>
-    </tr>
-    <tr>
-      <td colspan="2"  bgcolor="#e6f2ea">
-      <font face="Verdana" size="1"><b>Mysql Settings</b></font></td>
-    </tr>
-    <tr>
-      <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql 
-      Database Username</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="mysql_user" size="29" value="<?php echo MYSQL_USER; ?>"></font></td>
-    </tr>
-	 <tr>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql 
-      Database Password</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="password" name="mysql_pass" size="29" value="<?php echo MYSQL_PASS; ?>"></font></td>
-    </tr>
-    <tr>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql 
-      Database Name</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="mysql_db" size="29" value="<?php echo MYSQL_DB; ?>"></font></td>
-    </tr>
-    <tr>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql 
-      Server Hostname</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-      <input type="text" name="mysql_host" size="29" value="<?php echo MYSQL_HOST; ?>"></font></td>
-    </tr>
-	<tr><td colspan="2">
-	
-	</td></tr>
-	</table>
-	<p>
-	<input type="submit" value="Install">
-</p>
-</form>
+			define( 'UPLOAD_HTTP_PATH', $scheme . $host . $http_url . "/upload_files/" );
+		}
+		if ( UPLOAD_HTTP_PATH == '' ) {
+			$UPLOAD_HTTP_PATH = $scheme . str_replace( '\\', '/', $host . $http_url . "/upload_files/" );
+		} else {
+			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
+		}
 
-<h3>NOTES</h3>
-<ul>
-	<li>It is strongly recommended to use https to install and access your site.</li>
-	<li>Server Path to Admin is the full path to your admin directory, <font color="red">including a slash at the end</font></li>
-	<li>The Site's HTTP URL must include a<font color="red"> slash at the end</font></li>
-	<li>Use the recommended settings unless you are sure otherwise</li>
-	<li>Most modern hosts you do not have to worry about file and folder permissions. However on some hosts you may have to adjust the permissions of some folders to make them writable by the web server.</li>
-	<li>Sometimes your web server configuration may requipre different permissions in order for files to execute properly.  i.e. if you are running suExec, etc.</li>
-	<li>You should check with your host if you are unsure.</li>
-</ul>
+		?>
+        <p>&nbsp;</p>
+        <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+            <tr>
+                <td colspan="2" bgcolor="#e6f2ea">
+                    <p><font face="Verdana" size="1"><b>Paths and Locations</b><br></font></td>
+            </tr>
+            <tr>
+                <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Site's HTTP URL (address)</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="base_http_path" size="49" value="<?php echo htmlentities( $BASE_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
+            </tr>
+
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Server Path to Admin</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo htmlentities( $SERVER_PATH_TO_ADMIN ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
+            </tr>
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Path to upload directory</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="upload_path" size="55" value="<?php echo htmlentities( $UPLOAD_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
+            </tr>
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlentities( $UPLOAD_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
+            </tr>
+            <tr>
+                <td colspan="2" bgcolor="#e6f2ea">
+                    <font face="Verdana" size="1"><b>Mysql Settings</b></font></td>
+            </tr>
+            <tr>
+                <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
+                        Database Username</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? MYSQL_USER : ""; ?>"></font></td>
+            </tr>
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
+                        Database Password</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? MYSQL_PASS : ""; ?>"></font></td>
+            </tr>
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
+                        Database Name</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? MYSQL_DB : ""; ?>"></font></td>
+            </tr>
+            <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
+                        Server Hostname</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? MYSQL_HOST : ""; ?>"></font></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+
+                </td>
+            </tr>
+        </table>
+        <p>
+            <input type="submit" value="Install">
+        </p>
+    </form>
+
+    <h3>NOTES</h3>
+    <ul>
+        <li>It is strongly recommended to use https to install and access your site.</li>
+        <li>Server Path to Admin is the full path to your admin directory, <font color="red">including a slash at the end</font></li>
+        <li>The Site's HTTP URL must include a<font color="red"> slash at the end</font></li>
+        <li>Use the recommended settings unless you are sure otherwise</li>
+        <li>Most modern hosts you do not have to worry about file and folder permissions. However on some hosts you may have to adjust the permissions of some folders to make them writable by the web server.</li>
+        <li>Sometimes your web server configuration may requipre different permissions in order for files to execute properly. i.e. if you are running suExec, etc.</li>
+        <li>You should check with your host if you are unsure.</li>
+    </ul>
 <?php
 
 function save_db_config() {
@@ -291,45 +297,45 @@ function save_db_config() {
 	fclose( $handle );
 	//echo " done.";
 }
-###################################
-function query_parser($q){
-   // strip the comments from the query
-   while($n=strpos($q,'--')){
-       $k=@strpos($q,"\n",$n+1);
-       if(!$k) $k=strlen($q);
-       $q=substr($q,0,$n).substr($q,$k+1);
-   }
 
-   $queries = preg_split("/;;;/", $q);
+function query_parser( $q ) {
+	// strip the comments from the query
+	while ( $n = strpos( $q, '--' ) ) {
+		$k = @strpos( $q, "\n", $n + 1 );
+		if ( ! $k ) {
+			$k = strlen( $q );
+		}
+		$q = substr( $q, 0, $n ) . substr( $q, $k + 1 );
+	}
 
-  
-   return $queries;
-}
-#############################################
-function multiple_query($q){
-   $queries=query_parser($q);
-   $n=count($queries);
-   $results=array();
+	$queries = preg_split( "/;;;/", $q );
 
-   for($i=0;$i<$n;$i++)
-       $results[$i]=array(
-           mysqli_query($GLOBALS['connection'], $queries[$i]),
-           mysqli_errno($GLOBALS['connection']),
-           mysqli_error($GLOBALS['connection']),
-			$queries[$i]
-       );
-
-   return $results;
+	return $queries;
 }
 
-##################################################
+function multiple_query( $q ) {
+	$queries = query_parser( $q );
+	$n       = count( $queries );
+	$results = array();
+
+	for ( $i = 0; $i < $n; $i ++ ) {
+		$results[ $i ] = array(
+			mysqli_query( $GLOBALS['connection'], $queries[ $i ] ),
+			mysqli_errno( $GLOBALS['connection'] ),
+			mysqli_error( $GLOBALS['connection'] ),
+			$queries[ $i ]
+		);
+	}
+
+	return $results;
+}
 
 function install_db() {
 
-    // compare MySQL version, versions newer than 5.6.5 require a different set of queries
+	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
 	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
 
-	if (version_compare($mysql_server_info, '5.6.5') >= 0) {
+	if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
 
 		$sql = "
         
@@ -1052,23 +1058,23 @@ function install_db() {
           PRIMARY KEY  (`field_id`,`code`,`lang`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
         ";
-    }
+	}
 
 	/* You can use it like this */
 
-	$queries=multiple_query($sql);
+	$queries = multiple_query( $sql );
 
-	for($i=0;$i<count($queries);$i++)
-		if($queries[$i][1]==0){
-       /* some code.... with the result in $queries[$i][0] */
+	for ( $i = 0; $i < count( $queries ); $i ++ ) {
+		if ( $queries[ $i ][1] == 0 ) {
+			/* some code.... with the result in $queries[$i][0] */
+		} else {
+			echo "<pre>Error: " . $queries[ $i ][2] . "(" . $queries[ $i ][3] . ")<br>\n</pre>";
+		}
 	}
-	else
-		echo "<pre>Error: ".$queries[$i][2]."(".$queries[$i][3].")<br>\n</pre>";
 
 	//$result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']));
 	//$rows = mysqli_affected_rows ($result);;;
-	echo count($queries)." Operations Completed.";
+	echo count( $queries ) . " Operations Completed.";
 }
-
 
 ?>

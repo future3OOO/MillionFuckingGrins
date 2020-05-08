@@ -1,10 +1,10 @@
 <?php
 /**
- * @version        2.1
- * @package        mds
- * @copyright    (C) Copyright 2010-2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -17,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -29,7 +29,7 @@
  *        https://milliondollarscript.com/
  *
  */
-require_once __DIR__ . "/../config.php";
+require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['external'] = new external;
 
@@ -45,7 +45,6 @@ function external_mail_error( $msg ) {
 	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
 
 	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " external payment module. ", $msg, $headers );
-
 }
 
 function external_log_entry( $entry_line ) {
@@ -55,8 +54,7 @@ function external_log_entry( $entry_line ) {
 	fclose( $log_fp );
 }
 
-###########################################################################
-# Payment Object
+// Payment Object
 
 class external {
 
@@ -65,6 +63,8 @@ class external {
 	var $className = "external";
 
 	function __construct() {
+		require_once __DIR__ . "/../include/init.php";
+
 		if ( $this->is_installed() ) {
 
 			$sql = "SELECT * FROM config WHERE 
@@ -77,8 +77,10 @@ class external {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-			    $val = isset($row['val']) ? $row['val'] : "";
-				define( $row['key'], $val );
+				$val = isset( $row['val'] ) ? $row['val'] : "";
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $val );
+				}
 			}
 		}
 	}
@@ -140,14 +142,12 @@ class external {
 			$external_auto_approve = $_REQUEST['external_auto_approve'];
 			$external_button_text  = $_REQUEST['external_button_text'];
 			$external_button_image = $_REQUEST['external_button_image'];
-
 		} else {
 			$external_enabled      = EXTERNAL_ENABLED;
 			$external_url          = EXTERNAL_URL;
 			$external_auto_approve = EXTERNAL_AUTO_APPROVE;
 			$external_button_text  = EXTERNAL_BUTTON_TEXT;
 			$external_button_image = EXTERNAL_BUTTON_IMAGE;
-
 		}
 
 		?>
@@ -214,7 +214,6 @@ class external {
         </form>
 
 		<?php
-
 	}
 
 	function save_config() {
@@ -240,12 +239,9 @@ class external {
 		$row = mysqli_fetch_array( $result );
 		if ( $row['val'] == 'Y' ) {
 			return true;
-
 		} else {
 			return false;
-
 		}
-
 	}
 
 	function is_installed() {
@@ -256,26 +252,21 @@ class external {
 
 		if ( mysqli_num_rows( $result ) > 0 ) {
 			return true;
-
 		} else {
 			return false;
-
 		}
-
 	}
 
 	function enable() {
 
 		$sql = "UPDATE config SET val='Y' WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
 	}
 
 	function disable() {
 
 		$sql = "UPDATE config SET val='N' WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
 	}
 
 	function process_payment_return() {
@@ -286,7 +277,6 @@ class external {
 			if ( $_SESSION['MDS_ID'] == '' ) {
 
 				echo "Error: You must be logged in to view this page";
-
 			} else {
 
 				$order_id = intval( $_REQUEST['order_id'] );
@@ -296,8 +286,8 @@ class external {
 
 				$url = $f2->filter( EXTERNAL_URL );
 
-				$sql = "SELECT * FROM orders WHERE order_id='" . $order_id . "'";
-				$result = mysqli_query( $GLOBALS['connection'], $sql ) or external_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+				$sql = "SELECT * FROM orders WHERE order_id=" . intval($order_id);
+				$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 				$row = mysqli_fetch_array( $result );
 
 				if ( EXTERNAL_AUTO_APPROVE == "yes" ) {
@@ -305,8 +295,8 @@ class external {
 					debit_transaction( $order_id, $row['price'], $row['currency'], 'External', $url, 'External' );
 				}
 
-				$banner_data = load_banner_constants($row['banner_id']);
-				$quantity = intval($row['quantity']) / intval($banner_data['block_width']) / intval($banner_data['block_height']);
+				$banner_data = load_banner_constants( $row['banner_id'] );
+				$quantity    = intval( $row['quantity'] ) / intval( $banner_data['block_width'] ) / intval( $banner_data['block_height'] );
 
 				$dest = str_replace( '%AMOUNT%', urlencode( $row['price'] ), $url );
 				$dest = str_replace( '%CURRENCY%', urlencode( $row['currency'] ), $dest );
@@ -317,9 +307,7 @@ class external {
 				echo "<script>top.window.location = '$dest'</script>";
 				exit;
 			}
-
 		}
-
 	}
 
 	function complete_order( $order_id ) {
@@ -328,7 +316,7 @@ class external {
 		$url = $f2->filter( EXTERNAL_URL );
 
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or external_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
 
 		complete_order( $row['user_id'], $order_id );
@@ -337,7 +325,7 @@ class external {
 
 	function get_quantity( $order_id ) {
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or external_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
 
 		return $row['quantity'];

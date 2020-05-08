@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -32,7 +33,7 @@
 session_start();
 define( 'NO_HOUSE_KEEP', 'YES' );
 
-require( '../config.php' );
+require_once __DIR__ . "/../include/init.php";
 
 //include( "login_functions.php" );
 
@@ -50,9 +51,9 @@ $imagine = new Imagine\Gd\Imagine();
 
 // get the order id
 if ( isset( $_REQUEST['block_id'] ) && $_REQUEST['block_id'] != '' ) {
-	$sql = "SELECT order_id FROM blocks WHERE block_id='" . intval($_REQUEST['block_id']) . "' AND banner_id='" . $BID . "' ";
-} elseif ( isset( $_REQUEST['aid'] ) && $_REQUEST['aid'] != '' ) {
-	$sql = "SELECT order_id FROM ads WHERE ad_id='" . intval($_REQUEST['aid']) . "' ";
+	$sql = "SELECT order_id FROM blocks WHERE block_id='" . intval( $_REQUEST['block_id'] ) . "' AND banner_id='" . $BID . "' ";
+} else if ( isset( $_REQUEST['aid'] ) && $_REQUEST['aid'] != '' ) {
+	$sql = "SELECT order_id FROM ads WHERE ad_id='" . intval( $_REQUEST['aid'] ) . "' ";
 }
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 $row = mysqli_fetch_array( $result );
@@ -60,7 +61,7 @@ $row = mysqli_fetch_array( $result );
 $size = get_pixel_image_size( $row['order_id'] );
 
 // load all the blocks wot
-$sql = "SELECT block_id,x,y,image_data FROM blocks WHERE order_id='" . intval($row['order_id']) . "' ";
+$sql = "SELECT block_id,x,y,image_data FROM blocks WHERE order_id='" . intval( $row['order_id'] ) . "' ";
 $result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 $blocks = array();
@@ -94,7 +95,6 @@ while ( $block_row = mysqli_fetch_array( $result3 ) ) {
 		$blocks[ $i ]['image_data'] = $imagine->load( $banner_data['GRID_BLOCK'] );
 	} else {
 		$blocks[ $i ]['image_data'] = $imagine->load( base64_decode( $block_row['image_data'] ) );
-
 	}
 
 	$blocks[ $i ]['x'] = $block_row['x'];

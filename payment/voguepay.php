@@ -1,6 +1,36 @@
 <?php
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
-require_once "../config.php";
+require_once __DIR__ . "/../include/init.php";
 
 // https://voguepay.com/developers
 
@@ -23,8 +53,6 @@ function voguepay_mail_error( $msg ) {
 
 	mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " VoguePay script. ", $msg, $headers );
 }
-
-#####################################################################################
 
 if ( isset( $_POST['transaction_id'] ) && $_POST['transaction_id'] != '' ) {
 	//get the full transaction details as an json from voguepay
@@ -76,7 +104,7 @@ if ( isset( $_POST['transaction_id'] ) && $_POST['transaction_id'] != '' ) {
 	You should query your database with the merchant reference and fetch the records you saved for this transaction.
 	Then you should compare the $transaction['total'] with the total from your database.*/
 
-	$sql = "SELECT * FROM orders WHERE order_id='" . intval($transaction['transaction_id']) . "'";
+	$sql = "SELECT * FROM orders WHERE order_id='" . intval( $transaction['transaction_id'] ) . "'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or voguepay_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$row = mysqli_fetch_array( $result );
 
@@ -84,7 +112,7 @@ if ( isset( $_POST['transaction_id'] ) && $_POST['transaction_id'] != '' ) {
 	debit_transaction( $transaction['merchant_ref'], $transaction['total'], $transaction['cur'], $transaction['transaction_id'], $transaction['memo'], 'VoguePay' );
 }
 
-###########################################################################
+#
 # Payment Object
 
 class VoguePay {
@@ -117,9 +145,9 @@ class VoguePay {
 	function install() {
 		echo "Installing VoguePay...<br>";
 
-		$voguepay_notify_url  = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . $_SERVER['PHP_SELF']);
-		$voguepay_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className);
-		$voguepay_fail_url    = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/");
+		$voguepay_notify_url  = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . $_SERVER['PHP_SELF'] );
+		$voguepay_success_url = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className );
+		$voguepay_fail_url    = mysqli_real_escape_string( $GLOBALS['connection'], BASE_HTTP_PATH . "users/" );
 
 		$sql = "REPLACE INTO config (`key`, val) VALUES 
                 ('VOGUEPAY_ENABLED', 'N'),
@@ -159,7 +187,7 @@ class VoguePay {
 
 		$order_id = intval( $order_id );
 
-		$sql = "SELECT * FROM orders WHERE order_id='" . intval($order_id) . "'";
+		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order = mysqli_fetch_array( $result );
 
@@ -386,7 +414,7 @@ class VoguePay {
 	}
 
 	function save_config() {
-		$sql = "REPLACE INTO config (`key`, val) VALUES ('VOGUEPAY_DEMO_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_demo_mode']) . "'),('VOGUEPAY_STORE_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_store_id']) . "'),('VOGUEPAY_MERCHANT_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_merchant_id']) . "'),('VOGUEPAY_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_currency']) . "'),('VOGUEPAY_HTTPMODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_httpmode']) . "'),('VOGUEPAY_NOTIFY_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_notify_url']) . "'),('VOGUEPAY_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_success_url']) . "'),('VOGUEPAY_FAIL_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_fail_url']) . "'),('VOGUEPAY_BUTTON', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_button']) . "')";
+		$sql = "REPLACE INTO config (`key`, val) VALUES ('VOGUEPAY_DEMO_MODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_demo_mode'] ) . "'),('VOGUEPAY_STORE_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_store_id'] ) . "'),('VOGUEPAY_MERCHANT_ID', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_merchant_id'] ) . "'),('VOGUEPAY_CURRENCY', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_currency'] ) . "'),('VOGUEPAY_HTTPMODE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_httpmode'] ) . "'),('VOGUEPAY_NOTIFY_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_notify_url'] ) . "'),('VOGUEPAY_SUCCESS_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_success_url'] ) . "'),('VOGUEPAY_FAIL_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_fail_url'] ) . "'),('VOGUEPAY_BUTTON', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['voguepay_button'] ) . "')";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 

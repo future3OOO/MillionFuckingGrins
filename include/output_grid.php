@@ -1,23 +1,24 @@
 <?php
 
 /**
- * @package     mds
- * @copyright   (C) Copyright 2017 Ryan Rhode, All rights reserved.
- * @author      Ryan Rhode, ryan@milliondollarscript.com
- * @license     This program is free software; you can redistribute it and/or modify
- *              it under the terms of the GNU General Public License as published by
- *              the Free Software Foundation; either version 3 of the License, or
- *              (at your option) any later version.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
  *
- *              This program is distributed in the hope that it will be useful,
- *              but WITHOUT ANY WARRANTY; without even the implied warranty of
- *              MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *              GNU General Public License for more details.
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
  *
- *              You should have received a copy of the GNU General Public License along
- *              with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -291,9 +292,9 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 	if ( isset( $show_price_zones ) ) {
 		$price_zone_blocks = array();
 		$cell              = 0;
-	for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
+		for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
 
-		for ( $x = 0; $x < ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ); $x += $banner_data['BLK_WIDTH'] ) {
+			for ( $x = 0; $x < ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ); $x += $banner_data['BLK_WIDTH'] ) {
 
 				$price_zone_color = get_zone_color( $BID, $y, $x );
 				switch ( $price_zone_color ) {
@@ -320,9 +321,9 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 				$cell ++;
 			}
 		}
-			}
+	}
 
-			// preload full grid
+	// preload full grid
 	$grid_back = $grid_front = $grid_price_zone = array();
 	$cell      = 0;
 	for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
@@ -348,7 +349,6 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 				} else if ( isset( $show_grid ) ) {
 					$grid_back[ $x ][ $y ] = $default_block;
 				}
-
 			} else if ( isset( $show_grid ) ) {
 				$grid_back[ $x ][ $y ] = $default_block;
 			} else {
@@ -378,38 +378,38 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 		}
 	}
 
-			// blend in the background
-			if ( isset( $background ) ) {
+	// blend in the background
+	if ( isset( $background ) ) {
 
-				// Background image size
-				$bgsize = $background->getSize();
+		// Background image size
+		$bgsize = $background->getSize();
 
-				// Rescale image to fit within the size of the grid
-				$new_dimensions = resize_dimensions( $size->getWidth(), $size->getHeight(), $bgsize->getWidth(), $bgsize->getHeight() );
+		// Rescale image to fit within the size of the grid
+		$new_dimensions = resize_dimensions( $size->getWidth(), $size->getHeight(), $bgsize->getWidth(), $bgsize->getHeight() );
 
-				// Resize to max size
-				$background->resize( new Imagine\Image\Box( $new_dimensions['width'], $new_dimensions['height'] ) );
+		// Resize to max size
+		$background->resize( new Imagine\Image\Box( $new_dimensions['width'], $new_dimensions['height'] ) );
 
-				// Get new size
-				$bgsize = $background->getSize();
+		// Get new size
+		$bgsize = $background->getSize();
 
-				// calculate coords to paste at
-				$bgx = ( $size->getWidth() / 2 ) - ( $bgsize->getWidth() / 2 );
-				$bgy = ( $size->getHeight() / 2 ) - ( $bgsize->getHeight() / 2 );
+		// calculate coords to paste at
+		$bgx = ( $size->getWidth() / 2 ) - ( $bgsize->getWidth() / 2 );
+		$bgy = ( $size->getHeight() / 2 ) - ( $bgsize->getHeight() / 2 );
 
-				// make sure coords aren't outside the box
-				if ( $bgx < 0 ) {
-					$bgx = 0;
-				}
-				if ( $bgy < 0 ) {
-					$bgy = 0;
-				}
+		// make sure coords aren't outside the box
+		if ( $bgx < 0 ) {
+			$bgx = 0;
+		}
+		if ( $bgy < 0 ) {
+			$bgy = 0;
+		}
 
-				// paste background image into grid
-				$map->paste( $background, new Imagine\Image\Point( $bgx, $bgy ) );
-			}
+		// paste background image into grid
+		$map->paste( $background, new Imagine\Image\Point( $bgx, $bgy ) );
+	}
 
-			// paste the blocks
+	// paste the blocks
 	for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
 		for ( $x = 0; $x < ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ); $x += $banner_data['BLK_WIDTH'] ) {
 			if ( isset( $grid_front[ $x ] ) && isset( $grid_front[ $x ][ $y ] ) ) {
@@ -418,7 +418,7 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 		}
 	}
 
-			// paste price zone layer
+	// paste price zone layer
 	for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
 		for ( $x = 0; $x < ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ); $x += $banner_data['BLK_WIDTH'] ) {
 			if ( isset( $grid_price_zone[ $x ] ) && isset( $grid_price_zone[ $x ][ $y ] ) ) {
@@ -427,8 +427,8 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 		}
 	}
 
-			// output price zone text
-			if ( isset( $show_price_zones_text ) ) {
+	// output price zone text
+	if ( isset( $show_price_zones_text ) ) {
 
 		$row_c       = 0;
 		$col_c       = 0;
@@ -444,7 +444,6 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 					imagestringup( $map->getGdResource(), 1, $x + 1, 15 + 1, $spaces . "$col_c", $textcolor );
 					$col_c ++;
 				}
-
 			}
 
 			imagestring( $map->getGdResource(), 1, 1, $y, "$row_c", $textcolor_w );

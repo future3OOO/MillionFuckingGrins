@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -37,15 +38,12 @@ require_once( 'banner_functions.php' );
 require_once( 'image_functions.php' );
 require_once( __DIR__ . '/../vendor/autoload.php' );
 
-$banner_data = load_banner_constants( $BID );
-
 if ( ! defined( 'UPLOAD_PATH' ) ) {
 	$dir   = dirname( __FILE__ );
 	$dir   = preg_split( '%[/\\\]%', $dir );
 	$blank = array_pop( $dir );
 	$dir   = implode( '/', $dir );
 	define( 'UPLOAD_PATH', $dir . '/upload_files/' );
-
 }
 
 if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
@@ -60,25 +58,16 @@ if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
 	define( 'UPLOAD_HTTP_PATH', "http://" . $host . $http_url . "/upload_files/" );
 }
 
-#---------------------------------------------------------------------
-# Written for having magic quotes enabled
-#---------------------------------------------------------------------
-#####################################################
+// Written for having magic quotes enabled
 function unfck( $v ) {
 	return is_array( $v ) ? array_map( 'unfck', $v ) : addslashes( $v );
 }
 
-######################################################
 function unfck_gpc() {
-
 	foreach ( array( 'POST', 'GET', 'REQUEST', 'COOKIE' ) as $gpc ) {
 		$GLOBALS["_$gpc"] = array_map( 'unfck', $GLOBALS["_$gpc"] );
-
 	}
-
 }
-
-##################################################
 
 if ( isset( $_REQUEST['BID'] ) && ! empty( $_REQUEST['BID'] ) ) {
 	if ( ! defined( 'NO_HOUSE_KEEP' ) || NO_HOUSE_KEEP != 'YES' ) {
@@ -131,22 +120,18 @@ function expire_orders() {
 
 		$session_duration = intval( ini_get( "session.gc_maxlifetime" ) );
 
-		$sql = "SELECT session_id, order_date FROM `temp_orders` WHERE  DATE_SUB('$now', INTERVAL $session_duration SECOND) >= temp_orders.order_date AND session_id <> '" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "' ";
+		$sql = "SELECT session_id, order_date FROM `temp_orders` WHERE  DATE_SUB('$now', INTERVAL $session_duration SECOND) >= temp_orders.order_date AND session_id <> '" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql );
 
 		while ( $row = @mysqli_fetch_array( $result ) ) {
 
 			delete_temp_order( $row['session_id'] );
-
 		}
 
-		// COMPLTED Orders
+		// COMPLETED Orders
 
-		$sql = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
-
-		//echo $sql;
-
+		$sql    = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
 		$result = mysqli_query( $GLOBALS['connection'], $sql );
 
 		$affected_BIDs = array();
@@ -154,7 +139,6 @@ function expire_orders() {
 		while ( $row = @mysqli_fetch_array( $result ) ) {
 			$affected_BIDs[] = $row['BID'];
 			expire_order( $row['order_id'] );
-
 		}
 		if ( sizeof( $affected_BIDs ) > 0 ) {
 			foreach ( $affected_BIDs as $myBID ) {
@@ -164,7 +148,6 @@ function expire_orders() {
 					publish_image( $myBID );
 					process_map( $myBID );
 				}
-
 			}
 		}
 		process_paid_renew_orders();
@@ -187,9 +170,7 @@ function expire_orders() {
 				@mysqli_query( $GLOBALS['connection'], $sql );
 				global $f2;
 				$f2->debug( "Deleted unconfirmed order - " . $sql );
-
 			}
-
 		}
 
 		// unpaid Orders
@@ -200,9 +181,7 @@ function expire_orders() {
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				expire_order( $row['order_id'] );
-
 			}
-
 		}
 
 		// EXPIRED Orders -> Cancel
@@ -215,9 +194,7 @@ function expire_orders() {
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				cancel_order( $row['order_id'] );
-
 			}
-
 		}
 
 		// Cancelled Orders -> Delete
@@ -231,7 +208,6 @@ function expire_orders() {
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				delete_order( $row['order_id'] );
 			}
-
 		}
 
 		// update last run time stamp
@@ -239,16 +215,12 @@ function expire_orders() {
 		// update timestamp
 		$sql = "REPLACE INTO config (`key`, `val`) VALUES ('LAST_EXPIRE_RUN', '$unix_time')  ";
 		$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-
 	}
 
 	// release the poor man's lock
 	$sql = "UPDATE `config` SET `val`='NO' WHERE `key`='EXPIRE_RUNNING' ";
 	@mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-
 }
-
-#################################################
 
 function delete_temp_order( $sid, $delete_ad = true ) {
 
@@ -277,7 +249,6 @@ function delete_temp_order( $sid, $delete_ad = true ) {
 	}
 }
 
-#################################################
 /*
 
 Type:  CREDIT (subtract)
@@ -314,10 +285,8 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 	}
-
 }
 
-#################################################
 /*
 
 Type: DEBIT (add)
@@ -345,10 +314,7 @@ function debit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $or
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	}
-
 }
-
-##################################################
 
 function complete_order( $user_id, $order_id ) {
 	global $label;
@@ -425,7 +391,6 @@ function complete_order( $user_id, $order_id ) {
 			} else {
 				send_email( $to, $user_row['FirstName'] . " " . $user_row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_message, 1 );
 			}
-
 		}
 
 		// send a copy to admin
@@ -438,7 +403,6 @@ function complete_order( $user_id, $order_id ) {
 			} else {
 				send_email( SITE_CONTACT_EMAIL, $user_row['FirstName'] . " " . $user_row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_message, 1 );
 			}
-
 		}
 
 		// process the grid, if auto_publish is on
@@ -450,12 +414,8 @@ function complete_order( $user_id, $order_id ) {
 			publish_image( $order_row['banner_id'] );
 			process_map( $order_row['banner_id'] );
 		}
-
 	}
-
 }
-
-##########################################
 
 function confirm_order( $user_id, $order_id ) {
 	global $label;
@@ -538,7 +498,6 @@ function confirm_order( $user_id, $order_id ) {
 			} else {
 				send_email( $to, $row['FirstName'] . " " . $row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_message, 2 );
 			}
-
 			//@mail($to,$subject,$message,$headers);
 		}
 
@@ -553,12 +512,8 @@ function confirm_order( $user_id, $order_id ) {
 			}
 			//@mail(trim(SITE_CONTACT_EMAIL),$subject,$message,$headers);
 		}
-
 	}
-
 }
-
-##########################################
 
 function pend_order( $user_id, $order_id ) {
 	global $label;
@@ -634,12 +589,8 @@ function pend_order( $user_id, $order_id ) {
 			}
 			//@mail(trim(SITE_CONTACT_EMAIL),$subject,$message,$headers);
 		}
-
 	}
-
 }
-
-########################################################
 
 function expire_order( $order_id ) {
 	global $label;
@@ -739,12 +690,8 @@ function expire_order( $order_id ) {
 			}
 			//@mail(trim(EMAIL_ADMIN_ORDER_EXPIRED),$subject,$message,$headers);
 		}
-
 	}
-
 }
-
-########################################################
 
 function delete_order( $order_id ) {
 
@@ -766,7 +713,6 @@ function delete_order( $order_id ) {
 
 			$sql = "DELETE FROM blocks where order_id='" . intval( $order_id ) . "' and banner_id=" . intval( $order_row['banner_id'] );
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
 			/*
 			$blocks = explode (",", $order_row['blocks']);
 			foreach ($blocks as $key => $val) {
@@ -777,7 +723,6 @@ function delete_order( $order_id ) {
 
 			}
 			*/
-
 		}
 
 		// DELETE ADS
@@ -787,12 +732,8 @@ function delete_order( $order_id ) {
 		delete_ads_files( $order_row['ad_id'] );
 		$sql = "DELETE from ads where ad_id='" . intval( $order_row['ad_id'] ) . "' ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
 	}
-
 }
-
-########################################################
 
 function cancel_order( $order_id ) {
 
@@ -811,7 +752,6 @@ function cancel_order( $order_id ) {
 		$sql = "UPDATE blocks set status='ordered', `approved`='N' WHERE order_id='" . intval( $order_id ) . "' and banner_id='" . intval( $row['banner_id'] ) . "'";
 		//echo $sql."<br>";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql . " (cancel order) " );
-
 		/*
 		$blocks = explode (',', $row['blocks']);
 		//echo $order_row['blocks'];
@@ -823,7 +763,6 @@ function cancel_order( $order_id ) {
 			mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql. " (cancel order) ");
 		}
 		*/
-
 	}
 
 	// process the grid, if auto_publish is on
@@ -836,12 +775,10 @@ function cancel_order( $order_id ) {
 		publish_image( $row['banner_id'] );
 		process_map( $row['banner_id'] );
 	}
-
 }
 
-########################################################
-# is the renewal order already paid?
-# (Orders can be paid and cont be completed until the previous order expires)
+// is the renewal order already paid?
+// (Orders can be paid and cont be completed until the previous order expires)
 function is_renew_order_paid( $original_order_id ) {
 
 	$sql = "SELECT * from orders WHERE original_order_id='" . intval( $original_order_id ) . "' AND status='renew_paid' ";
@@ -851,13 +788,11 @@ function is_renew_order_paid( $original_order_id ) {
 	} else {
 		return false;
 	}
-
 }
 
-###########################################
-# returns $order_id of the 'renew_wait' order
-# only one 'renew_wait' wait order allowed for each $original_order_id
-# and there must be no 'renew_paid' orders
+// returns $order_id of the 'renew_wait' order
+// only one 'renew_wait' wait order allowed for each $original_order_id
+// and there must be no 'renew_paid' orders
 function allocate_renew_order( $original_order_id ) {
 
 	# if no waiting renew order, insert a new one
@@ -882,25 +817,19 @@ function allocate_renew_order( $original_order_id ) {
 		$order_id = mysqli_insert_id( $GLOBALS['connection'] );
 
 		return $order_id;
-
 	} else {
 		return $row['order_id'];
-
 	}
-
 }
 
-##########################################
-# payment had been completed.
-# allocate renew_wait, set it to renew_paid
-
+// payment had been completed.
+// allocate renew_wait, set it to renew_paid
 function pay_renew_order( $original_order_id ) {
 
 	$wait_order_id = allocate_renew_order( $original_order_id );
 	if ( $wait_order_id !== false ) {
 		$sql = "UPDATE orders set status='renew_paid' WHERE order_id='" . intval( $wait_order_id ) . "' and status='renew_wait' ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-
 	}
 
 	if ( mysqli_affected_rows( $GLOBALS['connection'] ) > 0 ) {
@@ -909,19 +838,10 @@ function pay_renew_order( $original_order_id ) {
 	} else {
 		return false;
 	}
-
 }
 
-#################################
-
 function process_paid_renew_orders() {
-
-	/*
-
-	Complete: Only expired orders that have status as 'renew_paid'
-
-
-	*/
+	//Complete: Only expired orders that have status as 'renew_paid'
 
 	$sql = "SELECT * FROM orders WHERE status='renew_paid' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
@@ -930,8 +850,6 @@ function process_paid_renew_orders() {
 		complete_renew_order( $row['order_id'] );
 	}
 }
-
-########################################################
 
 function complete_renew_order( $order_id ) {
 	global $label;
@@ -1018,7 +936,6 @@ function complete_renew_order( $order_id ) {
 			} else {
 				send_email( $to, $user_row['FirstName'] . " " . $user_row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_message, 1 );
 			}
-
 		}
 
 		// send a copy to admin
@@ -1031,7 +948,6 @@ function complete_renew_order( $order_id ) {
 			} else {
 				send_email( SITE_CONTACT_EMAIL, $user_row['FirstName'] . " " . $user_row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_message, 1 );
 			}
-
 		}
 
 		// process the grid, if auto_publish is on
@@ -1043,12 +959,8 @@ function complete_renew_order( $order_id ) {
 			publish_image( $order_row['banner_id'] );
 			process_map( $order_row['banner_id'] );
 		}
-
 	}
-
 }
-
-#####################################################
 
 function send_confirmation_email( $email ) {
 
@@ -1065,7 +977,7 @@ function send_confirmation_email( $email ) {
 	$message = $label["confirmation_email_templaltev2"];
 	$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 	$message = str_replace( "%LNAME%", $row['LastName'], $message );
-	$message = str_replace( "%SITE_URL%", "https://thebitcoinpizzaday.com/", $message );
+	$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
 	$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 	$message = str_replace( "%VERIFY_URL%", $verify_url, $message );
 	$message = str_replace( "%VALIDATION_CODE%", $code, $message );
@@ -1097,12 +1009,8 @@ function send_confirmation_email( $email ) {
 		} else {
 			send_email( SITE_CONTACT_EMAIL, SITE_NAME, SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_msg, 5 );
 		}
-
 	}
-
 }
-
-########################################################
 
 function send_published_pixels_notification( $user_id, $BID ) {
 
@@ -1151,16 +1059,12 @@ function send_published_pixels_notification( $user_id, $BID ) {
 	} else {
 		send_email( SITE_CONTACT_EMAIL, 'Admin', SITE_CONTACT_EMAIL, SITE_NAME, $subject, $msg, $html_msg, 7 );
 	}
-
 }
-
-#########################################################
 
 function send_expiry_reminder( $order_id ) {
 
 }
 
-#########################
 function display_order( $order_id, $BID ) {
 	global $label;
 	$BID = intval( $BID );
@@ -1173,6 +1077,8 @@ function display_order( $order_id, $BID ) {
 	} else {
 		$sql = "SELECT * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], $order_id ) . "' and banner_id='$BID'";
 	}
+
+	error_log($sql);
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$order_row = mysqli_fetch_array( $result );
@@ -1205,7 +1111,6 @@ function display_order( $order_id, $BID ) {
 
 				$label['advertiser_ord_days_exp'] = str_replace( "%DAYS_EXPIRE%", $order_row['days_expire'], $label['advertiser_ord_days_exp'] );
 				echo $label['advertiser_ord_days_exp'];
-
 			} ?></td>
         </tr>
         <tr>
@@ -1222,8 +1127,7 @@ function display_order( $order_id, $BID ) {
 	<?php
 }
 
-############################
-# Contributed by viday
+// Contributed by viday
 function display_packages( $order_id, $BID ) {
 
 	global $f2, $label;
@@ -1264,7 +1168,7 @@ function display_packages( $order_id, $BID ) {
             <td><?php if ( $b_row['days_expire'] == 0 ) {
 					echo $label['advertiser_ord_never'];
 				} else {
-                    // viday pricing dropdown
+					// viday pricing dropdown
 					?> <select name="packages"> <?php
 					$sql = "SELECT * from packages where banner_id='" . intval( $BID ) . "' order by price asc";
 					$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
@@ -1292,8 +1196,6 @@ function display_packages( $order_id, $BID ) {
 	<?php
 }
 
-####################################################
-
 function display_banner_selecton_form( $BID, $order_id, $res ) {
 
 	$action = $_SERVER['PHP_SELF'];
@@ -1313,7 +1215,6 @@ function display_banner_selecton_form( $BID, $order_id, $res ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';
-
 				}
 				echo '<option ' . $sel . ' value=' . $row['banner_id'] . '>' . $row['name'] . '</option>';
 			}
@@ -1322,8 +1223,6 @@ function display_banner_selecton_form( $BID, $order_id, $res ) {
     </form>
 	<?php
 }
-
-#######################################################
 
 function escape_html( $val ) {
 
@@ -1334,10 +1233,8 @@ function escape_html( $val ) {
 
 // echo "$val<br>";
 	return $val;
-
 }
 
-####################################################
 function send_email( $to_address, $to_name, $from_address, $from_name, $subject, $message, $html_message = '', $template_id = 0 ) {
 
 	if ( strpos( strtolower( $to_address ), strtolower( 'Content-type' ) ) > 0 ) { // detect mail() injection
@@ -1385,8 +1282,6 @@ function send_email( $to_address, $to_name, $from_address, $from_name, $subject,
 
 	return empty( $error );
 }
-
-##################################################
 
 function move_uploaded_image( $img_key ) {
 
@@ -1471,7 +1366,6 @@ function nav_pages_struct( $q_string, $count, $REC_PER_PAGE ) {
 	for ( $i = 0; $i < $count; $i = $i + $REC_PER_PAGE ) {
 		if ( $p == $cur_page ) {
 			$nav['cur_page'] = $p;
-
 		} else {
 			if ( $off === 0 ) {
 				$off = '';
@@ -1495,8 +1389,6 @@ function nav_pages_struct( $q_string, $count, $REC_PER_PAGE ) {
 
 	return $nav;
 }
-
-#####################################################
 
 function render_nav_pages( &$nav_pages_struct, $LINKS, $q_string = '' ) {
 
@@ -1557,15 +1449,6 @@ function render_nav_pages( &$nav_pages_struct, $LINKS, $q_string = '' ) {
 	echo $nav_pages_struct['next'];
 }
 
-function do_log_entry( $entry_line ) {
-
-	$entry_line = "$entry_line\r\n ";
-	$log_fp     = @fopen( "logs.txt", "a" );
-	@fputs( $log_fp, $entry_line );
-	@fclose( $log_fp );
-
-}
-
 function select_block( $map_x, $map_y ) {
 
 	global $BID, $b_row, $label, $order_id, $banner_data;
@@ -1574,7 +1457,6 @@ function select_block( $map_x, $map_y ) {
 
 	if ( func_num_args() > 2 ) {
 		$clicked_block = func_get_arg( 2 );
-
 	} else {
 
 		$clicked_block = get_block_id_from_position( $map_x, $map_y, $BID );
@@ -1611,6 +1493,8 @@ function select_block( $map_x, $map_y ) {
 		// $blocks2 will be modified based on deselections
 		$blocks2 = $blocks;
 
+		$is_adjacent = false;
+
 		// take multi-selection blocks into account (1,4,6) and deselecting blocks
 		if ( isset( $_REQUEST['sel_mode'] ) && ! empty( $_REQUEST['sel_mode'] ) ) {
 			if ( $_REQUEST['sel_mode'] == "sel1" ) {
@@ -1623,7 +1507,6 @@ function select_block( $map_x, $map_y ) {
 					// select
 					$clicked_blocks[] = $clicked_block;
 				}
-
 			} else if ( $_REQUEST['sel_mode'] == "sel4" ) {
 				// 2x2
 				// [1][2]
@@ -1683,7 +1566,6 @@ function select_block( $map_x, $map_y ) {
 						$clicked_blocks[] = $clicked_block;
 					}
 				}
-
 			} else if ( $_REQUEST['sel_mode'] == "sel6" ) {
 				// 3x2
 				// [1][2][3]
@@ -1772,6 +1654,55 @@ function select_block( $map_x, $map_y ) {
 			}
 		}
 
+		// max x and y values
+		$max_x = $banner_data['G_WIDTH'];
+		$max_y = $banner_data['G_HEIGHT'];
+
+		// check for adjacent blocks if more than one block exists
+		if ( sizeof( $blocks ) > 0 && sizeof( $clicked_blocks ) > 0 ) {
+			$id = 0;
+
+			for ( $y = 0; $y < $max_y; $y ++ ) {
+				for ( $x = 0; $x < $max_x; $x ++ ) {
+					if ( in_array( $id, $blocks ) ) {
+						// check all clicked blocks at once for adjacency
+						foreach ( $clicked_blocks as $clicked_block2 ) {
+							// top
+							if ( $id - $max_x == $clicked_block2 && $y >= 0 ) {
+								$is_adjacent = true;
+							}
+
+							// bottom
+							if ( $id + $max_x == $clicked_block2 && $y <= $max_y ) {
+								$is_adjacent = true;
+							}
+
+							// left
+							if ( $id - 1 == $clicked_block2 && $x >= 0 ) {
+								$is_adjacent = true;
+							}
+
+							// right
+							if ( $id + 1 == $clicked_block2 && $x <= $max_x ) {
+								$is_adjacent = true;
+							}
+						}
+					}
+
+					$id ++;
+				}
+			}
+		} else {
+			// only one block so pretend it's adjacent
+			$is_adjacent = true;
+		}
+
+		// remove $clicked_blocks if not found adjacent to another block
+		if ( ! $is_adjacent ) {
+			$clicked_blocks = array();
+			$return_val     = 'not_adjacent';
+		}
+
 		// merge blocks
 		$new_blocks = array_merge( $blocks2, $clicked_blocks );
 
@@ -1786,14 +1717,30 @@ function select_block( $map_x, $map_y ) {
 			}
 		}
 
-		if ( ! $max_selected ) {
+		$order_blocks = implode( ",", $new_blocks );
+
+		// don't overwrite existing blocks from other users
+		$existing_blocks = false;
+		if ( count( $new_blocks ) > 1 ) {
+			// single block is already handled, only handle multiple here
+			$sql = "SELECT block_id FROM blocks WHERE user_id != " . intval( $_SESSION['MDS_ID'] ) . " AND block_id IN(" . $order_blocks . ") AND banner_id=" . intval( $BID );
+			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+			$num_rows = mysqli_num_rows( $result );
+			if ( $num_rows > 0 ) {
+				$label['advertiser_sel_sold_error'] = str_replace( "%BLOCK_ID% ", '', $label['advertiser_sel_sold_error'] );
+				$return_val                         = $label['advertiser_sel_sold_error'];
+				$existing_blocks                    = true;
+			}
+		}
+
+		// if conditions are met then select new blocks
+		if ( ! $max_selected && $is_adjacent && ! $existing_blocks ) {
 			$return_val = intval( $_SESSION['MDS_order_id'] );
 
-			$price        = $total = 0;
-			$num_blocks   = sizeof( $new_blocks );
-			$quantity     = ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) * $num_blocks;
-			$order_blocks = implode( ",", $new_blocks );
-			$now          = gmdate( "Y-m-d H:i:s" );
+			$price      = $total = 0;
+			$num_blocks = sizeof( $new_blocks );
+			$quantity   = ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) * $num_blocks;
+			$now        = gmdate( "Y-m-d H:i:s" );
 
 			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . intval( $row['order_id'] ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $b_row['days_expire'] ) . ", '$now', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
 
@@ -1801,7 +1748,7 @@ function select_block( $map_x, $map_y ) {
 			$_SESSION['MDS_order_id'] = mysqli_insert_id( $GLOBALS['connection'] );
 			$order_id                 = $_SESSION['MDS_order_id'];
 
-			$sql = "delete from blocks where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
+			$sql = "delete from blocks where user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			$cell = 0;
@@ -1842,20 +1789,18 @@ function select_block( $map_x, $map_y ) {
 
 				$ad_id = insert_ad_data();
 
-				$sql = "UPDATE orders SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $order_id ) . "' ";
+				$sql = "UPDATE orders SET ad_id=" . intval( $ad_id ) . " WHERE order_id=" . intval( $order_id ) . " ";
 				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-				$sql = "UPDATE blocks SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $order_id ) . "' ";
+				$sql = "UPDATE blocks SET ad_id=" . intval( $ad_id ) . " WHERE order_id=" . intval( $order_id ) . " AND banner_id=" . intval( $BID );
 				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 				$_REQUEST['ad_id'] = $ad_id;
 			}
 		}
-
 	} else {
 
 		if ( $row['status'] == 'nfs' ) {
 			$return_val = $label['advertiser_sel_nfs_error'];
-
 		} else {
 			$label['advertiser_sel_sold_error'] = str_replace( "%BLOCK_ID%", $clicked_block, $label['advertiser_sel_sold_error'] );
 			$return_val                         = $label['advertiser_sel_sold_error'];
@@ -1864,8 +1809,6 @@ function select_block( $map_x, $map_y ) {
 
 	return $return_val;
 }
-
-################
 
 /*
 
@@ -1886,7 +1829,6 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 		echo 'can\'t touch this<br>';
 
 		return false;
-
 	}
 
 	require_once( '../include/ads.inc.php' );
@@ -1894,7 +1836,7 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	// Session may have expired if they waited too long so tell them to start over, even though we might still have the file it doesn't match the current session id anymore.
 	// TODO: Implement our own cookies instead of PHP sessions to allow longer sessions. Maybe can recover the old session file automatically somehow or another.
 	$block_info = array();
-	$sql        = "SELECT block_info FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "' ";
+	$sql        = "SELECT block_info FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 	$result     = mysqli_query( $GLOBALS['connection'], $sql );
 	$row        = mysqli_fetch_array( $result );
 
@@ -1939,21 +1881,19 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$alt_text = get_template_value( 'ALT_TEXT', 1 );
 
 	foreach ( $block_info as $key => $block ) {
-		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0)";
+		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0) WHERE banner_id=" . intval( $temp_order_row['banner_id'] );
 
 		global $f2;
 		$f2->debug( "Updated block - " . $sql );
 		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
 	}
 
-	delete_temp_order( session_id(), false ); // false = do not delete the ad...
+	delete_temp_order( session_id(), false );
+
+	// false = do not delete the ad...
 
 	return $order_id;
-
 }
-
-################
 
 function get_block_position( $block_id, $banner_id ) {
 
@@ -1970,11 +1910,9 @@ function get_block_position( $block_id, $banner_id ) {
 				$ret['y'] = $i * $banner_data['BLK_HEIGHT'];
 
 				return $ret;
-
 			}
 			$cell ++;
 		}
-
 	}
 
 	return $ret;
@@ -1998,8 +1936,6 @@ function get_block_id_from_position( $x, $y, $banner_id ) {
 	return $id;
 }
 
-########################
-
 function is_block_free( $block_id, $banner_id ) {
 
 	$sql = "SELECT * from blocks where block_id='" . intval( $block_id ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
@@ -2008,21 +1944,16 @@ function is_block_free( $block_id, $banner_id ) {
 	if ( mysqli_num_rows( $result ) == 0 ) {
 
 		return true;
-
 	} else {
 
 		return false;
-
 	}
-
 }
 
-######################################################
-# Move 1 block
-# - changes the x y of a block
-# - updates the order's blocks column
-# *** assuming that the grid constants were loaded!
-
+// Move 1 block
+// - changes the x y of a block
+// - updates the order's blocks column
+// *** assuming that the grid constants were loaded!
 function move_block( $block_from, $block_to, $banner_id ) {
 
 	# reserve block_to
@@ -2052,7 +1983,6 @@ function move_block( $block_from, $block_to, $banner_id ) {
 		echo "<b>x is $x</b><br>";
 
 		return false;
-
 	}
 
 	if ( ( $y === '' ) || ( $y > ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ) ) || $y < 0 ) {
@@ -2097,12 +2027,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 	$f2->debug( "Updated order - " . $sql );
 
 	return true;
-
 }
-
-###################################
-
-######################################################
 
 function move_order( $block_from, $block_to, $banner_id ) {
 
@@ -2113,7 +2038,7 @@ function move_order( $block_from, $block_to, $banner_id ) {
 	$to_x = $pos['x'];
 	$to_y = $pos['y'];
 
-// we need to work out block_from, get the block with the lowest x and y
+	// we need to work out block_from, get the block with the lowest x and y
 
 	$min_max = get_blocks_min_max( $block_from, $banner_id );
 	$from_x  = $min_max['low_x'];
@@ -2152,7 +2077,6 @@ function move_order( $block_from, $block_to, $banner_id ) {
 
 			return false;
 		}
-
 	}
 
 	mysqli_data_seek( $result, 0 );
@@ -2166,10 +2090,8 @@ function move_order( $block_from, $block_to, $banner_id ) {
 	}
 
 	return true;
-
 }
 
-######################################################
 /*
 function get_required_size($x, $y) - assuming the grid constants were initialized
 $x and $y are the current size
@@ -2186,22 +2108,18 @@ function get_required_size( $x, $y, $banner_data ) {
 
 	if ( $mod > 0 ) { // width does not fit
 		$size[0] = $x + ( $block_width - $mod );
-
 	}
 
 	$mod = ( $y % $block_height );
 
 	if ( $mod > 0 ) { // height does not fit
 		$size[1] = $y + ( $block_height - $mod );
-
 	}
 
 	return $size;
-
 }
 
-######################################################
-# If $user_id is null then return for all banners
+// If $user_id is null then return for all banners
 function get_clicks_for_today( $BID, $user_id = 0 ) {
 
 	$date = gmDate( 'Y' ) . "-" . gmDate( 'm' ) . "-" . gmDate( 'd' );
@@ -2211,11 +2129,9 @@ function get_clicks_for_today( $BID, $user_id = 0 ) {
 	$row = mysqli_fetch_array( $result );
 
 	return $row['clk'];
-
 }
 
-#######################################################
-# If $BID is null then return for all banners
+// If $BID is null then return for all banners
 function get_clicks_for_banner( $BID = '' ) {
 
 	$sql = "SELECT *, SUM(clicks) AS clk FROM `clicks` where banner_id='" . intval( $BID ) . "'  GROUP BY banner_id, block_id, user_id, date";
@@ -2223,10 +2139,8 @@ function get_clicks_for_banner( $BID = '' ) {
 	$row = mysqli_fetch_array( $result );
 
 	return $row['clk'];
-
 }
 
-#########################################################
 /*
 
 First check to see if the banner has packages. If it does
@@ -2243,7 +2157,6 @@ function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 	if ( $u_row['Rank'] == '2' ) {
 
 		return true;
-
 	}
 
 	$BID = $banner_data['BANNER_ID'];
@@ -2273,12 +2186,8 @@ function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 		} else {
 			return true; // can make unlimited orders
 		}
-
 	}
-
 }
-
-//////
 
 function get_blocks_min_max( $block_id, $banner_id ) {
 
@@ -2303,7 +2212,6 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 			$high_y = $block_row['y'];
 			$low_x  = $block_row['x'];
 			$low_y  = $block_row['y'];
-
 		}
 
 		if ( $block_row['x'] > $high_x ) {
@@ -2321,7 +2229,6 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 		if ( $block_row['x'] < $low_x ) {
 			$low_x = $block_row['x'];
 		}
-
 	}
 
 	$ret           = array();
@@ -2331,10 +2238,8 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 	$ret['low_y']  = $low_y;
 
 	return $ret;
-
 }
 
-################################################
 function get_definition( $field_type ) {
 
 	switch ( $field_type ) {
@@ -2385,12 +2290,8 @@ function get_definition( $field_type ) {
 		default:
 			return "VARCHAR( 255 ) NOT NULL ";
 			break;
-
 	}
-
 }
-
-##############################################
 
 function saveImage( $field_id ) {
 
@@ -2399,7 +2300,6 @@ function saveImage( $field_id ) {
 	$imagine = new Imagine\Gd\Imagine();
 
 	if ( ! defined( 'IMG_MAX_WIDTH' ) || IMG_MAX_WIDTH == 'IMG_MAX_WIDTH' ) {
-
 		$max_width = '150';
 	} else {
 		$max_width = IMG_MAX_WIDTH;
@@ -2499,7 +2399,6 @@ function saveImage( $field_id ) {
 		// Resize to max size
 		$image->resize( new Imagine\Image\Box( $final_width, $final_height ) );
 		$image->save( $uploadfile );
-
 	} else {
 		//echo 'No need to resize.<br>';
 
@@ -2508,8 +2407,6 @@ function saveImage( $field_id ) {
 	//@unlink($uploadfile); // delete the original file.
 	return $new_name;
 }
-
-###########################################################
 
 function deleteImage( $table_name, $object_name, $object_id, $field_id ) {
 
@@ -2523,12 +2420,7 @@ function deleteImage( $table_name, $object_name, $object_id, $field_id ) {
 		//@unlink (IMG_PATH."thumbs/".$row[$field_id]);
 		//echo "<br><b>unlnkthis[".IMG_PATH."thumbs/$new_name]</b><br>";
 	}
-
-// yeo su 019 760 0030
-
 }
-
-##########################################################
 
 function saveFile( $field_id ) {
 
@@ -2548,10 +2440,7 @@ function saveFile( $field_id ) {
 	}
 
 	return $new_name;
-
 }
-
-#####################################################################
 
 function deleteFile( $table_name, $object_name, $object_id, $field_id ) {
 
@@ -2565,13 +2454,7 @@ function deleteFile( $table_name, $object_name, $object_id, $field_id ) {
 		// unlink (FILE_PATH."thumbs/".$row[$field_id]);
 		//echo "<br><b>unlnkthis[".IMG_PATH."thumbs/$new_name]</b><br>";
 	}
-
-// yeo su 019 760 0030
-
 }
-
-/////////////////////////////////////
-###########################################################
 
 function is_filetype_allowed( $file_name ) {
 
@@ -2589,8 +2472,6 @@ function is_filetype_allowed( $file_name ) {
 	return in_array( $ext, $ext_list );
 }
 
-###########################################################
-
 function is_imagetype_allowed( $file_name ) {
 
 	$a   = explode( ".", $file_name );
@@ -2606,10 +2487,7 @@ function is_imagetype_allowed( $file_name ) {
 	$ext_list = preg_split( "/[\s,]+/", ( $ALLOWED_IMG ) );
 
 	return in_array( $ext, $ext_list );
-
 }
-
-/////////////////////////////////////
 
 function get_tmp_img_name( $session_id = '' ) {
 
@@ -2628,17 +2506,11 @@ function get_tmp_img_name( $session_id = '' ) {
 	return "";
 }
 
-////////////////////////////
-
 function update_temp_order_timestamp() {
-
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
-	$sql = "UPDATE temp_orders SET order_date='$now' WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], session_id() ) . "' ";
+	$sql = "UPDATE temp_orders SET order_date='$now' WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 	mysqli_query( $GLOBALS['connection'], $sql );
-
 }
-
-////////////////
 
 function show_nav_status( $page_id ) {
 	global $label;
@@ -2656,12 +2528,8 @@ function show_nav_status( $page_id ) {
 			echo ' -&gt; ';
 		}
 		echo $b2;
-
 	}
-
 }
-
-////////////////////////
 
 /**
  * @param string
@@ -2692,24 +2560,16 @@ function removeEvilTags( $source ) {
 	//return preg_replace('/<(.*?)>/ie', "'<'.removeEvilAttributes('\\1').'>'", $source);
 }
 
-##############################################################
-
 function remove_non_latin1_chars( $str ) {
 	// strip out characters that aren't valid in ISO-8859-1 (Also known as 'Latin 1', used in HTML Documents)
 	return preg_replace( '/[^\x09\x0A\x0D\x20-\x7F\xC0-\xFF]/', '', $str );
-
 }
-
-################################################
 
 function trim_date( $gmdate ) {
 	preg_match( "/(\d+-\d+-\d+).+/", $gmdate, $m );
 
 	return $m[1];
-
 }
-
-###########################################
 
 function get_formatted_date( $date ) {
 
@@ -2741,21 +2601,18 @@ function get_formatted_date( $date ) {
 		}
 
 		return $ret;
-
 	}
 
 	// else:
 	$time = strtotime( $date );
 
 	return date( DATE_FORMAT, $time );
-
 }
 
 function get_local_time( $gmdate ) {
 
 	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) { // gmt not found
 		$gmdate = $gmdate . " GMT";
-
 	}
 	date_default_timezone_set( "GMT" );
 	$gmtime = strtotime( $gmdate );
@@ -2764,12 +2621,12 @@ function get_local_time( $gmdate ) {
 		preg_match( "/(\d+-\d+-\d+).+/", $gmdate, $m );
 
 		return $m[1];
-
 	} else {
+		$dateTime = new DateTime();
+		$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
 
-		return gmdate( "Y-m-d H:i:s", $gmtime + ( 3600 * GMT_DIF ) );
+		return gmdate( "Y-m-d H:i:s", $gmtime + ( 3600 * $dateTime->getOffset() ) );
 	}
-
 }
 
 function break_long_words( $input, $with_tags ) {
@@ -2799,7 +2656,6 @@ function break_long_words( $input, $with_tags ) {
 				//echo " no space[".htmlentities($trun_str)."]<br>";
 
 			}
-
 		} else {
 			$new_str .= $trun_str;
 		}
@@ -2809,34 +2665,29 @@ function break_long_words( $input, $with_tags ) {
 	$new_str = addslashes( $new_str );
 
 	return $new_str;
-
 }
 
-#######################################
-# function truncate_html_str
-# truncate a string encoded with htmlentities eg &nbsp; is counted as 1 character
-# Limitation: does not work with well if the string contains html tags, (but does it's best to deal with them).
+// function truncate_html_str
+// truncate a string encoded with htmlentities eg &nbsp; is counted as 1 character
+// Limitation: does not work with well if the string contains html tags, (but does it's best to deal with them).
 function truncate_html_str( $s, $MAX_LENGTH, &$trunc_str_len ) {
 
 	$trunc_str_len = 0;
 
 	if ( func_num_args() > 3 ) {
 		$add_ellipsis = func_get_arg( 3 );
-
 	} else {
 		$add_ellipsis = true;
 	}
 
 	if ( func_num_args() > 4 ) {
 		$with_tags = func_get_arg( 4 );
-
 	} else {
 		$with_tags = false;
 	}
 
 	if ( $with_tags ) {
 		$tag_expr = "|<[^>]+>";
-
 	}
 
 	$offset          = 0;
@@ -2849,7 +2700,6 @@ function truncate_html_str( $s, $MAX_LENGTH, &$trunc_str_len ) {
 		$offset += strlen( $maches[0][0] );
 		$character_count ++;
 		$str .= $maches[0][0];
-
 	}
 	if ( ( $character_count == $MAX_LENGTH ) && ( $add_ellipsis ) ) {
 		$str = $str . "...";
@@ -2857,21 +2707,16 @@ function truncate_html_str( $s, $MAX_LENGTH, &$trunc_str_len ) {
 	$trunc_str_len = $character_count;
 
 	return $str;
-
 }
 
-/////////////////////////////////////////
-
-// assumming that load_banner_constants($_REQUEST['BID']); was called...
 function get_pixel_image_size( $order_id ) {
 
-	$sql = "SELECT * FROM blocks WHERE order_id='" . intval( $order_id ) . "' ";
-
+	$sql = "SELECT * FROM blocks WHERE order_id=" . intval( $order_id );
 	$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 	// find high x, y & low x, y
 	// low x,y is the top corner, high x,y is the bottom corner
-
+	$BID = 1;
 	while ( $block_row = mysqli_fetch_array( $result3 ) ) {
 
 		$high_x = ! isset( $high_x ) ? $block_row['x'] : $high_x;
@@ -2894,6 +2739,8 @@ function get_pixel_image_size( $order_id ) {
 		if ( $block_row['x'] < $low_x ) {
 			$low_x = $block_row['x'];
 		}
+
+		$BID = $block_row['banner_id'];
 	}
 
 	$high_x = ! isset( $high_x ) ? 0 : $high_x;
@@ -2901,21 +2748,19 @@ function get_pixel_image_size( $order_id ) {
 	$low_x  = ! isset( $low_x ) ? 0 : $low_x;
 	$low_y  = ! isset( $low_y ) ? 0 : $low_y;
 
-	$banner_data = load_banner_constants( $block_row['banner_id'] );
+	$banner_data = load_banner_constants( $BID );
 
 	$size['x'] = ( $high_x + $banner_data['BLK_WIDTH'] ) - $low_x;
 	$size['y'] = ( $high_y + $banner_data['BLK_HEIGHT'] ) - $low_y;
 
 	return $size;
-
 }
-
-////////////////
 
 function bcmod_wrapper( $x, $y ) {
 	if ( function_exists( 'bcmod' ) ) {
 		return bcmod( $x, $y );
 	}
+
 	// how many numbers to take at once? carefull not to exceed (int)
 	$take = 5;
 	$mod  = '';
@@ -2928,8 +2773,6 @@ function bcmod_wrapper( $x, $y ) {
 
 	return (int) $mod;
 }
-
-////////////////////////////////
 
 function elapsedtime( $sec ) {
 	$days    = floor( $sec / 86400 );
@@ -2947,9 +2790,6 @@ function elapsedtime( $sec ) {
 	return $tstring;
 }
 
-///////////////////////////////////////////
-
-//////////////////
 // convert decimal string to a hex string.
 function decimal_to_hex( $decimal ) {
 	return sprintf( '%X', $decimal );
@@ -2997,7 +2837,6 @@ function shutdown() {
 		if ( substr_count( $error['message'], 'Allowed memory size' ) ) {
 			echo "<br />Try increasing your PHP memory limit and restarting the web server.";
 		}
-
 	} else {
 		echo "Script completed";
 	}
@@ -3022,9 +2861,7 @@ function _GetMaxAllowedUploadSize() {
 	$Sizes[] = ini_get( 'post_max_size' );
 	$Sizes[] = ini_get( 'memory_limit' );
 
-	$Sizes = convertMemoryToBytes( $Sizes );
-
-	return min( $Sizes );
+	return convertMemoryToBytes( $Sizes );
 }
 
 /**
@@ -3036,25 +2873,27 @@ function _GetMaxAllowedUploadSize() {
  */
 function convertMemoryToBytes( $Sizes ) {
 	for ( $x = 0; $x < count( $Sizes ); $x ++ ) {
-		$Last = strtolower( $Sizes[ $x ][ strlen( $Sizes[ $x ] ) - 1 ] );
+		$Last  = strtolower( $Sizes[ $x ][ strlen( $Sizes[ $x ] ) - 1 ] );
+		$limit = intval( $Sizes[ $x ] );
 		if ( $Last == 'k' ) {
-			$Sizes[ $x ] *= 1024;
-		} elseif ( $Last == 'm' ) {
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
-		} elseif ( $Last == 'g' ) {
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
-		} elseif ( $Last == 't' ) {
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
-			$Sizes[ $x ] *= 1024;
+			$limit *= 1024;
+		} else if ( $Last == 'm' ) {
+			$limit *= 1024;
+			$limit *= 1024;
+		} else if ( $Last == 'g' ) {
+			$limit *= 1024;
+			$limit *= 1024;
+			$limit *= 1024;
+		} else if ( $Last == 't' ) {
+			$limit *= 1024;
+			$limit *= 1024;
+			$limit *= 1024;
+			$limit *= 1024;
 		}
+		$Sizes[ $x ] = $limit;
 	}
 
-	return $Sizes;
+	return max( $Sizes );
 }
 
 /**
@@ -3069,17 +2908,15 @@ function setMemoryLimit( $filename ) {
 	set_time_limit( 50 );
 
 	//initializing variables
-	list( $maxMemoryUsage ) = convertMemoryToBytes( array( "512M" ) );
-	list( $currentLimit ) = convertMemoryToBytes( array( ini_get( 'memory_limit' ) ) );
-	$currentUsage = memory_get_usage();
-	$width        = 0;
-	$height       = 0;
+	$maxMemoryUsage = convertMemoryToBytes( array( "512M" ) );
+	$currentLimit   = convertMemoryToBytes( array( ini_get( 'memory_limit' ) ) );
+	$currentUsage   = memory_get_usage();
 
 	//getting the image width and height
 	list( $width, $height ) = getimagesize( $filename );
 
 	//calculating the needed memory
-	$size = $currentUsage + $currentLimit + ( floor( $width * $height * 4 * 1.5 + 1048576 ) );
+	$size = intval( $currentUsage ) + $currentLimit + ( floor( $width * $height * 4 * 1.5 + 1048576 ) );
 
 	// make sure memory limit is within range
 	$size = min( max( $size, MEMORY_LIMIT ), $maxMemoryUsage );
@@ -3105,4 +2942,43 @@ function validate_mail( $email ) {
 	}
 
 	return true;
+}
+
+/**
+ * Cache controls:
+ *
+ * We have to make sure that this html page is cashed by the browser.
+ * If the banner was not modified, then send out a HTTP/1.0 304 Not Modified and exit
+ * otherwise output the HTML to the browser.
+ */
+function mds_header_cache() {
+
+	global $f2;
+
+	$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+
+	$banner_data = load_banner_constants( $BID );
+
+	if ( MDS_AGRESSIVE_CACHE == 'YES' ) {
+
+		// cache all requests, browsers must respect this php script
+		header( 'content-type: text/html; charset=utf-8' );
+		header( 'Cache-Control: public, must-revalidate' );
+		$if_modified_since = preg_replace( '/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE'] );
+		$gmdate_mod        = gmdate( 'D, d M Y H:i:s', $banner_data['time_stamp'] ) . ' GMT';
+		if ( $if_modified_since == $gmdate_mod ) {
+			header( "HTTP/1.0 304 Not Modified" );
+			exit;
+		}
+		header( "Last-Modified: $gmdate_mod" );
+	}
+}
+
+function get_current_order_id() {
+	$current_order_id = session_id();
+	if ( isset( $_SESSION['MDS_order_id'] ) && ! empty( $_SESSION['MDS_order_id'] ) ) {
+		$current_order_id = $_SESSION['MDS_order_id'];
+	}
+
+	return $current_order_id;
 }

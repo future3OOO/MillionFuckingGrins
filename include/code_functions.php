@@ -1,9 +1,10 @@
 <?php
 /**
- * @package        mds
- * @copyright    (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @license        This program is free software; you can redistribute it and/or modify
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
  *        (at your option) any later version.
@@ -16,7 +17,7 @@
  *        You should have received a copy of the GNU General Public License along
  *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  *        Million Dollar Script
  *        A pixel script for selling pixels on your website.
@@ -46,21 +47,20 @@ function format_codes_translation_table( $field_id ) {
 		$description  = mysqli_real_escape_string( $GLOBALS['connection'], $f_row['description'] );
 
 		foreach ( $AVAILABLE_LANGS as $key => $val ) {
-			$key = mysqli_real_escape_string( $GLOBALS['connection'], $key);
+			$key = mysqli_real_escape_string( $GLOBALS['connection'], $key );
 
 			$sql = "SELECT t2.code, t2.field_id, t2.description AS FLABEL, lang FROM codes_translations as t1, codes as t2 WHERE t2.code=t1.code AND t2.code='" . $code . "' AND t2.field_id=" . $row_field_id . " AND lang='$key' ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( $sql . mysqli_error( $GLOBALS['connection'] ) );
 			if ( mysqli_num_rows( $result ) == 0 ) {
-				$sql = "REPLACE INTO `codes_translations` (`field_id`, `code`, `lang`, `description`) VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['field_id']) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['code']) . "', '" . $key . "', '" . $description . "')";
+				$sql = "REPLACE INTO `codes_translations` (`field_id`, `code`, `lang`, `description`) VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['field_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['code'] ) . "', '" . $key . "', '" . $description . "')";
 				mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 			}
 		}
 	}
 }
 
-#################################################
-# Changes the code id, and updates *all* the records in the database
-# with the given field id with the new code_id
+// Changes the code id, and updates *all* the records in the database
+// with the given field id with the new code_id
 function change_code_id( $field_id, $code, $new_code ) {
 	$field_id = intval( $field_id );
 	$code     = mysqli_real_escape_string( $GLOBALS['connection'], $code );
@@ -109,8 +109,6 @@ function change_code_id( $field_id, $code, $new_code ) {
 	}
 }
 
-######################################################################
-
 function getCodeDescription( $field_id, $code ) {
 	$field_id = intval( $field_id );
 	$code     = mysqli_real_escape_string( $GLOBALS['connection'], $code );
@@ -129,8 +127,6 @@ function getCodeDescription( $field_id, $code ) {
 
 	return "";
 }
-
-###################################################
 
 function insert_code( $field_id, $code, $description ) {
 	$field_id    = intval( $field_id );
@@ -156,33 +152,26 @@ function insert_code( $field_id, $code, $description ) {
 
 		$sql = "INSERT INTO `codes_translations` ( `field_id` , `code` , `description`, `lang` )  VALUES ('$field_id', '$code', '$description', '" . get_lang() . "')";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( $sql . mysqli_error( $GLOBALS['connection'] ) );
-
 	}
 
 	format_codes_translation_table( $field_id );
 }
 
-################################################################
 function modify_code( $field_id, $code, $description ) {
 	$field_id    = intval( $field_id );
 	$code        = mysqli_real_escape_string( $GLOBALS['connection'], $code );
 	$description = mysqli_real_escape_string( $GLOBALS['connection'], $description );
 
-	$sql = "UPDATE `codes` SET `description` = '$description' " .
-	       "WHERE `field_id` = '$field_id' AND `code` = '$code'";
+	$sql = "UPDATE `codes` SET `description` = '$description' " . "WHERE `field_id` = '$field_id' AND `code` = '$code'";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( $sql . mysqli_error( $GLOBALS['connection'] ) );
 
 	if ( get_lang() != '' ) {
-		$sql = "UPDATE `codes_translations` SET `description` = '$description' " .
-		       "WHERE `field_id` = '$field_id' AND `code` = '$code' AND `lang`='" . get_lang() . "' ";
+		$sql = "UPDATE `codes_translations` SET `description` = '$description' " . "WHERE `field_id` = '$field_id' AND `code` = '$code' AND `lang`='" . get_lang() . "' ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	}
 }
 
-#####################################################
-/*
-   This is the reverse of function getCodeDescription();
-*/
+// This is the reverse of function getCodeDescription();
 function getCodeFromDescription( $field_id, $description ) {
 	$field_id    = intval( $field_id );
 	$description = mysqli_real_escape_string( $GLOBALS['connection'], $description );
