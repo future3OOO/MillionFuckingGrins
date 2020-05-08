@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.08 18:01:28 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -1073,12 +1073,10 @@ function display_order( $order_id, $BID ) {
 	$b_row = mysqli_fetch_array( $result );
 
 	if ( is_numeric( $order_id ) ) {
-		$sql = "SELECT * from orders where order_id='" . intval( $order_id ) . "' and banner_id='$BID'";
+		$sql = "SELECT * from orders where order_id=" . intval( $order_id );
 	} else {
-		$sql = "SELECT * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], $order_id ) . "' and banner_id='$BID'";
+		$sql = "SELECT * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], $order_id ) . "'";
 	}
-
-	error_log($sql);
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$order_row = mysqli_fetch_array( $result );
@@ -1102,7 +1100,7 @@ function display_order( $order_id, $BID ) {
         </tr>
         <tr>
             <td><b><?php echo $label['advertiser_ord_quantity']; ?></b></td>
-            <td><?php echo $order_row['quantity']; ?><?php echo $label['advertiser_ord_pix']; ?></td>
+            <td><?php echo $order_row['quantity']; ?> <?php echo $label['advertiser_ord_pix']; ?></td>
         </tr>
         <td><b><?php echo $label['advertiser_ord_expired']; ?></b></td>
         <td><?php if ( $order_row['days_expire'] == 0 ) {
@@ -1881,7 +1879,7 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$alt_text = get_template_value( 'ALT_TEXT', 1 );
 
 	foreach ( $block_info as $key => $block ) {
-		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0) WHERE banner_id=" . intval( $temp_order_row['banner_id'] );
+		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0)";
 
 		global $f2;
 		$f2->debug( "Updated block - " . $sql );

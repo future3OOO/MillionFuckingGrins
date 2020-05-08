@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.08 18:01:28 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -510,18 +510,12 @@ function insert_ad_data() {
 
 	if ( ! empty( $order_id ) ) {
 
-	    if($order_id == "temp") {
-
-        }
-		error_log( '$order_id: ' . $order_id );
-
 		// update blocks with ad data
 		$sql = "SELECT blocks,banner_id FROM orders WHERE order_id=" . intval( $order_id );
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 		$order_row = mysqli_fetch_array( $result );
 
 		$blocks = explode( ',', $order_row['blocks'] );
-		error_log( '$order_row: ' . print_r( $order_row, true ) );
 
 		foreach ( $blocks as $block ) {
 			$alt_text = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['1'] );

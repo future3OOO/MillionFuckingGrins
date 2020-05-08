@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.08 18:01:28 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -67,9 +67,9 @@ if ( mysqli_num_rows( $order_result ) == 0 ) {
 	<?php
 	require_once BASE_PATH . "/html/footer.php";
 	die();
-} else {
-	$order_row = mysqli_fetch_array( $order_result );
 }
+
+$order_row = mysqli_fetch_array( $order_result );
 
 // get the banner ID
 $BID = $order_row['banner_id'];
