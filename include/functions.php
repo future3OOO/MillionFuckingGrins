@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:05:36 EDT
+ * @version       2020.05.08 18:13:22 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -247,6 +247,9 @@ function delete_temp_order( $sid, $delete_ad = true ) {
 	if ( file_exists( $f ) ) {
 		unlink( $f );
 	}
+
+	// reset session order id
+	unset( $_SESSION['MDS_order_id'] );
 }
 
 /*
