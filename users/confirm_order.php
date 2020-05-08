@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:01:28 EDT
+ * @version       2020.05.08 18:12:31 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -47,7 +47,7 @@ if ( USE_AJAX == 'SIMPLE' ) {
 function display_edit_order_button( $order_id ) {
 	global $BID, $label, $order_page;
 	?>
-    <input type='button' class='big_button' value="<?php echo $label['advertiser_o_edit_button']; ?>" Onclick="window.location='<?php echo $order_page; ?>?&amp;BID=<?php echo $BID; ?>&amp;order_id=<?php echo $order_id; ?>'">
+    <input type='button' class='big_button' value="<?php echo $label['advertiser_o_edit_button']; ?>" onclick="window.location='<?php echo $order_page; ?>?&amp;BID=<?php echo $BID; ?>&amp;order_id=<?php echo $order_id; ?>'">
 	<?php
 }
 
@@ -174,14 +174,14 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 	if ( ( $has_packages ) && ( $_REQUEST['pack'] == '' ) ) {
 		?>
         <form name="confirm-order" method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-            <input type="hidden" name="selected_pixels" value="<?php echo $f2->filter($_REQUEST['selected_pixels']); ?>">
+            <input type="hidden" name="selected_pixels" value="<?php echo htmlspecialchars($_REQUEST['selected_pixels']); ?>">
             <input type="hidden" name="order_id" value="<?php echo intval($_REQUEST['order_id']); ?>">
             <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
             <?php
             display_package_options_table( $BID, $_REQUEST['pack'], true );
             ?>
-            <input class='big_button' type='button' value='<?php echo $f2->filter($label['advertiser_pack_prev_button']); ?>' onclick='window.location="write_ad.php?BID=<?php echo intval($BID); ?>&amp;ad_id=<?php echo intval($order_row['ad_id']); ?>"'>
-            &nbsp; <input class='big_button' type='submit' value='<?php echo $f2->filter($label['advertiser_pack_select_button']); ?>'>
+            <input class='big_button' type='button' value='<?php echo htmlspecialchars($label['advertiser_pack_prev_button']); ?>' onclick='window.location="write_ad.php?BID=<?php echo intval($BID); ?>&amp;ad_id=<?php echo intval($order_row['ad_id']); ?>"'>
+            &nbsp; <input class='big_button' type='submit' value='<?php echo htmlspecialchars($label['advertiser_pack_select_button']); ?>'>
 		<form>
 		<?php
 		if ( $cannot_get_package ) {
@@ -219,12 +219,12 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 
 			if ( ( $order_row['price'] == 0 ) || ( $u_row['Rank'] == 2 ) ) { // go straight to publish...
 				?>
-                <input type='button' class='big_button' value="<?php echo htmlentities( $label['advertiser_o_completebutton'] ); ?>" Onclick="window.location='publish.php?action=complete&BID=<?php echo $BID; ?>&order_id=temp'">
+                <input type='button' class='big_button' value="<?php echo htmlspecialchars( $label['advertiser_o_completebutton'] ); ?>" onclick="window.location='publish.php?action=complete&BID=<?php echo $BID; ?>&order_id=temp'">
 				<?php
 			} else {
 				// go to payment
 				?>
-                <input type='button' class='big_button' value="<?php echo htmlentities( $label['advertiser_o_confpay_button'] ); ?>" Onclick="window.location='checkout.php?action=confirm&BID=<?php echo $BID; ?>'">
+                <input type='button' class='big_button' value="<?php echo htmlspecialchars( $label['advertiser_o_confpay_button'] ); ?>" onclick="window.location='checkout.php?action=confirm&BID=<?php echo $BID; ?>'">
 				<?php
 			}
 		}
