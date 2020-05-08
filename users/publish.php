@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.08 18:25:54 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -188,7 +188,8 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 		$_REQUEST['ad_id'] = $ad_id;
-	} else { // initialize $_REQUEST['ad_id']
+	} else {
+		// initialize $_REQUEST['ad_id']
 
 		// make sure the ad exists..
 
@@ -214,6 +215,7 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 
 			$_REQUEST['ad_id'] = $blk_row['ad_id'];
 		}
+
 		// bug in previous versions resulted in saving the ad's user_id with a session_id
 		// fix user_id here
 		$sql = "UPDATE ads SET user_id='" . intval( $blk_row['user_id'] ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' AND user_id <> '" . intval( $_SESSION['MDS_ID'] ) . "' limit 1 ";
@@ -247,7 +249,6 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
                 <center>
 					<?php
 					if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-						//echo "ad is".$_REQUEST['ad_id'];
 						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['ad_id']; ?>" border=1><?php
 					} else {
 						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&block_id=<?php echo $_REQUEST['block_id']; ?>" border=1><?php
@@ -297,7 +298,6 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 
 			global $prams;
 			$prams = load_ad_values( $ad_id );
-			//print_r($prams);
 
 			?>
             <div class='ok_msg_label'><?php echo $label['adv_pub_adsaved']; ?></div>
@@ -353,7 +353,7 @@ if ( $count > 0 ) {
 
 <?php
 
-// infrom the user about the approval status of the iamges.
+// inform the user about the approval status of the images.
 
 $sql = "select * from orders where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status='completed' and  approved='N' and banner_id='" . intval( $BID ) . "' ";
 $result4 = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
