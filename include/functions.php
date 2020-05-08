@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:01:28 EDT
+ * @version       2020.05.08 18:05:36 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -1100,7 +1100,7 @@ function display_order( $order_id, $BID ) {
         </tr>
         <tr>
             <td><b><?php echo $label['advertiser_ord_quantity']; ?></b></td>
-            <td><?php echo $order_row['quantity']; ?> <?php echo $label['advertiser_ord_pix']; ?></td>
+            <td><?php echo $order_row['quantity']; ?><?php echo $label['advertiser_ord_pix']; ?></td>
         </tr>
         <td><b><?php echo $label['advertiser_ord_expired']; ?></b></td>
         <td><?php if ( $order_row['days_expire'] == 0 ) {
@@ -2974,7 +2974,7 @@ function mds_header_cache() {
 
 function get_current_order_id() {
 	$current_order_id = session_id();
-	if ( isset( $_SESSION['MDS_order_id'] ) && ! empty( $_SESSION['MDS_order_id'] ) ) {
+	if ( isset( $_SESSION['MDS_order_id'] ) && ! empty( $_SESSION['MDS_order_id'] ) && $_SESSION['MDS_order_id'] != "temp" ) {
 		$current_order_id = $_SESSION['MDS_order_id'];
 	}
 
