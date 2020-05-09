@@ -71,6 +71,13 @@ function mds_form_submit_success(responseText, statusText, xhr, $form) {
 	window.location.hash = '#' + url;
 
 	$form.find('input').attr('disabled', false);
+
+	let order_image_preview = $('#order_image_preview');
+	if (order_image_preview.length > 0) {
+		let t = new Date();
+		let src = order_image_preview.attr('src');
+		order_image_preview.attr('src', src + t);
+	}
 }
 
 function confirmLink(theLink, theConfirmMsg) {
