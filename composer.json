@@ -27,6 +27,7 @@
     "ezyang/htmlpurifier": ">=4.11.0",
     "phpmailer/phpmailer": ">=6.0.7",
     "components/jquery": ">=3.3.1",
+    "components/jqueryui": "1.11.4",
     "jquery-form/form": ">=4.2.2",
     "ext-mysqli": "*",
     "ext-gd": "*",
