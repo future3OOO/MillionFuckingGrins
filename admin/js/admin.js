@@ -85,6 +85,10 @@ function confirmLink(theLink, theConfirmMsg) {
 		if (link == null) {
 			link = $(theLink).data('link');
 		}
+		if (link == null) {
+			return true;
+		}
+
 		link += '&is_js_confirmed=1';
 		mds_load_page(link, true);
 	}
@@ -92,14 +96,8 @@ function confirmLink(theLink, theConfirmMsg) {
 	return false;
 }
 
-function checkBoxes(checkbox, name) {
-	let state, boxes, count, i;
-	state = checkbox.checked;
-	boxes = eval("document.form1.elements['" + name + "']");
-	count = boxes.length;
-	for (i = 0; i < count; i++) {
-		boxes[i].checked = state;
-	}
+function checkBoxes(name) {
+	$('input[name="' + name + '[]"]').trigger('click');
 }
 
 function mds_submit(el) {

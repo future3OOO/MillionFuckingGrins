@@ -50,7 +50,7 @@ if ( EMAIL_USER_EXPIRE_WARNING == 'YES' ) {
 	?>
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
         <tr>
-            <td><b><input type="checkbox" onClick="checkBoxes(this, 'orders[]');"></td>
+            <td><b><input type="checkbox" onClick="checkBoxes('orders');"></td>
             <td><b>Order Date</b></td>
             <td><b>Customer Name</b></td>
             <td><b>Username & ID</b></td>

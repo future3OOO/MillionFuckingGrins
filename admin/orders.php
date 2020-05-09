@@ -45,7 +45,7 @@ if ( $_REQUEST['mass_complete'] != '' ) {
 
 		if ( $order_row['status'] != 'completed' ) {
 			complete_order( $order_row['user_id'], $oid );
-			debit_transaction( $order_row['user_id'], $order_row['price'], $order_row['currency'], $order_row['order_id'], $reason_code, 'Admin' );
+			debit_transaction( $order_row['user_id'], $order_row['price'], $order_row['currency'], $order_row['order_id'], 'complete', 'Admin' );
 		}
 	}
 }
@@ -57,7 +57,7 @@ if ( $_REQUEST['action'] == 'complete' ) {
 	$order_row = mysqli_fetch_array( $result );
 
 	complete_order( $_REQUEST['user_id'], $_REQUEST['order_id'] );
-	debit_transaction( $_REQUEST['order_id'], $order_row['price'], $order_row['currency'], $order_row['order_id'], $reason_code, 'Admin' );
+	debit_transaction( $_REQUEST['order_id'], $order_row['price'], $order_row['currency'], $order_row['order_id'], 'complete', 'Admin' );
 	echo "Order completed.";
 }
 
@@ -101,262 +101,231 @@ $q_news     = $_REQUEST['q_news'];
 $q_email    = $_REQUEST['q_email'];
 $q_company  = $_REQUEST['q_company'];
 $search     = $_REQUEST['search'];
-$q_string   = "&q_name=$q_name&q_username=$q_username&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&search=$search";
+$q_string   = urlencode( "&q_name=$q_name&q_username=$q_username&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&search=$search" );
 ?>
 
-<p>
-
-    <form style="margin: 0" action="orders.php?search=search" method="post">
-        <input type="hidden" value="<?php echo $_REQUEST['show']; ?>" name="show">
-
-        <center>
-            <table border="0" cellpadding="2" cellspacing="0" style="border-collapse: collapse" id="AutoNumber2" width="100%">
-
-                <tr>
-                    <td width="63" bgcolor="#EDF8FC" valign="top">
-<p align="right"><font size="2" face="Arial"><b>Name</b></font></p></td>
-<td width="286" bgcolor="#EDF8FC" valign="top">
-    <font face="Arial">
-        <input type="text" name="q_name" size="39" value="<?php echo $q_name; ?>"/></font></td>
-<td width="71" bgcolor="#EDF8FC" valign="top">
-    <p align="right"><b><font face="Arial" size="2">Username</font></b></td>
-<td width="299" bgcolor="#EDF8FC" valign="top">
-
-    <input type="text" name="q_username" size="28" value="<?php echo $q_username; ?>"/></td>
-</tr>
-<tr>
-    <td width="63" bgcolor="#EDF8FC" valign="top">
-        <p align="right"><b><font face="Arial" size="2">Date From:</font></b></td>
-    <td width="286" bgcolor="#EDF8FC" valign="top">
-        <b>
-            <font face="Arial" size="2"></font></b><font size="2" face="Arial"><b>
-            </b></font>
-		<?php
-
-		if ( $q_aday == '' ) {
-
-			// $q_aday = date("d");
-			//   $q_amon = date("m");
-			//   $q_ayear = date("Y");
-
-		}
-
-		?>
-        <select name="q_aday">
-            <option></option>
-            <option <?php if ( $q_aday == '01' ) {
-				echo ' selected ';
-			} ?> >1
-            </option>
-            <option <?php if ( $q_aday == '02' ) {
-				echo ' selected ';
-			} ?> >2
-            </option>
-            <option <?php if ( $q_aday == '03' ) {
-				echo ' selected ';
-			} ?> >3
-            </option>
-            <option <?php if ( $q_aday == '04' ) {
-				echo ' selected ';
-			} ?> >4
-            </option>
-            <option <?php if ( $q_aday == '05' ) {
-				echo ' selected ';
-			} ?> >5
-            </option>
-            <option <?php if ( $q_aday == '06' ) {
-				echo ' selected ';
-			} ?> >6
-            </option>
-            <option <?php if ( $q_aday == '07' ) {
-				echo ' selected ';
-			} ?>>7
-            </option>
-            <option <?php if ( $q_aday == '08' ) {
-				echo ' selected ';
-			} ?>>8
-            </option>
-            <option <?php if ( $q_aday == '09' ) {
-				echo ' selected ';
-			} ?> >9
-            </option>
-            <option <?php if ( $q_aday == '25' ) {
-				echo ' selected ';
-			} ?> >25
-            </option>
-            <option <?php if ( $q_aday == '26' ) {
-				echo ' selected ';
-			} ?> >26
-            </option>
-            <option <?php if ( $q_aday == '10' ) {
-				echo ' selected ';
-			} ?> >10
-            </option>
-            <option <?php if ( $q_aday == '11' ) {
-				echo ' selected ';
-			} ?> > 11
-            </option>
-            <option <?php if ( $q_aday == '12' ) {
-				echo ' selected ';
-			} ?> >12
-            </option>
-            <option <?php if ( $q_aday == '13' ) {
-				echo ' selected ';
-			} ?> >13
-            </option>
-            <option <?php if ( $q_aday == '14' ) {
-				echo ' selected ';
-			} ?> >14
-            </option>
-            <option <?php if ( $q_aday == '15' ) {
-				echo ' selected ';
-			} ?> >15
-            </option>
-            <option <?php if ( $q_aday == '16' ) {
-				echo ' selected ';
-			} ?> >16
-            </option>
-            <option <?php if ( $q_aday == '17' ) {
-				echo ' selected ';
-			} ?> >17
-            </option>
-            <option <?php if ( $q_aday == '18' ) {
-				echo ' selected ';
-			} ?> >18
-            </option>
-            <option <?php if ( $q_aday == '19' ) {
-				echo ' selected ';
-			} ?> >19
-            </option>
-            <option <?php if ( $q_aday == '20' ) {
-				echo ' selected ';
-			} ?> >20
-            </option>
-            <option <?php if ( $q_aday == '21' ) {
-				echo ' selected ';
-			} ?> >21
-            </option>
-            <option <?php if ( $q_aday == '22' ) {
-				echo ' selected ';
-			} ?> >22
-            </option>
-            <option <?php if ( $q_aday == '23' ) {
-				echo ' selected ';
-			} ?> >23
-            </option>
-            <option <?php if ( $q_aday == '24' ) {
-				echo ' selected ';
-			} ?> >24
-            </option>
-            <option <?php if ( $q_aday == '27' ) {
-				echo ' selected ';
-			} ?> >27
-            </option>
-            <option <?php if ( $q_aday == '28' ) {
-				echo ' selected ';
-			} ?> >28
-            </option>
-            <option <?php if ( $q_aday == '29' ) {
-				echo ' selected ';
-			} ?> >29
-            </option>
-            <option <?php if ( $q_aday == '30' ) {
-				echo ' selected ';
-			} ?> >30
-            </option>
-            <option <?php if ( $q_aday == '31' ) {
-				echo ' selected ';
-			} ?> >31
-            </option>
-        </select>
-        <select name="q_amon">
-            <option></option>
-            <option <?php if ( $q_amon == '01' ) {
-				echo ' selected ';
-			} ?> value="1">Jan
-            </option>
-            <option <?php if ( $q_amon == '02' ) {
-				echo ' selected ';
-			} ?> value="2">Feb
-            </option>
-            <option <?php if ( $q_amon == '03' ) {
-				echo ' selected ';
-			} ?> value="3">Mar
-            </option>
-            <option <?php if ( $q_amon == '04' ) {
-				echo ' selected ';
-			} ?> value="4">Apr
-            </option>
-            <option <?php if ( $q_amon == '05' ) {
-				echo ' selected ';
-			} ?> value="5">May
-            </option>
-            <option <?php if ( $q_amon == '06' ) {
-				echo ' selected ';
-			} ?> value="6">Jun
-            </option>
-            <option <?php if ( $q_amon == '07' ) {
-				echo ' selected ';
-			} ?> value="7">Jul
-            </option>
-            <option <?php if ( $q_amon == '08' ) {
-				echo ' selected ';
-			} ?> value="8">Aug
-            </option>
-            <option <?php if ( $q_amon == '09' ) {
-				echo ' selected ';
-			} ?> value="9">Sep
-            </option>
-            <option <?php if ( $q_amon == '10' ) {
-				echo ' selected ';
-			} ?> value="10">Oct
-            </option>
-            <option <?php if ( $q_amon == '11' ) {
-				echo ' selected ';
-			} ?> value="11">Nov
-            </option>
-            <option <?php if ( $q_amon == '12' ) {
-				echo ' selected ';
-			} ?> value="12">Dec
-            </option>
-        </select>
-        <input type="text" name="q_ayear" size="4" value="<?php echo $q_ayear; ?>"/>
-
-    </td>
-    <td width="71" bgcolor="#EDF8FC" valign="top">
-    </td>
-    <td width="299" bgcolor="#EDF8FC" valign="top">
-
-    </td>
-</tr>
-
-<tr>
-    <td width="731" bgcolor="#EDF8FC" colspan="4">
-        <font face="Arial"><b>
-                <input type="submit" value="Find" name="B1" style="float: left"><?php if ( $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></font><b>[<font face="Arial"><a href="<?php echo $_SERVER['PHP_SELF'] ?>?show=<?php echo $_REQUEST['show']; ?>">Start a New Search</a></font>]</b><?php } ?></td>
-</tr>
-</table>
-
-</center>
-
+<form style="margin: 0" action="orders.php?search=search" method="post">
+    <input type="hidden" value="<?php echo $_REQUEST['show']; ?>" name="show">
+    <table border="0" cellpadding="2" cellspacing="0" style="border-collapse: collapse" id="AutoNumber2" width="100%">
+        <tr>
+            <td width="63" bgcolor="#EDF8FC" valign="top">
+                <p><b>Name</b></p>
+            </td>
+            <td width="286" bgcolor="#EDF8FC" valign="top">
+                <input type="text" name="q_name" size="39" value="<?php echo $q_name; ?>"/></td>
+            <td width="71" bgcolor="#EDF8FC" valign="top">
+                <p align="right"><b>Username</b></td>
+            <td width="299" bgcolor="#EDF8FC" valign="top">
+                <input type="text" name="q_username" size="28" value="<?php echo $q_username; ?>"/></td>
+        </tr>
+        <tr>
+            <td width="63" bgcolor="#EDF8FC" valign="top">
+                <p align="right"><b>Date From:</b></td>
+            <td width="286" bgcolor="#EDF8FC" valign="top">
+                <select name="q_aday">
+                    <option></option>
+                    <option <?php if ( $q_aday == '01' ) {
+						echo ' selected ';
+					} ?> >1
+                    </option>
+                    <option <?php if ( $q_aday == '02' ) {
+						echo ' selected ';
+					} ?> >2
+                    </option>
+                    <option <?php if ( $q_aday == '03' ) {
+						echo ' selected ';
+					} ?> >3
+                    </option>
+                    <option <?php if ( $q_aday == '04' ) {
+						echo ' selected ';
+					} ?> >4
+                    </option>
+                    <option <?php if ( $q_aday == '05' ) {
+						echo ' selected ';
+					} ?> >5
+                    </option>
+                    <option <?php if ( $q_aday == '06' ) {
+						echo ' selected ';
+					} ?> >6
+                    </option>
+                    <option <?php if ( $q_aday == '07' ) {
+						echo ' selected ';
+					} ?>>7
+                    </option>
+                    <option <?php if ( $q_aday == '08' ) {
+						echo ' selected ';
+					} ?>>8
+                    </option>
+                    <option <?php if ( $q_aday == '09' ) {
+						echo ' selected ';
+					} ?> >9
+                    </option>
+                    <option <?php if ( $q_aday == '25' ) {
+						echo ' selected ';
+					} ?> >25
+                    </option>
+                    <option <?php if ( $q_aday == '26' ) {
+						echo ' selected ';
+					} ?> >26
+                    </option>
+                    <option <?php if ( $q_aday == '10' ) {
+						echo ' selected ';
+					} ?> >10
+                    </option>
+                    <option <?php if ( $q_aday == '11' ) {
+						echo ' selected ';
+					} ?> > 11
+                    </option>
+                    <option <?php if ( $q_aday == '12' ) {
+						echo ' selected ';
+					} ?> >12
+                    </option>
+                    <option <?php if ( $q_aday == '13' ) {
+						echo ' selected ';
+					} ?> >13
+                    </option>
+                    <option <?php if ( $q_aday == '14' ) {
+						echo ' selected ';
+					} ?> >14
+                    </option>
+                    <option <?php if ( $q_aday == '15' ) {
+						echo ' selected ';
+					} ?> >15
+                    </option>
+                    <option <?php if ( $q_aday == '16' ) {
+						echo ' selected ';
+					} ?> >16
+                    </option>
+                    <option <?php if ( $q_aday == '17' ) {
+						echo ' selected ';
+					} ?> >17
+                    </option>
+                    <option <?php if ( $q_aday == '18' ) {
+						echo ' selected ';
+					} ?> >18
+                    </option>
+                    <option <?php if ( $q_aday == '19' ) {
+						echo ' selected ';
+					} ?> >19
+                    </option>
+                    <option <?php if ( $q_aday == '20' ) {
+						echo ' selected ';
+					} ?> >20
+                    </option>
+                    <option <?php if ( $q_aday == '21' ) {
+						echo ' selected ';
+					} ?> >21
+                    </option>
+                    <option <?php if ( $q_aday == '22' ) {
+						echo ' selected ';
+					} ?> >22
+                    </option>
+                    <option <?php if ( $q_aday == '23' ) {
+						echo ' selected ';
+					} ?> >23
+                    </option>
+                    <option <?php if ( $q_aday == '24' ) {
+						echo ' selected ';
+					} ?> >24
+                    </option>
+                    <option <?php if ( $q_aday == '27' ) {
+						echo ' selected ';
+					} ?> >27
+                    </option>
+                    <option <?php if ( $q_aday == '28' ) {
+						echo ' selected ';
+					} ?> >28
+                    </option>
+                    <option <?php if ( $q_aday == '29' ) {
+						echo ' selected ';
+					} ?> >29
+                    </option>
+                    <option <?php if ( $q_aday == '30' ) {
+						echo ' selected ';
+					} ?> >30
+                    </option>
+                    <option <?php if ( $q_aday == '31' ) {
+						echo ' selected ';
+					} ?> >31
+                    </option>
+                </select>
+                <select name="q_amon">
+                    <option></option>
+                    <option <?php if ( $q_amon == '01' ) {
+						echo ' selected ';
+					} ?> value="1">Jan
+                    </option>
+                    <option <?php if ( $q_amon == '02' ) {
+						echo ' selected ';
+					} ?> value="2">Feb
+                    </option>
+                    <option <?php if ( $q_amon == '03' ) {
+						echo ' selected ';
+					} ?> value="3">Mar
+                    </option>
+                    <option <?php if ( $q_amon == '04' ) {
+						echo ' selected ';
+					} ?> value="4">Apr
+                    </option>
+                    <option <?php if ( $q_amon == '05' ) {
+						echo ' selected ';
+					} ?> value="5">May
+                    </option>
+                    <option <?php if ( $q_amon == '06' ) {
+						echo ' selected ';
+					} ?> value="6">Jun
+                    </option>
+                    <option <?php if ( $q_amon == '07' ) {
+						echo ' selected ';
+					} ?> value="7">Jul
+                    </option>
+                    <option <?php if ( $q_amon == '08' ) {
+						echo ' selected ';
+					} ?> value="8">Aug
+                    </option>
+                    <option <?php if ( $q_amon == '09' ) {
+						echo ' selected ';
+					} ?> value="9">Sep
+                    </option>
+                    <option <?php if ( $q_amon == '10' ) {
+						echo ' selected ';
+					} ?> value="10">Oct
+                    </option>
+                    <option <?php if ( $q_amon == '11' ) {
+						echo ' selected ';
+					} ?> value="11">Nov
+                    </option>
+                    <option <?php if ( $q_amon == '12' ) {
+						echo ' selected ';
+					} ?> value="12">Dec
+                    </option>
+                </select>
+                <input type="text" name="q_ayear" size="4" value="<?php echo $q_ayear; ?>"/>
+            </td>
+            <td width="71" bgcolor="#EDF8FC" valign="top"></td>
+            <td width="299" bgcolor="#EDF8FC" valign="top"></td>
+        </tr>
+        <tr>
+            <td width="731" bgcolor="#EDF8FC" colspan="4">
+                <b><input type="submit" value="Find" name="B1" style="float: left"><?php if ( $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b><b>[<a href="<?php echo $_SERVER['PHP_SELF'] ?>?show=<?php echo $_REQUEST['show']; ?>">Start a New Search</a>]</b><?php } ?>
+            </td>
+        </tr>
+    </table>
 </form>
-
-</p>
 
 <?php
 if ( $_REQUEST['show'] == 'WA' ) {
-
 	$where_sql = " AND (status ='confirmed' OR status='pending') ";
-	$date_link = $date_link . "&show=WA";
+	$date_link = "&show=WA";
 } else if ( $_REQUEST['show'] == 'CA' ) {
 	$where_sql = " AND (status ='cancelled') ";
-	$date_link = $date_link . "&show=CA";
+	$date_link = "&show=CA";
 } else if ( $_REQUEST['show'] == 'EX' ) {
 	$where_sql = " AND (status ='expired') ";
-	$date_link = $date_link . "&show=EX";
+	$date_link = "&show=EX";
 } else if ( $_REQUEST['show'] == 'DE' ) {
 	$where_sql = " AND (status ='deleted') ";
-	$date_link = $date_link . "&show=DE";
+	$date_link = "&show=DE";
 } else if ( $_REQUEST['show'] == 'CO' ) {
 	$where_sql = " AND status ='completed' ";
 }
@@ -435,45 +404,52 @@ $cur_page ++;
 
 ?>
 
-<form style="margin: 0px;" method="post" action="<?php echo $_SERVER['PHP_SELF'];
-echo "?offset=" . $_REQUEST['offset'] . $q_string; ?>" name="form1">
+<form style="margin: 0;" method="post" action="orders.php?offset=<?php echo intval( $_REQUEST['offset'] ) . $q_string; ?>" name="form1">
     <input type="hidden" name="show" value="<?php echo $_REQUEST['show']; ?>">
     <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-    <center><b><?php echo mysqli_num_rows( $result ); ?> Orders Returned (<?php echo $pages; ?> pages) </b></center>
+    <div style="text-align: center;"><b><?php echo mysqli_num_rows( $result ); ?> Orders Returned (<?php echo $pages; ?> pages) </b></div>
 	<?php
 	if ( $count > $records_per_page ) {
 		// calculate number of pages & current page
+		$q_string .= "&show=" . urlencode( $_REQUEST['show'] );
 
-		$q_string .= "&show=" . $_REQUEST['show'];
-
-		echo "<center>";
 		$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 		$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 		//	echo "<span > ".$label["navigation_page"]."</span> ";
 		$nav   = nav_pages_struct( $q_string, $count, $records_per_page );
 		$LINKS = 40;
 		render_nav_pages( $nav, $LINKS, $q_string );
-		echo "</center>";
 	}
-	//print_r($_REQUEST);
 	?>
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
         <tr>
-            <td colspan="12"> <?php if ( $_REQUEST['show'] != 'DE' ) { ?> With selected: <input type="submit" value='Complete' onclick="if (!confirmLink(this, 'Complete for all selected, are you sure?')) return false" name='mass_complete'> <?php if ( $_REQUEST['show'] != 'CA' ) { ?>| <input type="submit" value='Cancel' name='mass_cancel' onclick="if (!confirmLink(this, 'Cancel for all selected, are you sure?')) return false"> <?php } ?><?php if ( $_REQUEST['show'] == 'CA' ) { ?>|
-                    <input type="submit" value='Delete' name='mass_delete' onclick="if (!confirmLink(this, 'Delete for all selected, are you sure?')) return false"> <?php }
+            <td colspan="12"> <?php if ( $_REQUEST['show'] != 'DE' ) { ?>
+                    With selected:
+                    <input type="submit" value='Complete' onclick="if (!confirmLink(this, 'Complete for all selected, are you sure?')) return false" name='mass_complete'>
+					<?php
+					if ( $_REQUEST['show'] != 'CA' ) {
+						?>
+                        | <input type="submit" value='Cancel' name='mass_cancel' onclick="if (!confirmLink(this, 'Cancel for all selected, are you sure?')) return false">
+						<?php
+					}
+					if ( $_REQUEST['show'] == 'CA' ) {
+						?>
+                        | <input type="submit" value='Delete' name='mass_delete' onclick="if (!confirmLink(this, 'Delete for all selected, are you sure?')) return false">
+						<?php
+					}
 				} ?></td>
         </tr>
         <tr bgcolor="#eaeaea">
-            <td><b><font face="Arial" size="2"><input type="checkbox" onClick="checkBoxes(this, 'orders[]');"></td>
-            <td><b><font face="Arial" size="2">Order Date</font></b></td>
-            <td><b><font face="Arial" size="2">Customer Name</font></b></td>
-            <td><b><font face="Arial" size="2">Username & ID</font></b></td>
-            <td><b><font face="Arial" size="2">OrderID</font></b></td>
-            <td><b><font face="Arial" size="2">AdID</font></b></td>
-            <td><b><font face="Arial" size="2">Grid</font></b></td>
-            <td><b><font face="Arial" size="2">Quantity</font></b></td>
-            <td><b><font face="Arial" size="2">Amount</font></b></td>
-            <td><b><font face="Arial" size="2">Status</font></b></td>
+            <td><input type="checkbox" onClick="checkBoxes('orders');"></td>
+            <td><b>Order Date</b></td>
+            <td><b>Customer Name</b></td>
+            <td><b>Username & ID</b></td>
+            <td><b>OrderID</b></td>
+            <td><b>AdID</b></td>
+            <td><b>Grid</b></td>
+            <td><b>Quantity</b></td>
+            <td><b>Amount</b></td>
+            <td><b>Status</b></td>
         </tr>
 		<?php
 		$i = 0;
@@ -487,47 +463,47 @@ echo "?offset=" . $_REQUEST['offset'] . $q_string; ?>" name="form1">
 				echo '#ffffff';
 			} ?>">
                 <td><input type="checkbox" name="orders[]" value="<?php echo $row['order_id']; ?>"></td>
-                <td><font face="Arial" size="2"><?php echo get_local_time( $row['order_date'] ); ?></font></td>
-                <td><font face="Arial" size="2"><?php echo escape_html( $row['FirstName'] . " " . $row['LastName'] ); ?></font></td>
-                <td><font face="Arial" size="2"><?php echo $row['Username']; ?> (<a href='edit.php?user_id=<?php echo $row['ID']; ?>'>#<?php echo $row['ID']; ?></a>)</font></td>
-                <td><font face="Arial" size="2">#<?php echo $row['order_id']; ?></font></td>
-                <td><font face="Arial" size="2"><a href='ads.php?ad_id=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></font></td>
-                <td><font face="Arial" size="2"><?php
+                <td><?php echo get_local_time( $row['order_date'] ); ?></td>
+                <td><?php echo escape_html( $row['FirstName'] . " " . $row['LastName'] ); ?></td>
+                <td><?php echo $row['Username']; ?> (<a href='edit.php?user_id=<?php echo $row['ID']; ?>'>#<?php echo $row['ID']; ?></a>)</td>
+                <td>#<?php echo $row['order_id']; ?></td>
+                <td><a href='ads.php?ad_id=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></td>
+                <td><?php
 
-						$sql = "select * from banners where banner_id=" . $row['banner_id'];
-						$b_result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
-						$b_row = mysqli_fetch_array( $b_result );
+					$sql = "select * from banners where banner_id=" . $row['banner_id'];
+					$b_result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+					$b_row = mysqli_fetch_array( $b_result );
 
-						echo $b_row['name'];
+					echo $b_row['name'];
 
-						?></font></td>
-                <td><font face="Arial" size="2"><?php echo $row['quantity']; ?></font></td>
-                <td><font face="Arial" size="2"><?php echo convert_to_default_currency_formatted( $row['currency'], $row['price'] ) ?></font></td>
-                <td><font face="Arial" size="2"><?php echo $row['status']; ?><br>
-						<?php
-						if ( $row['status'] == 'cancelled' ) {
-							$sql = "select * from transactions where type='CREDIT' and order_id=" . intval( $row['order_id'] );
-							$r1 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-							if ( mysqli_num_rows( $r1 ) > 0 ) {
-								$refunded = true;
-								echo "(Refunded)";
-							} else {
+					?></td>
+                <td><?php echo $row['quantity']; ?></td>
+                <td><?php echo convert_to_default_currency_formatted( $row['currency'], $row['price'] ) ?></td>
+                <td><?php echo $row['status']; ?><br>
+					<?php
+					if ( $row['status'] == 'cancelled' ) {
+						$sql = "select * from transactions where type='CREDIT' and order_id=" . intval( $row['order_id'] );
+						$r1 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+						if ( mysqli_num_rows( $r1 ) > 0 ) {
+							$refunded = true;
+							echo "(Refunded)";
+						} else {
 
-								$refunded = false;
-							}
+							$refunded = false;
 						}
-						?>
-						<?php if ( ( $row['status'] != 'completed' ) && ( $row['status'] != 'deleted' ) && ! $refunded ) { ?>
-                            <input type="button" style="font-size: 9px;" value="Complete" onclick="if (!confirmLink(this, 'Payment from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?> to be completed. Order for <?php echo $row['price']; ?> will be credited to their account.\n ** Are you sure? **')) return false;" data-link="orders.php?action=complete&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>"> / <?php }
-						if ( $row['status'] == 'cancelled' ) { ?>
-                            <input type="button" style="font-size: 9px;" value="Delete" onclick="if (!confirmLink(this, 'Delete the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=delete&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
-							<?php
-						} else if ( $row['status'] == 'deleted' ) {
+					}
+					?>
+					<?php if ( ( $row['status'] != 'completed' ) && ( $row['status'] != 'deleted' ) && ! $refunded ) { ?>
+                        <input type="button" style="font-size: 9px;" value="Complete" onclick="if (!confirmLink(this, 'Payment from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?> to be completed. Order for <?php echo $row['price']; ?> will be credited to their account.\n ** Are you sure? **')) return false;" data-link="orders.php?action=complete&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>"> / <?php }
+					if ( $row['status'] == 'cancelled' ) { ?>
+                        <input type="button" style="font-size: 9px;" value="Delete" onclick="if (!confirmLink(this, 'Delete the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=delete&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
+						<?php
+					} else if ( $row['status'] == 'deleted' ) {
 
-						} else { ?>
-                            <input type="button" style="font-size: 9px;" value="Cancel" onclick="if (!confirmLink(this, 'Cancel the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=cancel&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
-						<?php } ?>
-                    </font></td>
+					} else { ?>
+                        <input type="button" style="font-size: 9px;" value="Cancel" onclick="if (!confirmLink(this, 'Cancel the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=cancel&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
+					<?php } ?>
+                </td>
             </tr>
 			<?php
 		}

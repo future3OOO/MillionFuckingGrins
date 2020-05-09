@@ -440,7 +440,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                 <td colspan="12">With selected: <input type="submit" value='Delete' name='mass_del'> | <input type="submit" value='Validate' name='mass_val'></td>
             </tr>
             <tr>
-                <td><b><span style="font-family: Arial; font-size: x-small; "><input type="checkbox" onClick="checkBoxes(this, 'users[]');"></td>
+                <td><b><span style="font-family: Arial; font-size: x-small; "><input type="checkbox" onClick="checkBoxes('users');"></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Name</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Username</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Email</span></b></td>

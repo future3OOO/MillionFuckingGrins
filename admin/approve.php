@@ -269,7 +269,7 @@ if ( $count > $records_per_page ) {
         </tr>
         <tr>
         <tr>
-            <td><b><input type="checkbox" onClick="checkBoxes(this, 'orders[]');"></td>
+            <td><input type="checkbox" onClick="checkBoxes('orders');"></td>
             <td><b>Order ID</b></td>
             <td><b>Order Date</b></td>
             <td><b>Customer Name</b></td>
