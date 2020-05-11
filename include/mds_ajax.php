@@ -96,10 +96,10 @@ class Mds_Ajax {
 
 			// Note: Loading with CDN caused them to load out of order randomly
 			?>
-            <script src="<?php echo BASE_HTTP_PATH; ?>/js/popper.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>/js/tippy-bundle.umd.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>/css/tippy.css">
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>/css/light.css">
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/popper.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/tippy-bundle.umd.min.js"></script>
+            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/tippy.css">
+            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
             <script src="<?php echo BASE_HTTP_PATH; ?>js/image-scale.min.js"></script>
             <script src="<?php echo BASE_HTTP_PATH; ?>js/image-map.min.js"></script>
             <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
@@ -187,7 +187,20 @@ class Mds_Ajax {
 		?>
         <script>
 			$(function () {
-				mds_stats('<?php echo $container; ?>', <?php echo $BID; ?>);
+				let mds_stats_call = function () {
+					var load_wait = setInterval(function () {
+						if (typeof mds_stats == 'function') {
+							mds_stats('<?php echo $container; ?>', <?php echo $BID; ?>);
+							clearInterval(load_wait);
+						}
+					}, 100);
+				}
+
+				if (window.mds_ajax_request != null) {
+					window.mds_ajax_request.done(mds_stats_call);
+				} else {
+					mds_stats_call();
+				}
 			});
         </script>
 		<?php

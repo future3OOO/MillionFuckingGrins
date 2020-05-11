@@ -572,3 +572,9 @@ The value of the field (on the right from the field label)
 .mds-container area {
 	cursor: pointer;
 }
+
+.ajax-loader {
+	width:100%;
+	min-height:16px;
+	background:url(../images/ajax-loader.gif) no-repeat center center;
+}

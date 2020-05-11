@@ -47,10 +47,21 @@ function defer(toWaitFor, method) {
 	}
 }
 
+function add_ajax_loader(container) {
+	let ajax_loader = $("<div class='ajax-loader'></div>");
+	$(container).append(ajax_loader)
+}
+
+function remove_ajax_loader() {
+	$('.ajax-loader').remove();
+}
+
 function mds_grid(container, bid, width, height) {
 	if ($('#' + container).length > 0) {
 		return;
 	}
+
+	add_ajax_loader(container);
 
 	let grid = $("<div class='grid-inner' id='" + container + "'></div>");
 	grid.css('width', width).css('height', height);
@@ -67,6 +78,10 @@ function mds_grid(container, bid, width, height) {
 }
 
 function mds_stats(container, bid, width, height) {
+	if ($('#' + container).length > 0) {
+		return;
+	}
+
 	let stats = $("<div class='stats-inner' id='" + container + "'></div>");
 	stats.css('width', width).css('height', height);
 	$('.' + container).append(stats);
@@ -271,6 +286,8 @@ function mds_init(grid, scalemap, tippy, type) {
 	}
 
 	initialized = true;
+
+	remove_ajax_loader();
 }
 
 $(function () {

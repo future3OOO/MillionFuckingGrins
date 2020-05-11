@@ -73,7 +73,6 @@ if ( isset( $_POST['action'] ) ) {
 
 	// Handle WP integration calls
 	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-
 		if ( ! isset( $data->grid_id ) || ! isset( $data->type ) ) {
 			die;
 		}
@@ -81,11 +80,15 @@ if ( isset( $_POST['action'] ) ) {
 		$_REQUEST['BID'] = $data->grid_id;
 
 		if ( $data->type == "grid" ) {
-			require_once( __DIR__ . "/include/mds_ajax.php" );
+			require_once( BASE_PATH . "/include/mds_ajax.php" );
 			$mds_ajax = new Mds_Ajax();
 			$mds_ajax->show( 'grid', $data->grid_id, 'grid' );
-		} else if ( $_POST['type'] == "stats" ) {
-			show_stats();
+		} else if ( $data->type == "stats" ) {
+			require_once( BASE_PATH . "/include/mds_ajax.php" );
+			$mds_ajax = new Mds_Ajax();
+			$mds_ajax->show( 'stats', $data->grid_id, 'stats' );
+		} else if ( $data->type == "users" ) {
+			require_once( BASE_PATH . "/users/index.php" );
 		}
 
 		die;
@@ -98,7 +101,7 @@ function show_grid() {
 	$BID = $f2->bid( $_REQUEST['BID'] );
 
 	if ( ! is_numeric( $BID ) ) {
-		die();
+		die;
 	}
 
 	$banner_data = load_banner_constants( $BID );
