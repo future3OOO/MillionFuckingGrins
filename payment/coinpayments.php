@@ -353,7 +353,7 @@ class CoinPayments {
         </p>
 		<?php /*<p>Then click the 'Edit Permissions' button and add the following permissions: get_basic_info, create_transaction, get_tx_info, get_callback_address, rates, balances, get_deposit_address, create_transfer</p>*/ ?>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove;font-family: Verdana,sans-serif; font-size: small;" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+            <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove;font-family: Verdana,sans-serif; font-size: small;" width="100%" bgcolor="#FFFFFF">
                 <tr>
                     <td bgcolor="#e6f2ea">CoinPayments Public Key:</td>
                     <td bgcolor="#e6f2ea">

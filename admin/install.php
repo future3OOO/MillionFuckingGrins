@@ -192,7 +192,7 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
 
 		?>
         <p>&nbsp;</p>
-        <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+        <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
             <tr>
                 <td colspan="2" bgcolor="#e6f2ea">
                     <p><font face="Verdana" size="1"><b>Paths and Locations</b><br></font></td>

@@ -30,17 +30,16 @@
  *
  */
 
+session_start();
+require_once __DIR__ . "/../include/init.php";
 require_once( __DIR__ . '/../include/login_functions.php' );
 
 if ( ! is_logged_in() ) {
-	if ( isset( $_COOKIE['PHPSESSID'] ) ) {
-		unset( $_COOKIE['PHPSESSID'] );
-		setcookie( 'PHPSESSID', null, - 1 );
-	}
+	do_logout();
+	session_start();
 }
 
-session_start();
-require_once __DIR__ . "/../include/init.php";
+require_once BASE_PATH . "/html/header.php";
 
 $target_page = $_REQUEST['target_page'];
 
@@ -51,13 +50,6 @@ if ( $target_page == '' ) {
 }
 
 ?>
-<html>
-<head>
-    <link rel="stylesheet" type="text/css"
-          href="style.css"/>
-    <META HTTP-EQUIV="REFRESH" CONTENT="5; URL=<?php echo $target_page; ?>">
-</head>
-<body>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td width="35" height="26">&nbsp;</td>
@@ -92,5 +84,4 @@ if ( $target_page == '' ) {
         <td width="35" height="26">&nbsp;</td>
     </tr>
 </table>
-</body>
-</html>
+<?php require_once BASE_PATH . "/html/footer.php"; ?>

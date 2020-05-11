@@ -118,12 +118,14 @@ $defaults = array(
 	'HIDE_TIMEOUT'                => '500',
 	'MDS_AGRESSIVE_CACHE'         => 'NO',
 	'ERROR_REPORTING'             => 0,
+	'WP_ENABLED'                  => 'NO',
+	'WP_URL'                      => '',
 );
 
 $values = array_replace( $defaults, $_REQUEST );
 
 if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
-	echo "updating config....";
+	echo "Updating config....";
 	$config_str = "<?php
 
 #########################################################################
@@ -206,6 +208,8 @@ define( 'REDIRECT_URL', '" . $values['REDIRECT_URL'] . "' );
 define( 'HIDE_TIMEOUT', '" . $values['HIDE_TIMEOUT'] . "' );
 define( 'MDS_AGRESSIVE_CACHE', '" . $values['MDS_AGRESSIVE_CACHE'] . "' );
 define( 'ERROR_REPORTING', " . $values['ERROR_REPORTING'] . " );
+define( 'WP_ENABLED', '" . $values['WP_ENABLED'] . "' );
+define( 'WP_URL', '" . $values['WP_URL'] . "' );
 ";
 	// write out the config..
 

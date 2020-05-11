@@ -280,7 +280,9 @@ if ( ! isset( $_REQUEST['sel_mode'] ) ) {
 
     <form method="post" action="select.php" name='pixel_form'>
         <input type="hidden" name="jEditOrder" value="true">
-        <p><b><?php echo $label['selection_mode']; ?></b> <input type="radio" id='sel1' name='sel_mode' value='sel1' <?php if ( ( $_REQUEST['sel_mode'] == '' ) || ( $_REQUEST['sel_mode'] == 'sel1' ) ) {
+        <p><b><?php
+        // TODO: add option to disable these
+                echo $label['selection_mode']; ?></b> <input type="radio" id='sel1' name='sel_mode' value='sel1' <?php if ( ( $_REQUEST['sel_mode'] == '' ) || ( $_REQUEST['sel_mode'] == 'sel1' ) ) {
 				echo " checked ";
 			} ?> > <label for='sel1'><?php echo $label['select1']; ?></label> | <input type="radio" name='sel_mode' id='sel4' value='sel4' <?php if ( ( $_REQUEST['sel_mode'] == 'sel4' ) ) {
 				echo " checked ";

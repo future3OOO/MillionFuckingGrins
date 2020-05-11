@@ -33,6 +33,7 @@
 MDS 2.1 alpha
 
 - SECURITY RELEASE - UPGRADED STRONGLY RECOMMENDED
+- Please read UPGRADE.txt for upgrade instructions
 - Project transferred to new project coordinator: Ryan Rhode (ryan@milliondollarscript.com)
 - Fixed various SQL errors
 - added HTMLPurifier to library - still has to be implemented system-wide

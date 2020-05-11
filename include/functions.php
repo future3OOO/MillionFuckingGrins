@@ -278,7 +278,7 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 		return; // there already is a credit for this txn_id
 	}
 
-// check to make sure that there is a debit for this transaction
+    // check to make sure that there is a debit for this transaction
 
 	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
@@ -975,12 +975,20 @@ function send_confirmation_email( $email ) {
 
 	$code = substr( md5( $row['Email'] . $row['Password'] ), 0, 8 );
 
-	$verify_url = BASE_HTTP_PATH . "users/validate.php?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+	    $verify_url = WP_URL . "?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+    } else {
+	    $verify_url = BASE_HTTP_PATH . "users/validate.php?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+    }
 
 	$message = $label["confirmation_email_templaltev2"];
 	$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 	$message = str_replace( "%LNAME%", $row['LastName'], $message );
-	$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+		$message = str_replace( "%SITE_URL%", WP_URL, $message );
+	} else {
+		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+	}
 	$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 	$message = str_replace( "%VERIFY_URL%", $verify_url, $message );
 	$message = str_replace( "%VALIDATION_CODE%", $code, $message );
@@ -1848,10 +1856,10 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$in_str = $temp_order_row['blocks'];
 
 	$sql = "select block_id from blocks where banner_id='" . intval( $temp_order_row['banner_id'] ) . "' and block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ") ";
-//echo $sql."<br>";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
-		return false;  // the pixels are not available!
+		return false;
+		// the pixels are not available!
 	}
 
 	// approval status, default is N
@@ -1869,11 +1877,9 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$f2->debug( "Changed temp order to a real order - " . $sql );
 
 	$sql = "UPDATE ads SET user_id='" . intval( $_SESSION['MDS_ID'] ) . "', order_id='" . intval( $order_id ) . "' where ad_id='" . intval( $temp_order_row['ad_id'] ) . "' ";
-	//echo $sql;
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 	$sql = "UPDATE orders SET original_order_id='" . intval( $order_id ) . "' where order_id='" . intval( $order_id ) . "' ";
-	//echo $sql;
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 	global $prams;
@@ -1966,14 +1972,12 @@ function move_block( $block_from, $block_to, $banner_id ) {
 
 	#load block_from
 	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
-	//echo "$sql<br>";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
 
 	// get the position and check range, do not move if out of range
 
 	$pos = get_block_position( $block_to, $banner_id );
-	//echo "pos is ($block_to): ";print_r($pos); echo "<br>";
 
 	$x = $pos['x'];
 	$y = $pos['y'];
@@ -2044,22 +2048,19 @@ function move_order( $block_from, $block_to, $banner_id ) {
 	$min_max = get_blocks_min_max( $block_from, $banner_id );
 	$from_x  = $min_max['low_x'];
 	$from_y  = $min_max['low_y'];
-	//echo "block_from: ($block_from) $from_x $from_y<br>";
-	//echo "block_to: ($block_to) $to_x $to_y<br>";
+
 	// get the position move's difference
 
-	$dx = ( $to_x - $from_x ); //echo "$to_x - $from_x ($dx)<br>";
+	$dx = ( $to_x - $from_x );
 	$dy = ( $to_y - $from_y );
 
 	// get the order
 
 	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
-	//echo "$sql<br>";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
 
 	$sql = "SELECT * from blocks WHERE order_id='" . intval( $source_block['order_id'] ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
-	//echo "$sql<br>";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	$banner_data = load_banner_constants( $banner_id );
@@ -2067,9 +2068,6 @@ function move_order( $block_from, $block_to, $banner_id ) {
 	$grid_width = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
 
 	while ( $block_row = mysqli_fetch_array( $result ) ) { // check each block to make sure we can move it.
-
-		//echo 'from: '.$block_row['x'].",".$block_row['y']." to ".($block_row['x']+$dx).",".($block_row['y']+$dy)." (to pos: $to_x, $to_y diff: $dx & $dy)<Br>";
-		//$block_to = ((($block_row['y']+$dy)*$grid_width)+($block_row['x']+$dx))/10 ;
 
 		$block_to = ( ( $block_row['x'] + $dx ) / $banner_data['BLK_WIDTH'] ) + ( ( ( $block_row['y'] + $dy ) / $banner_data['BLK_HEIGHT'] ) * ( $grid_width / $banner_data['BLK_WIDTH'] ) );
 
@@ -2200,8 +2198,6 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 	$sql = "select * from blocks where order_id='" . intval( $row['order_id'] ) . "' ";
 	$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-	//echo $sql;
-
 	// find high x, y & low x, y
 	// low x,y is the top corner, high x,y is the bottom corner
 
@@ -2319,17 +2315,13 @@ function saveImage( $field_id ) {
 		//	$name = subssession_id().$name;
 
 	}
-	//echo "<b>NAMEis:[$name]</b>";
 
-	//$name = ereg_replace("[ '\"]+", "_", $name);
 	// strip quotes, spaces
 	$name = preg_replace( '/[^0-9a-zа-яіїё\`\~\!\@\#\$\%\^\*\(\)\; \,\.\'\/\_\-]/i', ' ', $name );
 
 	$new_name   = $name . time() . "." . $ext;
 	$uploadfile = $uploaddir . $new_name; //$uploaddir . $file_name;
 	$thumbfile  = $thumbdir . $new_name;
-
-	//echo "te,p Image is:".$_FILES[$field_id]['tmp_name']." upload file:".$uploadfile;
 
 	if ( move_uploaded_file( $_FILES[ $field_id ]['tmp_name'], $uploadfile ) ) {
 		//echo "File is valid, and was successfully uploaded. ($uploadfile)\n";
@@ -2358,9 +2350,6 @@ function saveImage( $field_id ) {
 			default:
 				print( "Unknown File Error" );
 		}
-
-		//echo "Possible file upload attack ($uploadfile)! $field_id<br>\n";
-		//echo $_FILES[$field_id]['tmp_name']."<br>";
 	}
 
 	setMemoryLimit( $uploadfile );
@@ -2405,7 +2394,6 @@ function saveImage( $field_id ) {
 
 	}
 
-	//@unlink($uploadfile); // delete the original file.
 	return $new_name;
 }
 
@@ -2479,12 +2467,11 @@ function is_imagetype_allowed( $file_name ) {
 	$ext = strtolower( array_pop( $a ) );
 
 	if ( ! defined( "ALLOWED_IMG" ) || ALLOWED_IMG == 'ALLOWED_IMG' ) {
-		$ALLOWED_IMG = 'jpg, jpeg, gif, png, doc, pdf, wps, hwp, txt, bmp, rtf, wri';
+		$ALLOWED_IMG = 'jpg, jpeg, gif, png, bmp, wbmp, xbm, webp';
 	} else {
 		$ALLOWED_IMG = trim( strtolower( ALLOWED_IMG ) );
 	}
 
-	//$ext_list = explode (',',$ALLOWED_EXT);
 	$ext_list = preg_split( "/[\s,]+/", ( $ALLOWED_IMG ) );
 
 	return in_array( $ext, $ext_list );

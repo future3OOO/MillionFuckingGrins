@@ -35,7 +35,9 @@
 ?>
 </div>
 <div class="clear"></div>
+<?php if ( WP_ENABLED == "NO" ) { ?>
 <div class="footer">&copy; Copyright <?php echo date( 'Y' ) . " " . SITE_NAME; ?></div>
+<?php } ?>
 </div>
 <div class="clear"></div>
 </div>

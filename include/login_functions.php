@@ -38,6 +38,7 @@ function process_login() {
 	if ( $session_duration == '' ) {
 		$session_duration = 60 * 20;
 	}
+
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
 	$sql = "UPDATE `users` SET `logout_date`='$now' WHERE UNIX_TIMESTAMP(DATE_SUB('$now', INTERVAL $session_duration SECOND)) > UNIX_TIMESTAMP(last_request_time) AND (`logout_date` ='1000-01-01 00:00:00')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
@@ -454,4 +455,18 @@ function do_login() {
 	}
 }
 
-?>
+function do_logout() {
+	$now = ( gmdate( "Y-m-d H:i:s" ) );
+	$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	unset( $_SESSION['MDS_ID'] );
+	$_SESSION['MDS_ID']     = '';
+	$_SESSION['MDS_Domain'] = '';
+	session_destroy();
+
+	if ( isset( $_COOKIE['PHPSESSID'] ) ) {
+		unset( $_COOKIE['PHPSESSID'] );
+		setcookie( 'PHPSESSID', null, - 1 );
+	}
+}

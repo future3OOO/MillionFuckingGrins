@@ -29,11 +29,11 @@
  *
  */
 
-.clear {
+.mds-container .clear {
 	clear: both;
 }
 
-body {
+body.mds-container {
 	background-color: #ffffff;
 	color: #000;
 	margin: 0;
@@ -42,39 +42,40 @@ body {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
-body.wp {
+body.mds-container.wp {
 	overflow: hidden;
 }
 
-.outer {
+.mds-container .outer {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	width: 100%;
 }
 
-.inner {
+.mds-container .inner {
 	margin: 0 auto;
 	width: auto;
 }
 
-.container {
+.mds-container .container {
 	width: calc(100% - 40px);
 	margin: 0 auto;
 	padding: 20px;
 }
 
-.wp .container {
+.mds-container.wp .container {
 	padding: 0;
 }
 
-.logged-in {
+.mds-container.wp .logged-in {
+	padding:20px !important;
 }
 
 /*
 Heading bar
 */
-.heading {
+.mds-container .heading {
 	background: #fff;
 	max-width: 1000px;
 	margin: 10px auto;
@@ -85,11 +86,11 @@ Heading bar
 	align-items: center;
 }
 
-.logo img {
+.mds-container .logo img {
 	max-width: 100%;
 }
 
-.slogan {
+.mds-container .slogan {
 	padding: 20px;
 	text-align: center;
 	width: auto;
@@ -99,24 +100,24 @@ Heading bar
 /*
 controls the look and feel of the 'pixels-sold/available' box:
 */
-iframe[class^='statsframe'] {
+.mds-container iframe[class^='statsframe'] {
 	overflow: hidden;
 	border: none;
 	padding: 0;
 	margin: 0;
 }
 
-.status_outer {
+.mds-container .status_outer {
 	width: 149px;
 }
 
-.status_body {
+.mds-container .status_body {
 	margin: 0;
 	background-color: transparent;
 	overflow: hidden;
 }
 
-.status {
+.mds-container .status {
 	border: 1px solid #efefef;
 	background-color: #fff;
 	border-radius: 6px;
@@ -128,14 +129,14 @@ iframe[class^='statsframe'] {
 	line-height: 16px;
 }
 
-.status_text {
+.mds-container .status_text {
 	font-weight: bold;
 	color: #000;
 }
 
 /* Menu bar */
-.menu-bar,
-.users-menu-bar {
+.mds-container .menu-bar,
+.mds-container .users-menu-bar {
 	background-color: #f6f6f6;
 	min-height: 53px;
 	width: 100%;
@@ -147,8 +148,8 @@ iframe[class^='statsframe'] {
 	flex-wrap: wrap;
 }
 
-.menu-bar a,
-.users-menu-bar a {
+.mds-container .menu-bar a,
+.mds-container .users-menu-bar a {
 	background-color: #eaeaea;
 	border-radius: 6px;
 	text-align: center;
@@ -163,16 +164,16 @@ iframe[class^='statsframe'] {
 	text-decoration: none;
 }
 
-.menu-bar a:hover,
-.users-menu-bar a:hover {
+.mds-container .menu-bar a:hover,
+.mds-container .users-menu-bar a:hover {
 	color: #6000cd;
 }
 
 /*
 Grid iframe
 */
-iframe[class^='gridframe'],
-.grid-container .grid-inner {
+.mds-container iframe[class^='gridframe'],
+.mds-container .grid-container .grid-inner {
 	overflow: hidden;
 	border: none;
 	border-bottom: 1px solid #D4D6D4;
@@ -186,7 +187,7 @@ iframe[class^='gridframe'],
 /*
 Footer
 */
-.footer {
+.mds-container .footer {
 	padding: 10px;
 	text-align: center;
 }
@@ -195,7 +196,7 @@ Footer
 Ads list page
 */
 
-.list {
+.mds-container .list {
 	width: 100%;
 	border: none;
 	font-family: Arial, sans-serif;
@@ -203,17 +204,17 @@ Ads list page
 	color: #000;
 }
 
-.list a {
+.mds-container .list a {
 	color: #0000ff;
 }
 
-.table-row {
+.mds-container .table-row {
 	display: table;
 	width: 100%;
 }
 
-.list-cell,
-.list-heading {
+.mds-container .list-cell,
+.mds-container .list-heading {
 	display: table-cell;
 	overflow: hidden;
 	white-space: nowrap;
@@ -222,19 +223,19 @@ Ads list page
 	width: 180px;
 }
 
-.table-row {
+.mds-container .table-row {
 	border-bottom: 2px solid rgba(255, 255, 255, 0.5);
 	border-collapse: collapse;
 }
 
-.table-row.header {
+.mds-container .table-row.header {
 	background-color: #dddddd;
 	color: #000;
 	font-weight: bold;
 }
 
-input[type='button'],
-input[type='submit'] {
+.mds-container input[type='button'],
+.mds-container input[type='submit'] {
 	border-radius: 6px;
 	background-color: #efefef;
 	color: #008cd4;
@@ -246,7 +247,7 @@ input[type='submit'] {
 	margin: 4px;
 }
 
-select {
+.mds-container select {
 	background: #ffffff;
 	color: #000000;
 	border: 1px solid #909090;
@@ -255,7 +256,7 @@ select {
 	font-weight: normal;
 }
 
-.outer-container {
+.mds-container .outer-container {
 	background-color: rgba(255, 255, 255, 0);
 	color: #000000;
 	border-color: #efefef;
@@ -264,29 +265,29 @@ select {
 	overflow: visible;
 }
 
-.free {
+.mds-container .free {
 	height: 10px;
 	width: 10px;
 	border: 1px solid #DFDFDF;
 }
 
-a.big_link {
+.mds-container a.big_link {
 	font-size: 20px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	color: #6699cc;
 }
 
-.big_button {
+.mds-container .big_button {
 	font-size: 18px;
 }
 
-.sold {
+.mds-container .sold {
 	height: 10px;
 	width: 10px;
 }
 
-.selected {
+.mds-container .selected {
 	height: 10px;
 	width: 10px;
 	border: 2px solid #33CC00;
@@ -294,12 +295,12 @@ a.big_link {
 	color: #000;
 }
 
-.reserved {
+.mds-container .reserved {
 	height: 10px;
 	width: 10px;
 }
 
-h1 {
+.mds-container h1 {
 	font-size: 20px;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-weight: bold;
@@ -307,7 +308,7 @@ h1 {
 	color: #000000;
 }
 
-h2 {
+.mds-container h2 {
 	font-size: 16px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: bold;
@@ -315,7 +316,7 @@ h2 {
 	color: #000000;
 }
 
-h3 {
+.mds-container h3 {
 	font-size: 14px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: bold;
@@ -323,32 +324,34 @@ h3 {
 	color: #000000;
 }
 
-p {
+.mds-container p {
 	font-size: 13px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	color: #000000;
 }
 
-table, tr, td {
+.mds-container table,
+.mds-container tr,
+.mds-container td {
 	font-size: 13px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	color: #000000;
 }
 
-form {
+.mds-container form {
 	margin: 0;
 }
 
-input {
+.mds-container input {
 	font-size: 11px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	color: #000000;
 }
 
-textarea {
+.mds-container textarea {
 	height: 230px;
 	width: 660px;
 	font-size: 11px;
@@ -358,14 +361,14 @@ textarea {
 	background: #fff;
 }
 
-a {
+.mds-container a {
 	font-size: 14px;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	color: #6699cc;
 }
 
-.fancy_heading {
+.mds-container .fancy_heading {
 	border-style: solid;
 	border-color: #99CCCC;
 	border-width: 1px;
@@ -381,7 +384,8 @@ Dynamic forms
 This set of styles control the display of dynamic forms - (Ad form).
 */
 
-#dynamic_form, table.dynamic_form {
+.mds-container #dynamic_form,
+.mds-container table.dynamic_form {
 	background-color: #d9d9d9;
 	color: #000;
 	width: 100%;
@@ -392,7 +396,7 @@ This set of styles control the display of dynamic forms - (Ad form).
 TD.dynamic_form_field -
 The name of the field (field label which on the left side)
 */
-td.dynamic_form_field {
+.mds-container td.dynamic_form_field {
 	background-color: #efefef;
 	color: #000;
 	font-weight: bold;
@@ -402,7 +406,7 @@ td.dynamic_form_field {
 
 }
 
-td.dynamic_form_2_col_field {
+.mds-container td.dynamic_form_2_col_field {
 	background-color: #ffffff;
 	color: #000;
 }
@@ -411,116 +415,117 @@ td.dynamic_form_2_col_field {
 #dynamic_form TD.dynamic_form_value
 The value of the field (on the right from the field label)
 */
-td.dynamic_form_value {
+.mds-container td.dynamic_form_value {
 	background-color: #ffffff;
 	color: #000;
 }
 
-.dynamic_form_image_label {
+.mds-container .dynamic_form_image_label {
 	font-weight: bold;
 	font-family: Arial, sans-serif;
 }
 
-.dynamic_form_file_label {
+.mds-container .dynamic_form_file_label {
 	font-weight: bold;
 }
 
 /* Date field */
-select.dynamic_form_date_style {
+.mds-container select.dynamic_form_date_style {
 	background-color: #ffffff;
 	color: #000;
 }
 
-input.dynamic_form_date_style {
+.mds-container input.dynamic_form_date_style {
 	background-color: #ffffff;
 	color: #000;
 }
 
 /* Other fields */
-input.dynamic_form_checkbox_style {
+.mds-container input.dynamic_form_checkbox_style {
 	background-color: #ffffff;
 	color: #000;
 }
 
-input.dynamic_form_radio_style {
+.mds-container input.dynamic_form_radio_style {
 	background-color: #ffffff;
 	color: #ffffff;
 }
 
-input.dynamic_form_text_style {
+.mds-container input.dynamic_form_text_style {
 	background-color: #ffffff;
 	color: #000;
 	max-width: 100%;
 }
 
-textarea {
+.mds-container textarea {
 	background-color: #ffffff;
 	color: #000;
 	max-width: 100%;
 }
 
-select {
+.mds-container select {
 	background-color: #ffffff;
 	color: #000;
 	max-width: 100%;
 }
 
-table.ad_data {
+.mds-container table.ad_data {
 	background-color: #ffffff;
 	border-width: 0;
 }
 
-.error_msg_label {
+.mds-container .error_msg_label {
 	color: #FF0000;
 	font-weight: bold;
 }
 
-.ok_msg_label {
+.mds-container .ok_msg_label {
 	border-style: solid;
 	border-color: #33CC00;
 	border-width: 2px;
 }
 
 /* Ads list */
-#pixels_list, table.pixels_list {
+.mds-container #pixels_list,
+.mds-container table.pixels_list {
 	background-color: #d9d9d9;
 	margin: 0 auto;
 }
 
-#pixels_list td.list_data_cell {
+.mds-container #pixels_list td.list_data_cell {
 	font-family: "Arial", sans-serif;
 	font-size: 10pt;
 	color: #000000;
 }
 
-#pixels_list .today {
+.mds-container #pixels_list .today {
 	color: #ff0000;
 	font-weight: bold;
 
 }
 
-#pixels_list .days_ago {
+.mds-container #pixels_list .days_ago {
 	color: #339900;
 	font-weight: bold;
 }
 
-#pixels_list .days_ago2 {
+.mds-container #pixels_list .days_ago2 {
 	color: #C0C0C0;
 	font-weight: bold;
 }
 
-#pixels_list .list_header_cell {
+.mds-container #pixels_list .list_header_cell {
 	font-size: 10pt;
 	margin: 0;
 	padding: 3px;
 	font-weight: bold;
 }
 
-.tooltip-source {
+.mds-container .tooltip-source {
 	visibility: hidden;
 }
 
-.publish-grid {
+.mds-container .publish-grid {
 	display: flex;
 	justify-content: center;
 	width:100%;
@@ -528,19 +533,19 @@ table.ad_data {
 	min-width:100%;
 }
 
-.publish-grid map,
-.publish-grid img {
+.mds-container .publish-grid map,
+.mds-container .publish-grid img {
 	max-width: 100%;
 	height: auto;
 }
 
-.publish-grid::after {
+.mds-container .publish-grid::after {
 	content: "";
 	clear: both;
 	display: table;
 }
 
-.flex-container {
+.mds-container .flex-container {
 	margin: 10px auto;
 	clear: both;
 	display: flex;
@@ -551,7 +556,7 @@ table.ad_data {
 	max-width: 100%;
 }
 
-.flex-row {
+.mds-container .flex-row {
 	clear: both;
 	display: flex;
 	flex-flow: row wrap;
@@ -559,11 +564,11 @@ table.ad_data {
 	max-width: 100%;
 }
 
-.flex-cell {
+.mds-container .flex-cell {
 	padding: 5px;
 	max-width: calc(100% - 10px);
 }
 
-area {
+.mds-container area {
 	cursor: pointer;
 }

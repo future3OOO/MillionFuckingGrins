@@ -100,4 +100,4 @@ $user_row = mysqli_fetch_array( $result );
     <p>
 		<?php echo $label['advertiser_home_quest']; ?><?php echo SITE_CONTACT_EMAIL; ?>
     </p>
-</div>
+<?php require_once BASE_PATH . "/html/footer.php"; ?>

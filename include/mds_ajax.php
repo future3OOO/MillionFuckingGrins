@@ -84,7 +84,50 @@ class Mds_Ajax {
 	private function mds_js_loaded() {
 		if ( ! isset( $GLOBALS['mds_js_loaded'] ) ) {
 			$GLOBALS['mds_js_loaded'] = true;
+
+			global $f2;
+			$BID         = $f2->bid( $_REQUEST['BID'] );
+			$banner_data = load_banner_constants( $BID );
+
+			$wp_url = '';
+			if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+				$wp_url = WP_URL;
+			}
+
+			// Note: Loading with CDN caused them to load out of order randomly
 			?>
+            <script src="<?php echo BASE_HTTP_PATH; ?>/js/popper.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>/js/tippy-bundle.umd.min.js"></script>
+            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>/css/tippy.css">
+            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>/css/light.css">
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/image-scale.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/image-map.min.js"></script>
+            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
+            <script>
+				var $ = jQuery.noConflict();
+				window.mds_data = {
+					ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+					wp: '<?php echo $wp_url; ?>',
+					winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
+					winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
+					time: '<?php echo time(); ?>',
+					BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+					moveBox: function () {
+						<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
+						moveBox2();
+						<?php } else { ?>
+						moveBox();
+						<?php } ?>
+					},
+					HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
+					REDIRECT_SWITCH: function () {
+						<?php if (REDIRECT_SWITCH == 'YES') { ?>
+						p = parent.window;
+						<?php } ?>
+					},
+					BID: parseInt('<?php echo $BID; ?>')
+				};
+            </script>
             <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>"></script>
 			<?php
 		}
@@ -101,14 +144,29 @@ class Mds_Ajax {
 		if ( $this->add_container !== false ) {
 			$container = $this->add_container . $BID;
 			?>
-            <div class="grid-container <?php echo $container; ?>"></div>
+            <div class="mds-container">
+                <div class="grid-container <?php echo $container; ?>"></div>
+            </div>
 			<?php
 		}
 
 		?>
         <script>
 			$(function () {
-				mds_grid('<?php echo $container; ?>', <?php echo $BID; ?>, <?php echo $width; ?>, <?php echo $height; ?>);
+				let mds_grid_call = function () {
+					var load_wait = setInterval(function () {
+						if (typeof mds_grid == 'function') {
+							mds_grid('<?php echo $container; ?>', <?php echo $BID; ?>, <?php echo $width; ?>, <?php echo $height; ?>);
+							clearInterval(load_wait);
+						}
+					}, 100);
+				}
+
+				if (window.mds_ajax_request != null) {
+					window.mds_ajax_request.done(mds_grid_call);
+				} else {
+					mds_grid_call();
+				}
 			});
         </script>
 		<?php

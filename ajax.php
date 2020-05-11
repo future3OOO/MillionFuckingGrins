@@ -30,10 +30,18 @@
  *
  */
 
-require_once __DIR__ . "/include/init.php";
-
 // Type of AJAX call can be POST or JSON input
 
+require_once __DIR__ . "/include/init.php";
+
+// Handle WP integration calls
+if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+	header( 'Access-Control-Allow-Origin: ' . WP_URL );
+	header( 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS' );
+	header( 'Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description' );
+}
+
+// Handle POST input
 if ( isset( $_POST['action'] ) ) {
 	switch ( $_POST['action'] ) {
 		case "show_grid":
@@ -48,6 +56,7 @@ if ( isset( $_POST['action'] ) ) {
 	}
 } else {
 
+	// Handle JSON input
 	$json = file_get_contents( 'php://input' );
 	$data = json_decode( $json );
 
@@ -60,6 +69,26 @@ if ( isset( $_POST['action'] ) ) {
 				die;
 				break;
 		}
+	}
+
+	// Handle WP integration calls
+	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+
+		if ( ! isset( $data->grid_id ) || ! isset( $data->type ) ) {
+			die;
+		}
+
+		$_REQUEST['BID'] = $data->grid_id;
+
+		if ( $data->type == "grid" ) {
+			require_once( __DIR__ . "/include/mds_ajax.php" );
+			$mds_ajax = new Mds_Ajax();
+			$mds_ajax->show( 'grid', $data->grid_id, 'grid' );
+		} else if ( $_POST['type'] == "stats" ) {
+			show_stats();
+		}
+
+		die;
 	}
 }
 
@@ -104,7 +133,7 @@ function show_grid() {
 		if ( REDIRECT_SWITCH == 'YES' ) {
 			$available_block_window = "parent.window.open('" . REDIRECT_URL . "', '', '');return false;";
 		}
-		?><img <?php if ( REDIRECT_SWITCH == 'YES' ) { ?>onclick="if (!block_clicked) {<?php echo $available_block_window; ?> }block_clicked=false;" <?php } ?> id="theimage" src="<?php echo $BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?time=<?php echo( $banner_data['TIME'] ); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
+		?><img <?php if ( REDIRECT_SWITCH == 'YES' ) { ?>onclick="if (!block_clicked) {<?php echo $available_block_window; ?> }block_clicked=false;" <?php } ?> id="theimage" src="<?php echo BASE_HTTP_PATH . '/' . $BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?time=<?php echo( $banner_data['TIME'] ); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
 		<?php
 	} else {
 		echo "<b>The file: " . $BANNER_PATH . "main" . $BID . ".$ext" . " doesn't exist.</b><br>";

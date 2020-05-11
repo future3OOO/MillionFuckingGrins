@@ -252,6 +252,7 @@ function invert_blocks(block, OffsetX, OffsetY) {
 		y: y
 	});
 
+	// TODO: add option to disable these
 	// additional blocks if multiple selection radio buttons are selected
 	if (document.getElementById('sel4').checked) {
 		// select 4 - 4x4
@@ -518,6 +519,7 @@ function getOffset(x, y) {
 function get_pointer_size() {
 	let size = {};
 
+	// TODO: add option to disable these
 	if (document.getElementById('sel4').checked) {
 		size.width = BLK_WIDTH * 2;
 		size.height = BLK_HEIGHT * 2;

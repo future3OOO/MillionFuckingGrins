@@ -41,7 +41,6 @@ mds_header_cache();
     <meta name="Description" content="<?php echo SITE_SLOGAN; ?>">
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10.0, minimum-scale=0.1, user-scalable=yes"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
     <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
@@ -50,18 +49,25 @@ mds_header_cache();
     <script src="<?php echo BASE_HTTP_PATH; ?>js/image-scale.min.js"></script>
     <script src="<?php echo BASE_HTTP_PATH; ?>js/image-map.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
+
 	<?php
-	if ( ! isset( $GLOBALS['mds_js_loaded'] ) ) {
+/*	if ( ! isset( $GLOBALS['mds_js_loaded'] ) ) {
 		$GLOBALS['mds_js_loaded'] = true;
 
 		global $f2;
 		$BID         = $f2->bid( $_REQUEST['BID'] );
 		$banner_data = load_banner_constants( $BID );
+
+		$wp_url = '';
+	    if ( WP_ENABLED == "YES" && !empty(WP_URL)) {
+	        $wp_url = WP_URL;
+	    }
 		?>
         <script>
 			const mds_data = {
 				ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
-				wp: '',
+				wp: '<?php echo $wp_url; ?>',
 				winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
 				winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
 				time: '<?php echo time(); ?>',
@@ -84,12 +90,13 @@ mds_header_cache();
         </script>
         <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>"></script>
 		<?php
-	}
+	}*/
 	?>
 </head>
-<body class="main">
+<body class="mds-container">
 <div class="outer">
     <div class="inner">
+        <?php if ( WP_ENABLED == "NO" ) { ?>
         <div class="heading">
 			<?php
 			$logourl = SITE_LOGO_URL;
@@ -126,6 +133,7 @@ mds_header_cache();
             <a href='<?php echo BASE_HTTP_PATH; ?>users/'>Buy Pixels</a>
             <a href='<?php echo BASE_HTTP_PATH; ?>list.php'>Ads List</a>
         </div>
+	    <?php } ?>
 
 		<?php
 		if ( USE_AJAX == 'SIMPLE' ) {

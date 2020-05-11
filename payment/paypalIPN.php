@@ -509,7 +509,7 @@ class PayPal {
 
 		?>
 		<form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
-		<table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+		<table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
     <tr>
       <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">PayPal 
       Email address</font></td>

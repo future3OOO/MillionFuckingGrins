@@ -300,7 +300,7 @@ class LiqPay {
 
 		?>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove;font-family: Verdana,sans-serif; font-size: small;" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+            <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove;font-family: Verdana,sans-serif; font-size: small;" width="100%" bgcolor="#FFFFFF">
                 <tr>
                     <td bgcolor="#e6f2ea">LiqPay Public Key:</td>
                     <td bgcolor="#e6f2ea">

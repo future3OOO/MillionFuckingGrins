@@ -75,7 +75,7 @@ $(function () {
 
 			const data = $(instance.reference).data('data');
 
-			postData(mds_data.ajax, {
+			postData(window.mds_data.ajax, {
 				aid: data.id,
 				bid: data.banner_id,
 				action: 'ga'

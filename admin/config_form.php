@@ -34,7 +34,7 @@
 <form method="POST" name="form1" action="edit_config.php">
     <p><input type="submit" value="Save Configuration" name="save"></p>
     <input name="version_info" type="hidden" value="<?php echo VERSION_INFO; ?>"/>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
                 <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>General Settings</b></span></td>
@@ -67,29 +67,16 @@
     </table>
 	<?php
 
-	//print_r($_SERVER);
-
-	$host     = $_SERVER['SERVER_NAME']; // hostname
-	$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
-	$http_url = explode( "/", $http_url );
-	array_pop( $http_url ); // get rid of filename
-	array_pop( $http_url ); // get rid of /admin
-	$http_url = implode( "/", $http_url );
-	// echo "<b> $http_url </b>";
-	$file_path = $_SERVER['SCRIPT_FILENAME']; // eg e:/apache/htdocs/ojo/admin/edit_config.php
-	$file_path = explode( "/", $file_path );
-	array_pop( $file_path ); // get rid of filename
-	array_pop( $file_path ); // get rid of /admin
-	$file_path = implode( "/", $file_path );
-	// echo "<b> $file_path </b>";
+	$rootpathinfo = pathinfo( '../' );
+	$BASE_PATH    = $rootpathinfo['dirname'];
 
 	if ( ! defined( "BASE_PATH" ) ) {
-		define( "BASE_PATH", $file_path );
+		define( "BASE_PATH", $BASE_PATH );
 	}
 
 	?>
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
                 <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Paths and Locations</b><br></span></td>
@@ -148,7 +135,7 @@ NOTES<br>
         </tr>
     </table>
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
                 <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>MySQL Settings</b></span></td>
@@ -200,7 +187,7 @@ NOTES<br>
 	}
 
 	?>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
                 <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Localization - Time and Date</b></span></td>
@@ -238,7 +225,7 @@ NOTES<br>
     </table>
 
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
                 <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Grid Image Settings</b></span></td>
@@ -355,7 +342,7 @@ NOTES<br>
 
     <p>&nbsp;
     <p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
       <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Email Settings</b>
@@ -501,7 +488,7 @@ NOTES<br>
 
     </table>
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" width="360" bgcolor="#e6f2ea">
                 <p><span style="font-family: Verdana,sans-serif; font-size: x-small; "><b>SMTP Settings</b><br>
@@ -612,7 +599,7 @@ NOTES<br>
     </table>
 
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
       <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Misc Settings</b>
@@ -670,26 +657,26 @@ NOTES<br>
       <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
       <input type="text" name="MAX_BLOCKS" size="2" value="<?php echo MAX_BLOCKS; ?>">(Enter a number. A zero or blank value means unlimited)</font></td>
     </tr>
-	<tr>
 	-->
+        <tr>
 
-        <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Memory Limit</span></td>
-        <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Memory Limit</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
 	 <input type='radio' name='MEMORY_LIMIT' value='8M' <?php if ( MEMORY_LIMIT == '8M' ) {
 		 echo ' checked ';
 	 } ?> > 8MB  | <input type='radio' name='MEMORY_LIMIT' value='12M' <?php if ( MEMORY_LIMIT == '12M' ) {
-					echo ' checked ';
-				} ?> > 12MB (default) | <input type='radio' name='MEMORY_LIMIT' value='16M' <?php if ( MEMORY_LIMIT == '16M' ) {
-					echo ' checked ';
-				} ?> > 16MB  | <input type='radio' name='MEMORY_LIMIT' value='32M' <?php if ( MEMORY_LIMIT == '32M' ) {
-					echo ' checked ';
-				} ?> > 32MB | <input type='radio' name='MEMORY_LIMIT' value='64M' <?php if ( MEMORY_LIMIT == '64M' ) {
-					echo ' checked ';
-				} ?> > 64MB | <input type='radio' name='MEMORY_LIMIT' value='128M' <?php if ( MEMORY_LIMIT == '128M' ) {
-					echo ' checked ';
-				} ?> > 128M | <input type='radio' name='MEMORY_LIMIT' value='256M' <?php if ( MEMORY_LIMIT == '256M' ) {
-					echo ' checked ';
-				} ?> > 256M (Note: If your script is reporting a 'memory exhausted' error, please check to make sure that you have currectly defined your grid size)
+						echo ' checked ';
+					} ?> > 12MB (default) | <input type='radio' name='MEMORY_LIMIT' value='16M' <?php if ( MEMORY_LIMIT == '16M' ) {
+						echo ' checked ';
+					} ?> > 16MB  | <input type='radio' name='MEMORY_LIMIT' value='32M' <?php if ( MEMORY_LIMIT == '32M' ) {
+						echo ' checked ';
+					} ?> > 32MB | <input type='radio' name='MEMORY_LIMIT' value='64M' <?php if ( MEMORY_LIMIT == '64M' ) {
+						echo ' checked ';
+					} ?> > 64MB | <input type='radio' name='MEMORY_LIMIT' value='128M' <?php if ( MEMORY_LIMIT == '128M' ) {
+						echo ' checked ';
+					} ?> > 128M | <input type='radio' name='MEMORY_LIMIT' value='256M' <?php if ( MEMORY_LIMIT == '256M' ) {
+						echo ' checked ';
+					} ?> > 256M (Note: If your script is reporting a 'memory exhausted' error, please check to make sure that you have currectly defined your grid size)
 
 	</span></td>
 
@@ -763,8 +750,9 @@ NOTES<br>
 	  </span></td>
         </tr>
     </table>
+
     <p>&nbsp;</p>
-    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" id="AutoNumber1" width="100%" bgcolor="#FFFFFF">
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Mouseover Effects</b></span>
             </td>
@@ -792,6 +780,38 @@ NOTES<br>
         </tr>
     </table>
 
-    <p><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
-  <input type="submit" value="Save Configuration" name="save"></span></p>
+	<?php
+	if ( ! defined( 'WP_ENABLED' ) ) {
+		define( 'WP_ENABLED', 'NO' );
+	}
+
+	if ( ! defined( 'WP_URL' ) ) {
+		define( 'WP_URL', '' );
+	}
+	?>
+    <p>&nbsp;</p>
+    <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
+        <tr>
+            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Integrations</b></span>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">WordPress Integration</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+	  <input type="radio" name="WP_ENABLED" value="YES"  <?php if ( WP_ENABLED == 'YES' ) {
+		  echo " checked ";
+	  } ?> >Yes - WordPress integration features will be enabled. Click here for more information.<br>
+	  <input type="radio" name="WP_ENABLED" value="NO"  <?php if ( WP_ENABLED == 'NO' ) {
+		  echo " checked ";
+	  } ?> >No - Normal operation<br>
+	  </span></td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">WordPress Site Address (URL, no trailing slash)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+      <input type="url" name="WP_URL" value="<?php echo WP_URL; ?>"></span></td>
+        </tr>
+    </table>
+
+    <p><input type="submit" value="Save Configuration" name="save"></p>
 </form>

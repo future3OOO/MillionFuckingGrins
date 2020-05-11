@@ -32,37 +32,26 @@
 
 session_start();
 require_once __DIR__ . "/../include/init.php";
+require_once( __DIR__ . '/../include/login_functions.php' );
 
-$now = ( gmdate( "Y-m-d H:i:s" ) );
-$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
-//echo $sql;
-mysqli_query( $GLOBALS['connection'], $sql );
+do_logout();
 
-unset( $_SESSION['MDS_ID'] );
-$_SESSION['MDS_ID']     = '';
-$_SESSION['MDS_Domain'] = '';
-session_destroy();
-
-if ( isset( $_COOKIE['PHPSESSID'] ) ) {
-	unset( $_COOKIE['PHPSESSID'] );
-	setcookie( 'PHPSESSID', null, - 1 );
-}
-//require ('header.php');
+require_once BASE_PATH . "/html/header.php";
 
 ?>
-<?php echo $f2->get_doc(); ?>
 
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-    </head>
-    <body>
-    <center><img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-        <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a href="../"><?php
-			$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
-			echo $label['advertiser_logout_home']; ?></a></center>
-    </body>
+    <div class="logout-container">
+		<?php
+		if ( WP_ENABLED == "yes" && ! empty( WP_URL ) ) {
+		?>
+        <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a target="_top" href="<?php echo urlencode( WP_URL ); ?>">
+			<?php
+		} else {
+			?>
+            <img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
+            <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a href="../"><?php
+		}
 
-<?php
-
-//require ('footer.php'); 
-
-?>
+		$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
+		echo $label['advertiser_logout_home']; ?></a>
+    </div>

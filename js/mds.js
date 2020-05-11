@@ -36,7 +36,22 @@ var body;
 var origWidth;
 var origHeight;
 
+// @link https://stackoverflow.com/a/58514043/311458
+function defer(toWaitFor, method) {
+	if (window[toWaitFor]) {
+		method();
+	} else {
+		setTimeout(function () {
+			defer(toWaitFor, method)
+		}, 50);
+	}
+}
+
 function mds_grid(container, bid, width, height) {
+	if ($('#' + container).length > 0) {
+		return;
+	}
+
 	let grid = $("<div class='grid-inner' id='" + container + "'></div>");
 	grid.css('width', width).css('height', height);
 	$('.' + container).append(grid);
@@ -46,7 +61,7 @@ function mds_grid(container, bid, width, height) {
 		BID: bid
 	};
 
-	$(grid).load(mds_data.ajax, data, function () {
+	$(grid).load(window.mds_data.ajax, data, function () {
 		mds_init('#theimage', true, true);
 	});
 }
@@ -61,17 +76,17 @@ function mds_stats(container, bid, width, height) {
 		BID: bid
 	};
 
-	$(stats).load(mds_data.ajax, data, function () {
+	$(stats).load(window.mds_data.ajax, data, function () {
 		mds_init();
 	});
 }
 
 function receiveMessage(event) {
-	if (event.origin !== mds_data.wp || !initialized) {
+	if (event.origin !== window.mds_data.wp || !initialized) {
 		return;
 	}
 
-	parent.postMessage('gridwidth', mds_data.wp);
+	parent.postMessage('gridwidth', window.mds_data.wp);
 
 	if ($gridimg) {
 		rescale();
@@ -136,7 +151,7 @@ function rescale() {
 function add_tippy() {
 	const defaultContent = $('.tooltip-source').html();
 
-	tippy('area', {
+	tippy('.mds-container area', {
 		theme: 'light',
 		content: defaultContent,
 		duration: 50,
@@ -170,7 +185,7 @@ function add_tippy() {
 					cache: 'force-cache',
 					credentials: 'same-origin',
 					headers: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 					},
 					redirect: 'follow',
 					referrerPolicy: 'no-referrer',
@@ -180,7 +195,7 @@ function add_tippy() {
 
 			const data = $(instance.reference).data('data');
 
-			postData(mds_data.ajax, {
+			postData(window.mds_data.ajax, {
 				aid: data.id,
 				bid: data.banner_id,
 				action: 'ga'
@@ -209,17 +224,19 @@ function add_tippy() {
 
 }
 
-function mds_init(grid, scalemap, tippy) {
+function mds_init(grid, scalemap, tippy, type) {
 	if (grid) {
 		$gridimg = $(grid);
 		let $girdimgParent = $gridimg.parent();
-		html = $("html");
-		body = $("body");
 		origWidth = $gridimg.width();
 		origHeight = $gridimg.height();
 
-		$('html').css('width', '100%').css('height', '100%');
-		$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
+		if (type === "iframe") {
+			html = $("html");
+			body = $("body");
+			$('html').css('width', '100%').css('height', '100%');
+			$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
+		}
 
 		if (scalemap) {
 			// https://github.com/GestiXi/image-scale
@@ -239,13 +256,17 @@ function mds_init(grid, scalemap, tippy) {
 		}
 
 		if (tippy) {
-			add_tippy();
+			defer('Popper', () => {
+				defer('tippy', () => {
+					add_tippy();
+				});
+			});
 		}
 	}
 
-	if (mds_data.wp !== '') {
+	if (type === "iframe") {
 		$('body').addClass('wp');
-		window.top.postMessage('iframeload:html', mds_data.wp);
+		window.top.postMessage('iframeload:html', window.mds_data.wp);
 		window.addEventListener("message", receiveMessage, false);
 	}
 

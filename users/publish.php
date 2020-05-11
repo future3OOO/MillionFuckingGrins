@@ -404,7 +404,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
     </div>
     <script>
 		$(function () {
-			mds_init('#publish-grid', true, false);
+			//mds_init('#publish-grid', true, false);
 		});
     </script>
 <?php

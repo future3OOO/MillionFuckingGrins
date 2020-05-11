@@ -121,8 +121,14 @@ if ( $email != '' ) {
 	}
 }
 
-?>
+if ( WP_ENABLED == "yes" && ! empty( WP_URL ) ) {
+	?>
+    <h3 style='text-align:center;'><a href="<?php echo WP_URL; ?>" target="_top"><?php echo $label["advertiser_forgot_go_back"]; ?></a></h3>
+	<?php
+} else {
+	?>
     <h3 style='text-align:center;'><a href="../"><?php echo $label["advertiser_forgot_go_back"]; ?></a></h3>
-<?php
+	<?php
+}
 
 require_once BASE_PATH . "/html/footer.php";

@@ -111,27 +111,5 @@ define( 'REDIRECT_URL', 'http://www.example.com' );
 define( 'HIDE_TIMEOUT', '500' );
 define( 'MDS_AGRESSIVE_CACHE', 'NO' );
 define( 'ERROR_REPORTING', 0 );
-
-if ( defined( 'MEMORY_LIMIT' ) ) {
-	ini_set( 'memory_limit', MEMORY_LIMIT );
-} else {
-	ini_set( 'memory_limit', '128M' );
-}
-
-require_once( dirname( __FILE__ ) . '/include/database.php' );
-require_once dirname( __FILE__ ) . '/vendor/autoload.php';
-
-$purifier = new HTMLPurifier();
-
-require_once dirname( __FILE__ ) . '/include/functions2.php';
-$f2 = new functions2();
-
-include dirname( __FILE__ ) . '/lang/lang.php';
-require_once dirname( __FILE__ ) . '/include/mail_manager.php';
-require_once dirname( __FILE__ ) . '/include/currency_functions.php';
-require_once dirname( __FILE__ ) . '/include/price_functions.php';
-require_once dirname( __FILE__ ) . '/include/functions.php';
-require_once dirname( __FILE__ ) . '/include/image_functions.php';
-if ( ! get_magic_quotes_gpc() ) {
-	unfck_gpc();
-}
+define( 'WP_ENABLED', 'NO' );
+define( 'WP_URL', '' );
