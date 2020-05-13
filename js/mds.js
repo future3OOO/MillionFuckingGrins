@@ -2,7 +2,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,11 +30,6 @@
  */
 
 var initialized = false;
-var $gridimg;
-var html;
-var body;
-var origWidth;
-var origHeight;
 
 // @link https://stackoverflow.com/a/58514043/311458
 function defer(toWaitFor, method) {
@@ -92,71 +87,56 @@ function mds_stats(container, bid, width, height) {
 	};
 
 	$(stats).load(window.mds_data.ajax, data, function () {
-		mds_init();
+		mds_init('#' + container, false, false);
 	});
 }
 
-function receiveMessage(event) {
+function receiveMessage(event, $el) {
 	if (event.origin !== window.mds_data.wp || !initialized) {
 		return;
 	}
 
 	parent.postMessage('gridwidth', window.mds_data.wp);
 
-	if ($gridimg) {
-		rescale();
+	if ($el && $el.length > 0 && $el.data('scalemap') === true) {
+		rescale($el);
 	}
 
-	if (event.data === "thankyouframeheight") {
-		$(function () {
-			event.source.postMessage("thankyouframeheight:" + document.body.clientHeight, event.origin);
-		});
-	}
-	if (event.data === "usersframeheight") {
-		$(function () {
-			event.source.postMessage("usersframeheight:" + document.body.clientHeight, event.origin);
-		});
-	}
-	if (event.data === "listframeheight") {
-		$(function () {
-			event.source.postMessage("listframeheight:" + document.body.clientHeight, event.origin);
-		});
-	}
-	if (event.data === "statsframeheight") {
-		$(function () {
-			event.source.postMessage("statsframeheight:" + document.body.clientHeight, event.origin);
-		});
-	}
-	if (event.data === "validateframeheight") {
-		$(function () {
-			event.source.postMessage("validateframeheight:" + document.body.clientHeight, event.origin);
-		});
-	}
+	switch (event.data) {
+		case "thankyouframeheight":
+		case "usersframeheight":
+		case "listframeheight":
+		case "statsframeheight":
+		case "validateframeheight":
+			event.source.postMessage(event.data + ":" + document.body.clientHeight, event.origin);
+			break;
+		case "gridheight":
+			// readjust width if grid is smaller than body
+			if ($el.width() < $('body').width() && $el.width() < $el.data('origWidth')) {
+				$('html').height("100%");
+				$('body').height("100%");
 
-	if (event.data === "gridheight") {
+				$el.width(('body').width());
+				$el.height(('body').width());
+			}
 
-		// readjust width if grid is smaller than body
-		if ($gridimg.width() < body.width() && $gridimg.width() < origWidth) {
-			html.height("100%");
-			body.height("100%");
+			// set html and body height to same as grid height
+			if ($('body').height() !== $el.height()) {
+				$('html').height($el.height());
+				$('body').height($el.height());
+			}
 
-			$gridimg.width(body.width());
-			$gridimg.height(body.width());
-		}
+			event.source.postMessage("gridheight:" + document.body.clientHeight, event.origin);
 
-		// set html and body height to same as grid height
-		if (body.height() !== $gridimg.height()) {
-			html.height($gridimg.height());
-			body.height($gridimg.height());
-		}
-
-		event.source.postMessage("gridheight:" + document.body.clientHeight, event.origin);
+			break;
+		default:
+			break;
 	}
 }
 
-function rescale() {
+function rescale($el) {
 	// https://github.com/GestiXi/image-scale
-	$gridimg.imageScale({
+	$el.imageScale({
 		scale: "best-fit",
 		align: "top",
 		rescaleOnResize: true
@@ -219,7 +199,6 @@ function add_tippy() {
 				.then(function (text) {
 					instance.setContent(text);
 					instance._content = true;
-
 				})
 				.catch((error) => {
 					instance._error = error;
@@ -236,53 +215,56 @@ function add_tippy() {
 			instance._error = null;
 		}
 	});
-
 }
 
-function mds_init(grid, scalemap, tippy, type) {
-	if (grid) {
-		$gridimg = $(grid);
-		let $girdimgParent = $gridimg.parent();
-		origWidth = $gridimg.width();
-		origHeight = $gridimg.height();
+function mds_init(el, scalemap, tippy, type) {
+	let $el = $(el);
 
-		if (type === "iframe") {
-			html = $("html");
-			body = $("body");
-			$('html').css('width', '100%').css('height', '100%');
-			$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
-		}
+	if ($el.length > 0) {
+		let origWidth = $el.width();
+		let origHeight = $el.height();
 
-		if (scalemap) {
-			// https://github.com/GestiXi/image-scale
-			$gridimg.imageScale({
-				scale: "best-fit",
-				align: "top",
-				rescaleOnResize: true,
-				didScale: function (firstTime, options) {
-					if (firstTime) {
-						$girdimgParent.height($gridimg.height());
-					}
+		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
+	}
 
-					// https://github.com/clarketm/image-map
-					$gridimg.imageMap();
+	if (type === "iframe") {
+		$('html').css('width', '100%').css('height', '100%');
+		$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
+	}
+
+	if (scalemap) {
+		let $elParent = $el;
+
+		// https://github.com/GestiXi/image-scale
+		$el.imageScale({
+			scale: "best-fit",
+			align: "top",
+			rescaleOnResize: true,
+			didScale: function (firstTime, options) {
+				if (firstTime) {
+					$elParent.height($el.height());
 				}
-			});
-		}
 
-		if (tippy) {
-			defer('Popper', () => {
-				defer('tippy', () => {
-					add_tippy();
-				});
+				// https://github.com/clarketm/image-map
+				$el.imageMap();
+			}
+		});
+	}
+
+	if (tippy) {
+		defer('Popper', () => {
+			defer('tippy', () => {
+				add_tippy();
 			});
-		}
+		});
 	}
 
 	if (type === "iframe") {
 		$('body').addClass('wp');
 		window.top.postMessage('iframeload:html', window.mds_data.wp);
-		window.addEventListener("message", receiveMessage, false);
+		window.addEventListener("message", function (event) {
+			receiveMessage(event, $el);
+		}, false);
 	}
 
 	initialized = true;
@@ -290,6 +272,6 @@ function mds_init(grid, scalemap, tippy, type) {
 	remove_ajax_loader();
 }
 
-$(function () {
-	mds_init();
-});
+// $(function () {
+// 	mds_init();
+// });

@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -488,7 +488,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['click_count']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; ">
 	<?php if ( $row['Validated'] == 0 ) { ?>
-        <input style="font-size: 9px;" type="button" value="Validate" onclick="if ( !confirmLink(this, 'Validate account?')) return false;" data-link="customers.pp?action=validate&user_id=<?php echo $row['ID'] . $q_string; ?>"><?php } ?> <input style="font-size: 9px;" type="button" value="Delete" onclick="if ( !confirmLink(this, 'Delete account?')) return false;" data-link="customers.php?action=delete&user_id=<?php echo $row['ID'] . $q_string; ?>"></span>
+        <input style="font-size: 9px;" type="button" value="Validate" onclick="if ( !confirmLink(this, 'Validate account?')) return false;" data-link="customers.php?action=validate&user_id=<?php echo $row['ID'] . $q_string; ?>"><?php } ?> <input style="font-size: 9px;" type="button" value="Delete" onclick="if ( !confirmLink(this, 'Delete account?')) return false;" data-link="customers.php?action=delete&user_id=<?php echo $row['ID'] . $q_string; ?>"></span>
                     </td>
                 </tr>
 				<?php

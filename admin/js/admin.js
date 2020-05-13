@@ -2,7 +2,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -38,28 +38,21 @@ const submit_options = {
 };
 
 function mds_load_page(page, force) {
-	console.log('window.location.hash', window.location.hash);
-	console.log('page', page);
-
 	// remove hashtag from page
 	if (window.location.hash !== "" && (page === undefined || (window.location.hash !== page && force !== true))) {
 		page = window.location.hash.substr(1);
 	}
 
 	$(".admin-content").load(page, function () {
-		console.log("loading " + page);
 	});
 }
 
 function mds_form_submit(formData, $form, options) {
-	console.log('Form data', $.param(formData));
 	$form.find('input').attr('disabled', true);
 	return true;
 }
 
 function mds_form_submit_success(responseText, statusText, xhr, $form) {
-	console.log('mds_form_submit_success');
-
 	let url = $form.attr('action');
 
 	if (url === "") {
@@ -120,10 +113,21 @@ $(function () {
 	mds_load_page(startpage);
 
 	$(document).on('click', 'a', function (event) {
+		let target = $(this).attr('target');
+
+		if ('_blank' === target) {
+			return true;
+		}
+
 		event.preventDefault();
 		event.stopPropagation();
 
 		let url = $(this).attr('href');
+
+		if (['_parent', '_top'].indexOf(target) !== -1) {
+			window.location.href = url;
+			return false;
+		}
 
 		if (url.startsWith("http")) {
 			window.location = url;

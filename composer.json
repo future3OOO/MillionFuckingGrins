@@ -35,6 +35,7 @@
     "ext-iconv": "*",
     "ext-mbstring": "*",
     "ext-curl": "*",
-    "ext-bcmath": "*"
+    "ext-bcmath": "*",
+    "ext-openssl": "*"
   }
 }

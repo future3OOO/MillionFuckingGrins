@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -96,12 +96,11 @@ class Mds_Ajax {
 
 			// Note: Loading with CDN caused them to load out of order randomly
 			?>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/popper.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/tippy-bundle.umd.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/tippy.css">
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.min.js"></script>
             <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/image-scale.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/image-map.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js"></script>
             <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
             <script>
 				var $ = jQuery.noConflict();

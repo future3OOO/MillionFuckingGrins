@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -39,7 +39,7 @@ error_reporting( 0 );
 define( 'DEBUG', false );
 define( 'MDS_LOG', false );
 define( 'MDS_LOG_FILE', __DIR__ . '/.mds.log' );
-define( 'VERSION_INFO', 'Version 2.1 (Apr 2020)' );
+define( 'VERSION_INFO', '2.1' );
 define( 'BASE_HTTP_PATH', '/' );
 define( 'BASE_PATH', __DIR__ );
 define( 'SERVER_PATH_TO_ADMIN', __DIR__ . '/admin/' );
@@ -47,7 +47,7 @@ define( 'UPLOAD_PATH', __DIR__ . '/upload_files/' );
 define( 'UPLOAD_HTTP_PATH', '/upload_files/' );
 define( 'SITE_CONTACT_EMAIL', 'test@example.com' );
 define( 'SITE_LOGO_URL', 'https://milliondollarscript.com/logo.gif' );
-define( 'SITE_NAME', 'Million Dollar Script ' . VERSION_INFO );
+define( 'SITE_NAME', 'Million Dollar Script' );
 define( 'SITE_SLOGAN', 'This is the Million Dollar Script Example. 1 pixel = 1 cent' );
 define( 'MDS_RESIZE', 'YES' );
 define( 'MYSQL_HOST', '' );

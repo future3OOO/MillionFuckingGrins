@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -59,7 +59,7 @@ if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) ) {
     <h3>Next Steps</h3>
     <ol>
         <li><a target="_blank" href="install.php?action=delete">Click here</a> to delete this file (/admin/install.php) from the server.</li>
-        <li><a target="_blank" href="<?php echo htmlspecialchars( BASE_HTTP_PATH, ENT_QUOTES, false ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking.</li>
+        <li><a target="_blank" href="<?php echo htmlspecialchars( BASE_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
         <li>Install, enable and configure a payment module under Payment Modules.</li>
         <li>Edit your grid settings under Manage Grids.</li>
         <li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
@@ -127,67 +127,42 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
         <input type="hidden" name="action" value="install">
 
 		<?php
+		// @link https://stackoverflow.com/a/13087678
+		function full_url() {
+			$ssl      = ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on';
+			$sp       = strtolower( $_SERVER['SERVER_PROTOCOL'] );
+			$protocol = substr( $sp, 0, strpos( $sp, '/' ) ) . ( ( $ssl ) ? 's' : '' );
+			$port     = $_SERVER['SERVER_PORT'];
+			$port     = ( ( ! $ssl && $port == '80' ) || ( $ssl && $port == '443' ) ) ? '' : ':' . $port;
+			$host     = isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : ( isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null );
+			$host     = isset( $host ) ? $host : $_SERVER['SERVER_NAME'] . $port;
+			$uri      = $protocol . '://' . $host . $_SERVER['REQUEST_URI'];
+			$segments = explode( '?', $uri, 2 );
 
-		//print_r($_SERVER);
-
-		$scheme   = $_SERVER['REQUEST_SCHEME'] . '://';
-		$host     = $_SERVER['SERVER_NAME']; // hostname
-		$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
-		$http_url = explode( "/", $http_url );
-		array_pop( $http_url ); // get rid of filename
-		array_pop( $http_url ); // get rid of /admin
-		$http_url = implode( "/", $http_url );
-		// echo "<b> $http_url </b>";
-		$file_path = $_SERVER['SCRIPT_FILENAME']; // eg e:/apache/htdocs/ojo/admin/edit_config.php
-		$file_path = explode( "/", $file_path );
-		array_pop( $file_path ); // get rid of filename
-		array_pop( $file_path ); // get rid of /admin
-		$file_path = implode( "/", $file_path );
-		// echo "<b> $file_path </b>";
-
-		if ( ! defined( 'BASE_HTTP_PATH' ) ) {
-			$BASE_HTTP_PATH = $scheme . $host . $http_url . "/";
-		} else {
-			$BASE_HTTP_PATH = BASE_HTTP_PATH;
+			return $segments[0];
 		}
 
-		if ( ! defined( 'SERVER_PATH_TO_ADMIN' ) ) {
-			$SERVER_PATH_TO_ADMIN = str_replace( '\\', '/', getcwd() ) . "/";
-		} else {
-			$SERVER_PATH_TO_ADMIN = SERVER_PATH_TO_ADMIN;
-		}
-		$SERVER_PATH_TO_ADMIN = str_replace( '\\', '/', $SERVER_PATH_TO_ADMIN );
+		// @link https://www.php.net/manual/en/function.parse-url.php#106731
+		function unparse_url( $parsed_url ) {
+			$scheme = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] . '://' : '';
+			$host   = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
+			$port   = isset( $parsed_url['port'] ) ? ':' . $parsed_url['port'] : '';
+			$user   = isset( $parsed_url['user'] ) ? $parsed_url['user'] : '';
+			$pass   = isset( $parsed_url['pass'] ) ? ':' . $parsed_url['pass'] : '';
+			$pass   = ( $user || $pass ) ? "$pass@" : '';
 
-		if ( ! defined( 'UPLOAD_PATH' ) ) {
-			$dir   = dirname( __FILE__ );
-			$dir   = preg_split( '%[/\\\]%', $dir );
-			$blank = array_pop( $dir );
-			$dir   = implode( '/', $dir );
+			return $scheme . $user . $pass . $host . $port . '/';
+		}
 
-			define( 'UPLOAD_PATH', $dir . '/upload_files/' );
-		}
-		if ( UPLOAD_PATH == '' ) {
-			$UPLOAD_PATH = str_replace( '\\', '/', $file_path . "/upload_files/" );
-		} else {
-			$UPLOAD_PATH = UPLOAD_PATH;
-		}
-		$UPLOAD_PATH = str_replace( '\\', '/', $UPLOAD_PATH );
+		$parsed_url     = parse_url( full_url() );
+		$BASE_HTTP_PATH = unparse_url( $parsed_url );
+
+		$SERVER_PATH_TO_ADMIN = __DIR__ . '/';
+
+		$UPLOAD_PATH = realpath( __DIR__ . '/../upload_files' ) . '/';
 
 		if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
-
-			$host     = $_SERVER['SERVER_NAME']; // hostname
-			$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
-			$http_url = explode( "/", $http_url );
-			array_pop( $http_url ); // get rid of filename
-			array_pop( $http_url ); // get rid of /admin
-			$http_url = implode( "/", $http_url );
-
-			define( 'UPLOAD_HTTP_PATH', $scheme . $host . $http_url . "/upload_files/" );
-		}
-		if ( UPLOAD_HTTP_PATH == '' ) {
-			$UPLOAD_HTTP_PATH = $scheme . str_replace( '\\', '/', $host . $http_url . "/upload_files/" );
-		} else {
-			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
+			define( 'UPLOAD_HTTP_PATH', $BASE_HTTP_PATH . "upload_files/" );
 		}
 
 		?>
@@ -200,23 +175,23 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
             <tr>
                 <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Site's HTTP URL (address)</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="base_http_path" size="49" value="<?php echo htmlentities( $BASE_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
+                        <input type="text" name="base_http_path" size="49" value="<?php echo htmlspecialchars( $BASE_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
             </tr>
 
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Server Path to Admin</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo htmlentities( $SERVER_PATH_TO_ADMIN ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
+                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo htmlspecialchars( $SERVER_PATH_TO_ADMIN, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Path to upload directory</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_path" size="55" value="<?php echo htmlentities( $UPLOAD_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
+                        <input type="text" name="upload_path" size="55" value="<?php echo htmlspecialchars( $UPLOAD_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlentities( $UPLOAD_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
+                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlspecialchars( UPLOAD_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo UPLOAD_HTTP_PATH; ?></b></font></td>
             </tr>
             <tr>
                 <td colspan="2" bgcolor="#e6f2ea">
@@ -226,25 +201,25 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
                 <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Username</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? MYSQL_USER : ""; ?>"></font></td>
+                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? htmlspecialchars( MYSQL_USER, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Password</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? MYSQL_PASS : ""; ?>"></font></td>
+                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? htmlspecialchars( MYSQL_PASS, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Name</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? MYSQL_DB : ""; ?>"></font></td>
+                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? htmlspecialchars( MYSQL_DB, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Server Hostname</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? MYSQL_HOST : ""; ?>"></font></td>
+                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? htmlspecialchars( MYSQL_HOST, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -279,18 +254,21 @@ function save_db_config() {
 	fclose( $handle );
 	$handle = fopen( $filename, "w" );
 
-	$contents = preg_replace( "/.*define\( 'MYSQL_HOST',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_HOST', '" . $_REQUEST['mysql_host'] . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_USER',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_USER', '" . $_REQUEST['mysql_user'] . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_PASS',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_PASS', '" . $_REQUEST['mysql_pass'] . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_DB',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_DB', '" . $_REQUEST['mysql_db'] . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'MYSQL_HOST',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_HOST', '" . $f2->filter( $_REQUEST['mysql_host'] ) . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'MYSQL_USER',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_USER', '" . $f2->filter( $_REQUEST['mysql_user'] ) . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'MYSQL_PASS',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_PASS', '" . $f2->filter( $_REQUEST['mysql_pass'] ) . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'MYSQL_DB',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_DB', '" . $f2->filter( $_REQUEST['mysql_db'] ) . "' );", $contents );
 
-	$contents = preg_replace( "/.*define\( 'SERVER_PATH_TO_ADMIN',[ ]*'[^']*' \);[ ]*/U", "define( 'SERVER_PATH_TO_ADMIN', '" . $_REQUEST['server_path_to_admin'] . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'SERVER_PATH_TO_ADMIN',[ ]*'[^']*' \);[ ]*/U", "define( 'SERVER_PATH_TO_ADMIN', '" . $f2->filter( $_REQUEST['server_path_to_admin'] ) . "' );", $contents );
 
-	$contents = preg_replace( "/.*define\( 'BASE_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'BASE_HTTP_PATH', '" . $_REQUEST['base_http_path'] . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'BASE_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'BASE_HTTP_PATH', '" . $f2->filter( $_REQUEST['base_http_path'] ) . "' );", $contents );
 
-	$contents = preg_replace( "/.*define\( 'UPLOAD_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_PATH', '" . $_REQUEST['upload_path'] . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'UPLOAD_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_PATH', '" . $f2->filter( $_REQUEST['upload_path'] ) . "' );", $contents );
 
-	$contents = preg_replace( "/.*define\( 'UPLOAD_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_HTTP_PATH', '" . $_REQUEST['upload_http_path'] . "' );", $contents );
+	$contents = preg_replace( "/.*define\( 'UPLOAD_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_HTTP_PATH', '" . $f2->filter( $_REQUEST['upload_http_path'] ) . "' );", $contents );
+
+	$password = bin2hex( openssl_random_pseudo_bytes( 12 ) );
+	$contents = preg_replace( "/.*define\( 'ADMIN_PASSWORD',[ ]*'[^']*' \);[ ]*/U", "define( 'ADMIN_PASSWORD', '" . $password . "' );", $contents );
 
 	fwrite( $handle, $contents );
 

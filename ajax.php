@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -42,57 +42,78 @@ if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 }
 
 // Handle POST input
-if ( isset( $_POST['action'] ) ) {
-	switch ( $_POST['action'] ) {
-		case "show_grid":
-			show_grid();
-			break;
-		case "show_stats":
-			show_stats();
-			break;
-		default:
+if ( isset( $_POST ) ) {
+
+	// Get input
+	$input = file_get_contents( 'php://input' );
+
+	// Try to json_decode the input
+	$data = json_decode( $input );
+
+	if ( $data == null ) {
+		// Invalid JSON sent so try parsing it
+
+		parse_str( $input, $data_array );
+		if ( ! isset( $data_array['action'] ) ) {
 			die;
-			break;
+		}
 	}
-} else {
 
-	// Handle JSON input
-	$json = file_get_contents( 'php://input' );
-	$data = json_decode( $json );
+	$action = isset( $data_array['action'] ) ? $data_array['action'] : ( isset( $data->action ) ? $data->action : null );
 
-	if ( isset( $data->action ) ) {
-		switch ( $data->action ) {
-			case "ga":
-				get_ad( $data );
-				break;
-			default:
+	// Handle core MDS AJAX calls
+	if ( isset( $action ) ) {
+		switch ( $action ) {
+			case "show_grid":
+				show_grid();
 				die;
 				break;
+			case "show_stats":
+				show_stats();
+				die;
+				break;
+			case "ga":
+				get_ad( $data );
+				die;
+				break;
+			default:
+				break;
 		}
+
+		// Handle WP integration calls
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			if ( ! isset( $data->grid_id ) ) {
+				die;
+			}
+
+			$_REQUEST['BID'] = $data->grid_id;
+
+			switch ( $data->action ) {
+				case "ajax_grid":
+					$_REQUEST['type'] = 'grid';
+					require_once( BASE_PATH . "/include/mds_ajax.php" );
+					$mds_ajax = new Mds_Ajax();
+					$mds_ajax->show( 'grid', $data->grid_id, 'grid' );
+					break;
+				case "ajax_stats":
+					$_REQUEST['type'] = 'stats';
+					require_once( BASE_PATH . "/include/mds_ajax.php" );
+					$mds_ajax = new Mds_Ajax();
+					$mds_ajax->show( 'stats', $data->grid_id, 'stats' );
+					break;
+				case "users":
+					require_once( BASE_PATH . "/users/index.php" );
+					break;
+				default:
+					break;
+			}
+		}
+
+		global $ajax_call;
+		$ajax_call = true;
 	}
 
-	// Handle WP integration calls
-	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-		if ( ! isset( $data->grid_id ) || ! isset( $data->type ) ) {
-			die;
-		}
-
-		$_REQUEST['BID'] = $data->grid_id;
-
-		if ( $data->type == "grid" ) {
-			require_once( BASE_PATH . "/include/mds_ajax.php" );
-			$mds_ajax = new Mds_Ajax();
-			$mds_ajax->show( 'grid', $data->grid_id, 'grid' );
-		} else if ( $data->type == "stats" ) {
-			require_once( BASE_PATH . "/include/mds_ajax.php" );
-			$mds_ajax = new Mds_Ajax();
-			$mds_ajax->show( 'stats', $data->grid_id, 'stats' );
-		} else if ( $data->type == "users" ) {
-			require_once( BASE_PATH . "/users/index.php" );
-		}
-
-		die;
-	}
+	die;
 }
 
 function show_grid() {

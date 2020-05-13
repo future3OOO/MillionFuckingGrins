@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:13:22 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -278,7 +278,7 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 		return; // there already is a credit for this txn_id
 	}
 
-    // check to make sure that there is a debit for this transaction
+	// check to make sure that there is a debit for this transaction
 
 	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
@@ -976,10 +976,10 @@ function send_confirmation_email( $email ) {
 	$code = substr( md5( $row['Email'] . $row['Password'] ), 0, 8 );
 
 	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-	    $verify_url = WP_URL . "?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
-    } else {
-	    $verify_url = BASE_HTTP_PATH . "users/validate.php?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
-    }
+		$verify_url = WP_URL . "?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+	} else {
+		$verify_url = BASE_HTTP_PATH . "users/validate.php?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+	}
 
 	$message = $label["confirmation_email_templaltev2"];
 	$message = str_replace( "%FNAME%", $row['FirstName'], $message );
@@ -2969,4 +2969,34 @@ function get_current_order_id() {
 	}
 
 	return $current_order_id;
+}
+
+/**
+ * Check if the page was called normally or by iframe, AJAX.
+ *
+ * 0 = normal
+ * 1 = iframe
+ * 2 = ajax
+ * 3 = WP integration + normal (unused)
+ * 4 = WP integration + iframe
+ * 5 = WP integration + ajax
+ *
+ * @return int
+ */
+function get_call_state() {
+	global $ajax_call;
+
+	$state = 0;
+
+	if ( isset( $_GET['iframe_call'] ) && $_GET['iframe_call'] == true ) {
+		$state = 1;
+	} else if ( isset( $ajax_call ) && $ajax_call ) {
+		$state = 2;
+	}
+
+	if ( WP_ENABLED == "YES" ) {
+		$state += 3;
+	}
+
+	return $state;
 }

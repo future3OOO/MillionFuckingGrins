@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -32,18 +32,25 @@
 
 // MillionDollarScript footer.php
 
+$call_state = get_call_state();
+
 ?>
-            </div>
-            <div class="clear"></div>
-            <?php if ( WP_ENABLED == "NO" ) { ?>
-                <div class="footer">&copy; Copyright <?php echo date( 'Y' ) . " " . SITE_NAME; ?></div>
-            <?php } ?>
-        </div>
-        <div class="clear"></div>
     </div>
-<?php if ( WP_ENABLED == "NO" ) { ?>
-</body>
-</html>
-<?php } else { 	?>
-</div>
+
+<?php if ( $call_state < 3 ) { ?>
+    <div class="footer">&copy; Copyright <?php echo date( 'Y' ) . " " . SITE_NAME; ?></div>
 <?php } ?>
+
+    </div>
+    </div>
+
+<?php if ( $call_state < 2 || $call_state == 4 ) {
+	echo '
+</body>
+</html>';
+}
+
+if ( $call_state == 2 || $call_state == 5 ) {
+	echo '
+</div>';
+}

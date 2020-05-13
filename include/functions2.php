@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -147,11 +147,6 @@ class functions2 {
 
 	/** debug */
 	function debug( $line = "null", $label = "debug" ) {
-
-		// Firebug console debug
-//		if(DEBUG===true) {
-//			echo "<script>console.log('".$label."[".$line."]');</script>";
-//		}
 
 		// log file
 		if ( MDS_LOG === true && file_exists( MDS_LOG_FILE ) ) {

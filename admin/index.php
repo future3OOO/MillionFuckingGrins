@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2020.05.13 12:41:15 EDT
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -54,7 +54,7 @@ require_once 'admin_common.php';
         <img src="https://milliondollarscript.com/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
         <br>
         <a href="main.php">Main Summary</a><br/>
-        <a href="<?php echo BASE_HTTP_PATH; ?>">View Site</a><br/>
+        <a href="<?php echo BASE_HTTP_PATH; ?>" target="_blank">View Site</a><br/>
         <hr>
         <b>Pixel Inventory</b><br/>
         + <a href="inventory.php">Manage Grids</a><br/>
