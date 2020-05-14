@@ -128,7 +128,7 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
 
 		<?php
 
-        require_once __DIR__ . '/../url_functions.php';
+        require_once __DIR__ . '/../include/url_functions.php';
 
 		$parsed_url     = parse_url( full_url() );
 		$BASE_HTTP_PATH = unparse_url( $parsed_url );
