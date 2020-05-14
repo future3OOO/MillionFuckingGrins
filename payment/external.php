@@ -33,29 +33,6 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['external'] = new external;
 
-function external_mail_error( $msg ) {
-
-	$date = date( "D, j M Y H:i:s O" );
-
-	$headers = "From: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "Reply-To: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "Return-Path: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "X-Mailer: PHP" . "\r\n";
-	$headers .= "Date: $date" . "\r\n";
-	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
-
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " external payment module. ", $msg, $headers );
-}
-
-function external_log_entry( $entry_line ) {
-	$entry_line = "External:$entry_line\r\n ";
-	$log_fp     = fopen( "logs.txt", "a" );
-	fputs( $log_fp, $entry_line );
-	fclose( $log_fp );
-}
-
-// Payment Object
-
 class external {
 
 	var $name = "Payment";

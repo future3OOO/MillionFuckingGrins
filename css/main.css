@@ -100,24 +100,24 @@ Heading bar
 /*
 controls the look and feel of the 'pixels-sold/available' box:
 */
-.mds-container iframe[class^='statsframe'] {
+iframe[class^='statsframe'] {
 	overflow: hidden;
 	border: none;
 	padding: 0;
 	margin: 0;
 }
 
-.mds-container .status_outer {
+.stats-container {
 	width: 149px;
 }
 
-.mds-container .status_body {
+.stats-container .status_body {
 	margin: 0;
 	background-color: transparent;
 	overflow: hidden;
 }
 
-.mds-container .status {
+.stats-container .status {
 	border: 1px solid #efefef;
 	background-color: #fff;
 	border-radius: 6px;
@@ -129,7 +129,7 @@ controls the look and feel of the 'pixels-sold/available' box:
 	line-height: 16px;
 }
 
-.mds-container .status_text {
+.stats-container .status_text {
 	font-weight: bold;
 	color: #000;
 }

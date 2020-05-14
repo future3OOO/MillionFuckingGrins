@@ -96,9 +96,8 @@ function receiveMessage(event, $el) {
 		return;
 	}
 
-	parent.postMessage('gridwidth', window.mds_data.wp);
-
 	if ($el && $el.length > 0 && $el.data('scalemap') === true) {
+		parent.postMessage('gridwidth', window.mds_data.wp);
 		rescale($el);
 	}
 
@@ -227,11 +226,6 @@ function mds_init(el, scalemap, tippy, type) {
 		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
 	}
 
-	// if (type === "iframe") {
-	// 	$('html').css('width', '100%').css('height', '100%');
-	// 	$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
-	// }
-
 	if (scalemap) {
 		let $elParent = $el;
 
@@ -271,7 +265,3 @@ function mds_init(el, scalemap, tippy, type) {
 
 	remove_ajax_loader();
 }
-
-// $(function () {
-// 	mds_init();
-// });
