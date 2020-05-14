@@ -2988,7 +2988,7 @@ function get_call_state() {
 
 	$state = 0;
 
-	if ( isset( $_GET['iframe_call'] ) && $_GET['iframe_call'] == true ) {
+	if ( isset( $_GET['iframe_call'] ) && $_GET['iframe_call'] == true || stripos( $_SERVER['REQUEST_URI'], '/users' ) !== false ) {
 		$state = 1;
 	} else if ( isset( $ajax_call ) && $ajax_call ) {
 		$state = 2;
