@@ -130,13 +130,13 @@ function get_html_code( $BID ) {
 	$width  = $b_row['grid_width'] * $b_row['block_width'];
 	$height = $b_row['grid_height'] * $b_row['block_height'];
 
-	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
+	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '&iframe_call=true" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
 }
 
 function get_stats_html_code( $BID ) {
 	$BID = intval( $BID );
 
-	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '" width="150" height="50"></iframe>';
+	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '&iframe_call=true" width="150" height="50"></iframe>';
 }
 
 /**
