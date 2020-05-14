@@ -976,7 +976,7 @@ function send_confirmation_email( $email ) {
 	$code = substr( md5( $row['Email'] . $row['Password'] ), 0, 8 );
 
 	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-		$verify_url = WP_URL . "?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
+		$verify_url = WP_URL . "/validate/?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
 	} else {
 		$verify_url = BASE_HTTP_PATH . "users/validate.php?lang=" . get_lang() . "&email=" . $row['Email'] . "&code=$code";
 	}

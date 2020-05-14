@@ -55,3 +55,5 @@ require_once BASE_PATH . "/html/header.php";
 		$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
 		echo $label['advertiser_logout_home']; ?></a>
     </div>
+<?php
+require_once BASE_PATH . "/html/footer.php";

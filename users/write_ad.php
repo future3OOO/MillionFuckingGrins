@@ -33,7 +33,7 @@
 session_start();
 require_once __DIR__ . "/../include/init.php";
 
-require_once( "../include/ads.inc.php" );
+require_once BASE_PATH . "/include/ads.inc.php";
 
 $BID = $f2->bid( $_REQUEST['BID'] );
 
@@ -96,7 +96,6 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		// save ad_id with the temp order...
 
 		$sql = "UPDATE temp_orders SET ad_id='$ad_id' where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
-		//echo $sql;
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 		$prams = load_ad_values( $ad_id );
@@ -125,4 +124,3 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 }
 
 require_once BASE_PATH . "/html/footer.php";
-?>
