@@ -146,8 +146,6 @@ if ( isset( $order_row['blocks'] ) && $order_row['blocks'] != "" ) {
 	}
 }
 
-$label['max_blocks_selected'] = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX_BLOCKS'], $label['max_blocks_selected'] );
-
 ?>
 
     <script>
@@ -163,7 +161,6 @@ $label['max_blocks_selected'] = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX
 			user_id: parseInt('<?php echo $_SESSION['MDS_ID']; ?>'),
 			BID: parseInt('<?php echo $BID; ?>'),
 			time: '<?php echo time(); ?>',
-			max_blocks_selected: '<?php  echo js_out_prep( $label['max_blocks_selected'] ); ?>',
 			advertiser_max_order: '<?php echo js_out_prep( $label['advertiser_max_order'] ); ?>',
 			not_adjacent: '<?php echo js_out_prep( $label['not_adjacent'] ); ?>',
 			no_blocks_selected: '<?php echo js_out_prep( $label['no_blocks_selected'] ); ?>',

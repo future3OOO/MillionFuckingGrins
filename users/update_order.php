@@ -88,19 +88,6 @@ if ( isset( $_REQUEST['reset'] ) && $_REQUEST['reset'] == "true" ) {
 	die();
 }
 
-// check the max pixels
-if ( $banner_data['G_MAX_BLOCKS'] > 0 ) {
-	$sql = "SELECT * from blocks where user_id='$user_id' and status='reserved' and banner_id='$BID' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
-
-	$count = mysqli_num_rows( $result );
-
-	if ( ( $count ) >= $banner_data['G_MAX_BLOCKS'] ) {
-		echo 'max_selected';
-		die();
-	}
-}
-
 $output_result = select_block( '', '', $block_id );
 
 echo $output_result;

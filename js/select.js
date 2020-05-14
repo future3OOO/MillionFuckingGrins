@@ -426,9 +426,7 @@ function change_block_state(OffsetX, OffsetY) {
 
 				} else {
 
-					if (data.indexOf('max_selected') > -1) {
-						messageout(select.max_blocks_selected);
-					} else if (data.indexOf('max_orders') > -1) {
+					if (data.indexOf('max_orders') > -1) {
 						messageout(select.advertiser_max_order);
 					} else if (data.indexOf('not_adjacent') > -1) {
 						messageout(select.not_adjacent);

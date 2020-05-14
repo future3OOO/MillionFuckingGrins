@@ -1717,14 +1717,12 @@ function select_block( $map_x, $map_y ) {
 
 		// check max blocks
 		$max_selected = false;
-		if ( USE_AJAX == 'NO' ) {
-			if ( $banner_data['G_MAX_BLOCKS'] > 0 ) {
-				if ( sizeof( $new_blocks ) > $banner_data['G_MAX_BLOCKS'] ) {
-					$max_selected = true;
-					$return_val   = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX_BLOCKS'], $label['max_blocks_selected'] );
-				}
-			}
-		}
+        if ( $banner_data['G_MAX_BLOCKS'] > 0 ) {
+            if ( sizeof( $new_blocks ) > $banner_data['G_MAX_BLOCKS'] ) {
+                $max_selected = true;
+                $return_val   = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX_BLOCKS'], $label['max_blocks_selected'] );
+            }
+        }
 
 		$order_blocks = implode( ",", $new_blocks );
 
