@@ -227,10 +227,10 @@ function mds_init(el, scalemap, tippy, type) {
 		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
 	}
 
-	if (type === "iframe") {
-		$('html').css('width', '100%').css('height', '100%');
-		$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
-	}
+	// if (type === "iframe") {
+	// 	$('html').css('width', '100%').css('height', '100%');
+	// 	$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
+	// }
 
 	if (scalemap) {
 		let $elParent = $el;
