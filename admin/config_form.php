@@ -808,8 +808,9 @@ NOTES<br>
         </tr>
         <tr>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">WordPress Site Address (URL, no trailing slash)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
-      <input type="url" name="WP_URL" value="<?php echo WP_URL; ?>"></span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><input type="url" name="WP_URL" value="<?php echo WP_URL; ?>"></span><br/>
+                Note: WP integration requres a separate plugin to be installed in WP that you can download <a target="_blank" href="https://milliondollarscript.com/million-dollar-script-2-1-wordpress-integration-plugin/">here</a>.
+            </td>
         </tr>
     </table>
 
