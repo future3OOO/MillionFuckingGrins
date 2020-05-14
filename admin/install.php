@@ -127,32 +127,8 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
         <input type="hidden" name="action" value="install">
 
 		<?php
-		// @link https://stackoverflow.com/a/13087678
-		function full_url() {
-			$ssl      = ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on';
-			$sp       = strtolower( $_SERVER['SERVER_PROTOCOL'] );
-			$protocol = substr( $sp, 0, strpos( $sp, '/' ) ) . ( ( $ssl ) ? 's' : '' );
-			$port     = $_SERVER['SERVER_PORT'];
-			$port     = ( ( ! $ssl && $port == '80' ) || ( $ssl && $port == '443' ) ) ? '' : ':' . $port;
-			$host     = isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : ( isset( $_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null );
-			$host     = isset( $host ) ? $host : $_SERVER['SERVER_NAME'] . $port;
-			$uri      = $protocol . '://' . $host . $_SERVER['REQUEST_URI'];
-			$segments = explode( '?', $uri, 2 );
 
-			return $segments[0];
-		}
-
-		// @link https://www.php.net/manual/en/function.parse-url.php#106731
-		function unparse_url( $parsed_url ) {
-			$scheme = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] . '://' : '';
-			$host   = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
-			$port   = isset( $parsed_url['port'] ) ? ':' . $parsed_url['port'] : '';
-			$user   = isset( $parsed_url['user'] ) ? $parsed_url['user'] : '';
-			$pass   = isset( $parsed_url['pass'] ) ? ':' . $parsed_url['pass'] : '';
-			$pass   = ( $user || $pass ) ? "$pass@" : '';
-
-			return $scheme . $user . $pass . $host . $port . '/';
-		}
+        require_once __DIR__ . '/../url_functions.php';
 
 		$parsed_url     = parse_url( full_url() );
 		$BASE_HTTP_PATH = unparse_url( $parsed_url );
