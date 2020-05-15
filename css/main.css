@@ -58,6 +58,13 @@ body.mds-container.wp {
 	width: auto;
 }
 
+.mds-container .container::before,
+.mds-container .container::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
 .mds-container .container {
 	width: calc(100% - 40px);
 	margin: 0 auto;
