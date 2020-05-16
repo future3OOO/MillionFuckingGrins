@@ -463,7 +463,10 @@ function do_logout() {
 	unset( $_SESSION['MDS_ID'] );
 	$_SESSION['MDS_ID']     = '';
 	$_SESSION['MDS_Domain'] = '';
-	session_destroy();
+
+	if ( session_status() === PHP_SESSION_ACTIVE ) {
+		session_destroy();
+	}
 
 	if ( isset( $_COOKIE['PHPSESSID'] ) ) {
 		unset( $_COOKIE['PHPSESSID'] );
