@@ -243,6 +243,11 @@ function mds_init(el, scalemap, tippy, type) {
 				$el.imageMap();
 			}
 		});
+
+		$('area').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+		});
 	}
 
 	if (tippy) {
