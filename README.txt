@@ -526,6 +526,10 @@ https://github.com/clarketm/image-map
 Image Scale - Scale images to fit or fill any target container via two simple properties: scale and align
 https://github.com/gestixi/image-scale
 
+BrowserStack - App & Browser Testing Made Easy
+https://www.browserstack.com/
+
+
 And of course anything else I might be missing.
 
 Thank you to everyone else who helps out!
