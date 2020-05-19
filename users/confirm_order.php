@@ -35,8 +35,6 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once( "../include/ads.inc.php" );
 
-$BID = $f2->bid( isset( $_REQUEST['BID'] ) ? $_REQUEST['BID'] : 1 );
-
 global $order_page;
 if ( USE_AJAX == 'SIMPLE' ) {
 	$order_page = 'order_pixels.php';
@@ -176,7 +174,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
         <form name="confirm-order" method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
             <input type="hidden" name="selected_pixels" value="<?php echo htmlspecialchars($_REQUEST['selected_pixels']); ?>">
             <input type="hidden" name="order_id" value="<?php echo intval($_REQUEST['order_id']); ?>">
-            <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+            <input type="hidden" name="BID" value="<?php echo $BID; ?>">
             <?php
             display_package_options_table( $BID, $_REQUEST['pack'], true );
             ?>
@@ -196,6 +194,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 			echo "<p>" . $label['pack_cannot_select'] . "</p>";
 		}
 	} else {
+
 		display_order( get_current_order_id(), $BID );
 
 		$sql = "select * from users where ID='" . intval( $_SESSION['MDS_ID'] ) . "'";

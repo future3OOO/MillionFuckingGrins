@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
 
@@ -49,14 +49,14 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 <form name="bidselect" method="post" action="top.php">
     <input type="hidden" name="old_order_id" value="<?php echo $order_id; ?>">
     Select grid: <select name="BID" onchange="mds_submit(this)">
-        <option value='all' <?php if ( $f2->bid( $_REQUEST['BID'] ) == 'all' ) {
+        <option value='all' <?php if ( $BID == 'all' ) {
 			echo 'selected';
 		} ?>>Show All
         </option>
 		<?php
 		while ( $row = mysqli_fetch_array( $res ) ) {
 
-			if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+			if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 				$sel = 'selected';
 			} else {
 				$sel = '';

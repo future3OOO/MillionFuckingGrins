@@ -50,7 +50,7 @@ if ( ! file_exists( __DIR__ . "/config.php" ) ) {
 require_once __DIR__ . "/include/init.php";
 
 global $f2;
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 // include the header
 require_once( __DIR__ . "/html/header.php" );

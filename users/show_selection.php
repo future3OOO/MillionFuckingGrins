@@ -37,7 +37,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once( "../include/output_grid.php" );
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+$BID = $f2->bid();
 
 output_grid( true, "", $BID, array(
 	'background',

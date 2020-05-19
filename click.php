@@ -38,10 +38,8 @@ $block_id = $_REQUEST['block_id'];
 if ( $block_id == '' ) {
 	die();
 }
-$BID = $f2->bid( $_REQUEST['BID'] );
-if ( $BID == '' ) {
-	$BID = 1;
-}
+
+$BID = $f2->bid();
 
 $block_id = intval( $block_id );
 

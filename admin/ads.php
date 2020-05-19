@@ -38,7 +38,7 @@ require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 require_once( "../include/ads.inc.php" );
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -172,11 +172,7 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 } else {
 
 	// select banner id
-	if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID = $f2->bid( $_REQUEST['BID'] );
-	} else {
-		$BID = 1;
-	}
+	$BID = $f2->bid();
 
 	$sql = "Select * from banners ";
 	$res = mysqli_query( $GLOBALS['connection'], $sql );

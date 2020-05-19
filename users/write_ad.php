@@ -35,7 +35,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once BASE_PATH . "/include/ads.inc.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 $order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );

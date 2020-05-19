@@ -31,7 +31,7 @@
  */
 
 global $f2;
-$BID         = $f2->bid( $_REQUEST['BID'] );
+$BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 ?>
 <script>

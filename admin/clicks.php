@@ -35,14 +35,10 @@ require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
 if ( ADVANCED_CLICK_COUNT != 'YES' ) {
-
 	die ( "Advanced click tracking not enabled. You will need to enable advanced click tracking in the Main Config" );
 }
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+
+$BID = $f2->bid();
 
 $sql = "Select * from banners ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
@@ -54,7 +50,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 			<?php
 			while ( $row = mysqli_fetch_array( $res ) ) {
 
-				if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+				if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';

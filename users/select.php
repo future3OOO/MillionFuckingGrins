@@ -36,16 +36,7 @@ require_once BASE_PATH . "/html/header.php";
 require_once BASE_PATH . "/include/login_functions.php";
 process_login();
 
-if ( isset( $_REQUEST['BID'] ) && ! empty( $_REQUEST['BID'] ) ) {
-	if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID             = $f2->bid( $_REQUEST['BID'] );
-		$_SESSION['BID'] = $BID;
-	} else {
-		$BID = $_SESSION['BID'];
-	}
-} else {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 if ( ! is_numeric( $BID ) ) {
 	die();

@@ -39,7 +39,7 @@ process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+$BID = $f2->bid();
 
 $banner_data  = load_banner_constants( $BID );
 $has_packages = banner_get_packages( $BID );
@@ -126,7 +126,7 @@ if ( ( $order_row['order_id'] == '' ) || ( ( $order_row['quantity'] == '0' ) ) )
 		?>
         <input type="hidden" name="selected_pixels" value="<?php echo $_REQUEST['selected_pixels']; ?>">
         <input type="hidden" name="order_id" value="<?php echo $_REQUEST['order_id']; ?>">
-        <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+        <input type="hidden" name="BID" value="<?php echo $BID; ?>">
 		<?php
 		display_package_options_table( $BID, $_REQUEST['pack'], true );
 		echo "<input type='button' value='" . $label['advertiser_pack_prev_button'] . "' onclick='window.location=\"select.php?&jEditOrder=true&BID=$BID&order_id=" . $order_row['order_id'] . "\"' >";

@@ -34,7 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/include/init.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 

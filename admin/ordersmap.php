@@ -34,11 +34,8 @@ ini_set( 'max_execution_time', 10000 );
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+$BID = $f2->bid();
+
 $banner_data = load_banner_constants( $BID );
 
 //$sql = "select * from banners where banner_id=$BID";

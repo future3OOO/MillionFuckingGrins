@@ -33,7 +33,7 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+$BID = $f2->bid();
 
 if ( isset( $_REQUEST['reset_image'] ) && $_REQUEST['reset_image'] != '' ) {
 

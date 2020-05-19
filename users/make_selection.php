@@ -38,7 +38,7 @@ require_once __DIR__ . "/../include/init.php";
 header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
 header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
-$BID         = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+$BID = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 
 // normalize...
@@ -101,11 +101,7 @@ function reserve_temp_order_pixels( $block_info, $in_str ) {
 		return false;
 	}
 
-	if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID = $f2->bid( $_REQUEST['BID'] );
-	} else {
-		$BID = 1;
-	}
+	$BID = $f2->bid();
 
 	$total = 0;
 	foreach ( $block_info as $key => $block ) {
@@ -117,7 +113,7 @@ function reserve_temp_order_pixels( $block_info, $in_str ) {
 		// enhance block info...
 		$block_info[ $key ]['currency']  = $currency;
 		$block_info[ $key ]['price']     = $price;
-		$block_info[ $key ]['banner_id'] = $f2->bid( $_REQUEST['BID'] );
+		$block_info[ $key ]['banner_id'] = $BID;
 
 		$total += $price;
 	}

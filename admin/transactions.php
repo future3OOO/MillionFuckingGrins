@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
 

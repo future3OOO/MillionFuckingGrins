@@ -38,7 +38,7 @@ process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+$BID = $f2->bid();
 $sql = "SELECT grid_width,grid_height, block_width, block_height, bgcolor, time_stamp FROM banners WHERE (banner_id = '$BID')";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 $b_row = mysqli_fetch_array( $result );

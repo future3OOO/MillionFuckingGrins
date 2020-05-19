@@ -35,12 +35,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once( "../include/ads.inc.php" );
 
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1; # Banner ID. Change this later & allow users to select multiple banners
-
-}
+$BID = $f2->bid();
 
 process_login();
 

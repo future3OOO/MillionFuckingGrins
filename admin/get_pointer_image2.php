@@ -34,11 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/../include/init.php";
 
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -46,7 +42,7 @@ $imagine = new Imagine\Gd\Imagine();
 
 // get the order id
 if ( isset( $_REQUEST['block_id'] ) && $_REQUEST['block_id'] != '' ) {
-	$sql = "SELECT * FROM blocks WHERE block_id='" . intval( $_REQUEST['block_id'] ) . "' AND banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "' ";
+	$sql = "SELECT * FROM blocks WHERE block_id='" . intval( $_REQUEST['block_id'] ) . "' AND banner_id='" . $BID . "' ";
 } else if ( isset( $_REQUEST['aid'] ) && $_REQUEST['aid'] != '' ) {
 	$sql = "SELECT * FROM ads WHERE ad_id='" . intval( $_REQUEST['aid'] ) . "' ";
 }

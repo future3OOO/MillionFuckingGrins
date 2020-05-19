@@ -41,10 +41,10 @@ echo '<script>';
 require( BASE_PATH . '/include/mouseover_js.inc.php' );
 echo '</script>';
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
-if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
+if ( ( $BID == 'all' ) || empty($BID) ) {
 	$BID     = '';
 	$bid_sql = "  ";
 }
@@ -117,7 +117,7 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
         Select Grid:
         <select name="BID" onchange="mds_submit(this)">
             <option value='all'
-				<?php if ( $f2->bid( $_REQUEST['BID'] ) == 'all' ) {
+				<?php if ( $BID == 'all' ) {
 					echo 'selected';
 				} ?>>Show All
             </option>
@@ -128,7 +128,7 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 			while ( $row = mysqli_fetch_array( $res ) ) {
 
-				if ( ( $row['banner_id'] == $BID ) && ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+				if ( ( $row['banner_id'] == $BID ) && ( isset( $_REQUEST['BID'] ) && $BID != 'all' ) ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';
@@ -150,7 +150,7 @@ if ( $_REQUEST['save_links'] != '' ) {
 		$i = 0;
 
 		foreach ( $_REQUEST['urls'] as $url ) {
-			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "'  ";
+			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $BID . "'  ";
 			//echo $sql."<br>";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$i ++;
@@ -164,7 +164,7 @@ if ( $_REQUEST['edit_links'] != '' ) {
     <h3>Edit Links:</h3>
     <form method="post" action="approve.php">
         <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-        <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+        <input type="hidden" name="BID" value="<?php echo $BID; ?>">
         <input type="hidden" name="user_id" value="<?php echo $_REQUEST['user_id']; ?>">
         <input type="hidden" value="<?php echo $_REQUEST['app']; ?>" name="app">
         <table>
@@ -200,7 +200,7 @@ if ( $_REQUEST['edit_links'] != '' ) {
 }
 
 $bid_sql2 = " AND blocks.banner_id=$BID ";
-if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
+if ( ( $BID == 'all' ) || ( empty($BID) ) ) {
 	$BID      = '';
 	$bid_sql2 = "";
 }
@@ -254,7 +254,7 @@ if ( $count > $records_per_page ) {
 ?>
 <form name="form1" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
     <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-    <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+    <input type="hidden" name="BID" value="<?php echo $BID; ?>">
     <input type="hidden" name="app" value="<?php echo $_REQUEST['app']; ?>">
     <input type="hidden" name="all_go" value="">
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">

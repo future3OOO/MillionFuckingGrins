@@ -37,13 +37,16 @@ header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 require_once __DIR__ . "/../include/init.php";
 
-$sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' and banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "' ";
+global $f2;
+$BID = $f2->bid();
+
+$sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' and banner_id='" . $BID . "' ";
 
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 $row = mysqli_fetch_array( $result );
 
 if ( $row['image_data'] == '' ) {
-	$banner_data       = load_banner_constants( $f2->bid( $_REQUEST['BID'] ) );
+	$banner_data       = load_banner_constants( $BID );
 	$row['image_data'] = base64_encode( $banner_data['GRID_BLOCK'] );
 	//$row['image_data'] =  "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABZJREFUKFNj/N/gwIAHAKXxIIYRKg0AB3qe55E8bNQAAAAASUVORK5CYII=";
 }

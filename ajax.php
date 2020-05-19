@@ -119,7 +119,7 @@ if ( isset( $_POST ) ) {
 function show_grid() {
 	global $f2;
 
-	$BID = $f2->bid( $_REQUEST['BID'] );
+	$BID = $f2->bid();
 
 	if ( ! is_numeric( $BID ) ) {
 		die;
@@ -174,7 +174,7 @@ function show_grid() {
 function show_stats() {
 	global $f2, $label;
 
-	$BID = $f2->bid( $_REQUEST['BID'] );
+	$BID = $f2->bid();
 
 	$banner_data = load_banner_constants( $BID );
 

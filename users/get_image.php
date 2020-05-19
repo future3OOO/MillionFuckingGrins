@@ -32,11 +32,7 @@
 
 define( 'NO_HOUSE_KEEP', 'YES' );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
-
-if ( $BID == '' ) {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 require_once __DIR__ . "/../include/init.php";
 

@@ -35,7 +35,7 @@ require( 'admin_common.php' );
 
 global $f2;
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $sql = "select * from banners where banner_id=" . intval( $BID );
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );

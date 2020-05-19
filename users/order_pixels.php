@@ -43,7 +43,7 @@ require_once BASE_PATH . "/include/login_functions.php";
 //print_r($_SESSION);
 //print_r($_REQUEST);
 
-$BID             = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+$BID = $f2->bid();
 $_SESSION['BID'] = $BID;
 
 if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != '' ) {

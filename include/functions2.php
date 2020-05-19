@@ -44,19 +44,60 @@ class functions2 {
 	}
 
 	/**
-	 * check that banner id is numeric and if so return it
-	 * otherwise return 1 (1 = default banner id)
+	 * Get the banner id value.
+	 *
+	 * @param int $var
+	 *
+	 * @return int|string
 	 */
-	function bid( $var ) {
-		if ( isset( $var ) ) {
+	function bid( $var = 0 ) {
+		$ret = 1;
+
+		if ( $var == 0 ) {
+
+			global $BID;
+			if ( ! empty( $BID ) ) {
+				// global
+				$ret = $BID;
+			} else if ( isset( $_REQUEST['BID'] ) && ! empty( $_REQUEST['BID'] ) ) {
+				// $_REQUEST['BID']
+				$ret = $_REQUEST['BID'];
+			} else if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
+				// $_REQUEST['ad_id']
+				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['ad_id'] ) . "'";
+				$res = mysqli_query( $GLOBALS['connection'], $sql );
+				if ( mysqli_num_rows( $res ) > 0 ) {
+					$row = mysqli_fetch_array( $res );
+					$ret = $row['banner_id'];
+				}
+			} else if ( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ) {
+				// $_SESSION['MDS_ID']
+				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
+				$res = mysqli_query( $GLOBALS['connection'], $sql );
+				if ( mysqli_num_rows( $res ) > 0 ) {
+					$row = mysqli_fetch_array( $res );
+					$ret = $row['BID'];
+				}
+			} else {
+				// temp_orders
+				$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
+				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+				if ( mysqli_num_rows( $order_result ) > 0 ) {
+					$order_row = mysqli_fetch_array( $order_result );
+
+					$ret = $order_row['banner_id'];
+				}
+			}
+
+		} else {
 			if ( is_numeric( $var ) && $var > 0 ) {
-				return $var;
+				$ret = $var;
 			} else if ( $var == 'all' ) {
-				return 'all';
+				$ret = 'all';
 			}
 		}
 
-		return "1";
+		return $ret;
 	}
 
 	/**

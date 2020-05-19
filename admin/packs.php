@@ -33,7 +33,7 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-$BID = $f2->bid( ( isset( $_REQUEST['BID'] ) ? $_REQUEST['BID'] : 1 ) );
+$BID = $f2->bid();
 ?>
 
     <p>

@@ -464,7 +464,7 @@ function insert_ad_data() {
 	}
 
 	$order_id = ( isset( $_REQUEST['order_id'] ) && ! empty( $_REQUEST['order_id'] ) ) ? $_REQUEST['order_id'] : ( isset( $_SESSION['MDS_order_id'] ) ? $_SESSION['MDS_order_id'] : 0 );
-	$BID      = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+	$BID = $f2->bid();
 
 	$ad_values = array();
 

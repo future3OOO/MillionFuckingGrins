@@ -36,7 +36,7 @@ require( 'admin_common.php' );
 ini_set( 'max_execution_time', 10000 );
 ini_set( 'max_input_vars', 10002 );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -273,7 +273,7 @@ if ( $_REQUEST['action'] == 'save' ) {
                 <option></option>
 				<?php
 				while ( $row = mysqli_fetch_array( $res ) ) {
-					if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+					if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 						$sel = 'selected';
 					} else {
 						$sel = '';

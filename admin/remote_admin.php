@@ -49,11 +49,7 @@ if ( ! $admin ) {
 	require( 'admin_common.php' );
 }
 
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -72,7 +68,7 @@ if ( $_REQUEST['approve_links'] != '' ) {
 		$i = 0;
 
 		foreach ( $_REQUEST['urls'] as $url ) {
-			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "'  ";
+			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $BID . "'  ";
 			//echo $sql."<br>";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$i ++;
@@ -113,7 +109,7 @@ if ( $_REQUEST['disapprove_links'] != '' ) {
     <form method="post" action="remote_admin.php">
         <b>Listing Links for:</b> <?php echo $u_row['LastName'] . " " . $u_row['FirstName']; ?> (<?php echo $u_row['Username']; ?>)
         <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-        <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+        <input type="hidden" name="BID" value="<?php echo $BID; ?>">
         <input type="hidden" name="user_id" value="<?php echo $_REQUEST['user_id']; ?>">
         <table>
             <tr>

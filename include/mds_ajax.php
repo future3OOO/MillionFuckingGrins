@@ -86,7 +86,7 @@ class Mds_Ajax {
 			$GLOBALS['mds_js_loaded'] = true;
 
 			global $f2;
-			$BID         = $f2->bid( $_REQUEST['BID'] );
+			$BID         = $f2->bid();
 			$banner_data = load_banner_constants( $BID );
 
 			$wp_url = '';

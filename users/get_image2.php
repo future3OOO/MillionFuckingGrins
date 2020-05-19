@@ -34,11 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/../include/init.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
-
-if ( $BID == '' ) {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 $sql = "SELECT * FROM blocks where banner_id='$BID' AND block_id='" . intval( $_REQUEST['block_id'] ) . "' ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );

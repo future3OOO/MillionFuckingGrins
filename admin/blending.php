@@ -36,11 +36,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-if ( $_REQUEST['BID'] != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 function nice_format( $val ) {
 	$val  = trim( $val );
@@ -111,7 +107,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 		<?php
 		while ( $row = mysqli_fetch_array( $res ) ) {
 
-			if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+			if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 				$sel = 'selected';
 			} else {
 				$sel = '';

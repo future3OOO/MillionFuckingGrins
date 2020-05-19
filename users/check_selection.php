@@ -40,7 +40,7 @@ header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 global $f2;
 
-$BID         = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+$BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 
 // normalize...
@@ -65,11 +65,7 @@ function check_pixels( $in_str ) {
 		return false;
 	}
 
-	if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID = $f2->bid( $_REQUEST['BID'] );
-	} else {
-		$BID = 1;
-	}
+	$BID = $f2->bid();
 
 	// check if it is free
 	$available = true;

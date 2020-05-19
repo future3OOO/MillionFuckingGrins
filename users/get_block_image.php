@@ -35,7 +35,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/../include/init.php";
 
-$row = load_banner_constants( $f2->bid( $_REQUEST['BID'] ) );
+$row = load_banner_constants( $f2->bid() );
 
 $image = $row[ $_REQUEST['image_name'] ];
 
@@ -49,5 +49,3 @@ header( "Expires: " . gmdate( 'r', time() + 60 ) ); // Date in the past
 
 header( "Content-type: image/x-png" );
 echo base64_decode( $image );
-
-?>

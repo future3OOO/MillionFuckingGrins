@@ -45,7 +45,7 @@ if ( isset( $_REQUEST['block_id'] ) ) {
 	$block_id = - 1;
 }
 
-$BID           = $f2->bid( $_REQUEST['BID'] );
+$BID           = $f2->bid();
 $output_result = "";
 
 if ( $_SESSION['MDS_ID'] == '' ) {

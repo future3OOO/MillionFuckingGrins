@@ -34,11 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/include/init.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
-
-if ( $BID == '' ) {
-	$BID = 1;
-}
+$BID = $f2->bid();
 
 if ( isset( $DB_ERROR ) ) {
 	echo "Database configuration error: " . $DB_ERROR;

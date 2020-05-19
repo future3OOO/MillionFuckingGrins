@@ -53,27 +53,7 @@ if ( isset( $gd_info['PNG Support'] ) && ! empty( $gd_info['PNG Support'] ) ) {
 	$png_support = "PNG";
 }
 
-// Work out the banner id...
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-	$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['ad_id'] ) . "'";
-	$res = mysqli_query( $GLOBALS['connection'], $sql );
-	$row = mysqli_fetch_array( $res );
-	$BID = $row['banner_id'];
-} else {
-	// get the banner_id of one if the blocks the customer owns
-	//$sql = "SELECT DISTINCT(blocks.banner_id) as banner_id, name FROM blocks, banners where blocks.banner_id=banners.banner_id AND user_id='".$_SESSION['MDS_ID']."' and (status='sold' or status='expired') LIMIT 1";
-
-	$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
-
-	$res = mysqli_query( $GLOBALS['connection'], $sql );
-	if ( $row = mysqli_fetch_array( $res ) ) {
-		$BID = $row['BID'];
-	} else {
-		$BID = 1; # this should not happen unless the above queries failed.
-	}
-}
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
