@@ -169,14 +169,14 @@ function echo_order_arrows( $row ) {
             <tr>
                 <td >
                     <a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?mode=edit&action=move_up&field_id=' . $row['field_id'] . '&field_sort=' . $row['field_sort'] . '&section=' . $row['section'] . '">
-                        <IMG SRC="sortup.gif" WIDTH="9" align="top" HEIGHT="13" BORDER="0" ALT="Move Up">
+                        <IMG SRC="images/sortup.gif" WIDTH="9" align="top" HEIGHT="13" BORDER="0" ALT="Move Up">
                     </a>
                 </td>
             </tr>
             <tr>
                 <td>
                     <a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?mode=edit&action=move_down&field_id=' . $row['field_id'] . '&field_sort=' . $row['field_sort'] . '&section=' . $row['section'] . '">
-                        <IMG SRC="sortdown.gif" WIDTH="9" HEIGHT="13" BORDER="0" ALT="Move Down">
+                        <IMG SRC="images/sortdown.gif" WIDTH="9" HEIGHT="13" BORDER="0" ALT="Move Down">
                     </a>
                 </td>
             </tr>
