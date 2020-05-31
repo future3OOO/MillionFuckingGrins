@@ -582,7 +582,7 @@ if ( ! does_field_exist( "form_fields", "field_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 	$sql = "INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', 'http://', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-	$sql = "INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed when a mouse pointer is placed over your ad)', 0, '', 0, '', '', '')";
+	$sql = "INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 }
 if ( ! does_field_exist( "form_field_translations", "field_id" ) ) {
@@ -601,7 +601,7 @@ if ( ! does_field_exist( "form_field_translations", "field_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 	$sql = "INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-	$sql = "INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed when a mouse pointer is placed over your ad)')";
+	$sql = "INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 
 	format_field_translation_table( 1 );

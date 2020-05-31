@@ -389,7 +389,7 @@ function install_db() {
         
         INSERT INTO `form_fields` VALUES (1, 1, 1, 'not_empty', 'Ad Text', 'TEXT', 1, 'Y', '', '', 'was not filled in', '', 80, 0, 0, 0, 'ALT_TEXT', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', '', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '');;;
-        INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed when a mouse pointer is placed over your ad)', 0, '', 0, '', '', '');;;
+        INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '');;;
         
         CREATE TABLE `form_field_translations` (
           `field_id` int(11) NOT NULL default '0',
@@ -403,7 +403,7 @@ function install_db() {
         
         INSERT INTO `form_field_translations` VALUES (1, 'EN', 'Ad Text', 'was not filled in', '');;;
         INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '');;;
-        INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed when a mouse pointer is placed over your ad)');;;
+        INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)');;;
     
         CREATE TABLE `form_lists` (
           `form_id` int(11) NOT NULL default '0',
@@ -750,7 +750,7 @@ function install_db() {
         
         INSERT INTO `form_fields` VALUES (1, 1, 1, 'not_empty', 'Ad Text', 'TEXT', 1, 'Y', '', '', 'was not filled in', '', 80, 0, 0, 0, 'ALT_TEXT', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', '', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '');;;
-        INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed when a mouse pointer is placed over your ad)', 0, '', 0, '', '', '');;;
+        INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '');;;
         
         CREATE TABLE `form_field_translations` (
           `field_id` int(11) NOT NULL default '0',
@@ -764,7 +764,7 @@ function install_db() {
         
         INSERT INTO `form_field_translations` VALUES (1, 'EN', 'Ad Text', 'was not filled in', '');;;
         INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '');;;
-        INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed when a mouse pointer is placed over your ad)');;;
+        INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)');;;
             
         CREATE TABLE `form_lists` (
           `form_id` int(11) NOT NULL default '0',
