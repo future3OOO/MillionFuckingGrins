@@ -38,7 +38,7 @@ require_once __DIR__ . "/include/init.php";
 if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 	header( 'Access-Control-Allow-Origin: ' . WP_URL );
 	header( 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS' );
-	header( 'Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description' );
+	header( 'Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description, X-Requested-With' );
 }
 
 // Handle POST input
@@ -49,8 +49,9 @@ if ( isset( $_POST ) ) {
 
 	// Try to json_decode the input
 	$data = json_decode( $input );
+	$data_array = array();
 
-	if ( $data == null ) {
+	if ( empty($data) ) {
 		// Invalid JSON sent so try parsing it
 
 		parse_str( $input, $data_array );
@@ -73,7 +74,7 @@ if ( isset( $_POST ) ) {
 				die;
 				break;
 			case "ga":
-				get_ad( $data );
+				get_ad( $data_array );
 				die;
 				break;
 			default:
@@ -213,7 +214,7 @@ function get_ad( $data ) {
 
 	global $prams;
 
-	$prams = load_ad_values( $data->aid );
+	$prams = load_ad_values( $data['aid'] );
 
 	if ( $prams !== false ) {
 		echo assign_ad_template( $prams );

@@ -144,15 +144,16 @@ function rescale($el) {
 
 function add_tippy() {
 	const defaultContent = $('.tooltip-source').html();
+	const isIOS = /iPhone|iPad|iPod/.test(navigator.platform);
 
-	tippy('.mds-container area', {
+	window.tippy_instance = tippy('.mds-container area', {
 		theme: 'light',
 		content: defaultContent,
 		duration: 50,
 		delay: 50,
 		trigger: 'click',
 		allowHTML: true,
-		followCursor: true,
+		followCursor: 'initial',
 		hideOnClick: true,
 		interactive: true,
 		maxWidth: 350,
@@ -163,47 +164,40 @@ function add_tippy() {
 			instance._isFetching = false;
 			instance._content = null;
 			instance._error = null;
-
+			window.tippy_instance = instance;
 		},
 		onShow(instance) {
 			if (instance._isFetching || instance._content || instance._error) {
 				return;
 			}
 
-			instance._isFetching = true;
-
-			async function postData(url = '', data = {}) {
-				return await fetch(url, {
-					method: 'POST',
-					mode: 'cors',
-					cache: 'force-cache',
-					credentials: 'same-origin',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					redirect: 'follow',
-					referrerPolicy: 'no-referrer',
-					body: JSON.stringify(data)
-				});
+			if (isIOS) {
+				$(instance.reference).click();
 			}
+
+			instance._isFetching = true;
 
 			const data = $(instance.reference).data('data');
 
-			postData(window.mds_data.ajax, {
+			let ajax_data = {
 				aid: data.id,
 				bid: data.banner_id,
 				action: 'ga'
-			})
-				.then((response) => response.text())
-				.then(function (text) {
-					instance.setContent(text);
+			};
+
+			$.ajax({
+				method: 'POST',
+				url: window.mds_data.ajax,
+				data: ajax_data,
+				dataType: 'html',
+				crossDomain: true,
+			}).success(function (data) {
+				instance.setContent(data);
 					instance._content = true;
-				})
-				.catch((error) => {
-					instance._error = error;
-					instance.setContent(`Request failed. ${error}`);
-				})
-				.finally(() => {
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+				instance._error = errorThrown;
+				instance.setContent(`Request failed. ${errorThrown}`);
+			}).always(function () {
 					instance._isFetching = false;
 				});
 
@@ -212,6 +206,18 @@ function add_tippy() {
 			instance.setContent(defaultContent);
 			instance._content = null;
 			instance._error = null;
+		}
+	});
+
+	window.is_touch = false;
+
+	$(document).on('touchstart', function () {
+		window.is_touch = true;
+	});
+
+	$(document).on('scroll', function () {
+		if (!window.is_touch && window.tippy_instance != null && typeof window.tippy_instance.hide === 'function') {
+			window.tippy_instance.hide();
 		}
 	});
 }

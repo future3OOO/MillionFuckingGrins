@@ -167,7 +167,7 @@ function echo_order_arrows( $row ) {
     <div align="left" style="margin: 0">
         <table align="left" border="0" cellpadding="0" cellspacing="0">
             <tr>
-                <td >
+                <td>
                     <a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?mode=edit&action=move_up&field_id=' . $row['field_id'] . '&field_sort=' . $row['field_sort'] . '&section=' . $row['section'] . '">
                         <IMG SRC="images/sortup.gif" WIDTH="9" align="top" HEIGHT="13" BORDER="0" ALT="Move Up">
                     </a>
