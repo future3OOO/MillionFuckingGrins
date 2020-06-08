@@ -1742,7 +1742,6 @@ function select_block( $map_x, $map_y ) {
 
 		// if conditions are met then select new blocks
 		if ( ! $max_selected && $is_adjacent && ! $existing_blocks ) {
-			$return_val = intval( $_SESSION['MDS_order_id'] );
 
 			$price      = $total = 0;
 			$num_blocks = sizeof( $new_blocks );
@@ -1754,6 +1753,8 @@ function select_block( $map_x, $map_y ) {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$_SESSION['MDS_order_id'] = mysqli_insert_id( $GLOBALS['connection'] );
 			$order_id                 = $_SESSION['MDS_order_id'];
+
+			$return_val = intval( $_SESSION['MDS_order_id'] );
 
 			$sql = "delete from blocks where user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
