@@ -59,7 +59,7 @@ if ( ! is_numeric( $BID ) ) {
 	die();
 }
 
-if ( $_REQUEST['user_id'] != '' ) {
+if ( isset($_REQUEST['user_id']) && !empty($_REQUEST['user_id']) ) {
 	$user_id = intval( $_REQUEST['user_id'] );
 	if ( ! is_numeric( $_REQUEST['user_id'] ) ) {
 		die();
