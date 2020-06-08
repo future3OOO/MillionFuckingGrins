@@ -49,8 +49,11 @@ echo "lang filename: $lang_filename ";
 require( BASE_PATH . "/lang/english_default.php" );
 $source_label = $label; // default english labels
 
-require( BASE_PATH . "/lang/" . $lang_filename );
-$dest_label = $label; // dest labels
+if ( file_exists( BASE_PATH . "/lang/" . $lang_filename ) ) {
+    require( BASE_PATH . "/lang/" . $lang_filename );
+    $dest_label = $label; // dest labels
+}
+
 //print_r($dest_label);
 // preload the source code, preg the hash key and use it as a key for the line 
 //$source_code = array();
