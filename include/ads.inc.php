@@ -202,7 +202,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
 			}
 
 			// section 1
-			display_form( $form_id, $mode, $prams, 1 );
+			mds_display_form( $form_id, $mode, $prams, 1 );
 			?>
             <div class="flex-row">
                 <input type="hidden" name="save" id="save101" value="">

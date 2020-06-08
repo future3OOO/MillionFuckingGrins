@@ -99,7 +99,7 @@ if ( $save != '' ) {
 
 	$error = validate_field_form();
 	if ( $error == '' ) {
-		$id = save_field( $error, $NEW_FIELD );
+		$id = mds_save_field( $error, $NEW_FIELD );
 		format_field_translation_table( 1 );
 		echo "OK!";
 		$NEW_FIELD            = "NO";
@@ -123,7 +123,7 @@ if ( $_REQUEST['delete'] != '' ) {
 	} else {
 
 		echo "Deleting...";
-		delete_field( $_REQUEST['field_id'] );
+		mds_delete_field( $_REQUEST['field_id'] );
 		echo "OK!";
 		$_REQUEST['field_id'] = "";
 	}

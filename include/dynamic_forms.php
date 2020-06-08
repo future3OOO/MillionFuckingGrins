@@ -185,7 +185,7 @@ function echo_order_arrows( $row ) {
     ';
 }
 
-function display_form( $form_id, $mode, $prams, $section ) {
+function mds_display_form( $form_id, $mode, $prams, $section ) {
 	global $f2, $label, $admin;
 
 	// filter vars
@@ -637,7 +637,7 @@ function display_form( $form_id, $mode, $prams, $section ) {
 	}
 }
 
-function delete_field( $field_id ) {
+function mds_delete_field( $field_id ) {
 
 	$field_id = intval( $field_id );
 
@@ -664,7 +664,7 @@ function delete_field( $field_id ) {
 
 }
 
-function save_field( $error, $NEW_FIELD ) {
+function mds_save_field( $error, $NEW_FIELD ) {
 	global $f2;
 
 	// filter vars
@@ -1818,61 +1818,6 @@ function form_mselect_field( $field_id, $selected, $size, $mode ) {
 	}
 }
 
-function get_sql_insert_fields( $form_id ) {
-	$form_id = intval( $form_id );
-
-	$sql = "SELECT * FROM form_fields WHERE form_id='$form_id' AND field_type != 'SEPERATOR' AND field_type != 'BLANK' AND field_type != 'NOTE' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-
-	$str = "";
-	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
-
-		switch ( $row['field_type'] ) {
-
-			case "IMAGE":
-				if ( $_FILES[ $row['field_id'] ]['name'] != '' ) {
-					$str .= ", `" . $row['field_id'] . "` ";
-				}
-				break;
-			case "FILE":
-				if ( $_FILES[ $row['field_id'] ]['name'] != '' ) {
-
-					$str .= ", `" . $row['field_id'] . "` ";
-				}
-				break;
-			case "DATE":
-			case "DATE_CAL":
-				$str .= ", `" . $row['field_id'] . "` ";
-				break;
-			case "CHECK":
-				$str .= ", `" . $row['field_id'] . "` ";
-				break;
-			case "TEXT":
-				$str .= ", `" . html_entity_decode( $row['field_id'] ) . "` ";
-				break;
-			default:
-				$str .= ", `" . $row['field_id'] . "` ";
-				break;
-		}
-	}
-
-	return $str;
-}
-
-// parse null strings
-function parseNull( $data ) {
-	//Be sure your data is escaped before you use this function
-	if ( rtrim( $data ) != "" ) {
-		if ( strtolower( rtrim( $data ) ) == "null" ) {
-			return "NULL";
-		} else {
-			return "'" . $data . "'";
-		}
-	} else {
-		return "NULL";
-	}
-}
-
 // Not just get..() anymore , but also saves / deletes images, and updates the skills matrix fields..
 function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_id, $op ) {
 	$form_id = intval( $form_id );
@@ -2261,7 +2206,7 @@ function build_sort_fields( $form_id, $section ) {
 
 function move_field_up( $form_id, $field_id ) {
 
-	$field = get_field( $form_id, $field_id );
+	$field = mds_get_field( $form_id, $field_id );
 
 	$section = $field['section'];
 
@@ -2286,7 +2231,7 @@ function move_field_down( $form_id, $field_id ) {
 
 	$form_id = intval( $form_id );
 
-	$field = get_field( $form_id, $field_id );
+	$field = mds_get_field( $form_id, $field_id );
 
 	$section = intval( $field['section'] );
 
@@ -2325,7 +2270,7 @@ function get_field_order( $form_id, $field_id ) {
 	return $row['field_sort'];
 }
 
-function get_field( $form_id, $field_id ) {
+function mds_get_field( $form_id, $field_id ) {
 
 	$form_id  = intval( $form_id );
 	$field_id = intval( $field_id );
@@ -2410,23 +2355,6 @@ function generate_template_tag( $form_id ) {
 		return $template_tag;
 	} else {
 		return generate_template_tag( $form_id ); // try again
-	}
-}
-
-function fix_form_field_translations() {
-
-	$sql = "DELETE FROM form_fields WHERE (form_id=4 OR form_id=5) AND section=3 ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-
-	$sql = "SELECT field_id FROM form_field_translations";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-	while ( $row = mysqli_fetch_array( $result ) ) {
-		$sql = "SELECT field_id FROM form_fields";
-		$result2 = mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-		if ( mysqli_num_rows( $result2 ) == 0 ) {
-			$sql = "DELETE FORM form_field_translations WHERE field_id=" . intval( $row['field_id'] );
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-		}
 	}
 }
 
