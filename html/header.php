@@ -92,7 +92,7 @@ mds_header_cache();
 				BID: parseInt('<?php echo $BID; ?>')
 			};
         </script>
-        <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>"></script>
+        <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>" defer></script>
 	<?php if ( $call_state == 4 ) { ?>
         <script>
 			$(function () {

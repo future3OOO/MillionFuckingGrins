@@ -127,7 +127,7 @@ class Mds_Ajax {
 					BID: parseInt('<?php echo $BID; ?>')
 				};
             </script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>"></script>
+            <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>" defer></script>
 			<?php
 		}
 	}
