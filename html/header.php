@@ -176,7 +176,7 @@ if ( $call_state == 2 || $call_state == 5 ) {
 			}
 
 			$loggedin = '';
-			if ( $_SESSION['MDS_ID'] != '' ) {
+			if ( isset($_SESSION['MDS_ID']) && $_SESSION['MDS_ID'] != '' ) {
 				$loggedin = ' logged-in';
 				?>
                 <div class="users-menu-bar">
