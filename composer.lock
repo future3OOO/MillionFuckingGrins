@@ -259,16 +259,16 @@
         },
         {
             "name": "jquery-form/form",
-            "version": "v4.2.2",
+            "version": "v4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jquery-form/form.git",
-                "reference": "4beae57bc92402e2d03ca66b5ae2942d0c94c695"
+                "reference": "fcbd5773d19a75d4b2f336df7f49788a42b71fbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jquery-form/form/zipball/4beae57bc92402e2d03ca66b5ae2942d0c94c695",
-                "reference": "4beae57bc92402e2d03ca66b5ae2942d0c94c695",
+                "url": "https://api.github.com/repos/jquery-form/form/zipball/fcbd5773d19a75d4b2f336df7f49788a42b71fbc",
+                "reference": "fcbd5773d19a75d4b2f336df7f49788a42b71fbc",
                 "shasum": ""
             },
             "require": {
@@ -313,9 +313,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jquery-form/form/issues",
-                "source": "https://github.com/jquery-form/form/tree/master"
+                "source": "https://github.com/jquery-form/form/tree/v4.3.0"
             },
-            "time": "2017-08-09T20:56:53+00:00"
+            "time": "2020-06-07T04:29:46+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
