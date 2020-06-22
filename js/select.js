@@ -65,7 +65,7 @@ let grid;
 let submit_button1;
 let submit_button2;
 let pointer;
-let pos;
+let pixel_container;
 
 const messageout = function (message) {
 	if (debug) {
@@ -102,6 +102,17 @@ $.fn.repositionStyles = function () {
 	return this;
 };
 
+function has_touch() {
+	try {
+		document.createEvent("TouchEvent");
+		console.log('has_touch true')
+		return true;
+	} catch (e) {
+		console.log('has_touch false')
+		return false;
+	}
+}
+
 window.onload = function () {
 	grid = document.getElementById("pixelimg");
 	myblocks = document.getElementById('blocks');
@@ -109,13 +120,17 @@ window.onload = function () {
 	submit_button1 = document.getElementById('submit_button1');
 	submit_button2 = document.getElementById('submit_button2');
 	pointer = document.getElementById('block_pointer');
+	pixel_container = document.getElementById('pixel_container');
 
 	window.onresize = rescale_grid;
 
 	load_order();
 
-	handle_click_events();
-	handle_touch_events();
+	if (has_touch()) {
+		handle_touch_events();
+	} else {
+		handle_click_events();
+	}
 
 	rescale_grid();
 
@@ -601,12 +616,11 @@ function center_block(coords) {
 function handle_click_events() {
 	let click = false;
 
-	$([grid, pointer]).on('mousedown', function () {
+	$(pixel_container).on('mousedown', function () {
 		click = true;
 	});
 
-	$([grid, pointer]).on('mousemove', function (event) {
-
+	$(pixel_container).on('mousemove', function (event) {
 		let coords = center_block({
 			x: event.originalEvent.pageX,
 			y: event.originalEvent.pageY
@@ -620,8 +634,7 @@ function handle_click_events() {
 		click = false;
 	});
 
-	$([grid, pointer]).on('click', function (event) {
-
+	$(pixel_container).on('click', function (event) {
 		event.preventDefault();
 
 		if (click) {
@@ -645,45 +658,18 @@ function handle_click_events() {
 }
 
 function handle_touch_events() {
-	let tap = false;
-
-	$([grid, pointer]).on('touchstart', function () {
-		tap = true;
+	let manager = new Hammer.Manager(pixel_container);
+	let Tap = new Hammer.Tap({
+		taps: 1
 	});
-
-	$([grid, pointer]).on('touchmove', function (event) {
-		const {changedTouches} = event;
-		let coords = center_block({
-			x: changedTouches[0].pageX,
-			y: changedTouches[0].pageY
-		});
-		let offset = getOffset(coords.x, coords.y);
+	manager.add(Tap);
+	manager.on('tap', function(e) {
+		let offset = getOffset(e.center.x, e.center.y);
 		if (offset == null) {
-			return false;
+			return true;
 		}
 
 		show_pointer(offset);
-		tap = false;
-	});
-
-	$([grid, pointer]).on('touchend', function (event) {
-		if (tap) {
-			tap = false;
-
-			const {changedTouches} = event;
-			let coords = center_block({
-				x: changedTouches[0].pageX,
-				y: changedTouches[0].pageY
-			});
-			let offset = getOffset(coords.x, coords.y);
-			if (offset == null) {
-				return false;
-			}
-
-			show_pointer(offset);
-			select_pixels(offset);
-		}
-
-		return false;
+		select_pixels(offset);
 	});
 }

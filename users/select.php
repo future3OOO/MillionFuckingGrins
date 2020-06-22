@@ -237,9 +237,7 @@ if ( mysqli_num_rows( $res ) > 1 ) {
 		echo $label['advertiser_sel_select_intro'];
 		?>
     </p>
-    <p>
 		<?php display_banner_selecton_form( $BID, $order_row['order_id'], $res ); ?>
-    </p>
 	<?php
 }
 
@@ -288,8 +286,8 @@ if ( ! isset( $_REQUEST['sel_mode'] ) ) {
 
         <div id="pixel_container">
             <div id="blocks"></div>
-            <span id='block_pointer' oncontextmenu="return false;" unselectable="on" draggable="false"></span>
-            <input id="pixelimg" draggable="false" unselectable="on" type="image" name="map" value='Select Pixels.' src="show_selection.php?BID=<?php echo $BID; ?>&gud=<?php echo time(); ?>" alt=""/>
+            <span id='block_pointer'></span>
+            <img id="pixelimg" draggable="false" unselectable="on" src="show_selection.php?BID=<?php echo $BID; ?>&amp;gud=<?php echo time(); ?>" alt=""/>
         </div>
 
         <input type="hidden" name="action" value="select">
