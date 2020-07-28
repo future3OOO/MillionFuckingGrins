@@ -191,15 +191,15 @@ function add_tippy() {
 				data: ajax_data,
 				dataType: 'html',
 				crossDomain: true,
-			}).success(function (data) {
+			}).done(function (data) {
 				instance.setContent(data);
-					instance._content = true;
+				instance._content = true;
 			}).fail(function (jqXHR, textStatus, errorThrown) {
 				instance._error = errorThrown;
 				instance.setContent(`Request failed. ${errorThrown}`);
 			}).always(function () {
-					instance._isFetching = false;
-				});
+				instance._isFetching = false;
+			});
 
 		},
 		onHidden(instance) {
