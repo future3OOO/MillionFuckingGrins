@@ -86,13 +86,15 @@ INSTALLATION.
 	
 	The installation script will install the database for you.
 	Fill in the database details from step 1.
-	
+
+	Note the password given to you for your admin login.
+
 	Please delete the install.php file after successful installation.
 
 
 4. Edit your configuration.
 	
-	Go to http://yourwebsite.com/admin/ and use 'ok' as the default password.
+	Go to http://yourwebsite.com/admin/ and login using the password given during the install process.
 	
 	Here is what should be configured:
 	
