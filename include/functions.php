@@ -2598,21 +2598,27 @@ function get_formatted_date( $date ) {
 
 function get_local_time( $gmdate ) {
 
-	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) { // gmt not found
+	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) {
+		// gmt not found
 		$gmdate = $gmdate . " GMT";
 	}
 	date_default_timezone_set( "GMT" );
 	$gmtime = strtotime( $gmdate );
 
-	if ( $gmtime == - 1 ) { // out of range
+	if ( $gmtime == - 1 ) {
+		// out of range
 		preg_match( "/(\d+-\d+-\d+).+/", $gmdate, $m );
 
 		return $m[1];
 	} else {
-		$dateTime = new DateTime();
-		$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
+		try {
+			$dateTime = new DateTime( $gmdate );
+			$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
 
-		return gmdate( "Y-m-d H:i:s", $gmtime + ( 3600 * $dateTime->getOffset() ) );
+			return $dateTime->format( "Y-m-d H:i:s" );
+		} catch ( Exception $e ) {
+			return gmdate( "Y-m-d H:i:s", $gmtime );
+		}
 	}
 }
 
