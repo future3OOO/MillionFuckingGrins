@@ -128,7 +128,7 @@ function assign_ad_template( $prams ) {
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 		if ( $row['field_type'] == 'IMAGE' ) {
 			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( $prams[ $row['field_id'] ] ) ) {
-				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
+				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . rtrim(BASE_HTTP_PATH, '/' ) . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
 			} else {
 				//$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
 				$str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
