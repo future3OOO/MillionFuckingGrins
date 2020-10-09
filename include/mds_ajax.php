@@ -94,41 +94,52 @@ class Mds_Ajax {
 				$wp_url = WP_URL;
 			}
 
-			// Note: Loading with CDN caused them to load out of order randomly
-			?>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
-            <script>
-				var $ = jQuery.noConflict();
-				window.mds_data = {
-					ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
-					wp: '<?php echo $wp_url; ?>',
-					winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
-					winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
-					time: '<?php echo time(); ?>',
-					BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-					moveBox: function () {
-						<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
-						moveBox2();
-						<?php } else { ?>
-						moveBox();
-						<?php } ?>
-					},
-					HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
-					REDIRECT_SWITCH: function () {
-						<?php if (REDIRECT_SWITCH == 'YES') { ?>
-						p = parent.window;
-						<?php } ?>
-					},
-					BID: parseInt('<?php echo $BID; ?>')
-				};
-            </script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>" defer></script>
-			<?php
+			if ( WP_ENABLED == "YES" ) {
+				?>
+                <script>
+					if (window.mds_js_loaded !== true) {
+						window.mds_js_loaded = true;
+						var $ = jQuery.noConflict();
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css'}).appendTo('head');
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>'}).appendTo('head');
+
+						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
+							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
+								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js', function () {
+										window.mds_data = {
+											ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+											wp: '<?php echo $wp_url; ?>',
+											winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
+											winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
+											time: '<?php echo time(); ?>',
+											BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+											moveBox: function () {
+												<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
+												moveBox2();
+												<?php } else { ?>
+												moveBox();
+												<?php } ?>
+											},
+											HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
+											REDIRECT_SWITCH: function () {
+												<?php if (REDIRECT_SWITCH == 'YES') { ?>
+												p = parent.window;
+												<?php } ?>
+											},
+											BID: parseInt('<?php echo $BID; ?>')
+										};
+										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+										});
+									});
+
+								});
+							});
+						});
+					}
+                </script>
+				<?php
+			}
 		}
 	}
 
