@@ -1880,6 +1880,14 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 				$day                          = $_REQUEST[ $row['field_id'] . "d" ];
 				$month                        = $_REQUEST[ $row['field_id'] . "m" ];
 				$year                         = $_REQUEST[ $row['field_id'] . "y" ];
+
+				if ( ! checkdate( $month, $day, $year ) ) {
+					// invalid date so use epoc
+					$day   = 1;
+					$month = 1;
+					$year  = 1970;
+				}
+
 				$_REQUEST[ $row['field_id'] ] = $year . "-" . $month . "-" . $day;
 				$ret[ $row['field_id'] ]      = $_REQUEST[ $row['field_id'] ];
 				if ( $op == "update" ) {

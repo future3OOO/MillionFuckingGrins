@@ -96,9 +96,18 @@ function load_ad_values( $ad_id ) {
 			$prams[ $fields['field_id'] ] = $row[ $fields['field_id'] ];
 
 			if ( $fields['field_type'] == 'DATE' ) {
-				$day   = $_REQUEST[ $row['field_id'] . "d" ];
-				$month = $_REQUEST[ $row['field_id'] . "m" ];
-				$year  = $_REQUEST[ $row['field_id'] . "y" ];
+				$date = date_parse( $row[ $fields['field_id'] ] );
+
+				$day   = $date['day'];
+				$month = $date['month'];
+				$year  = $date['year'];
+
+				if ( ! checkdate( $month, $day, $year ) ) {
+					// invalid date so use epoc
+					$day   = 1;
+					$month = 1;
+					$year  = 1970;
+				}
 
 				$prams[ $fields['field_id'] ] = "$year-$month-$day";
 			} else if ( ( $fields['field_type'] == 'MSELECT' ) || ( $fields['field_type'] == 'CHECK' ) ) {
@@ -162,6 +171,14 @@ function display_ad_form( $form_id, $mode, $prams ) {
 				$day                       = $_REQUEST[ $row['field_id'] . "d" ];
 				$month                     = $_REQUEST[ $row['field_id'] . "m" ];
 				$year                      = $_REQUEST[ $row['field_id'] . "y" ];
+
+				if ( ! checkdate( $month, $day, $year ) ) {
+					// invalid date so use epoc
+					$day   = 1;
+					$month = 1;
+					$year  = 1970;
+				}
+
 				$prams[ $row['field_id'] ] = "$year-$month-$day";
 			} else if ( ( $row['field_type'] == 'MSELECT' ) || ( $row['field_type'] == 'CHECK' ) ) {
 				if ( is_array( $_REQUEST[ $row['field_id'] ] ) ) {
