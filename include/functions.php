@@ -2237,6 +2237,8 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 }
 
 function get_definition( $field_type ) {
+	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
+	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
 
 	switch ( $field_type ) {
 		case "TEXT":
@@ -2252,7 +2254,11 @@ function get_definition( $field_type ) {
 			break;
 		case "DATE":
 		case "DATE_CAL":
-			return "DATETIME NOT NULL ";
+		    if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
+			    return "DATETIME NOT NULL default '1000-01-01 00:00:00'";
+		    } else {
+			    return "DATETIME NOT NULL ";
+            }
 			break;
 		case "FILE":
 			return "VARCHAR( 255 ) NOT NULL ";
