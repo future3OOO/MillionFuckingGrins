@@ -51,7 +51,7 @@ mds_header_cache();
     <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
 
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js"></script>
+    <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.jquery.js"></script>
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
