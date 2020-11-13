@@ -69,10 +69,34 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 </p>
 <?php
 
-ob_start();
-include( BASE_PATH . '/html/mouseover_box.htm' ); // edit this file to change the style of the mouseover box!
-$box = ob_get_contents();
-ob_end_flush();
+$box = '<style type="text/css">
+    #bubble {
+        position: absolute;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+        background-color: #FFFFFF;
+        border-color: #33CCFF;
+        border-style: solid;
+        border-width: 1px;
+        padding: 5px;
+        margin: 0;
+        width: 200px;
+        filter: revealtrans();
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+    }
+
+    #content {
+        padding: 0;
+        margin: 0
+    }
+</style>
+<div onmouseout="hideBubble()" id="bubble">
+<span id="content">
+</span>
+</div>
+';
 ?>
 
 <?php
