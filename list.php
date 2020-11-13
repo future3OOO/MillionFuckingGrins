@@ -36,7 +36,6 @@ global $label, $purifier;
 
 require_once( __DIR__ . '/html/header.php' );
 require_once( __DIR__ . '/include/top_ads_js.php' );
-require_once( __DIR__ . '/html/mouseover_box.htm' );
 require_once( __DIR__ . '/include/ads.inc.php' );
 
 ?>
@@ -84,7 +83,16 @@ require_once( __DIR__ . '/include/ads.inc.php' );
 							$ALT_TEXT = get_template_value( 'ALT_TEXT', 1 );
 							$ALT_TEXT = str_replace( "'", "", $ALT_TEXT );
 							$ALT_TEXT = ( str_replace( "\"", '', $ALT_TEXT ) );
-							echo $br . '<a target="_blank" data-block-id="' . $block_id . '" data-id="' . $prams['ad_id'] . '" data-alt-text="' . $ALT_TEXT . '" class="list-link" href="http://' . get_template_value( 'URL', 1 ) . '">' . get_template_value( 'ALT_TEXT', 1 ) . '</a>';
+
+							$data_values = array(
+								'id'        => $prams['ad_id'],
+								'block_id'  => $block_id,
+								'banner_id' => $BID,
+								'alt_text'  => $ALT_TEXT,
+								'url'       => get_template_value( 'URL', 1 ),
+							);
+
+							echo $br . '<a target="_blank" data-data="' . htmlspecialchars( json_encode( $data_values, JSON_HEX_QUOT | JSON_HEX_APOS ), ENT_QUOTES, 'UTF-8' ) . '" data-alt-text="' . $ALT_TEXT . '" class="list-link" href="http://' . $data_values['url'] . '">' . get_template_value( 'ALT_TEXT', 1 ) . '</a>';
 							$br = '<br>';
 						}
 

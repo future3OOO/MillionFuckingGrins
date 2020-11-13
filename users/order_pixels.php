@@ -35,15 +35,9 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once BASE_PATH . "/include/login_functions.php";
 
-//process_login();
+global $f2, $label;
 
-//echo "session id:".session_id();
-//echo " ".strlen(session_id());
-
-//print_r($_SESSION);
-//print_r($_REQUEST);
-
-$BID = $f2->bid();
+$BID             = $f2->bid();
 $_SESSION['BID'] = $BID;
 
 if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != '' ) {
@@ -101,9 +95,7 @@ require_once BASE_PATH . "/html/header.php";
 
     <script type="text/javascript">
 
-		var browser_compatible = false;
-		var browser_checked = false;
-		var selectedBlocks = new Array();
+		var selectedBlocks = [];
 		var selBlocksIndex = 0;
 
 		function refreshSelectedLayers() {
@@ -137,47 +129,6 @@ require_once BASE_PATH . "/html/header.php";
 			} else if (obj.y)
 				curtop += obj.y;
 			return curtop;
-		}
-
-		function is_browser_compatible() {
-
-			/*
-		userAgent should not be used, but since there is a bug in Opera, and there is
-		no way to detect this bug unless userAgent is used...
-			*/
-
-			if ((navigator.userAgent.indexOf("Opera") !== -1)) {
-				// does not work in Opera
-				// cannot work out why?
-				return false;
-			} else {
-
-				if (navigator.userAgent.indexOf("Gecko") !== -1) {
-					// gecko based browsers should be ok
-					// this includes safari?
-					// continue to other tests..
-
-				} else {
-					if (navigator.userAgent.indexOf("MSIE") === -1) {
-						return false; // unknown..
-					}
-				}
-
-				//return false; // mozilla incompatible
-
-			}
-
-			// check if we can get by element id
-
-			if (!document.getElementById) {
-
-				return false;
-			}
-
-			// check if we can XMLHttpRequest
-
-			return typeof XMLHttpRequest !== 'undefined';
-
 		}
 
 		var trip_count = 0;
@@ -313,17 +264,6 @@ require_once BASE_PATH . "/html/header.php";
 
 		function show_pointer(e) {
 			var button = document.getElementById('submit_button1');
-
-			//return;
-			if (!browser_checked) {
-				browser_compatible = is_browser_compatible();
-			}
-
-			if (!browser_compatible) {
-				return false;
-			}
-
-			browser_checked = true;
 
 			var pixelimg = document.getElementById('pixelimg');
 			var pointer = document.getElementById('block_pointer');
@@ -567,14 +507,14 @@ require_once BASE_PATH . "/html/header.php";
 
     </script>
     <style>
-        #block_pointer {
-            height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
-            padding: 0;
-            margin: 0;
-            line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-        }
+		#block_pointer {
+			height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
+			padding: 0;
+			margin: 0;
+			line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+		}
     </style>
 <?php
 
@@ -591,11 +531,12 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 	// CHECK THE EXTENSION TO MAKE SURE IT IS ALLOWED
 	$ALLOWED_EXT = array( 'jpg', 'jpeg', 'gif', 'png' );
 
+	$error = "";
 	if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
 		$error              .= "<strong><font color='red'>" . $label['advertiser_file_type_not_supp'] . " ($ext)</font></strong><br />";
 		$image_changed_flag = false;
 	}
-	if ( isset( $error ) ) {
+	if ( ! empty( $error ) ) {
 		//echo "<font color='red'>Error, image upload failed</font>";
 		echo $error;
 	} else {
@@ -733,7 +674,7 @@ if ( $has_packages ) {
 
 <?php
 
-if ( ! $tmp_image_file ) {
+if ( ! isset( $tmp_image_file ) || empty( $tmp_image_file ) ) {
 
 	?>
 
@@ -772,8 +713,6 @@ if ( ! $tmp_image_file ) {
 	<?php //echo $label['advertiser_select_instructions']; ?>
 
     <form method="post" action="order_pixels.php" name='pixel_form'>
-        <input type="hidden" name="jEditOrder" value="true">
-
         <p>
             <input type="button" class='big_button' <?php if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != 'temp' ) {
 				echo 'disabled';

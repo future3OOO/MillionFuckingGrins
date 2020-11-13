@@ -161,7 +161,7 @@ usort( $orders, "date_sort" );
 			<td><font face="Arial" size="2"><?php echo $order['quantity'];?></font></td>
 	<td><font face="Arial" size="2"><?php 
 
-					$sql = "select * from banners where banner_id=".intval($order['banner_id']);
+			$sql = "select * from banners where banner_id=".intval($order['banner_id']);
 			$b_result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
 			$b_row = mysqli_fetch_array($b_result);
 		

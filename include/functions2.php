@@ -62,9 +62,9 @@ class functions2 {
 			} else if ( isset( $_REQUEST['BID'] ) && ! empty( $_REQUEST['BID'] ) ) {
 				// $_REQUEST['BID']
 				$ret = $_REQUEST['BID'];
-			} else if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-				// $_REQUEST['ad_id']
-				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['ad_id'] ) . "'";
+			} else if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
+				// $_REQUEST['aid']
+				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['aid'] ) . "'";
 				$res = mysqli_query( $GLOBALS['connection'], $sql );
 				if ( mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
@@ -74,7 +74,7 @@ class functions2 {
 				// $_SESSION['MDS_ID']
 				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
 				$res = mysqli_query( $GLOBALS['connection'], $sql );
-				if ( mysqli_num_rows( $res ) > 0 ) {
+				if ( $res !== false && mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
 					$ret = $row['BID'];
 				}
@@ -88,7 +88,6 @@ class functions2 {
 					$ret = $order_row['banner_id'];
 				}
 			}
-
 		} else {
 			if ( is_numeric( $var ) && $var > 0 ) {
 				$ret = $var;

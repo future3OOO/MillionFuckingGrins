@@ -37,119 +37,14 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
+global $f2;
+
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
 ?>
-<span onmouseout="hideBubble()" id="bubble" style="position:absolute;left:0; top:0; visibility:hidden; background-color:#FFFFFF; border: 1px solid #33CCFF;padding:3px; width:250px; font-family:Arial,serif; font-size:11px;"></span>
-
 <script>
-
-	function is_right_available(box, e) {
-		return (box.clientWidth + e.clientX + h_padding) < window.winWidth;
-	}
-
-	function is_top_available(box, e) {
-		return (e.clientY - box.clientHeight - v_padding) >= 0;
-	}
-
-	function is_bot_available(box, e) {
-		return (e.clientY + box.clientHeight + v_padding) <= window.winHeight;
-	}
-
-	function is_left_available(box, e) {
-		return (e.clientX - box.clientWidth - h_padding) >= 0;
-	}
-
-	function boxFinishedMoving(box) {
-		var y = box.offsetTop;
-		var x = box.offsetLeft;
-
-		return !((y < box.ypos) || (y > box.ypos) || (x < box.xpos) || (x > box.xpos));
-	}
-
-	function moveBox() {
-
-		var box = document.getElementById('bubble');
-
-		var y = box.offsetTop;
-		var x = box.offsetLeft;
-
-		if (!boxFinishedMoving(box)) {
-			if (y < box.ypos) {
-
-				y++;
-				box.style.top = y;
-			}
-
-			if (y > box.ypos) {
-				y--;
-				box.style.top = y;
-			}
-
-			if (x < box.xpos) {
-				x++;
-				box.style.left = x;
-			}
-
-			if (x > box.xpos) {
-				x--;
-				box.style.left = x;
-			}
-			window.setTimeout("moveBox()", <?php if ( ! is_numeric( ANIMATION_SPEED ) ) {
-				echo '10';
-			} else {
-
-				echo ANIMATION_SPEED;
-			} ?>);
-		}
-
-	}
-
-	function moveBox2() {
-
-		var box = document.getElementById('bubble');
-
-		var y = box.offsetTop;
-		var x = box.offsetLeft;
-
-		var diffx;
-		var diffy;
-
-		diffx = Math.abs(x - box.xpos);
-		diffy = Math.abs(y - box.ypos);
-
-		if (!boxFinishedMoving(box)) {
-			if (y < box.ypos) {
-
-				y = y + diffy;
-				box.style.top = y;
-			}
-
-			if (y > box.ypos) {
-				y = y - diffy;
-				box.style.top = y;
-			}
-
-			if (x < box.xpos) {
-				x = x + diffx;
-				box.style.left = x;
-			}
-
-			if (x > box.xpos) {
-				x = x - diffx;
-				box.style.left = x;
-			}
-			window.setTimeout("moveBox2()", <?php if ( ! is_numeric( ANIMATION_SPEED ) ) {
-				echo '10';
-			} else {
-
-				echo ANIMATION_SPEED;
-			} ?>);
-		}
-
-	}
 
 	window.winWidth = 0;
 	window.winHeight = 0;
@@ -181,91 +76,6 @@ $banner_data = load_banner_constants( $BID );
 
 	h_padding = 10;
 	v_padding = 10;
-
-	function showBubble(e, str, area) {
-		var relTarg;
-		var bubble = document.getElementById('bubble');
-		if (!e) var e = window.event;
-		if (e.relatedTarget) relTarg = e.relatedTarget;
-		else if (e.fromElement) relTarg = e.fromElement;
-
-		b = bubble.style;
-
-		document.getElementById('bubble').innerHTML = str;
-
-		initFrameSize();
-
-		var mytop = is_top_available(bubble, e);
-		var mybot = is_bot_available(bubble, e);
-		var myright = is_right_available(bubble, e);
-		var myleft = is_left_available(bubble, e);
-
-		if (mytop) {
-			// move to the top
-			bubble.ypos = e.clientY - bubble.clientHeight - v_padding;
-		}
-
-		if (myright) {
-			// move to the right
-			bubble.xpos = e.clientX + h_padding;
-		}
-
-		if (myleft) {
-			// move to the left
-			bubble.xpos = e.clientX - bubble.clientWidth - h_padding;
-		}
-
-		if (mybot) {
-			// move to the bottom
-			bubble.ypos = e.clientY + v_padding;
-		}
-
-		b.visibility = 'visible';
-
-		moveBox2()
-
-		window.setTimeout("moveBox2()", <?php if ( ! is_numeric( ANIMATION_SPEED ) ) {
-			echo '10';
-		} else {
-			echo ANIMATION_SPEED;
-		} ?>);
-
-		<?php
-
-
-		?>
-
-	}
-
-	function hideBubble(e) {
-
-		var bubble = document.getElementById('bubble');
-		b = bubble.style;
-		b.visibility = 'hidden';
-
-	}
-
-	var timeoutId = 0;
-
-	function hideIt() {
-
-		if (timeoutId === 0) {
-
-			timeoutId = window.setTimeout('hideBubble()', '500')
-
-		}
-
-	}
-
-	function cancelIt() {
-
-		if (timeoutId !== 0) {
-
-			window.clearTimeout(timeoutId);
-			timeoutId = 0;
-		}
-
-	}
 
 	/*
 
@@ -477,7 +287,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 
 <IMG name='button_move' SRC="images/move.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Order" onclick='bm_state_change("MOVE_ORDER")'>
 <IMG name='button_move_b' SRC="images/move_b.gif" WIDTH="24" HEIGHT="20" BORDER="0" ALT="Move Block" onclick='bm_state_change("MOVE_BLOCK")'>
-<map name="main" id="main" onmousemove="cancelIt()">
+<map name="main" id="main">
 
 	<?php
 

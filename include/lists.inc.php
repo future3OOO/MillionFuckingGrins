@@ -161,7 +161,7 @@ function echo_ad_list_data( $admin ) {
 
 		if ( $column_info[ $template_tag ]['link'] == 'Y' ) { // Render as a Link to the record?
 			$AD_ID = get_template_value( 'AD_ID', 1, $admin );
-			$val   = '<a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?ad_id=' . $AD_ID . '&amp;offset=' . $cur_offset . $order_str . '">' . get_template_value( $template_tag, 1, $admin ) . "</a>";
+			$val   = '<a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?aid=' . $AD_ID . '&amp;offset=' . $cur_offset . $order_str . '">' . get_template_value( $template_tag, 1, $admin ) . "</a>";
 		}
 		?>
         <td class="list_data_cell" <?php if ( $column_info[ $template_tag ]['no_wrap'] == 'Y' ) {

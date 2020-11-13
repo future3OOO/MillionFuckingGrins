@@ -1802,7 +1802,7 @@ function select_block( $map_x, $map_y ) {
 				$sql = "UPDATE blocks SET ad_id=" . intval( $ad_id ) . " WHERE order_id=" . intval( $order_id ) . " AND banner_id=" . intval( $BID );
 				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-				$_REQUEST['ad_id'] = $ad_id;
+				$_REQUEST['aid'] = $ad_id;
 			}
 		}
 	} else {

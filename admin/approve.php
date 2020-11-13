@@ -213,6 +213,17 @@ if ( isset( $_REQUEST['app'] ) ) {
 	}
 }
 
+/*$sql = "
+SELECT Distinct orders.blocks, orders.order_date, orders.order_id, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, users.FirstName, users.LastName, users.Username, users.Email
+    FROM ads, blocks, orders, users
+    WHERE orders.approved='" . $Y_or_N . "'
+      AND orders.user_id=users.ID
+      AND orders.order_id=blocks.order_id
+      AND blocks.order_id=ads.order_id
+      {$bid_sql2}
+
+    ORDER BY orders.order_date
+";*/
 $sql = "
 SELECT orders.blocks, orders.order_date, orders.order_id, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, ads.2, users.FirstName, users.LastName, users.Username, users.Email 
     FROM ads, blocks, orders, users 

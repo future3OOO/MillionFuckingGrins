@@ -34,6 +34,8 @@ session_start();
 require_once __DIR__ . "/../include/init.php";
 require_once BASE_PATH . "/include/login_functions.php";
 
+global $f2, $label;
+
 echo $f2->get_doc();
 
 require_once BASE_PATH . "/html/header.php";

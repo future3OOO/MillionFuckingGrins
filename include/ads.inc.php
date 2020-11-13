@@ -72,7 +72,7 @@ function ad_tag_to_field_id_init() {
 
 function load_ad_values( $ad_id ) {
 
-	global $f2;
+	global $purifier;
 
 	$prams = array();
 
@@ -116,6 +116,10 @@ function load_ad_values( $ad_id ) {
 				} else {
 					$prams[ $fields['field_id'] ] = $_REQUEST[ $fields['field_id'] ];
 				}
+			} else if ( $fields['field_type'] == 'TEXTAREA' ) {
+				$val = escape_html( $prams[ $fields['field_id'] ] );
+				$val = str_replace( "\n", "<br>", $val );
+				$prams[ $fields['field_id'] ] = $purifier->purify( $val );
 			}
 		}
 
@@ -136,8 +140,8 @@ function assign_ad_template( $prams ) {
 
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 		if ( $row['field_type'] == 'IMAGE' ) {
-			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( $prams[ $row['field_id'] ] ) ) {
-				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . rtrim(BASE_HTTP_PATH, '/' ) . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
+			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( ! empty( $prams[ $row['field_id'] ] ) ) ) {
+				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
 			} else {
 				//$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
 				$str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
@@ -159,7 +163,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
 	if ( $prams == '' ) {
 		$prams              = array();
 		$prams['mode']      = ( isset( $_REQUEST['mode'] ) ? $_REQUEST['mode'] : "" );
-		$prams['ad_id']     = ( isset( $_REQUEST['ad_id'] ) ? $_REQUEST['ad_id'] : "" );
+		$prams['ad_id']     = ( isset( $_REQUEST['aid'] ) ? $_REQUEST['aid'] : "" );
 		$prams['banner_id'] = $BID;
 		$prams['user_id']   = ( isset( $_REQUEST['user_id'] ) ? $_REQUEST['user_id'] : "" );
 
@@ -202,7 +206,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
     <form method="POST" action="<?php echo htmlentities( $action ); ?>" name="form1" enctype="multipart/form-data">
 
         <input type="hidden" name="mode" value="<?php echo $mode; ?>">
-        <input type="hidden" name="ad_id" value="<?php echo $ad_id; ?>">
+        <input type="hidden" name="aid" value="<?php echo $ad_id; ?>">
         <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
         <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
         <input type="hidden" name="BID" value="<?php echo $banner_id; ?>">
@@ -340,7 +344,7 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 					if ( $admin == true ) {
 						?>
                         <td class="list_data_cell">
-                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="mds_load_page('<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?action=edit&amp;ad_id=<?php echo $prams['ad_id']; ?>', true)">
+                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="mds_load_page('<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?action=edit&amp;aid=<?php echo $prams['ad_id']; ?>', true)">
                         </td>
 						<?php
 					}
@@ -348,7 +352,7 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 					if ( $list_mode == 'USER' ) {
 						?>
                         <td class="list_data_cell">
-                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="window.location='<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?ad_id=<?php echo $prams['ad_id']; ?>'">
+                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="window.location='<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?aid=<?php echo $prams['ad_id']; ?>'">
                         </td>
 						<?php
 					}
@@ -485,7 +489,7 @@ function insert_ad_data() {
 
 	$ad_values = array();
 
-	if ( ! isset( $_REQUEST['ad_id'] ) || empty( $_REQUEST['ad_id'] ) ) {
+	if ( ! isset( $_REQUEST['aid'] ) || empty( $_REQUEST['aid'] ) ) {
 
 		$ad_id = generate_ad_id();
 		$now   = ( gmdate( "Y-m-d H:i:s" ) );
@@ -496,7 +500,7 @@ function insert_ad_data() {
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( "<br />SQL:[$sql]<br />ERROR:[" . mysqli_error( $GLOBALS['connection'] ) . "]<br />" );
 	} else {
 
-		$ad_id = intval( $_REQUEST['ad_id'] );
+		$ad_id = intval( $_REQUEST['aid'] );
 
 		if ( ! $admin ) {
 			// make sure that the logged in user is the owner of this ad.

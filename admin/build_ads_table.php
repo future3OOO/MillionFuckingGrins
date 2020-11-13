@@ -33,11 +33,10 @@
 session_start( [
 	'name' => 'MDSADMIN_PHPSESSID',
 ] );
-require_once __DIR__ . "/../include/init.php";
 
-?>
-
-<?php
+if ( ! defined( 'VERSION_INFO' ) ) {
+	exit;
+}
 
 $sql = "SELECT * FROM `form_fields` where form_id=1 AND field_type != 'BLANK' AND field_type !='SEPERATOR' AND field_type !='NOTE' ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );

@@ -53,6 +53,8 @@ if ( isset( $gd_info['PNG Support'] ) && ! empty( $gd_info['PNG Support'] ) ) {
 	$png_support = "PNG";
 }
 
+global $f2, $label;
+
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
@@ -159,7 +161,7 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		$_REQUEST['order_id']                                    = $blk_row['order_id'];
 		$_REQUEST['BID']                                         = $BID;
 		$_REQUEST['user_id']                                     = $_SESSION['MDS_ID'];
-		$_REQUEST['ad_id']                                       = "";
+		$_REQUEST['aid']                                       = "";
 		$ad_id                                                   = insert_ad_data();
 
 		$sql = "UPDATE orders SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
@@ -167,7 +169,7 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		$sql = "UPDATE blocks SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-		$_REQUEST['ad_id'] = $ad_id;
+		$_REQUEST['aid'] = $ad_id;
 	} else {
 		// initialize $_REQUEST['ad_id']
 
@@ -190,10 +192,10 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 			$sql = "UPDATE blocks SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-			$_REQUEST['ad_id'] = $ad_id;
+			$_REQUEST['aid'] = $ad_id;
 		} else {
 
-			$_REQUEST['ad_id'] = $blk_row['ad_id'];
+			$_REQUEST['aid'] = $blk_row['ad_id'];
 		}
 
 		// bug in previous versions resulted in saving the ad's user_id with a session_id
@@ -204,9 +206,9 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 }
 
 // Display ad editing forms if the ad was clicked, or 'Edit' button was pressed.
-if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
+if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 
-	$sql = "SELECT * from ads as t1, orders as t2 where t1.ad_id=t2.ad_id AND t1.user_id=" . intval( $_SESSION['MDS_ID'] ) . " and t1.banner_id=" . intval( $BID ) . " and t1.ad_id=" . intval( $_REQUEST['ad_id'] ) . " AND t1.order_id=t2.order_id ";
+	$sql = "SELECT * from ads as t1, orders as t2 where t1.ad_id=t2.ad_id AND t1.user_id=" . intval( $_SESSION['MDS_ID'] ) . " and t1.banner_id=" . intval( $BID ) . " and t1.ad_id=" . intval( $_REQUEST['aid'] ) . " AND t1.order_id=t2.order_id ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 	$row      = mysqli_fetch_array( $result );
@@ -228,8 +230,8 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
             <td valign="top"><b><?php echo $label['adv_pub_piximg']; ?></b><br>
                 <center>
 					<?php
-					if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['ad_id']; ?>" border=1><?php
+					if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
+						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['aid']; ?>" border=1><?php
 					} else {
 						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&block_id=<?php echo $_REQUEST['block_id']; ?>" border=1><?php
 					} ?>
@@ -249,7 +251,7 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 				?>
                 <form name="change" enctype="multipart/form-data" method="post">
                     <input type="file" name='pixels'><br>
-                    <input type="hidden" name="ad_id" value="<?php echo $_REQUEST['ad_id']; ?>">
+                    <input type="hidden" name="aid" value="<?php echo $_REQUEST['aid']; ?>">
                     <input type="submit" name="change_pixels" value="<?php echo $label['adv_pub_pixupload']; ?>">
                 </form>
 				<?php if ( $error ) {
@@ -307,7 +309,7 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 		}
 	} else {
 
-		$prams = load_ad_values( $_REQUEST['ad_id'] );
+		$prams = load_ad_values( $_REQUEST['aid'] );
 		display_ad_form( 1, 'user', $prams );
 	}
 } # end of ad forms
