@@ -7,7 +7,7 @@
     array (
       0 => '9999999-dev',
     ),
-    'reference' => 'bb1518da658aaee25d8045dcec5c29b4c96228f5',
+    'reference' => 'eec0cde1452f2b2ab5b45149b6d6b65e622a3f9f',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -41,12 +41,12 @@
     ),
     'imagine/imagine' => 
     array (
-      'pretty_version' => '1.2.3',
-      'version' => '1.2.3.0',
+      'pretty_version' => '1.2.4',
+      'version' => '1.2.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'cb2361e5bb4410b681462d8e4f912bc5dabf84ab',
+      'reference' => 'd2e18be6e930ca169e4f921ef73ebfc061bf55d8',
     ),
     'jquery-form/form' => 
     array (
@@ -65,7 +65,7 @@
       array (
         0 => '9999999-dev',
       ),
-      'reference' => 'bb1518da658aaee25d8045dcec5c29b4c96228f5',
+      'reference' => 'eec0cde1452f2b2ab5b45149b6d6b65e622a3f9f',
     ),
     'phpmailer/phpmailer' => 
     array (
