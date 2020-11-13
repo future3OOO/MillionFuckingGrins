@@ -34,13 +34,11 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-// edit this file to change the style of the mouseover box!
-require( BASE_PATH . '/html/mouseover_box.htm' );
-
 echo '<script>';
 require( BASE_PATH . '/include/mouseover_js.inc.php' );
 echo '</script>';
 
+global $f2;
 $BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
