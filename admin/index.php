@@ -35,6 +35,12 @@ define( 'MAIN_PHP', '1' );
 require_once __DIR__ . "/../include/init.php";
 require_once 'admin_common.php';
 
+if(WP_ENABLED == 'YES') {
+    $mds_site_url = WP_URL;
+} else {
+	$mds_site_url = BASE_HTTP_PATH;
+}
+
 ?><!DOCTYPE html>
 <html lang="">
 <head>
@@ -54,7 +60,7 @@ require_once 'admin_common.php';
         <img src="https://milliondollarscript.com/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
         <br>
         <a href="main.php">Main Summary</a><br/>
-        <a href="<?php echo BASE_HTTP_PATH; ?>" target="_blank">View Site</a><br/>
+        <a href="<?php echo $mds_site_url; ?>" target="_blank">View Site</a><br/>
         <hr>
         <b>Pixel Inventory</b><br/>
         + <a href="inventory.php">Manage Grids</a><br/>
