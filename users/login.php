@@ -65,14 +65,12 @@ if ( $target_page == '' ) {
         <td><span>
 			<?php
 			if ( do_login() ) {
+				echo "<script>window.location = '$target_page'</script>";
 				$ok = str_replace( "%username%", $_SESSION['MDS_Username'], $label['advertiser_login_success2'] );
 				$ok = str_replace( "%firstname%", $_SESSION['MDS_FirstName'], $ok );
 				$ok = str_replace( "%lastname%", $_SESSION['MDS_LastName'], $ok );
 				$ok = str_replace( "%target_page%", $target_page, $ok );
 				echo "<div align='center' >" . $ok . "</div>";
-			} else {
-				//echo "<div align='center' >".$label["advertiser_login_error"]."</div>";
-
 			}
 			?>
 		</span></td>
