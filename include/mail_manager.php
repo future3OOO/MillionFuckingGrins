@@ -197,7 +197,7 @@ function send_smtp_email( $mail_row ) {
 	}
 
 	if ( EMAIL_POP_BEFORE_SMTP == 'YES' ) {
-		$pop = POP3::popBeforeSmtp( EMAIL_POP_SERVER, POP3_PORT, 30, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, $debug_level );
+		$pop = PHPMailer\PHPMailer\POP3::popBeforeSmtp( EMAIL_POP_SERVER, POP3_PORT, 30, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, $debug_level );
 	}
 
 	$mail = new PHPMailer\PHPMailer\PHPMailer;
