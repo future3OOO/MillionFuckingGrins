@@ -106,33 +106,34 @@ class Mds_Ajax {
 						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
 							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
 								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
-									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js', function () {
-										window.mds_data = {
-											ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
-											wp: '<?php echo $wp_url; ?>',
-											winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
-											winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
-											time: '<?php echo time(); ?>',
-											BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-											moveBox: function () {
-												<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
-												moveBox2();
-												<?php } else { ?>
-												moveBox();
-												<?php } ?>
-											},
-											HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
-											REDIRECT_SWITCH: function () {
-												<?php if (REDIRECT_SWITCH == 'YES') { ?>
-												p = parent.window;
-												<?php } ?>
-											},
-											BID: parseInt('<?php echo $BID; ?>')
-										};
-										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.jquery.js', function () {
+										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js', function () {
+											window.mds_data = {
+												ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+												wp: '<?php echo $wp_url; ?>',
+												winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
+												winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
+												time: '<?php echo time(); ?>',
+												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+												moveBox: function () {
+													<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
+													moveBox2();
+													<?php } else { ?>
+													moveBox();
+													<?php } ?>
+												},
+												HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
+												REDIRECT_SWITCH: function () {
+													<?php if (REDIRECT_SWITCH == 'YES') { ?>
+													p = parent.window;
+													<?php } ?>
+												},
+												BID: parseInt('<?php echo $BID; ?>')
+											};
+											$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+											});
 										});
 									});
-
 								});
 							});
 						});
