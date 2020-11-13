@@ -36,6 +36,8 @@ require( 'admin_common.php' );
 ini_set( 'max_execution_time', 10000 );
 ini_set( 'max_input_vars', 10002 );
 
+global $f2;
+
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
@@ -59,14 +61,14 @@ if ( $_REQUEST['action'] == 'save' ) {
 	//$sql = "delete from blocks where status='nfs' AND banner_id=$BID ";
 	//mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
 
-	if ( isset( $_REQUEST['addnfs'] ) && ( ! empty( $_REQUEST['addnfs'] || $_REQUEST['addnfs'] == 0 ) ) ) {
-		$addnfs = explode( "~", $_REQUEST['addnfs'] );
+	if ( isset( $_POST['addnfs'] ) && ( ! empty( $_POST['addnfs'] || $_POST['addnfs'] == 0 ) ) ) {
+		$addnfs = json_decode( $_POST['addnfs'] );
 	} else {
 		unset( $addnfs );
 	}
 
-	if ( isset( $_REQUEST['remnfs'] ) && ( ! empty( $_REQUEST['remnfs'] ) || $_REQUEST['remnfs'] == 0 ) ) {
-		$remnfs = explode( "~", $_REQUEST['remnfs'] );
+	if ( isset( $_POST['remnfs'] ) && ( ! empty( $_POST['remnfs'] ) || $_POST['remnfs'] == 0 ) ) {
+		$remnfs = json_decode( $_POST['remnfs'] );
 	} else {
 		unset( $remnfs );
 	}
@@ -76,7 +78,7 @@ if ( $_REQUEST['action'] == 'save' ) {
 		$x = 0;
 		for ( $j = 0; $j < $banner_data['G_WIDTH']; $j ++ ) {
 			if ( isset( $addnfs ) && in_array( $cell, $addnfs ) ) {
-				$sql = "REPLACE INTO blocks (block_id, status, x, y, image_data, banner_id, click_count) VALUES ({$cell}, 'nfs', {$x}, {$y}, '{$data}', {$BID}, 0)";
+				$sql = "REPLACE INTO blocks (block_id, status, x, y, image_data, banner_id, click_count, alt_text) VALUES ({$cell}, 'nfs', {$x}, {$y}, '{$data}', {$BID}, 0, '')";
 				mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			}
 			if ( isset( $remnfs ) && in_array( $cell, $remnfs ) ) {
@@ -103,20 +105,20 @@ if ( $_REQUEST['action'] == 'save' ) {
 		var remnfs = [];
 
 		function processBlock(block) {
+			let blockid = block.attr("data-block");
 			if (block.hasClass("nfs")) {
 				block.removeClass("nfs").addClass("free");
-				var blockid = block.attr("data-block");
 				remnfs.push(blockid);
-				var index = addnfs.indexOf(blockid);
-				if (index != -1) {
+				let index = addnfs.indexOf(blockid);
+				if (index !== -1) {
 					addnfs.splice(index, 1);
 				}
 			} else if (block.hasClass("free")) {
 				block.removeClass("free").addClass("nfs");
-				var blockid = block.attr("data-block");
+				blockid = block.attr("data-block");
 				addnfs.push(blockid);
-				var index = remnfs.indexOf(blockid);
-				if (index != -1) {
+				let index = remnfs.indexOf(blockid);
+				if (index !== -1) {
 					remnfs.splice(index, 1);
 				}
 			} else if (!block.hasClass("free")) {
@@ -124,7 +126,10 @@ if ( $_REQUEST['action'] == 'save' ) {
 			}
 		}
 
-		$('.grid').selectable({
+		const $document = $(document);
+
+		$document.on('click', '.grid', function () {
+			$(this).selectable({
 			delay: 75,
 			distance: <?php echo $banner_data['BLK_WIDTH']; ?>,
 			autoRefresh: false,
@@ -136,26 +141,25 @@ if ( $_REQUEST['action'] == 'save' ) {
 				$(this).selectable("refresh");
 			}
 		});
+		});
 
-		$(".block").click(function () {
+		$document.on('click', '.block', function () {
 			processBlock($(this));
 		});
 
-		$('.save').click(function (e) {
+		$document.on('click', '.save', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			$(this).after('<img class="loading" width="16" height="16" src="../images/ajax-loader.gif" alt="Loading..." />');
 			$('.save').prop('disabled', true);
 			$('.reset').prop('disabled', true);
 
-			var posting = $.post("nfs.php", {
+			$.post("nfs.php", {
 				BID: <?php echo $BID; ?>,
 				action: "save",
-				addnfs: addnfs.join('~'),
-				remnfs: remnfs.join('~')
-			});
-
-			posting.done(function (data) {
+				addnfs: JSON.stringify(addnfs),
+				remnfs: JSON.stringify(remnfs)
+			}).done(function (data) {
 				$('.loading').hide(function () {
 					$(this).remove();
 					$('<span class="message">' + data + '</span>').insertAfter('.save').fadeOut(10000, function () {
@@ -167,19 +171,17 @@ if ( $_REQUEST['action'] == 'save' ) {
 			});
 		});
 
-		$('.reset').click(function (e) {
+		$document.on('click', '.reset', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			var result = confirm('This will unselect all NFS blocks. Are you sure you want to do this?');
-			if (result) {
+			if (confirm('This will unselect all NFS blocks. Are you sure you want to do this?')) {
 				$('.save').prop('disabled', true);
 				$('.reset').prop('disabled', true);
 				$(this).after('<img class="loading" width="16" height="16" src="../images/ajax-loader.gif" alt="Loading..." />');
-				var posting = $.post("nfs.php", {
+				$.post("nfs.php", {
 					BID: <?php echo $BID; ?>,
 					action: "reset"
-				});
-				posting.done(function (data) {
+				}).done(function (data) {
 					$('.loading').hide(function () {
 						$(this).remove();
 						$('<span class="message">' + data + '</span>').insertAfter('.reset').fadeOut(10000, function () {
