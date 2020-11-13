@@ -38,7 +38,7 @@ require_once __DIR__ . "/include/init.php";
 if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 	header( 'Access-Control-Allow-Origin: ' . WP_URL );
 	header( 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS' );
-	header( 'Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description, X-Requested-With' );
+	header( 'Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description, X-Requested-With, X-CSRF-UAP-TOKEN' );
 }
 
 // Handle POST input

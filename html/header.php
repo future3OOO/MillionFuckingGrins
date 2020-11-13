@@ -38,6 +38,11 @@ if ( $call_state < 2 || $call_state == 4 ) {
 
 mds_header_cache();
 
+if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+	header( "Content-Security-Policy: frame-ancestors 'self' " . WP_URL . "/" );
+	header( "X-Frame-Options: allow-from " . WP_URL . "/" );
+}
+
 ?><!DOCTYPE html>
 <html>
 <head>
