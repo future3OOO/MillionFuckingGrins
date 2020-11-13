@@ -49,7 +49,7 @@ if ( ! isset( $_SESSION['ADMIN'] ) || empty( $_SESSION['ADMIN'] ) ) {
         </form>
 		<?php
 	} else {
-		echo '<script type="text/javascript">parent.document.location.href = "' . BASE_HTTP_PATH . basename( SERVER_PATH_TO_ADMIN ) . '";</script>';
+		echo '<script type="text/javascript">top.location.href = "index.php";</script>';
 	}
 	die();
 }
