@@ -138,7 +138,7 @@ if ( $_REQUEST['disapprove_links'] != '' ) {
         </table>
 
         <input type="submit" value="Approve (OK)" name="approve_links"> | <input type="submit" value="Disapprove (No)" name="disapprove_links">
-        &nbsp; &nbsp;<a href="index.php">Go to Admin</a> | <a href='../users/login.php?Username=<?php echo $u_row['Username']; ?>&Password=<?php echo ADMIN_PASSWORD; ?>' target='_blank'>Login to this Advertiser's Account</a>
+        &nbsp; &nbsp;<a href="#main.php">Go to Admin</a> | <a href='../users/login.php?Username=<?php echo $u_row['Username']; ?>&Password=<?php echo ADMIN_PASSWORD; ?>' target='_blank'>Login to this Advertiser's Account</a>
     </form>
 
 <?php
