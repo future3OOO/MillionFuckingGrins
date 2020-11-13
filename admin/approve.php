@@ -34,6 +34,34 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
+echo '<style type="text/css">
+    #bubble {
+        position: absolute;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+        background-color: #FFFFFF;
+        border-color: #33CCFF;
+        border-style: solid;
+        border-width: 1px;
+        padding: 5px;
+        margin: 0;
+        width: 200px;
+        filter: revealtrans();
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+    }
+
+    #content {
+        padding: 0;
+        margin: 0
+    }
+</style>
+<div onmouseout="hideBubble()" id="bubble">
+<span id="content">
+</span>
+</div>
+';
 echo '<script>';
 require( BASE_PATH . '/include/mouseover_js.inc.php' );
 echo '</script>';
