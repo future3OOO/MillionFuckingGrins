@@ -992,7 +992,7 @@ function validate_form_data( $form_id ) {
 
 			switch ( $row['reg_expr'] ) {
 				case "not_empty":
-					if ( ( ( $row['field_type'] == 'FILE' || $row['field_type'] == 'IMAGE' ) && $_FILES[ $row['field_id'] ]['name'] == '' ) && trim( $_REQUEST[ $row['field_id'] ] == '' ) ) {
+					if ( ( ( $row['field_type'] == 'FILE' || $row['field_type'] == 'IMAGE' ) && $_FILES[ $row['field_id'] ]['name'] == '' ) || ( ( $row['field_type'] != 'FILE' && $row['field_type'] != 'IMAGE' ) && trim( $_REQUEST[ $row['field_id'] ] == '' ) ) ) {
 					    $error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 				    }
 					break;
