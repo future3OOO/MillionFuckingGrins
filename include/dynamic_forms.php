@@ -992,9 +992,21 @@ function validate_form_data( $form_id ) {
 
 			switch ( $row['reg_expr'] ) {
 				case "not_empty":
-					if ( ( ( $row['field_type'] == 'FILE' || $row['field_type'] == 'IMAGE' ) && $_FILES[ $row['field_id'] ]['name'] == '' ) || ( ( $row['field_type'] != 'FILE' && $row['field_type'] != 'IMAGE' ) && trim( $_REQUEST[ $row['field_id'] ] == '' ) ) ) {
-					    $error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
-				    }
+					if ( $row['field_type'] == 'FILE' || $row['field_type'] == 'IMAGE' ) {
+						// check if an image was saved already first by checking for the delete input
+						$del_image_key = 'del_image' . $row['field_id'];
+						if ( isset( $_REQUEST[ $del_image_key ] ) ) {
+							break;
+						}
+
+						// check if file name is empty or image size is 0
+						if ( $_FILES[ $row['field_id'] ]['name'] == '' || $_FILES[ $row['field_id'] ]['size'] == 0 ) {
+							$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
+						}
+
+					} else if ( trim( $_REQUEST[ $row['field_id'] ] == '' ) ) {
+						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
+					}
 					break;
 				case "email":
 					if ( ! validate_mail( trim( $_REQUEST[ $row['field_id'] ] ) ) ) {
