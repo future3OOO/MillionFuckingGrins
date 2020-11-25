@@ -57,7 +57,7 @@ if(WP_ENABLED == 'YES') {
 <body>
 <div class="admin-container">
     <div class="admin-menu">
-        <img src="https://milliondollarscript.com/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
+        <img src="<?php echo BASE_HTTP_PATH; ?>images/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
         <br>
         <a href="main.php">Main Summary</a><br/>
         <a href="<?php echo $mds_site_url; ?>" target="_blank">View Site</a><br/>
