@@ -109,7 +109,7 @@ if(WP_ENABLED == 'YES') {
         - <a href="payment.php">Payment Modules</a><br/>
         - <a href="aform.php">Ad Form</a><br/>
 		<?php
-		if ( WP_ENABLED == 'NO' ) {
+		if ( WP_ENABLED == 'NO' || WP_ADMIN_ENABLED == 'NO' ) {
 			?>
         <hr>
         <b>Logout</b><br/>

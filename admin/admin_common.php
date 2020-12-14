@@ -35,7 +35,7 @@ session_start( [
 ] );
 
 // WP integration
-if ( defined( 'WP_ENABLED' ) && WP_ENABLED == 'YES' ) {
+if ( defined( 'WP_ENABLED' ) && WP_ENABLED == 'YES' && WP_ADMIN_ENABLED == 'YES' ) {
 	mds_load_wp();
 
 	if ( current_user_can( 'manage_options' ) ) {
