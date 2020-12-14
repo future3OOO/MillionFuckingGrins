@@ -91,6 +91,25 @@ function mds_stats(container, bid, width, height) {
 	});
 }
 
+function mds_list(container, bid, width, height) {
+	if ($('#' + container).length > 0) {
+		return;
+	}
+
+	let list = $("<div class='list-inner' id='" + container + "'></div>");
+	list.css('width', width).css('height', height);
+	$('.' + container).append(list);
+
+	const data = {
+		action: 'show_list',
+		BID: bid
+	};
+
+	$(list).load(window.mds_data.ajax, data, function () {
+		mds_init('#' + container, false, false);
+	});
+}
+
 function receiveMessage(event, $el) {
 	if (event.origin !== window.mds_data.wp || !initialized) {
 		return;
@@ -244,6 +263,8 @@ function mds_init(el, scalemap, tippy, type) {
 				if (firstTime) {
 					$elParent.height($el.height());
 				}
+				$elParent.parent().height($el.height() + parseInt($el.css('border-bottom-width'), 10));
+				$elParent.parent().width($el.width() + parseInt($el.css('border-right-width'), 10));
 
 				// https://github.com/clarketm/image-map
 				$el.imageMap();

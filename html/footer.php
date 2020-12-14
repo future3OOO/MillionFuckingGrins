@@ -31,6 +31,7 @@
  */
 
 // MillionDollarScript footer.php
+require_once __DIR__ . "/../include/init.php";
 
 $call_state = get_call_state();
 

@@ -331,7 +331,7 @@ class external {
 		$row = mysqli_fetch_array( $result );
 
 		complete_order( $row['user_id'], $order_id );
-		debit_transaction( $order_id, $row['price'], $row['currency'], 'External', $url, 'External' );
+		debit_transaction( $order_id, $row['price'], $row['currency'], 'External', substr($url, 0, 64), 'External' );
 	}
 
 	function get_quantity( $order_id ) {

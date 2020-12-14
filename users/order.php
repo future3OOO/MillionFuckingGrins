@@ -39,6 +39,8 @@ process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
+global $f2, $label;
+
 $BID = $f2->bid();
 
 $banner_data  = load_banner_constants( $BID );
@@ -83,9 +85,7 @@ if ( $has_packages && $_REQUEST['pack'] != '' ) {
 $sql = "SELECT block_id FROM blocks WHERE user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status='reserved' AND banner_id='$BID' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 $count = mysqli_num_rows( $res );
-if ( $count < $banner_data['G_MIN_BLOCKS'] ) {
-	$not_enough_blocks = true;
-}
+$not_enough_blocks = $count < $banner_data['G_MIN_BLOCKS'];
 
 ?>
     <p>

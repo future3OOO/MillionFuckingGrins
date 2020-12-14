@@ -55,3 +55,7 @@ require_once BASE_PATH . '/include/currency_functions.php';
 require_once BASE_PATH . '/include/price_functions.php';
 require_once BASE_PATH . '/include/functions.php';
 require_once BASE_PATH . '/include/image_functions.php';
+
+if ( WP_ENABLED == 'YES' ) {
+	require_once BASE_PATH . '/include/wp_functions.php';
+}

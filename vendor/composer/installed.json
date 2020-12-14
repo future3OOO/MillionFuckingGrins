@@ -396,10 +396,6 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "support": {
-                "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.2.0"
-            },
             "funding": [
                 {
                     "url": "https://github.com/Synchro",
@@ -409,5 +405,6 @@
             "install-path": "../phpmailer/phpmailer"
         }
     ],
-    "dev": true
+    "dev": true,
+    "dev-package-names": []
 }

@@ -131,14 +131,20 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
         require_once __DIR__ . '/../include/url_functions.php';
 
 		$parsed_url     = parse_url( full_url() );
-		$BASE_HTTP_PATH = unparse_url( $parsed_url );
+		$BASE_HTTP_PATH = unparse_url( $parsed_url, true );
 
 		$SERVER_PATH_TO_ADMIN = __DIR__ . '/';
 
 		$UPLOAD_PATH = realpath( __DIR__ . '/../upload_files' ) . '/';
 
 		if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
-			define( 'UPLOAD_HTTP_PATH', $BASE_HTTP_PATH . "upload_files/" );
+			define( 'UPLOAD_HTTP_PATH', $BASE_HTTP_PATH . 'upload_files/' );
+			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
+		}
+		if ( UPLOAD_HTTP_PATH == '/upload_files/' ) {
+			$UPLOAD_HTTP_PATH = $BASE_HTTP_PATH . 'upload_files/';
+		} else {
+			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
 		}
 
 		?>
@@ -167,7 +173,7 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlspecialchars( UPLOAD_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo UPLOAD_HTTP_PATH; ?></b></font></td>
+                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlspecialchars( $UPLOAD_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
             </tr>
             <tr>
                 <td colspan="2" bgcolor="#e6f2ea">
@@ -577,7 +583,7 @@ function install_db() {
           `amount` float NOT NULL default '0',
           `currency` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `txn_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
-          `reason` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
+          `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `origin` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`transaction_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
@@ -937,7 +943,7 @@ function install_db() {
           `amount` float NOT NULL default '0',
           `currency` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `txn_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
-          `reason` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
+          `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `origin` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`transaction_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;

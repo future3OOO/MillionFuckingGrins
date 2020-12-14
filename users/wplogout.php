@@ -36,24 +36,14 @@ require_once( __DIR__ . '/../include/login_functions.php' );
 
 do_logout();
 
-require_once BASE_PATH . "/html/header.php";
+if ( WP_ENABLED == 'YES' && WP_USERS_ENABLED == 'YES' ) {
 
-?>
+	mds_load_wp();
 
-    <div class="logout-container">
-		<?php
-		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-		?>
-        <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a target="_top" href="<?php echo urlencode( WP_URL ); ?>">
-			<?php
-		} else {
-			?>
-            <img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-            <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a href="../"><?php
-		}
+	if ( is_user_logged_in() ) {
+		wp_logout();
 
-		$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
-		echo $label['advertiser_logout_home']; ?></a>
-    </div>
-<?php
-require_once BASE_PATH . "/html/footer.php";
+		wp_redirect( wp_login_url( BASE_HTTP_PATH . 'users/' ) );
+		exit;
+	}
+}

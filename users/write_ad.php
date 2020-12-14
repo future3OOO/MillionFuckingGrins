@@ -103,9 +103,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		$prams = load_ad_values( $ad_id );
 
 		?>
-        <center>
             <div class='ok_msg_label'><input type="button" class='big_button' value="<?php echo $label['write_ad_saved'] . " " . $label['write_ad_continue_button']; ?>" onclick="window.location='confirm_order.php'"></div>
-        </center>
         <p>&nbsp;</p>
 		<?php
 		display_ad_form( 1, "user", $prams );

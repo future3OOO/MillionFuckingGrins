@@ -31,7 +31,7 @@
  */
 require_once __DIR__ ."/../include/init.php";
 
-$_PAYMENT_OBJECTS['PayPal'] = new PayPal;//"paypal";
+$_PAYMENT_OBJECTS['PayPal'] = new PayPal;
 
 define ('IPN_LOGGING', 'Y');
 
@@ -84,10 +84,6 @@ if ($_POST['txn_id']!='') {
 	$req = 'cmd=_notify-validate';
 
 	foreach ($_POST as $key => $value) {
-		
-		if (get_magic_quotes_gpc()) {
-			$value = stripslashes($value);
-		}
 		$value = urlencode($value);
 		$req .= "&$key=$value";
 		
@@ -97,7 +93,7 @@ if ($_POST['txn_id']!='') {
 	pp_log_entry ($entry_line);
 
 	// post back to PayPal system to validate
-	$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
+	$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
 	$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
 	$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
 	$fp = fsockopen (PAYPAL_SERVER, 80, $errno, $errstr, 30);
@@ -210,11 +206,16 @@ if ($_POST['txn_id']!='') {
 					pay_renew_order($invoice_id);
 				} else {
 					// this is the first payment!
+
+                    $sql = "select user_id FROM orders where order_id='".intval($invoice_id)."'";
+                    $result = mysqli_query($GLOBALS['connection'], $sql) or pp_mail_error(mysqli_error($GLOBALS['connection']).$sql);
+                    $row = mysqli_fetch_array($result);
+
 					complete_order ($row['user_id'], $invoice_id);
 
 				}
 
-				debit_transaction($invoice_id, $amount, $currency, $txn_id, $reason, "PayPal");
+				debit_transaction($invoice_id, $mc_gross, $mc_currency, $txn_id, $reason_code, "PayPal");
 			}
 
 			if ($txn_type=='subscr_failed') {
@@ -264,11 +265,6 @@ if ($_POST['txn_id']!='') {
 					
 						break;
 					case "Refunded":
-						// reason_code : 'buyer_complaint', 'chargeback', 'guarantee', 'refund', 'other'
-						cancel_order ( $invoice_id);
-						credit_transaction($invoice_id, $mc_gross, $mc_currency, $txn_id, $reason_code, 'PayPal');
-
-						break;
 					case "Reversed":
 						// reason_code : 'buyer_complaint', 'chargeback', 'guarantee', 'refund', 'other'
 						cancel_order ( $invoice_id);

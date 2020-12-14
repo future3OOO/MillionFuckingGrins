@@ -35,7 +35,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once( "../include/ads.inc.php" );
 
-global $order_page;
+global $order_page, $label;
 if ( USE_AJAX == 'SIMPLE' ) {
 	$order_page = 'order_pixels.php';
 } else {
@@ -78,6 +78,10 @@ $banner_data = load_banner_constants( $BID );
 require_once BASE_PATH . "/include/login_functions.php";
 
 if ( $_SESSION['MDS_ID'] == '' ) {
+	if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+        mds_wp_login_check();
+    }
+
 	// not logged in..
 	require_once BASE_PATH . "/html/header.php";
 

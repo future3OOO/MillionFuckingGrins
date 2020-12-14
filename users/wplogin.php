@@ -32,28 +32,25 @@
 
 session_start();
 require_once __DIR__ . "/../include/init.php";
+
+// check if WP integration is enabled
+if ( WP_ENABLED !== 'YES' ) {
+	echo "false";
+	exit;
+}
+
 require_once( __DIR__ . '/../include/login_functions.php' );
 
-do_logout();
+// if user isn't logged in then log them out
+if ( ! is_logged_in() ) {
+	do_logout();
+	session_start();
+}
 
-require_once BASE_PATH . "/html/header.php";
+// try to login
+if ( do_wp_login() ) {
+	echo "true";
+	exit;
+}
 
-?>
-
-    <div class="logout-container">
-		<?php
-		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-		?>
-        <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a target="_top" href="<?php echo urlencode( WP_URL ); ?>">
-			<?php
-		} else {
-			?>
-            <img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-            <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a href="../"><?php
-		}
-
-		$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
-		echo $label['advertiser_logout_home']; ?></a>
-    </div>
-<?php
-require_once BASE_PATH . "/html/footer.php";
+echo "false";

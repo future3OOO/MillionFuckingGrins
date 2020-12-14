@@ -30,6 +30,8 @@
  *
  */
 
+require_once __DIR__ . "/../include/init.php";
+
 global $f2;
 $BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );

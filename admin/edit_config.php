@@ -117,9 +117,12 @@ $defaults = array(
 	'REDIRECT_URL'                => 'http://www.example.com',
 	'HIDE_TIMEOUT'                => '500',
 	'MDS_AGRESSIVE_CACHE'         => 'NO',
+	'BLOCK_SELECTION_MODE'        => 'YES',
 	'ERROR_REPORTING'             => 0,
 	'WP_ENABLED'                  => 'NO',
 	'WP_URL'                      => '',
+	'WP_PATH'                     => '',
+	'WP_USERS_ENABLED'            => 'NO',
 );
 
 $values = array_replace( $defaults, $_REQUEST );
@@ -207,14 +210,26 @@ define( 'REDIRECT_SWITCH', '" . $values['REDIRECT_SWITCH'] . "' );
 define( 'REDIRECT_URL', '" . $values['REDIRECT_URL'] . "' );
 define( 'HIDE_TIMEOUT', '" . $values['HIDE_TIMEOUT'] . "' );
 define( 'MDS_AGRESSIVE_CACHE', '" . $values['MDS_AGRESSIVE_CACHE'] . "' );
+define( 'BLOCK_SELECTION_MODE', '" . $values['BLOCK_SELECTION_MODE'] . "' );
 define( 'ERROR_REPORTING', " . $values['ERROR_REPORTING'] . " );
 define( 'WP_ENABLED', '" . $values['WP_ENABLED'] . "' );
 define( 'WP_URL', '" . $values['WP_URL'] . "' );
+define( 'WP_PATH', '" . $values['WP_PATH'] . "' );
+define( 'WP_USERS_ENABLED', '" . $values['WP_USERS_ENABLED'] . "' );
 ";
 	// write out the config..
 
 	$file = fopen( "../config.php", "w" );
 	fwrite( $file, $config_str );
+
+	?>
+    <script>
+		$(function () {
+			$(document).scrollTop(0);
+			window.location.reload();
+		});
+    </script>
+	<?php
 }
 
 require_once __DIR__ . "/../include/init.php";

@@ -30,30 +30,27 @@
  *
  */
 
-session_start();
-require_once __DIR__ . "/../include/init.php";
-require_once( __DIR__ . '/../include/login_functions.php' );
+function mds_load_wp() {
 
-do_logout();
+	$wpdomain = parse_url( WP_URL );
 
-require_once BASE_PATH . "/html/header.php";
+	define( 'COOKIE_DOMAIN', '.' . $wpdomain['host'] );
+	define( 'COOKIEPATH', '/' );
+	define( 'COOKIEHASH', md5( $wpdomain['host'] ) );
 
-?>
+	require_once WP_PATH . '/wp-load.php';
+	require_once WP_PATH . '/wp-includes/pluggable.php';
+}
 
-    <div class="logout-container">
-		<?php
-		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
-		?>
-        <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a target="_top" href="<?php echo urlencode( WP_URL ); ?>">
-			<?php
-		} else {
-			?>
-            <img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-            <h3><?php echo $label['advertiser_logout_ok']; ?></h3> <a href="../"><?php
+function mds_wp_login_check() {
+	if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+		// If WP integration is enabled then redirect to WP login page if not logged in
+
+		mds_load_wp();
+
+		if ( ! is_user_logged_in() ) {
+			wp_redirect( wp_login_url( BASE_HTTP_PATH . 'users/index.php' ) );
+			exit;
 		}
-
-		$label["advertiser_logout_home"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logout_home"] );
-		echo $label['advertiser_logout_home']; ?></a>
-    </div>
-<?php
-require_once BASE_PATH . "/html/footer.php";
+	}
+}

@@ -48,13 +48,13 @@ $mode = $_REQUEST['mode'];
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000; "></div>
 <b>[Ads List]</b><span style="background-color: <?php if ( ( $_REQUEST['mode'] != 'edit' ) ) {
 	echo "#F2F2F2";
-} ?>; border-style:outset; padding: 5px;"><a href="adform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] == '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] == '' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="adform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] != '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] != '' ) ) {
 	echo "#FFFFCC";
 } else {
 	echo "#F2F2F2";
-} ?> ; border-style:outset; padding: 5px;"><a href="adform.php?NEW_FIELD=YES&mode=edit">New Field</a></span> &nbsp; &nbsp; <span style="background-color: <?php echo "#FFFFCC"; ?> ; border-style:outset; padding: 5px;"><a href="adslist.php">Ads List</a></span>
+} ?> ; border-style:outset; padding: 5px;"><a href="aform.php?NEW_FIELD=YES&mode=edit">New Field</a></span> &nbsp; &nbsp; <span style="background-color: <?php echo "#FFFFCC"; ?> ; border-style:outset; padding: 5px;"><a href="alist2.php">Ads List</a></span>
 
 <hr>
 
@@ -156,11 +156,11 @@ if ( $_REQUEST['save_col'] != '' ) {
 <?php
 if ( $col_row['column_id'] != '' ) {
 
-	echo '<a href="adslist.php">+ Add new column</a>';
+	echo '<a href="alist2.php">+ Add new column</a>';
 }
 
 ?>
-<form method="POST" action="adslist.php">
+<form method="POST" action="alist2.php">
 
     <input type="hidden" name="form_id" value="1">
     <input type="hidden" name="column_id" value="<?php echo $col_row['column_id']; ?>">

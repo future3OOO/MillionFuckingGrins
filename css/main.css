@@ -183,12 +183,15 @@ Grid iframe
 .mds-container .grid-container .grid-inner {
 	overflow: hidden;
 	border: none;
-	border-bottom: 1px solid #D4D6D4;
-	border-right: 1px solid #D4D6D4;
 	padding: 0;
 	margin: 0 auto;
 	display: block;
 	max-width: 100%;
+}
+
+.mds-container #theimage {
+	border-bottom: 1px solid #D4D6D4;
+	border-right: 1px solid #D4D6D4;
 }
 
 /*

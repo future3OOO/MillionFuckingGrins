@@ -1,5 +1,15 @@
 <?php
 
+
+
+
+
+
+
+
+
+
+
 namespace Composer;
 
 use Composer\Semver\VersionParser;
@@ -18,9 +28,8 @@ private static $installed = array (
     'version' => 'dev-master',
     'aliases' => 
     array (
-      0 => '9999999-dev',
     ),
-    'reference' => '023d7988ef98927cb7fb04c752d9daecedacfdee',
+    'reference' => '2052a46a21c47a98375c21f9c0dba78f4e712f7e',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -76,9 +85,8 @@ private static $installed = array (
       'version' => 'dev-master',
       'aliases' => 
       array (
-        0 => '9999999-dev',
       ),
-      'reference' => '023d7988ef98927cb7fb04c752d9daecedacfdee',
+      'reference' => '2052a46a21c47a98375c21f9c0dba78f4e712f7e',
     ),
     'phpmailer/phpmailer' => 
     array (

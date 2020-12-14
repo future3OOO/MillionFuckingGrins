@@ -33,6 +33,7 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
+global $f2;
 $BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
@@ -46,7 +47,7 @@ $sql = "Select * from banners ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 ?>
 <form name="bidselect" method="post" action="list.php">
-    <input type="hidden" name="old_order_id" value="<?php echo $order_id; ?>">
+        <label>
     Select grid: <select name="BID" onchange="mds_submit(this)">
 
 		<?php
@@ -61,49 +62,28 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 		}
 		?>
     </select>
+        </label>
 </form>
-<hr>
-<p>
-    Here is the list of your top advertisers for the selected grid. <b>To have this list on your own page, copy and paste the following HTML code.</b>
+    <br/>
+    <p>Here is the list of your top advertisers for the selected grid. <b>To have this list on your own page, copy and paste the following HTML/JavaScript code.</b></p>
+<?php
+require_once( __DIR__ . "/../include/mds_ajax.php" );
+$mds_ajax = new Mds_Ajax();
+ob_start();
+$mds_ajax->show( 'list', $BID, 'list' );
+$output = ob_get_contents();
+?>
+    <textarea style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities( $output ); ?></textarea>
 
-</p>
+    <p>You can also use PHP:</p>
+    <textarea style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities(
+			'<?php
+require_once( BASE_PATH . "/include/mds_ajax.php" );
+$mds_ajax = new Mds_Ajax();
+$mds_ajax->show( \'list\', $BID, \'list\' );
+' ); ?></textarea>
+
+    <p>Results:</p>
 <?php
 
-$box = '<style type="text/css">
-    #bubble {
-        position: absolute;
-        left: 0;
-        top: 0;
-        visibility: hidden;
-        background-color: #FFFFFF;
-        border-color: #33CCFF;
-        border-style: solid;
-        border-width: 1px;
-        padding: 5px;
-        margin: 0;
-        width: 200px;
-        filter: revealtrans();
-        font-family: Arial, sans-serif;
-        font-size: 11px;
-    }
-
-    #content {
-        padding: 0;
-        margin: 0
-    }
-</style>
-<div onmouseout="hideBubble()" id="bubble">
-<span id="content">
-</span>
-</div>
-';
-?>
-
-<?php
-
-?>
-<TEXTAREA style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities( $box . '<script src="' . BASE_HTTP_PATH . 'top_ads_js.php?BID=' . $BID . '"></script>' ); ?></TEXTAREA>
-
-<hr>
-
-<?php include( BASE_PATH . "/include/top_ads_js.php" ); ?>
+echo $output;

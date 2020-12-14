@@ -338,12 +338,9 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 		?>
 
         <area
-                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.top.location='/admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
+                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo BASE_HTTP_PATH; ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
 
                 href="<?php echo( $row['url'] ); ?>"
-
-                onmousemove="showBubble(event, '<?php echo htmlspecialchars( str_replace( "'", "\'", ( $alt_text ) ) ); ?>', this)"
-                onmouseout="hideIt()"
 
                 shape="RECT" coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
 

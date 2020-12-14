@@ -37,31 +37,31 @@
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-                <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>General Settings</b></span></td>
+                <p><span style="font-family: Verdana,sans-serif; font-size: small; "><b>General Settings</b></span></td>
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Site Name</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site Name</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="SITE_NAME" size="49" value="<?php echo htmlentities( SITE_NAME ); ?>"/></span></td>
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Site Slogan</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site Slogan</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="SITE_SLOGAN" size="49" value="<?php echo htmlentities( SITE_SLOGAN ); ?>"/></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Site Logo URL</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site Logo URL</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="SITE_LOGO_URL" size="49" value="<?php echo htmlentities( SITE_LOGO_URL ); ?>"/><br>(http://www.example.com/images/logo.gif)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Site Contact Email</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site Contact Email</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="SITE_CONTACT_EMAIL" size="49" value="<?php echo htmlentities( SITE_CONTACT_EMAIL ); ?>"> (Please ensure that this email address has a POP account for extra email delivery reliability.)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Admin Password</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Admin Password</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="password" name="ADMIN_PASSWORD" size="49" value="<?php echo htmlentities( ADMIN_PASSWORD ); ?>"></span></td>
         </tr>
     </table>
@@ -79,26 +79,26 @@
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-                <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Paths and Locations</b><br></span></td>
+                <p><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Paths and Locations</b><br></span></td>
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Site's HTTP URL (address)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site's HTTP URL (address)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="BASE_HTTP_PATH" size="55" value="<?php echo htmlentities( BASE_HTTP_PATH ); ?>"><br>Recommended: <b>https://<?php echo htmlentities( $host . $http_url ) . "/"; ?></b></span></td>
         </tr>
 
         <tr>
             <td bgcolor="#e6f2ea">
-                <span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Server Path to MDS Root Directory</span>
+                <span style="font-family: Verdana,sans-serif; font-size: small; ">Server Path to MDS Root Directory</span>
             </td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="BASE_PATH" size="55" value="<?php echo htmlentities( BASE_PATH ); ?>"><br>Recommended: <b><?php echo htmlentities( $file_path ); ?></b></span>
             </td>
         </tr>
 
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Server Path to Admin</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Server Path to Admin</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="SERVER_PATH_TO_ADMIN" size="55" value="<?php echo htmlentities( SERVER_PATH_TO_ADMIN ); ?>"><br>Recommended: <b><?php echo htmlentities( str_replace( '\\', '/', getcwd() ) ); ?>/</b></span></td>
         </tr>
 		<?php
@@ -112,18 +112,18 @@
 
 		?>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Path to upload directory</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Path to upload directory</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="UPLOAD_PATH" size="55" value="<?php echo htmlentities( UPLOAD_PATH ); ?>"><br>Recommended: <b><?php echo htmlentities( str_replace( '\\', '/', $file_path . "/upload_files/" ) ); ?></b></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">HTTP URL to upload directory</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">HTTP URL to upload directory</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="UPLOAD_HTTP_PATH" size="55" value="<?php echo htmlentities( UPLOAD_HTTP_PATH ); ?>"><br>Recommended: <b>https://<?php echo htmlentities( str_replace( '\\', '/', $host . $http_url . "/upload_files/" ) ); ?></b></span></td>
         </tr>
         <tr>
             <td colspan="2">
-	<span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+	<span style="font-family: Verdana,sans-serif; font-size: small; ">
 NOTES<br>
  - Server Path to Admin is the full path to your admin directory, <span style="color: red; ">including a slash at the end</span><br>
  - The Site's HTTP URL must include a<span style="color: red; "> slash at the end</span><br>
@@ -138,36 +138,36 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-                <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>MySQL Settings</b></span></td>
+                <span style="font-family: Verdana,sans-serif; font-size: small; "><b>MySQL Settings</b></span></td>
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Database Username</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Database Username</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="MYSQL_USER" size="29" value="<?php echo MYSQL_USER; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Database Password</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Database Password</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="password" name="MYSQL_PASS" size="29" value="<?php echo MYSQL_PASS; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Database Name</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Database Name</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="MYSQL_DB" size="29" value="<?php echo MYSQL_DB; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Server Hostname</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Server Hostname</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="MYSQL_HOST" size="29" value="<?php echo MYSQL_HOST; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Server Port</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Server Port</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="MYSQL_PORT" size="29" value="<?php echo MYSQL_PORT; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">MySQL Server Socket (optional)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">MySQL Server Socket (optional)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="MYSQL_SOCKET" size="29" value="<?php echo MYSQL_SOCKET; ?>"></span></td>
         </tr>
     </table>
@@ -190,24 +190,24 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-                <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Localization - Time and Date</b></span></td>
+                <p><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Localization - Time and Date</b></span></td>
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Display Date Format</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Display Date Format</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="DATE_FORMAT" size="49" value="<?php echo htmlentities( DATE_FORMAT ); ?>"><br> Note: Only works for the mouseover add(see http://www.php.net/date for formatting info)</span></td>
         </tr>
 
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Input Date Sequence</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Input Date Sequence</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	   <input type="text" name="DATE_INPUT_SEQ" size="49" value="<?php echo( DATE_INPUT_SEQ ); ?>"> Eg. YMD for the international date standard (ISO 8601). The sequence should always contain one D, one M and one Y only, in any order.
 	  </span></td>
         </tr>
 
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">GMT Difference</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">GMT Difference</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <select name="GMT_DIF" value="<?php echo htmlentities( GMT_DIF ); ?>">
           <?php
           $timezone_identifiers = DateTimeZone::listIdentifiers();
@@ -228,12 +228,12 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-                <p><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Grid Image Settings</b></span></td>
+                <p><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Grid Image Settings</b></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">
        Output Grid Image(s) As</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	   <input type="radio" name="OUTPUT_JPEG" size="49" value="Y" <?php if ( OUTPUT_JPEG == 'Y' ) {
 		   echo " checked ";
 	   } ?> >JPEG (Lossy compression). JPEG Quality: <input type="text" name='jpeg_quality' value="<?php echo JPEG_QUALITY; ?>" size="2">% <br><input type="radio" name="output_jpeg" value="N" <?php if ( OUTPUT_JPEG == 'N' ) {
@@ -245,9 +245,9 @@ NOTES<br>
 	   </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">
        Interlace Grid Image?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	   <input type="radio" name="INTERLACE_SWITCH" size="49" value="YES" <?php if ( INTERLACE_SWITCH == 'YES' ) {
 		   echo " checked ";
 	   } ?> > Yes (Parts of the grid are 'previewed' while loading) Only works well for PNG or GIF. IE has a bug for JPG files)<br>
@@ -258,9 +258,9 @@ NOTES<br>
         </tr>
 
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">
        Display a grid in the background?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	   <input type="radio" name="DISPLAY_PIXEL_BACKGROUND" size="49" value="YES" <?php if ( DISPLAY_PIXEL_BACKGROUND == 'YES' ) {
 		   echo " checked ";
 	   } ?> > Yes. (A blank pixel grid is loaded almost instantly, and then the real pixel grid is loaded on top)<br>
@@ -270,8 +270,8 @@ NOTES<br>
 	   </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Pixel Selection Method</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Pixel Selection Method</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
 	  <input type="radio" name="USE_AJAX" value="SIMPLE"  <?php if ( USE_AJAX == 'SIMPLE' ) {
 		  echo " checked ";
 	  } ?> >Simple (Upload whole image at a time, users can start ordering without logging in. Uses AJAX. Recommended.) <br>
@@ -284,9 +284,9 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">
        Resize uploaded pixels automatically?</td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	   <input type="radio" name="MDS_RESIZE" size="49" value="YES" <?php if ( MDS_RESIZE == 'YES' ) {
 		   echo " checked ";
 	   } ?> > Yes. Uploaded pixels will be resized to fit in to the blocks<br>
@@ -312,9 +312,9 @@ NOTES<br>
 
 		?>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">
        Output processed images to:</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	  <select name="BANNER_DIR" size="3">
 	   <option value='pixels/' <?php if ( $BANNER_DIR == 'pixels/' ) {
 		   echo ' selected ';
@@ -345,15 +345,15 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-      <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Email Settings</b>
+      <span style="font-family: Verdana,sans-serif; font-size: small; "><b>Email Settings</b>
 	 
 	  
 	</span></td>
 
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Advertiser when an order is Confirmed?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Advertiser when an order is Confirmed?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
      <input type="radio" name="EMAIL_USER_ORDER_CONFIRMED" value="YES"  <?php if ( EMAIL_USER_ORDER_CONFIRMED == 'YES' ) {
 	     echo " checked ";
      } ?> >Yes<br>
@@ -363,8 +363,8 @@ NOTES<br>
 	 </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Admin when an order is Confirmed?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Admin when an order is Confirmed?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_ORDER_CONFIRMED" value="YES"  <?php if ( EMAIL_ADMIN_ORDER_CONFIRMED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -374,8 +374,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Advertiser when an order is Completed?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Advertiser when an order is Completed?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_USER_ORDER_COMPLETED" value="YES"  <?php if ( EMAIL_USER_ORDER_COMPLETED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -385,8 +385,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Admin when an order is Completed?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Admin when an order is Completed?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_ORDER_COMPLETED" value="YES"  <?php if ( EMAIL_ADMIN_ORDER_COMPLETED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -396,8 +396,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Advertiser when an order is Pended?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Advertiser when an order is Pended?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_USER_ORDER_PENDED" value="YES"  <?php if ( EMAIL_USER_ORDER_PENDED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -407,8 +407,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Admin when an order is Pended?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Admin when an order is Pended?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_ORDER_PENDED" value="YES"  <?php if ( EMAIL_ADMIN_ORDER_PENDED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -418,8 +418,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Advertiser when an order is Expired?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Advertiser when an order is Expired?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_USER_ORDER_EXPIRED" value="YES"  <?php if ( EMAIL_USER_ORDER_EXPIRED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -429,8 +429,8 @@ NOTES<br>
 	  </span></td>
         <tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Email Admin when an order is Expired?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Email Admin when an order is Expired?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_ORDER_EXPIRED" value="YES"  <?php if ( EMAIL_ADMIN_ORDER_EXPIRED == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes<br>
@@ -439,8 +439,8 @@ NOTES<br>
 	  } ?> >No<br>
 	  </span></td>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Send validation email to user?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Send validation email to user?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EM_NEEDS_ACTIVATION" value="YES"  <?php if ( EM_NEEDS_ACTIVATION == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - users need to validate their account before loging in.<br>
@@ -450,8 +450,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Send validation email to Admin?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Send validation email to Admin?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_ACTIVATION" value="YES"  <?php if ( EMAIL_ADMIN_ACTIVATION == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes. When a user signs up, a copy of the validation email is sent to admin.<br>
@@ -461,8 +461,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Pixels Modified: Send a notification email to Admin?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Pixels Modified: Send a notification email to Admin?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="EMAIL_ADMIN_PUBLISH_NOTIFY" value="YES"  <?php if ( EMAIL_ADMIN_PUBLISH_NOTIFY == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes. When a user modifies their pixels, a notification email is sent to admin.<br>
@@ -491,7 +491,7 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" width="360" bgcolor="#e6f2ea">
-                <p><span style="font-family: Verdana,sans-serif; font-size: x-small; "><b>SMTP Settings</b><br>
+                <p><span style="font-family: Verdana,sans-serif; font-size: small; "><b>SMTP Settings</b><br>
 	  <input type="checkbox" name="USE_SMTP" value="YES"  <?php if ( USE_SMTP == 'YES' ) {
 		  echo " checked ";
 	  } ?> >Enable SMTP Server. (All outgoing email will be sent via authenticated SMTP server connection. By default, the email is sent using the PHP mail() function, and there is no need to turn this option on. Please make sure to fill in all the fields if you enable this option. POP port setting is used to verify that the script can connect to a POP account to check if the username and password was correctly filled in when the test button is clicked. )<br>
@@ -499,43 +499,43 @@ NOTES<br>
                 </p></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">SMTP Server address</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">SMTP Server address</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="EMAIL_SMTP_SERVER" size="33" value="<?php echo EMAIL_SMTP_SERVER; ?>"><br>Eg. mail.example.com</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">POP3 Server address</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">POP3 Server address</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="EMAIL_POP_SERVER" size="33" value="<?php echo EMAIL_POP_SERVER; ?>"><br>Eg. mail.example.com, usually the same as the SMTP server.</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">SMTP/POP3 Username</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">SMTP/POP3 Username</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="EMAIL_SMTP_USER" size="33" value="<?php echo EMAIL_SMTP_USER; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">SMTP/POP3 Password</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">SMTP/POP3 Password</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="password" name="EMAIL_SMTP_PASS" size="33" value="<?php echo EMAIL_SMTP_PASS; ?>"></span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">SMTP Authentication Hostname</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">SMTP Authentication Hostname</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="EMAIL_SMTP_AUTH_HOST" size="33" value="<?php echo EMAIL_SMTP_AUTH_HOST; ?>">(This is usually the same as your SMTP Server address)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">SMTP Port</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">SMTP Port</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
                 <input type="text" name="SMTP_PORT" size="33" value="<?php echo SMTP_PORT; ?>">(Leave blank to default to 465)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">POP3 Port</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">POP3 Port</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
                 <input type="text" name="POP3_PORT" size="33" value="<?php echo POP3_PORT; ?>">(Leave blank to default to 995)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Enable email TLS/SSL</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Enable email TLS/SSL</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
         <input type="radio" name="EMAIL_TLS" value="1"  <?php if ( EMAIL_TLS == '1' ) {
 	        echo " checked ";
         } ?> >Yes<br>
@@ -544,8 +544,8 @@ NOTES<br>
         } ?> >No
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">My SMTP server uses the POP-before-SMTP mechanism</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">My SMTP server uses the POP-before-SMTP mechanism</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
      <input type="radio" name="EMAIL_POP_BEFORE_SMTP" value="YES"  <?php if ( EMAIL_POP_BEFORE_SMTP == 'YES' ) {
 	     echo " checked ";
      } ?> >Yes<br>
@@ -555,8 +555,8 @@ NOTES<br>
 	 </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Enable email debug (saves file in /mail/.maildebug.log)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Enable email debug (saves file in /mail/.maildebug.log)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
                 <input type="radio" name="EMAIL_DEBUG" value="YES"  <?php if ( EMAIL_DEBUG == 'YES' ) {
 	                echo " checked ";
                 } ?> >Yes<br>
@@ -583,8 +583,8 @@ NOTES<br>
 
 		?>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Outgoing email queue settings</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Outgoing email queue settings</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       Send a maxiumum of <input type="text" name="EMAILS_PER_BATCH" size="3" value="<?php echo EMAILS_PER_BATCH; ?>">emails per batch (enter a number > 0)<br>
 	  On error, retry <input type="text" name="EMAILS_MAX_RETRY" size="3" value="<?php echo EMAILS_MAX_RETRY; ?>"> times before giving up. (recommened: 15)<br>
 	  On error, wait at least <input type="text" name="EMAILS_ERROR_WAIT" size="3" value="<?php echo EMAILS_ERROR_WAIT; ?>">minutes before retry. (20 minutes recommended)<br>
@@ -602,36 +602,36 @@ NOTES<br>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
             <td colspan="2" bgcolor="#e6f2ea">
-      <span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Misc Settings</b>
+      <span style="font-family: Verdana,sans-serif; font-size: small; "><b>Misc Settings</b>
 	 
 	  
 	</span></td>
 
         </tr>
         <tr>
-            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">How many days to keep Expired orders before cancellation?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many days to keep Expired orders before cancellation?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="DAYS_RENEW" size="2" value="<?php echo DAYS_RENEW; ?>">(Enter a number. 0 = Do not cancel)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">How many days to keep Confirmed (but not paid) orders before cancellation?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many days to keep Confirmed (but not paid) orders before cancellation?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="DAYS_CONFIRMED" size="2" value="<?php echo DAYS_CONFIRMED; ?>">(Enter a number. 0 = never cancel)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">How many <b>hours</b> to keep Unconfirmed orders before deletion?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many <b>hours</b> to keep Unconfirmed orders before deletion?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="HOURS_UNCONFIRMED" size="2" value="<?php echo HOURS_UNCONFIRMED; ?>">(Enter a number. 0 = never delete)</span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">How many days to keep Cancelled orders before deletion?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many days to keep Cancelled orders before deletion?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="DAYS_CANCEL" size="2" value="<?php echo DAYS_CANCEL; ?>">(Enter a number. 0 = never delete. Note: If deleted, the order will stay in the database, and only the status will simply  change to 'deleted'. The blocks will be freed)</span></td>
         </tr>
 
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Enable URL cloaking?<br>(Supposedly, when enabled, the advertiser's link will get a better advantage from search engines.)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Enable URL cloaking?<br>(Supposedly, when enabled, the advertiser's link will get a better advantage from search engines.)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="ENABLE_CLOAKING" value="YES"  <?php if ( ENABLE_CLOAKING == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - All links will point directly to the Advertiser's URL. Click tracking will be managed by a JavaScript.) <br>
@@ -641,8 +641,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Validate URLs by connecting to them?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Validate URLs by connecting to them?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="VALIDATE_LINK" value="YES"  <?php if ( VALIDATE_LINK == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - The script will try to connect to the Advertiser's url to make sure that the link is correct.) <br>
@@ -660,8 +660,8 @@ NOTES<br>
 	-->
         <tr>
 
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Memory Limit</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Memory Limit</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
 	 <input type='radio' name='MEMORY_LIMIT' value='8M' <?php if ( MEMORY_LIMIT == '8M' ) {
 		 echo ' checked ';
 	 } ?> > 8MB  | <input type='radio' name='MEMORY_LIMIT' value='12M' <?php if ( MEMORY_LIMIT == '12M' ) {
@@ -676,15 +676,16 @@ NOTES<br>
 						echo ' checked ';
 					} ?> > 128M | <input type='radio' name='MEMORY_LIMIT' value='256M' <?php if ( MEMORY_LIMIT == '256M' ) {
 						echo ' checked ';
-					} ?> > 256M (Note: If your script is reporting a 'memory exhausted' error, please check to make sure that you have currectly defined your grid size)
+					} ?> > 256M
+                    <br/>(Note: If your script is reporting a 'memory exhausted' error, please check to make sure that you have currectly defined your grid size)
 
 	</span></td>
 
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Error Reporting</span></td>
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">Error Reporting</span></td>
             <td bgcolor="#e6f2ea">
-		<span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+		<span style="font-family: Verdana,sans-serif; font-size: small; ">
 			<input type="text" name="ERROR_REPORTING" size="40" value="<?php echo ERROR_REPORTING; ?>"> (PHP error_reporting value)<br/>
 			More information: <a target="_blank" href="http://php.net/manual/en/function.error-reporting.php">http://php.net/manual/en/function.error-reporting.php</a>
 		</span>
@@ -702,11 +703,12 @@ NOTES<br>
 		?>
 
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Redirect when a user clicks on available block? </span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Redirect when a user clicks on available block? </span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="REDIRECT_SWITCH" value="YES"  <?php if ( REDIRECT_SWITCH == 'YES' ) {
 	      echo " checked ";
-      } ?> >Yes - When an available block is clicked, redirect to: <input type="text" name="redirect_url" size="30" value="<?php echo $REDIRECT_URL; ?>"> <br><b>NOTE:</b> This option will only wrok for grids that are on the same domain as the script (browser security). If the grid is placed on another domain, IE may report a 'permission denied' JavaScript error. <br>
+      } ?> >Yes - When an available block is clicked, redirect to: <input type="text" name="redirect_url" size="30" value="<?php echo $REDIRECT_URL; ?>">
+                    <br>Note: This option will only work for grids that are on the same domain as the script (browser security). If the grid is placed on another domain, IE may report a 'permission denied' JavaScript error. <br>
 	  <input type="radio" name="REDIRECT_SWITCH" value="NO"  <?php if ( REDIRECT_SWITCH == 'NO' ) {
 		  echo " checked ";
 	  } ?> >No (default)<br>
@@ -714,8 +716,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Advanced Click Count? </span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Advanced Click Count? </span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="ADVANCED_CLICK_COUNT" value="YES"  <?php if ( ADVANCED_CLICK_COUNT == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - Clicks will be counted by day <br>
@@ -726,8 +728,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Use PayPal Subscription features? </span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Use PayPal Subscription features? </span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="USE_PAYPAL_SUBSCR" value="YES"  <?php if ( USE_PAYPAL_SUBSCR == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - When customer places pixels for rent, paypal will subscribe them and re-bill automatically. This feature is in Beta right now, not recommended.  <br>
@@ -738,8 +740,8 @@ NOTES<br>
 	  </span></td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Force the browser to cache the HTML image map? </span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Force the browser to cache the HTML image map? </span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="MDS_AGRESSIVE_CACHE" value="YES"  <?php if ( MDS_AGRESSIVE_CACHE == 'YES' ) {
 	      echo " checked ";
       } ?> >Yes - The script will tell the browser to cache the page to save download time. This feature may only work on Apache based servers. Disable if your grid does not refresh, even though you processed the pixels. <br>
@@ -749,17 +751,33 @@ NOTES<br>
 	
 	  </span></td>
         </tr>
+        <tr>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Show block Selection Mode (1, 4, 6 blocks)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
+                    <?php
+                    if ( ! defined( 'BLOCK_SELECTION_MODE' ) ) {
+	                    define( 'BLOCK_SELECTION_MODE', 'YES' );
+                    }
+                    ?>
+      <input type="radio" name="BLOCK_SELECTION_MODE" value="YES"  <?php if ( BLOCK_SELECTION_MODE == 'YES' ) {
+	      echo " checked ";
+      } ?> >Yes - When Pixel Selection Method is set to Advanced users will be shown an option to select blocks 1, 4 or 6 at a time.<br>
+	  <input type="radio" name="BLOCK_SELECTION_MODE" value="NO"  <?php if ( BLOCK_SELECTION_MODE == 'NO' ) {
+		  echo " checked ";
+	  } ?> >No - They will only be able to select 1 block at a time. If you want to adjust how large of block they can select you can edit the grid settings under Manage Grids.<br>
+	  </span></td>
+        </tr>
     </table>
 
     <p>&nbsp;</p>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
-            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Mouseover Effects</b></span>
+            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Mouseover Effects</b></span>
             </td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Show a box when the positioning mouse over a block?</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">Show a box when the positioning mouse over a block?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
 	  <input type="radio" name="ENABLE_MOUSEOVER" value="POPUP"  <?php if ( ENABLE_MOUSEOVER == 'POPUP' ) {
 		  echo " checked ";
 	  } ?> >Yes - Simple popup box, with no animation<br>
@@ -774,8 +792,8 @@ NOTES<br>
 				define( 'HIDE_TIMEOUT', '500' );
 			}
 			?>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">Delay before hiding</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Delay before hiding</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="HIDE_TIMEOUT" size="2" value="<?php echo HIDE_TIMEOUT; ?>">milliseconds (eg. enter 500 to wait 500 milliseconds before hiding the box)</span></td>
         </tr>
     </table>
@@ -788,29 +806,54 @@ NOTES<br>
 	if ( ! defined( 'WP_URL' ) ) {
 		define( 'WP_URL', '' );
 	}
+
+	if ( ! defined( 'WP_PATH' ) ) {
+		define( 'WP_PATH', '' );
+	}
+
+	if ( ! defined( 'WP_USERS_ENABLED' ) ) {
+		define( 'WP_USERS_ENABLED', 'NO' );
+	}
 	?>
     <p>&nbsp;</p>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
-            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><b>Integrations</b></span>
+            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Integrations</b></span>
             </td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">WordPress Integration</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-size: xx-small; font-family: Verdana,sans-serif; ">
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">WordPress Integration</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
 	  <input type="radio" name="WP_ENABLED" value="YES"  <?php if ( WP_ENABLED == 'YES' ) {
 		  echo " checked ";
 	  } ?> >Yes - WordPress integration features will be enabled. Click here for more information.<br>
 	  <input type="radio" name="WP_ENABLED" value="NO"  <?php if ( WP_ENABLED == 'NO' ) {
 		  echo " checked ";
 	  } ?> >No - Normal operation<br>
-	  </span></td>
-        </tr>
-        <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; ">WordPress Site Address (URL, no trailing slash)</span></td>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: xx-small; "><input type="url" name="WP_URL" value="<?php echo WP_URL; ?>"></span><br/>
+	  </span><br>
                 Note: WP integration requres a separate plugin to be installed in WP that you can download <a target="_blank" href="https://milliondollarscript.com/million-dollar-script-2-1-wordpress-integration-plugin/">here</a>.
             </td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">WordPress Site Address (URL, no trailing slash)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><input type="url" name="WP_URL" value="<?php echo WP_URL; ?>" style="width:98%"></span><br/>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">WordPress Site Path (absolute path to WP install, no trailing slash)</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><input type="text" name="WP_PATH" value="<?php echo WP_PATH; ?>" style="width:98%"></span><br/>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">WordPress Users Integration</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
+	  <input type="radio" name="WP_USERS_ENABLED" value="YES"  <?php if ( WP_USERS_ENABLED == 'YES' ) {
+		  echo " checked ";
+	  } ?> >Yes - WordPress user integration features will be enabled. Click here for more information.<br>
+	  <input type="radio" name="WP_USERS_ENABLED" value="NO"  <?php if ( WP_USERS_ENABLED == 'NO' ) {
+		  echo " checked ";
+	  } ?> >No - Normal operation<br>
+	  </span></td>
         </tr>
     </table>
 

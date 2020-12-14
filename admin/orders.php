@@ -467,7 +467,7 @@ $cur_page ++;
                 <td><?php echo escape_html( $row['FirstName'] . " " . $row['LastName'] ); ?></td>
                 <td><?php echo $row['Username']; ?> (<a href='edit.php?user_id=<?php echo $row['ID']; ?>'>#<?php echo $row['ID']; ?></a>)</td>
                 <td>#<?php echo $row['order_id']; ?></td>
-                <td><a href='ads.php?ad_id=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></td>
+                <td><a href='alist.php?aid=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></td>
                 <td><?php
 
 					$sql = "select * from banners where banner_id=" . $row['banner_id'];

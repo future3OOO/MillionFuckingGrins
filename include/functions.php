@@ -1481,14 +1481,14 @@ function select_block( $map_x, $map_y ) {
 	$clicked_blocks = array();
 	$return_val     = "";
 
-	$sql = "SELECT status, user_id, ad_id FROM blocks where block_id=" . intval( $clicked_block ) . " AND banner_id=" . intval( $BID );
+	$sql = "SELECT status, user_id, ad_id FROM blocks WHERE block_id=" . intval( $clicked_block ) . " AND banner_id=" . intval( $BID );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result );
 
 	if ( ( $row['status'] == '' ) || ( ( $row['status'] == 'reserved' ) && ( $row['user_id'] == $_SESSION['MDS_ID'] ) ) ) {
 
 		// put block on order
-		$sql = "SELECT blocks,status,ad_id,order_id FROM orders where user_id=" . intval( $_SESSION['MDS_ID'] ) . " and order_id=" . intval( $_SESSION['MDS_order_id'] ) . " and banner_id=" . intval( $BID ) . " ";
+		$sql = "SELECT blocks,status,ad_id,order_id FROM orders WHERE user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND order_id=" . intval( $_SESSION['MDS_order_id'] ) . " AND banner_id=" . intval( $BID ) . " AND status!='deleted'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row = mysqli_fetch_array( $result );
 		if ( $row['blocks'] != '' ) {

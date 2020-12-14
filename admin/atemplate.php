@@ -47,7 +47,7 @@ require_once( "../include/ads.inc.php" );
 	echo "#FFFFCC";
 } ?>; border-style:outset; padding: 5px;"><a href="adform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] != '' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="adform.php?NEW_FIELD=YES&mode=edit">New Field</a></span>&nbsp; &nbsp; <span style="background-color: <?php echo "#ffffcc"; ?> ; border-style:outset; padding: 5px;"><a href="adtemplate.php">Edit Template</a></span> <span style="background-color: <?php echo "#F2F2F2"; ?> ; border-style:outset; padding: 5px;"><a href="adslist.php">Ad List</a></span>
+} ?>; border-style:outset; padding: 5px;"><a href="adform.php?NEW_FIELD=YES&mode=edit">New Field</a></span>&nbsp; &nbsp; <span style="background-color: <?php echo "#ffffcc"; ?> ; border-style:outset; padding: 5px;"><a href="atemplate.php">Edit Template</a></span> <span style="background-color: <?php echo "#F2F2F2"; ?> ; border-style:outset; padding: 5px;"><a href="alist2.php">Ad List</a></span>
 
     <hr>
     Here you can edit the template for the ads. The ads are displayed when a mouse is moved over the pixels. <b>You will need to edit this template after inserting or removing a field on the Ad Form.</b><p>The rules are simple... if you want <b>to display to the value of a field, put two % signs around the field's template tag</b>, like this %TEMPLATE_TAG%. If you want
@@ -62,7 +62,7 @@ echo "Current Language: [" . $_SESSION['MDS_LANG'] . "] Select language:";
 
 ?>
 
-    <form name="lang_form" action="adtemplate.php">
+    <form name="lang_form" action="atemplate.php">
         <input type="hidden" name="field_id" value="<?php echo $field_id; ?>"/>
         <input type="hidden" name="mode" value="<?php echo $mode; ?>"/>
         <select name='lang' onChange="mds_submit(this)">
@@ -118,7 +118,7 @@ if ( $_REQUEST['mouseover_ad_template'] == '' ) {
 }
 
 ?>
-    <form method="POST" action="adtemplate.php">
+    <form method="POST" action="atemplate.php">
 
         <textarea name='mouseover_ad_template' rows=10 cols=50><?php echo escape_html( stripslashes( $_REQUEST['mouseover_ad_template'] ) ); ?></textarea><br>
         <input type="submit" name='save' value="Save">

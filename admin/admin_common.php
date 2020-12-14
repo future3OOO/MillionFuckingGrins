@@ -34,24 +34,38 @@ session_start( [
 	'name' => 'MDSADMIN_PHPSESSID',
 ] );
 
-if ( ( isset( $_REQUEST['pass'] ) && $_REQUEST['pass'] != '' ) && ( defined( "MAIN_PHP" ) && MAIN_PHP == '1' ) ) {
-	if ( stripslashes( $_REQUEST['pass'] ) == ADMIN_PASSWORD ) {
-		$_SESSION['ADMIN'] = '1';
-	}
-}
-if ( ! isset( $_SESSION['ADMIN'] ) || empty( $_SESSION['ADMIN'] ) ) {
-	if ( defined( "MAIN_PHP" ) && MAIN_PHP == '1' ) {
-		?>
-        Please input admin password:<br>
-        <form method='post' action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <input type="password" name='pass'>
-            <input type="submit" value="OK">
-        </form>
-		<?php
-	} else {
-		echo '<script type="text/javascript">top.location.href = "index.php";</script>';
-	}
-	die();
-}
+// WP integration
+if ( defined( 'WP_ENABLED' ) && WP_ENABLED == 'YES' ) {
+	mds_load_wp();
 
-?>
+	if ( current_user_can( 'manage_options' ) ) {
+		if ( ! defined( 'MAIN_PHP' ) ) {
+			define( 'MAIN_PHP', '1' );
+		}
+		$_SESSION['ADMIN'] = '1';
+	} else {
+		wp_redirect( wp_login_url() );
+		die();
+	}
+} else {
+
+	if ( ( isset( $_REQUEST['pass'] ) && $_REQUEST['pass'] != '' ) && ( defined( "MAIN_PHP" ) && MAIN_PHP == '1' ) ) {
+		if ( stripslashes( $_REQUEST['pass'] ) == ADMIN_PASSWORD ) {
+			$_SESSION['ADMIN'] = '1';
+		}
+	}
+	if ( ! isset( $_SESSION['ADMIN'] ) || empty( $_SESSION['ADMIN'] ) ) {
+		if ( defined( "MAIN_PHP" ) && MAIN_PHP == '1' ) {
+			?>
+            Please input admin password:<br>
+            <form method='post' action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <input type="password" name='pass'>
+                <input type="submit" value="OK">
+            </form>
+			<?php
+		} else {
+			echo '<script type="text/javascript">top.location.href = "index.php";</script>';
+		}
+		die();
+	}
+}

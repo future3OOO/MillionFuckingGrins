@@ -37,6 +37,12 @@ const submit_options = {
 	success: mds_form_submit_success,
 };
 
+function scroll_to_top() {
+	$("#mds-top")[0].scrollIntoView();
+	document.body.scrollLeft -= 20;
+	document.body.scrollTop -= 20;
+}
+
 function mds_load_page(page, force) {
 	// remove hashtag from page
 	if (window.location.hash !== "" && (page === undefined || (window.location.hash !== page && force !== true))) {
@@ -44,6 +50,7 @@ function mds_load_page(page, force) {
 	}
 
 	$(".admin-content").load(page, function () {
+		scroll_to_top();
 	});
 }
 
@@ -134,17 +141,16 @@ $(function () {
 			return false;
 		}
 
+		if (url.endsWith('.txt')) {
+			admin_content.html('<embed style="width:100%;height:100%;" src="' + url + '" />');
+		} else {
 		admin_content.load(url, function (response, status) {
 			if (status === "success") {
-				if (url.endsWith('LICENSE.txt')) {
-					admin_content.html(response.replace(/\r\n|\r|\n/g, '<br />'));
-				}
-			}
-		});
-
-		$(document).scrollTop(0);
-
+					scroll_to_top();
 		window.location.hash = '#' + url;
+				}
+			});
+		}
 
 		return false;
 	});

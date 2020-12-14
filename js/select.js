@@ -105,10 +105,8 @@ $.fn.repositionStyles = function () {
 function has_touch() {
 	try {
 		document.createEvent("TouchEvent");
-		console.log('has_touch true')
 		return true;
 	} catch (e) {
-		console.log('has_touch false')
 		return false;
 	}
 }
@@ -267,9 +265,9 @@ function invert_blocks(block, OffsetX, OffsetY) {
 		y: y
 	});
 
-	// TODO: add option to disable these
 	// additional blocks if multiple selection radio buttons are selected
-	if (document.getElementById('sel4').checked) {
+	const sel4 = document.getElementById('sel4');
+	if (sel4 !== null && sel4.checked) {
 		// select 4 - 4x4
 
 		x = OffsetX + BLK_WIDTH;
@@ -299,7 +297,8 @@ function invert_blocks(block, OffsetX, OffsetY) {
 	} else {
 		// select 6 - 3x2
 
-		if (document.getElementById('sel6').checked) {
+		const sel6 = document.getElementById('sel6');
+		if (sel6 !== null && sel6.checked) {
 
 			x = OffsetX + BLK_WIDTH;
 			y = OffsetY;
@@ -532,13 +531,14 @@ function getOffset(x, y) {
 function get_pointer_size() {
 	let size = {};
 
-	// TODO: add option to disable these
-	if (document.getElementById('sel4').checked) {
+	const sel4 = document.getElementById('sel4');
+	if (sel4 !== null && sel4.checked) {
 		size.width = BLK_WIDTH * 2;
 		size.height = BLK_HEIGHT * 2;
 
 	} else {
-		if (document.getElementById('sel6').checked) {
+		const sel6 = document.getElementById('sel6');
+		if (sel6 !== null && sel6.checked) {
 			size.width = BLK_WIDTH * 3;
 			size.height = BLK_HEIGHT * 2;
 		} else {

@@ -73,6 +73,9 @@ class Mds_Ajax {
 			case "stats":
 				$this->stats( $BID );
 				break;
+			case "list":
+				$this->list( $BID );
+				break;
 			default:
 				break;
 		}
@@ -191,7 +194,7 @@ class Mds_Ajax {
 		if ( $this->add_container !== false ) {
 			$container = $this->add_container . $BID;
 			?>
-            <div class="stats-container <?php echo $container; ?>"></div>
+            <div class="mds-container stats-container <?php echo $container; ?>"></div>
 			<?php
 		}
 
@@ -211,6 +214,40 @@ class Mds_Ajax {
 					window.mds_ajax_request.done(mds_stats_call);
 				} else {
 					mds_stats_call();
+				}
+			});
+        </script>
+		<?php
+	}
+
+	private function list( int $BID ) {
+		$this->mds_js_loaded();
+
+		$container = 'list' . $BID;
+
+		if ( $this->add_container !== false ) {
+			$container = $this->add_container . $BID;
+			?>
+            <div class="mds-container list-container <?php echo $container; ?>"></div>
+			<?php
+		}
+
+		?>
+        <script>
+			$(function () {
+				let mds_list_call = function () {
+					var load_wait = setInterval(function () {
+						if (typeof mds_list == 'function') {
+							mds_list('<?php echo $container; ?>', <?php echo $BID; ?>);
+							clearInterval(load_wait);
+						}
+					}, 100);
+				}
+
+				if (window.mds_ajax_request != null) {
+					window.mds_ajax_request.done(mds_list_call);
+				} else {
+					mds_list_call();
 				}
 			});
         </script>

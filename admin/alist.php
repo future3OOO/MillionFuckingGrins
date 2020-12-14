@@ -42,7 +42,7 @@ $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
-if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
+if ( isset( $_REQUEST['aid'] ) && is_numeric( $_REQUEST['aid'] ) ) {
 
 
 	$gd_info = @gd_info();
@@ -56,7 +56,7 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 		$png_support = "PNG";
 	};
 
-	$prams = load_ad_values( $_REQUEST['ad_id'] );
+	$prams = load_ad_values( $_REQUEST['aid'] );
 
 	// pre-check for failure
 	if ( $prams['user_id'] == "" ) {
@@ -88,8 +88,8 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
             <td valign="top"><b><?php echo $label['adv_pub_piximg']; ?></b><br>
                 <center>
 					<?php
-					if ( $_REQUEST['ad_id'] != '' ) {
-						?><img id="order_image_preview" src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['ad_id']; ?>" border=1><?php
+					if ( $_REQUEST['aid'] != '' ) {
+						?><img id="order_image_preview" src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['aid']; ?>" border=1><?php
 					} else {
 						?><img id="order_image_preview" src="get_order_image.php?BID=<?php echo $BID; ?>&block_id=<?php echo $_REQUEST['block_id']; ?>" border=1><?php
 					} ?>
@@ -107,9 +107,9 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 				$label['adv_pub_pixtochng'] = str_replace( '%SIZE_Y%', $size['y'], $label['adv_pub_pixtochng'] );
 				echo $label['adv_pub_pixtochng'];
 				?>
-                <form name="change" enctype="multipart/form-data" method="post" action="ads.php">
+                <form name="change" enctype="multipart/form-data" method="post" action="alist.php">
                     <input type="file" name='pixels'><br>
-                    <input type="hidden" name="ad_id" value="<?php echo $_REQUEST['ad_id']; ?>">
+                    <input type="hidden" name="aid" value="<?php echo $_REQUEST['aid']; ?>">
                     <input type="submit" name="change_pixels" value="<?php echo $label['adv_pub_pixupload']; ?>"></form><?php if ( $error ) {
 					echo "<font color='red'>" . $error . "</font>";
 					$error = '';
@@ -131,8 +131,8 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 			display_ad_form( 1, "user", '' );
 		} else {
 			insert_ad_data( true ); // admin mode
-			$prams = load_ad_values( $_REQUEST['ad_id'] );
-			update_blocks_with_ad( $_REQUEST['ad_id'], $prams['user_id'] );
+			$prams = load_ad_values( $_REQUEST['aid'] );
+			update_blocks_with_ad( $_REQUEST['aid'], $prams['user_id'] );
 			display_ad_form( 1, "user", $prams );
 			// disapprove the pixels because the ad was modified..
 
@@ -146,15 +146,15 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 				publish_image( $BID );
 				process_map( $BID );
 			}
-			echo 'Ad Saved. <a href="ads.php?BID=' . $prams['banner_id'] . '">&lt;&lt; Go to the Ad List</a>';
+			echo 'Ad Saved. <a href="alist.php?BID=' . $prams['banner_id'] . '">&lt;&lt; Go to the Ad List</a>';
 			echo "<hr>";
 		}
 	} else {
 
-		$prams = load_ad_values( $_REQUEST['ad_id'] );
+		$prams = load_ad_values( $_REQUEST['aid'] );
 		display_ad_form( 1, "user", $prams );
 	}
-	$prams  = load_ad_values( $_REQUEST['ad_id'] );
+	$prams  = load_ad_values( $_REQUEST['aid'] );
 	$sql    = "select * FROM users where ID='" . intval( $prams['user_id'] ) . "' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	$u_row  = mysqli_fetch_array( $result );
@@ -178,7 +178,7 @@ if ( isset( $_REQUEST['ad_id'] ) && is_numeric( $_REQUEST['ad_id'] ) ) {
 	$res = mysqli_query( $GLOBALS['connection'], $sql );
 	?>
 
-    <form name="bidselect" method="post" action="ads.php">
+    <form name="bidselect" method="post" action="alist.php">
 
         Select grid: <select name="BID" onchange="mds_submit(this)">
             <option></option>

@@ -32,10 +32,15 @@
 
 session_start();
 require_once __DIR__ . "/../include/init.php";
+if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+	mds_wp_login_check();
+}
+
 require_once BASE_PATH . "/html/header.php";
 require_once BASE_PATH . "/include/login_functions.php";
 process_login();
 
+global $f2;
 $BID = $f2->bid();
 
 if ( ! is_numeric( $BID ) ) {
@@ -73,48 +78,50 @@ if ( $order_row != null ) {
 
 $cannot_sel = "";
 if ( isset( $_REQUEST['select'] ) && ! empty( $_REQUEST['select'] ) ) {
+	if ( defined( 'BLOCK_SELECTION_MODE' ) && BLOCK_SELECTION_MODE == 'YES' ) {
+		if ( $_REQUEST['sel_mode'] == 'sel4' ) {
 
-	if ( $_REQUEST['sel_mode'] == 'sel4' ) {
+			$max_x = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
+			$max_y = $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];
 
-		$max_x = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
-		$max_y = $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];
+			$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
+			if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] );
+			}
+			if ( ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			}
+			if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			}
+		} else if ( $_REQUEST['sel_mode'] == 'sel6' ) {
 
-		$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
-		if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] );
-		}
-		if ( ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
-		}
-		if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
-		}
-	} else if ( $_REQUEST['sel_mode'] == 'sel6' ) {
+			$max_x = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
+			$max_y = $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];
 
-		$max_x = $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];
-		$max_y = $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];
+			$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
 
-		$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
+			if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] );
+			}
+			if ( ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			}
+			if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			}
 
-		if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] );
-		}
-		if ( ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
-		}
-		if ( ( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'] <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + $banner_data['BLK_WIDTH'], $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
-		}
+			if ( ( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ) <= $max_x ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ), $_REQUEST['map_y'] );
+			}
 
-		if ( ( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ) <= $max_x ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ), $_REQUEST['map_y'] );
-		}
-
-		if ( ( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ) <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
-			$cannot_sel = select_block( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ), $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			if ( ( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ) <= $max_x ) && ( $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] <= $max_y ) ) {
+				$cannot_sel = select_block( $_REQUEST['map_x'] + ( $banner_data['BLK_WIDTH'] * 2 ), $_REQUEST['map_y'] + $banner_data['BLK_HEIGHT'] );
+			}
+		} else {
+			$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
 		}
 	} else {
-
 		$cannot_sel = select_block( $_REQUEST['map_x'], $_REQUEST['map_y'] );
 	}
 }
@@ -161,60 +168,60 @@ if ( isset( $order_row['blocks'] ) && $order_row['blocks'] != "" ) {
     <script src="../js/select.js"></script>
 
     <style>
-        #block_pointer {
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
-            position: absolute;
-            left: 0;
-            top: 0;
-            background-color: transparent;
-            visibility: hidden;
-            height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
-            line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -moz-user-select: none;
-            box-shadow: inset 0 0 0 1px #000;
-        }
+		#block_pointer {
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			position: absolute;
+			left: 0;
+			top: 0;
+			background-color: transparent;
+			visibility: hidden;
+			height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
+			line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-touch-callout: none;
+			-moz-user-select: none;
+			box-shadow: inset 0 0 0 1px #000;
+		}
 
-        span[id^='block'] {
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
-            position: absolute;
-            background-color: #FFFFFF;
-            width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
-            height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-        }
+		span[id^='block'] {
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			position: absolute;
+			background-color: #FFFFFF;
+			width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
+			height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+		}
 
-        #pixel_container {
-            width: <?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>px;
-            position: relative;
-            margin: 0 auto;
-            max-width: 100%;
-        }
+		#pixel_container {
+			width: <?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>px;
+			position: relative;
+			margin: 0 auto;
+			max-width: 100%;
+		}
 
-        #pixelimg {
-            width: <?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>px;
-            height: auto;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            user-select: none;
-            -moz-user-select: none;
-            -webkit-tap-highlight-color: transparent !important;
-            margin: 0 auto;
-            float: none;
-            display: block;
-            background: transparent;
-            max-width: 100%;
-        }
+		#pixelimg {
+			width: <?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>px;
+			height: auto;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			user-select: none;
+			-moz-user-select: none;
+			-webkit-tap-highlight-color: transparent !important;
+			margin: 0 auto;
+			float: none;
+			display: block;
+			background: transparent;
+			max-width: 100%;
+		}
     </style>
 
     <p>
@@ -237,7 +244,7 @@ if ( mysqli_num_rows( $res ) > 1 ) {
 		echo $label['advertiser_sel_select_intro'];
 		?>
     </p>
-		<?php display_banner_selecton_form( $BID, $order_row['order_id'], $res ); ?>
+	<?php display_banner_selecton_form( $BID, $order_row['order_id'], $res ); ?>
 	<?php
 }
 
@@ -265,16 +272,22 @@ if ( ! isset( $_REQUEST['sel_mode'] ) ) {
 ?>
 
     <form method="post" action="select.php" name='pixel_form'>
-        <input type="hidden" name="jEditOrder" value="true">
         <p><b><?php
-        // TODO: add option to disable these
-                echo $label['selection_mode']; ?></b> <input type="radio" id='sel1' name='sel_mode' value='sel1' <?php if ( ( $_REQUEST['sel_mode'] == '' ) || ( $_REQUEST['sel_mode'] == 'sel1' ) ) {
+				if ( defined( 'BLOCK_SELECTION_MODE' ) && BLOCK_SELECTION_MODE == 'YES' ) {
+				echo $label['selection_mode']; ?></b> <input type="radio" id='sel1' name='sel_mode' value='sel1' <?php if ( ( $_REQUEST['sel_mode'] == '' ) || ( $_REQUEST['sel_mode'] == 'sel1' ) ) {
 				echo " checked ";
 			} ?> > <label for='sel1'><?php echo $label['select1']; ?></label> | <input type="radio" name='sel_mode' id='sel4' value='sel4' <?php if ( ( $_REQUEST['sel_mode'] == 'sel4' ) ) {
 				echo " checked ";
 			} ?> > <label for="sel4"><?php echo $label['select4']; ?></label> | <input type="radio" name='sel_mode' id='sel6' value='sel6' <?php if ( ( $_REQUEST['sel_mode'] == 'sel6' ) ) {
 				echo " checked ";
 			} ?> > <label for="sel6"><?php echo $label['select6']; ?></label>
+			<?php
+			} else {
+				?>
+                <input type="hidden" id='sel1' name='sel_mode' value='sel1' checked="checked"/>
+				<?php
+			}
+			?>
         </p>
         <p>
             <input type="button" name='submit_button1' id='submit_button1' value='<?php echo htmlspecialchars( $label['advertiser_buy_button'] ); ?>' onclick='form1Submit(event)'>

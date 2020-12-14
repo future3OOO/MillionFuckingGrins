@@ -55,6 +55,7 @@ if(WP_ENABLED == 'YES') {
 
 </head>
 <body>
+<div id="mds-top"></div>
 <div class="admin-container">
     <div class="admin-menu">
         <img src="<?php echo BASE_HTTP_PATH; ?>images/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
@@ -91,7 +92,7 @@ if(WP_ENABLED == 'YES') {
         - <a href="process.php">Process Pixels</a><br/>
         <hr>
         <b>Report</b><br/>
-        - <a href="ads.php">Ad List</a><br/>
+        - <a href="alist.php">Ad List</a><br/>
         - <a href="list.php">Top Advertisers</a><br/>
         - <a href="email_queue.php">Outgoing Email</a><br/>
         <!--
@@ -106,17 +107,23 @@ if(WP_ENABLED == 'YES') {
         - <a href="language.php">Language</a><br/>
         - <a href="currency.php">Currencies</a><br/>
         - <a href="payment.php">Payment Modules</a><br/>
-        - <a href="adform.php">Ad Form</a><br/>
+        - <a href="aform.php">Ad Form</a><br/>
+		<?php
+		if ( WP_ENABLED == 'NO' ) {
+			?>
         <hr>
         <b>Logout</b><br/>
         - <a href="logout.php">Logout</a><br/>
+			<?php
+		}
+		?>
         <hr>
         <b>Info</b><br/>
         - <a href="info.php">System Info</a><br/>
-        - <a href="https://milliondollarscript.com">Script Home</a><br/>
+        - <a href="https://milliondollarscript.com" target="_blank">Script Home</a><br/>
 
         <br/>
-        <small>Copyright <?php date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
+        <small>Copyright <?php echo date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
             <br/>
             MDS Build Date:<br/><?php echo VERSION_INFO; ?></small>
     </div>

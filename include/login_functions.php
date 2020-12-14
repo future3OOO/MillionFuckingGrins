@@ -44,6 +44,9 @@ function process_login() {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 
 	if ( ! is_logged_in() || ( $_SESSION['MDS_Domain'] != "ADVERTISER" ) ) {
+		if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+			mds_wp_login_check();
+		}
 
 		require_once BASE_PATH . "/html/header.php";
 		?>
@@ -92,6 +95,39 @@ function process_login() {
 
 function is_logged_in() {
 	global $_SESSION;
+
+	if ( WP_ENABLED == 'YES' && WP_USERS_ENABLED == 'YES' ) {
+
+		require_once WP_PATH . '/wp-load.php';
+		require_once WP_PATH . '/wp-includes/pluggable.php';
+
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		$user = wp_get_current_user();
+
+		// get user from MDS db
+		$result = mysqli_query( $GLOBALS['connection'], "SELECT * FROM `users` WHERE username='" . mysqli_real_escape_string( $GLOBALS['connection'], $user->user_login ) . "'" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$row = mysqli_fetch_array( $result );
+		if ( ! $row['Username'] ) {
+			return false;
+		}
+
+		$_SESSION['MDS_ID']        = $row['ID'];
+		$_SESSION['MDS_FirstName'] = $row['FirstName'];
+		$_SESSION['MDS_LastName']  = $row['LastName'];
+		$_SESSION['MDS_Username']  = $row['Username'];
+		$_SESSION['MDS_Rank']      = $row['Rank'];
+		//$_SESSION['MDS_order_id'] = '';
+		$_SESSION['MDS_Domain'] = 'ADVERTISER';
+
+		if ( $row['lang'] != '' ) {
+			$_SESSION['MDS_LANG'] = $row['lang'];
+		}
+
+		return true;
+	}
 
 	if ( ! isset( $_SESSION['MDS_ID'] ) ) {
 		$_SESSION['MDS_ID'] = '';
@@ -455,12 +491,55 @@ function do_login() {
 	}
 }
 
+function do_wp_login(): bool {
+	if ( empty( WP_PATH ) ) {
+		return false;
+	}
+
+	if ( ! isset( $_POST ) || ! isset( $_POST['ID'] ) || ! isset( $_POST['Username'] ) || ! isset( $_POST['Password'] ) ) {
+		return false;
+	}
+
+	$ID       = $_POST['ID'];
+	$Username = $_POST['Username'];
+	$Password = $_POST['Password'];
+
+	// get user from MDS db
+	$result = mysqli_query( $GLOBALS['connection'], "SELECT * FROM `users` WHERE username='" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "'" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$row = mysqli_fetch_array( $result );
+	if ( ! $row['Username'] ) {
+		return false;
+	}
+
+	// use WP to check password for user
+	mds_load_wp();
+	$user = get_userdata( $ID );
+	if ( ! wp_check_password( $Password, $row['Password'], $user->ID ) ) {
+		return false;
+	}
+
+	// update login dates and count
+	$now = ( gmdate( "Y-m-d H:i:s" ) );
+	$sql = "UPDATE `users` SET `login_date`='$now', `last_request_time`='$now', `logout_date`='1000-01-01 00:00:00', `login_count`=`login_count`+1 WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['Username'] ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+
+	return true;
+}
+
 function do_logout() {
+	// check for $_SESSION before trying to use it
+	if ( isset( $_SESSION ) ) {
+		if ( isset( $_SESSION['MDS_Username'] ) ) {
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
 	$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
 	mysqli_query( $GLOBALS['connection'], $sql );
+		}
 
+		if ( isset( $_SESSION['MDS_ID'] ) ) {
 	unset( $_SESSION['MDS_ID'] );
+		}
+	}
+
 	$_SESSION['MDS_ID']     = '';
 	$_SESSION['MDS_Domain'] = '';
 

@@ -46,13 +46,37 @@ function full_url() {
 }
 
 // @link https://www.php.net/manual/en/function.parse-url.php#106731
-function unparse_url( $parsed_url ) {
+function unparse_url( $parsed_url, $trim_admin = false ) {
 	$scheme = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] . '://' : '';
 	$host   = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
 	$port   = isset( $parsed_url['port'] ) ? ':' . $parsed_url['port'] : '';
 	$user   = isset( $parsed_url['user'] ) ? $parsed_url['user'] : '';
 	$pass   = isset( $parsed_url['pass'] ) ? ':' . $parsed_url['pass'] : '';
 	$pass   = ( $user || $pass ) ? "$pass@" : '';
+	$path   = isset( $parsed_url['path'] ) ? get_url_path( $parsed_url['path'], $trim_admin ) : '';
 
-	return $scheme . $user . $pass . $host . $port . '/';
+	return $scheme . $user . $pass . $host . $port . $path;
+}
+
+/**
+ * Convert a given URL or string to the proper path where MDS is installed.
+ *
+ * @param $input
+ *
+ * @return string
+ */
+function get_url_path( $input, $trim_admin = false ) {
+
+	// Remove anything before the first "/"
+	$output = substr( $input, 0, strrpos( $input, '/' ) + 1 );
+
+	// Get the pathinfo array of it
+	$pathinfo = pathinfo( $output );
+
+	// Trim off the admin folder
+	if ( $trim_admin ) {
+		$output = rtrim( $pathinfo['dirname'], '/admin/' ) . '/';
+	}
+
+	return $output;
 }

@@ -31,6 +31,7 @@
  */
 
 // MillionDollarScript header.php
+require_once __DIR__ . "/../include/init.php";
 
 // Only load headers and assets if not using WP integration and not an ajax call.
 $call_state = get_call_state();
@@ -184,13 +185,14 @@ if ( $call_state == 2 || $call_state == 5 ) {
 			$loggedin = '';
 			if ( isset($_SESSION['MDS_ID']) && $_SESSION['MDS_ID'] != '' ) {
 				$loggedin = ' logged-in';
+				global $label;
 				?>
                 <div class="users-menu-bar">
                     <a href="<?php echo BASE_HTTP_PATH; ?>users/index.php"><?php echo $label['advertiser_header_nav1']; ?></a>
                     <a href="<?php echo BASE_HTTP_PATH . "users/" . $order_page; ?>"><?php echo $label['advertiser_header_nav2']; ?></a>
                     <a href="<?php echo BASE_HTTP_PATH; ?>users/publish.php"><?php echo $label['advertiser_header_nav3']; ?></a>
                     <a href="<?php echo BASE_HTTP_PATH; ?>users/orders.php"><?php echo $label['advertiser_header_nav4']; ?></a>
-                    <a href="<?php echo BASE_HTTP_PATH; ?>users/logout.php"><?php echo $label['advertiser_header_nav5']; ?></a>
+                    <a href="<?php echo BASE_HTTP_PATH; ?>users/<?php echo ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) ? "wp" : ""; ?>logout.php"><?php echo $label['advertiser_header_nav5']; ?></a>
                 </div>
 
 			<?php } ?>

@@ -78,6 +78,9 @@ function get_zone_color( $banner_id, $row, $col ) {
 	$col += $banner_data['BLK_WIDTH'];
 
 	foreach ( $price_table as $key => $val ) {
+		if ( $key == 'loaded' ) {
+			continue;
+		}
 
 		if ( ( ( $price_table[ $key ]['row_from'] <= $row ) && ( $price_table[ $key ]['row_to'] >= $row ) ) && ( ( $price_table[ $key ]['col_from'] <= $col ) && ( $price_table[ $key ]['col_to'] >= $col ) ) ) {
 
