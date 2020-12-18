@@ -95,6 +95,7 @@ $defaults = array(
 	'ENABLE_CLOAKING'             => 'YES',
 	'VALIDATE_LINK'               => 'NO',
 	'ADVANCED_CLICK_COUNT'        => 'YES',
+	'ADVANCED_VIEW_COUNT'         => 'YES',
 	'USE_SMTP'                    => '',
 	'EMAIL_SMTP_SERVER'           => '',
 	'EMAIL_SMTP_USER'             => '',
@@ -189,6 +190,7 @@ define( 'ENABLE_MOUSEOVER', '" . $values['ENABLE_MOUSEOVER'] . "' );
 define( 'ENABLE_CLOAKING', '" . $values['ENABLE_CLOAKING'] . "' );
 define( 'VALIDATE_LINK', '" . $values['VALIDATE_LINK'] . "' );
 define( 'ADVANCED_CLICK_COUNT', '" . $values['ADVANCED_CLICK_COUNT'] . "' );
+define( 'ADVANCED_VIEW_COUNT', '" . $values['ADVANCED_VIEW_COUNT'] . "' );
 define( 'USE_SMTP', '" . $values['USE_SMTP'] . "' );
 define( 'EMAIL_SMTP_SERVER', '" . $values['EMAIL_SMTP_SERVER'] . "' );
 define( 'EMAIL_SMTP_USER', '" . $values['EMAIL_SMTP_USER'] . "' );

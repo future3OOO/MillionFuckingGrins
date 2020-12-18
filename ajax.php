@@ -48,10 +48,10 @@ if ( isset( $_POST ) ) {
 	$input = file_get_contents( 'php://input' );
 
 	// Try to json_decode the input
-	$data = json_decode( $input );
+	$data       = json_decode( $input );
 	$data_array = array();
 
-	if ( empty($data) ) {
+	if ( empty( $data ) ) {
 		// Invalid JSON sent so try parsing it
 
 		parse_str( $input, $data_array );
@@ -75,6 +75,11 @@ if ( isset( $_POST ) ) {
 				break;
 			case "ga":
 				get_ad( $data_array );
+				store_view( $data_array );
+				die;
+				break;
+			case "click":
+				store_click( $data_array );
 				die;
 				break;
 			case "show_list":
@@ -164,11 +169,8 @@ function show_grid() {
 	}
 
 	if ( file_exists( $BANNER_PATH . "main" . $BID . ".$ext" ) ) {
-		$available_block_window = 'return false;';
-		if ( REDIRECT_SWITCH == 'YES' ) {
-			$available_block_window = "parent.window.open('" . REDIRECT_URL . "', '', '');return false;";
-		}
-		?><img <?php if ( REDIRECT_SWITCH == 'YES' ) { ?>onclick="if (!block_clicked) {<?php echo $available_block_window; ?> }block_clicked=false;" <?php } ?> id="theimage" src="<?php echo BASE_HTTP_PATH . '/' . $BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?time=<?php echo( $banner_data['TIME'] ); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
+		?>
+        <img id="theimage" src="<?php echo BASE_HTTP_PATH . '/' . $BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?time=<?php echo( $banner_data['TIME'] ); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
 		<?php
 	} else {
 		echo "<b>The file: " . $BANNER_PATH . "main" . $BID . ".$ext" . " doesn't exist.</b><br>";
@@ -231,6 +233,52 @@ function get_ad( $data ) {
 	}
 }
 
+function store_click( $data ) {
+	if ( ADVANCED_CLICK_COUNT == 'YES' ) {
+		$date = gmdate( 'Y' ) . "-" . gmdate( 'm' ) . "-" . gmdate( 'd' );
+		$sql  = "UPDATE clicks set clicks = clicks + 1 where banner_id='" . intval( $data['bid'] ) . "' AND `date`='$date' AND `block_id`='" . intval( $data['block_id'] ) . "'";
+		mysqli_query( $GLOBALS['connection'], $sql );
+		$x = @mysqli_affected_rows( $GLOBALS['connection'] );
+
+		if ( ! $x ) {
+		    require_once BASE_PATH . '/include/dynamic_forms.php';
+			$tag_to_field_id = get_tag_to_field_id( 1 );
+			$field_id        = intval( $tag_to_field_id['URL']['field_id'] );
+			$sql    = "SELECT t1.{$field_id}, t1.user_id FROM ads AS t1 INNER JOIN blocks AS t2 ON t1.ad_id = t2.ad_id WHERE t2.block_id=" . intval( $data['block_id'] ) . ";";
+			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$row    = @mysqli_fetch_array( $result );
+			$sql = "INSERT into clicks (`banner_id`, `date`, `clicks`, `block_id`, `user_id`) VALUES('" . intval( $data['bid'] ) . "', '$date', '1', '" . intval( $data['block_id'] ) . "', '" . intval( $row['user_id'] ) . "') ";
+			@mysqli_query( $GLOBALS['connection'], $sql );
+		}
+	}
+
+	$sql = "UPDATE blocks SET click_count = click_count + 1 where block_id='" . intval( $data['block_id'] ) . "' AND banner_id='" . intval( $data['bid'] ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql );
+}
+
+function store_view( $data ) {
+	if ( ADVANCED_VIEW_COUNT == 'YES' ) {
+		$date = gmdate( 'Y' ) . "-" . gmdate( 'm' ) . "-" . gmdate( 'd' );
+		$sql  = "UPDATE views set views = views + 1 where banner_id='" . intval( $data['bid'] ) . "' AND `date`='$date' AND `block_id`='" . intval( $data['block_id'] ) . "'";
+		mysqli_query( $GLOBALS['connection'], $sql );
+		$x = @mysqli_affected_rows( $GLOBALS['connection'] );
+
+		if ( ! $x ) {
+			require_once BASE_PATH . '/include/dynamic_forms.php';
+			$tag_to_field_id = get_tag_to_field_id( 1 );
+			$field_id        = intval( $tag_to_field_id['URL']['field_id'] );
+			$sql    = "SELECT t1.{$field_id}, t1.user_id FROM ads AS t1 INNER JOIN blocks AS t2 ON t1.ad_id = t2.ad_id WHERE t2.block_id=" . intval( $data['block_id'] ) . ";";
+			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$row    = @mysqli_fetch_array( $result );
+			$sql = "INSERT into views (`banner_id`, `date`, `views`, `block_id`, `user_id`) VALUES('" . intval( $data['bid'] ) . "', '$date', '1', '" . intval( $data['block_id'] ) . "', '" . intval( $row['user_id'] ) . "') ";
+			@mysqli_query( $GLOBALS['connection'], $sql );
+		}
+	}
+
+	$sql = "UPDATE blocks SET view_count = view_count + 1 where block_id='" . intval( $data['block_id'] ) . "' AND banner_id='" . intval( $data['bid'] ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql );
+}
+
 function show_list() {
 	global $label, $purifier, $BID;
 	?>
@@ -276,7 +324,7 @@ function show_list() {
 							$block_id = $blocks[0];
 
 							$ALT_TEXT = get_template_value( 'ALT_TEXT', 1 );
-							$ALT_TEXT = str_replace( ["'", '"'], "", $ALT_TEXT );
+							$ALT_TEXT = str_replace( [ "'", '"' ], "", $ALT_TEXT );
 
 							$data_values = array(
 								'id'        => $prams['ad_id'],

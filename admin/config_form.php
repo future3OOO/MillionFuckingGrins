@@ -720,11 +720,28 @@ NOTES<br>
             <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
       <input type="radio" name="ADVANCED_CLICK_COUNT" value="YES"  <?php if ( ADVANCED_CLICK_COUNT == 'YES' ) {
 	      echo " checked ";
-      } ?> >Yes - Clicks will be counted by day <br>
+      } ?> >Yes - Clicks (clicking the link on the popup) will be counted by day <br>
 	  <input type="radio" name="ADVANCED_CLICK_COUNT" value="NO"  <?php if ( ADVANCED_CLICK_COUNT == 'NO' ) {
 		  echo " checked ";
 	  } ?> >No (default)<br>
 	
+	  </span></td>
+        </tr>
+        <?php
+        if ( ! defined( 'ADVANCED_VIEW_COUNT' ) ) {
+	        define( 'ADVANCED_VIEW_COUNT', 'NO' );
+        }
+        ?>
+        <tr>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Advanced View Count? </span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
+      <input type="radio" name="ADVANCED_VIEW_COUNT" value="YES"  <?php if ( ADVANCED_VIEW_COUNT == 'YES' ) {
+	      echo " checked ";
+      } ?> >Yes - Views (clicking the block to trigger the popup) will be counted by day <br>
+	  <input type="radio" name="ADVANCED_VIEW_COUNT" value="NO"  <?php if ( ADVANCED_VIEW_COUNT == 'NO' ) {
+		  echo " checked ";
+	  } ?> >No (default)<br>
+
 	  </span></td>
         </tr>
         <tr>
@@ -772,11 +789,11 @@ NOTES<br>
     <p>&nbsp;</p>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
         <tr>
-            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Mouseover Effects</b></span>
+            <td colspan="2" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; "><b>Tooltip box</b></span>
             </td>
         </tr>
         <tr>
-            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">Show a box when the positioning mouse over a block?</span></td>
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">Show a box when the clicking a block?</span></td>
             <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
 	  <input type="radio" name="ENABLE_MOUSEOVER" value="POPUP"  <?php if ( ENABLE_MOUSEOVER == 'POPUP' ) {
 		  echo " checked ";

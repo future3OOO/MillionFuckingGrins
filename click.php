@@ -39,6 +39,7 @@ if ( $block_id == '' ) {
 	die();
 }
 
+global $f2;
 $BID = $f2->bid();
 
 $block_id = intval( $block_id );
@@ -69,8 +70,6 @@ if ( ADVANCED_CLICK_COUNT == 'YES' ) {
 		$result = @mysqli_query( $GLOBALS['connection'], $sql );
 	}
 }
-
-// 
 
 $sql = "UPDATE blocks SET click_count = click_count + 1 where block_id='" . $block_id . "' AND banner_id='$BID' ";
 //echo $sql;

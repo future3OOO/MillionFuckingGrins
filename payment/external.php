@@ -310,7 +310,11 @@ class external {
 				$dest = str_replace( '%AMOUNT%', urlencode( $row['price'] ), $url );
 				$dest = str_replace( '%CURRENCY%', urlencode( $row['currency'] ), $dest );
 				$dest = str_replace( '%QUANTITY%', urlencode( $quantity ), $dest );
-				$dest = $dest . '&mdsid=' . $order_id;
+				if(strpos($dest, '?') !== false) {
+					$dest = $dest . '&mdsid=' . $order_id;
+				} else {
+					$dest = $dest . '?mdsid=' . $order_id;
+				}
 
 				if ( EXTERNAL_REDIRECT == "yes" ) {
 					echo "<span style='color:#000'>Please wait, redirecting...</span>";

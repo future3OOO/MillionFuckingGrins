@@ -38,6 +38,7 @@ if ( ADVANCED_CLICK_COUNT != 'YES' ) {
 	die ( "Advanced click tracking not enabled. You will need to enable advanced click tracking in the Main Config" );
 }
 
+global $f2;
 $BID = $f2->bid();
 
 $sql = "Select * from banners ";
@@ -194,8 +195,7 @@ if ( $_REQUEST['to_year'] == '' ) {
 
 	$to = intval( $_REQUEST['to_year'] ) . "-" . intval( $_REQUEST['to_month'] ) . "-" . intval( $_REQUEST['to_day'] );
 
-	$sql = "SELECT *, SUM(clicks) as CLICKSUM FROM clicks WHERE banner_id='" . intval( $BID ) . "' AND `date` >= '$from' AND `date` <= '$to' GROUP BY date ";
-
+	$sql = "SELECT *, SUM(t1.clicks) as CLICKSUM, SUM(t2.views) as VIEWSUM FROM clicks t1 INNER JOIN views t2 ON t1.banner_id = t2.banner_id WHERE t1.banner_id=" . intval( $BID ) . " AND t1.date >= '{$from}' AND t1.date <= '{$to}' GROUP BY t1.date";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 
 	?>
@@ -208,10 +208,12 @@ if ( $_REQUEST['to_year'] == '' ) {
         <tr>
             <td><b>Date</b></td>
             <td><b>Clicks</b></td>
+            <td><b>Views</b></td>
         </tr>
 
 		<?php
-
+		$totalclicks = 0;
+		$totalviews = 0;
 		if ( mysqli_num_rows( $result ) > 0 ) {
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
@@ -220,15 +222,18 @@ if ( $_REQUEST['to_year'] == '' ) {
                 <tr>
                     <td><?php echo get_local_time( $row['date'] ) ?></td>
                     <td><?php echo $row['CLICKSUM'] ?></td>
+                    <td><?php echo $row['VIEWSUM'] ?></td>
 
                 </tr>
 
 				<?php
-				$total = $total + $row['CLICKSUM'];
+				$totalclicks = $totalclicks + $row['CLICKSUM'];
+				$totalviews = $totalviews + $row['VIEWSUM'];
 			}
 		}
 
 		?>
     </table>
 
-    Total Clicks: <?php echo $total; ?>
+    Total Clicks: <?php echo $totalclicks; ?><br />
+    Total Views: <?php echo $totalviews; ?>

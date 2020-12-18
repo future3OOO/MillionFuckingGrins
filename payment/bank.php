@@ -351,7 +351,7 @@ class bank {
 						$label['payment_bank_note']    = str_replace( "%INVOICE_CODE%", $_REQUEST['order_id'], $label['payment_bank_note'] );
 
 						if ( get_default_currency() != BANK_CURRENCY ) {
-							echo convert_to_default_currency_formatted( $order_row[ currency ], $order_row['price'] ) . " = " . $bank_amount;
+							echo convert_to_default_currency_formatted( $order_row[ 'currency' ], $order_row['price'] ) . " = " . $bank_amount;
 							echo "<br>";
 						} ?>
 

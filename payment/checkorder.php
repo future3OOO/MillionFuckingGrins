@@ -295,7 +295,7 @@ class check {
 						//$label['payment_check_note'] = str_replace ("%INVOICE_CODE%", $_REQUEST['order_id'], $label['payment_check_note']);
 
 						if ( get_default_currency() != CHECK_CURRENCY ) {
-							echo convert_to_default_currency_formatted( $order_row[ currency ], $order_row['price'] ) . " = " . $check_amount;
+							echo convert_to_default_currency_formatted( $order_row[ 'currency' ], $order_row['price'] ) . " = " . $check_amount;
 							echo "<br>";
 						} ?>
 

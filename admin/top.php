@@ -83,6 +83,9 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
         <td>
             <font face="arial" size="2"><b>Clicks</b></font>
         </td>
+        <td>
+            <font face="arial" size="2"><b>Views</b></font>
+        </td>
     </tr>
 
 	<?php
@@ -91,7 +94,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 
 	//$sql = "SELECT *, DATE_FORMAT(MAX(order_date), '%Y-%c-%d') as max_date, sum(quantity) AS pixels FROM orders where status='completed' $bid_sql GROUP BY user_id, banner_id order by pixels desc ";
 
-	$sql = "SELECT *, sum(click_count) as clicksum, count(order_id) as b from blocks WHERE status='sold' AND image_data <> '' $bid_sql group by url order by clicksum desc ";
+	$sql = "SELECT *, sum(click_count) as clicksum, sum(view_count) as viewsum, count(order_id) as b from blocks WHERE status='sold' AND image_data <> '' $bid_sql group by url order by clicksum desc ";
 
 	//echo $sql;
 
@@ -134,6 +137,9 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 
             <td>
                 <font face="arial" size="2"><?php echo $row['clicksum']; ?></font>
+            </td>
+            <td>
+                <font face="arial" size="2"><?php echo $row['viewsum']; ?></font>
             </td>
         </tr>
 		<?php

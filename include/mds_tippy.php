@@ -32,6 +32,10 @@
 
 require_once __DIR__ . "/../include/init.php";
 
+if ( ENABLE_MOUSEOVER === 'NO' ) {
+	return;
+}
+
 global $f2;
 $BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );
@@ -45,11 +49,8 @@ $banner_data = load_banner_constants( $BID );
 		winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
 		time: '<?php echo time(); ?>',
 		BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-		REDIRECT_SWITCH: function () {
-			<?php if (REDIRECT_SWITCH == 'YES') { ?>
-			p = parent.window;
-			<?php } ?>
-		},
+		REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
+		REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
 		BID: parseInt('<?php echo $BID; ?>')
 	}
 	$(document).on('click', 'a.list-link', function (e) {

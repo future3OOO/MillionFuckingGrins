@@ -39,6 +39,7 @@ try {
 
 	$imagine = new Imagine\Gd\Imagine();
 
+	global $f2;
 	$BID = $f2->bid();
 
 	$banner_data = load_banner_constants( $BID );

@@ -53,7 +53,7 @@ function render_map_area( $fh, $data, $b_row ) {
 	}
 
 	$ALT_TEXT = "";
-	if ( ( ENABLE_MOUSEOVER == 'YES' ) || ( ENABLE_MOUSEOVER == 'POPUP' ) ) {
+	if ( ENABLE_MOUSEOVER == 'YES' || ENABLE_MOUSEOVER == 'POPUP' ) {
 		if ( $data['ad_id'] > 0 ) {
 			$ALT_TEXT = $data['alt_text'] . '<img src="' . BASE_HTTP_PATH . 'images/periods.gif" border="0">';
 			$ALT_TEXT = str_replace( "'", "", $ALT_TEXT );

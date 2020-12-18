@@ -478,8 +478,16 @@ function install_db() {
             `clicks` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
-    
+        
+        CREATE TABLE `views` (
+            `banner_id` INT NOT NULL ,
+            `block_id` INT NOT NULL ,
+            `user_id` INT NOT NULL ,
+            `date` date default '1970-01-01',
+            `views` INT NOT NULL ,
+            PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
+        
         CREATE TABLE `config` (
           `key` varchar(100) NOT NULL default '',
           `val` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -837,6 +845,15 @@ function install_db() {
             `user_id` INT NOT NULL ,
             `date` date NOT NULL default '0000-00-00',
             `clicks` INT NOT NULL ,
+            PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
+      
+        CREATE TABLE `views` (
+            `banner_id` INT NOT NULL ,
+            `block_id` INT NOT NULL ,
+            `user_id` INT NOT NULL ,
+            `date` date default '1970-01-01',
+            `views` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
     

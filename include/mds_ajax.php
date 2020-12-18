@@ -118,19 +118,10 @@ class Mds_Ajax {
 												winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
 												time: '<?php echo time(); ?>',
 												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-												moveBox: function () {
-													<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
-													moveBox2();
-													<?php } else { ?>
-													moveBox();
-													<?php } ?>
-												},
 												HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
-												REDIRECT_SWITCH: function () {
-													<?php if (REDIRECT_SWITCH == 'YES') { ?>
-													p = parent.window;
-													<?php } ?>
-												},
+												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
+												REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
+												ENABLE_MOUSEOVER: '<?php echo ENABLE_MOUSEOVER; ?>',
 												BID: parseInt('<?php echo $BID; ?>')
 											};
 											$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {

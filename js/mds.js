@@ -68,7 +68,7 @@ function mds_grid(container, bid, width, height) {
 	};
 
 	$(grid).load(window.mds_data.ajax, data, function () {
-		mds_init('#theimage', true, true);
+		mds_init('#theimage', true, window.mds_data.ENABLE_MOUSEOVER !== 'NO');
 	});
 }
 
@@ -191,7 +191,7 @@ function add_tippy() {
 			}
 
 			if (isIOS) {
-				$(instance.reference).click();
+				$(instance.reference).trigger('click');
 			}
 
 			instance._isFetching = true;
@@ -201,6 +201,7 @@ function add_tippy() {
 			let ajax_data = {
 				aid: data.id,
 				bid: data.banner_id,
+				block_id: data.block_id,
 				action: 'ga'
 			};
 
@@ -270,14 +271,52 @@ function mds_init(el, scalemap, tippy, type) {
 				$el.imageMap();
 			}
 		});
-
-		$('area').on('click', function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-		});
 	}
 
-	if (tippy) {
+	$('area').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+	});
+
+	$(document).on('click', '.pixel-url', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const $link = $(this);
+
+		const data = $(this).parent().parent().parent().siblings('area').data('data');
+
+		let ajax_data = {
+			aid: data.id,
+			bid: data.banner_id,
+			block_id: data.block_id,
+			action: 'click'
+		};
+
+		$.ajax({
+			method: 'POST',
+			url: window.mds_data.ajax,
+			data: ajax_data,
+			dataType: 'html',
+			crossDomain: true,
+		}).done(function () {
+			let win = window.open($link.attr('href'), '_blank');
+			if (win) {
+				win.focus();
+			}
+		});
+	});
+
+	$(document).on('click', '#theimage', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (window.mds_data.REDIRECT_SWITCH === 'YES') {
+			window.open(window.mds_data.REDIRECT_URL);
+			return false;
+		}
+	});
+
+	if (tippy && window.mds_data.ENABLE_MOUSEOVER !== 'NO') {
 		defer('Popper', () => {
 			defer('tippy', () => {
 				add_tippy();

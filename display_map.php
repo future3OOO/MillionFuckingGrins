@@ -34,6 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/include/init.php";
 
+global $f2;
 $BID = $f2->bid();
 
 if ( isset( $DB_ERROR ) ) {
