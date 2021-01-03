@@ -497,6 +497,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
+        INSERT INTO `config` VALUES ('dbver', 1);;;
     
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -866,7 +867,8 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-    
+        INSERT INTO `config` VALUES ('dbver', 1);;;
+
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
