@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '5f71a442b9a0ff95b37b8fa30029459f0b668820',
+    'reference' => '4f7cc7d33272cff35d22000b74c49e3b5a522659',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -63,7 +63,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '5f71a442b9a0ff95b37b8fa30029459f0b668820',
+      'reference' => '4f7cc7d33272cff35d22000b74c49e3b5a522659',
     ),
     'phpmailer/phpmailer' => 
     array (
