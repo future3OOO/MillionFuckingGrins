@@ -64,6 +64,11 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isse
  * Database Upgrades
  */
 
+// Don't do upgrades on install
+if ( $_POST['action'] == "install" ) {
+	return;
+}
+
 function up_dbver() {
 	$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
 	mysqli_query( $GLOBALS['connection'], $sql );
@@ -72,10 +77,10 @@ function up_dbver() {
 // add database version config value
 $sql   = "SELECT `val` FROM `config` WHERE `key`='dbver';";
 $dbver = mysqli_query( $GLOBALS['connection'], $sql );
-if ( $dbver->num_rows == 0 ) {
-	$sql = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
+if ( mysqli_num_rows( $dbver ) == 0 ) {
+	$sql    = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	$dbver = 1;
+	$dbver  = 1;
 }
 $dbver = intval( $dbver );
 
@@ -84,7 +89,7 @@ if ( $dbver == 1 ) {
 	// add views table
 	$sql    = "SELECT 1 FROM views;";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	if ( $result->num_rows == 0 ) {
+	if ( mysqli_num_rows( $result ) == 0 ) {
 		$sql = "CREATE TABLE IF NOT EXISTS `views` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
@@ -99,7 +104,7 @@ if ( $dbver == 1 ) {
 	// add view_count column to blocks table
 	$sql    = "SELECT `view_count` FROM `blocks`;";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	if ( $result->num_rows == 0 ) {
+	if ( mysqli_num_rows( $result ) == 0 ) {
 		$sql = "ALTER TABLE `blocks` ADD COLUMN `view_count` INT NOT NULL AFTER `click_count`;";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
