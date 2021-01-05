@@ -33,7 +33,8 @@
 define( 'MAIN_PHP', '1' );
 
 require_once __DIR__ . "/../include/init.php";
-require_once 'admin_common.php';
+require_once __DIR__ . '/admin_common.php';
+require_once __DIR__ . '/router.php';
 
 if(WP_ENABLED == 'YES') {
     $mds_site_url = WP_URL;
@@ -103,7 +104,7 @@ if(WP_ENABLED == 'YES') {
         - <a href="clicks.php">Click Reports</a><br/>
         <hr>
         <b>Configuration</b><br/>
-        - <a href="edit_config.php">Main Config</a><br/>
+        - <a href="index.php?page=edit-main">Main Config</a><br/>
         - <a href="language.php">Language</a><br/>
         - <a href="currency.php">Currencies</a><br/>
         - <a href="payment.php">Payment Modules</a><br/>

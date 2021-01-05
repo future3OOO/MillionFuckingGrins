@@ -31,7 +31,7 @@
  */
 
 ?>
-<form method="POST" name="form1" action="edit_config.php">
+<form method="POST" name="form1" action="index.php">
     <p><input type="submit" value="Save Configuration" name="save"></p>
     <input name="version_info" type="hidden" value="<?php echo VERSION_INFO; ?>"/>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">

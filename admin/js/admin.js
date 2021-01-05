@@ -144,10 +144,10 @@ $(function () {
 		if (url.endsWith('.txt')) {
 			admin_content.html('<embed style="width:100%;height:100%;" src="' + url + '" />');
 		} else {
-		admin_content.load(url, function (response, status) {
-			if (status === "success") {
+			admin_content.load(url, function (response, status) {
+				if (status === "success") {
 					scroll_to_top();
-		window.location.hash = '#' + url;
+					window.location.hash = '#' + url;
 				}
 			});
 		}
