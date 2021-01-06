@@ -225,6 +225,7 @@ define( 'WP_ADMIN_ENABLED', '" . $values['WP_ADMIN_ENABLED'] . "' );
 
 	$file = fopen( "../config.php", "w" );
 	fwrite( $file, $config_str );
+	fclose( $file );
 
 	?>
     <script>
