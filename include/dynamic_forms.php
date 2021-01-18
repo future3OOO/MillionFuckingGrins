@@ -913,7 +913,7 @@ function validate_field_form() {
 
 function validate_form_data( $form_id ) {
 
-	global $f2, $label, $purifier;
+	global $label, $purifier;
 
 	if ( ! defined( 'MAX_UPLOAD_BYTES' ) ) {
 		define( 'MAX_UPLOAD_BYTES', _GetMaxAllowedUploadSize() );

@@ -42,7 +42,7 @@ global $f2;
 $BID = $f2->bid();
 
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 ?>
 
     <form name="bidselect" method="post" action="clicks.php">
@@ -196,7 +196,7 @@ if ( $_REQUEST['to_year'] == '' ) {
 	$to = intval( $_REQUEST['to_year'] ) . "-" . intval( $_REQUEST['to_month'] ) . "-" . intval( $_REQUEST['to_day'] );
 
 	$sql = "SELECT *, SUM(t1.clicks) as CLICKSUM, SUM(t2.views) as VIEWSUM FROM clicks t1 INNER JOIN views t2 ON t1.banner_id = t2.banner_id WHERE t1.banner_id=" . intval( $BID ) . " AND t1.date >= '{$from}' AND t1.date <= '{$to}' GROUP BY t1.date";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 
 	?>
 

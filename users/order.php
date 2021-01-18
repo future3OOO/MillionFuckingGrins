@@ -58,7 +58,7 @@ if ( $has_packages && $_REQUEST['pack'] != '' ) {
 	if ( can_user_get_package( $_SESSION['MDS_ID'], $_REQUEST['pack'] ) ) {
 
 		$sql = "SELECT quantity FROM orders WHERE order_id='" . intval( $_REQUEST['order_id'] ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$row      = mysqli_fetch_array( $result );
 		$quantity = $row['quantity'];
 
@@ -73,7 +73,7 @@ if ( $has_packages && $_REQUEST['pack'] != '' ) {
 
 		$sql = "UPDATE orders SET package_id='" . intval( $_REQUEST['pack'] ) . "', price='" . floatval( $total ) . "',  days_expire='" . intval( $pack['days_expire'] ) . "', currency='" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "' WHERE order_id='" . intval( $_SESSION['MDS_order_id'] ) . "'";
 
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	} else {
 		$selected_pack      = $_REQUEST['pack'];
 		$_REQUEST['pack']   = '';
@@ -83,7 +83,7 @@ if ( $has_packages && $_REQUEST['pack'] != '' ) {
 
 // check to make sure MIN_BLOCKS were selected.
 $sql = "SELECT block_id FROM blocks WHERE user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status='reserved' AND banner_id='$BID' ";
-$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $count = mysqli_num_rows( $res );
 $not_enough_blocks = $count < $banner_data['G_MIN_BLOCKS'];
 
@@ -99,7 +99,7 @@ $not_enough_blocks = $count < $banner_data['G_MIN_BLOCKS'];
 
 $sql = "SELECT * from orders where order_id='" . intval( $_SESSION['MDS_order_id'] ) . "' and banner_id='$BID'";
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $order_row = mysqli_fetch_array( $result );
 
 function display_edit_order_button( $order_id ) {
@@ -136,7 +136,7 @@ if ( ( $order_row['order_id'] == '' ) || ( ( $order_row['quantity'] == '0' ) ) )
 		if ( $cannot_get_package ) {
 
 			$sql = "SELECT * from packages where package_id='" . intval( $selected_pack ) . "'";
-			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			$row = mysqli_fetch_array( $result );
 
 			$label['pack_cannot_select'] = str_replace( "%MAX_ORDERS%", $row['max_orders'], $label['pack_cannot_select'] );
@@ -146,7 +146,7 @@ if ( ( $order_row['order_id'] == '' ) || ( ( $order_row['quantity'] == '0' ) ) )
 	} else {
 		display_order( get_current_order_id(), $BID );
 		$sql = "select * from users where ID='" . intval( $_SESSION['MDS_ID'] ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$u_row = mysqli_fetch_array( $result );
 
 		?>

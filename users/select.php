@@ -50,7 +50,7 @@ if ( ! is_numeric( $BID ) ) {
 $banner_data = load_banner_constants( $BID );
 
 $sql          = "SELECT * from orders where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' and status='new' and banner_id='$BID' ";
-$order_result = mysqli_query( $GLOBALS['connection'], $sql );
+$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $order_row    = mysqli_fetch_array( $order_result );
 
 if ( $order_row != null ) {

@@ -57,7 +57,7 @@ function get_default_lang() {
 	$lang = "EN";
 
 	$sql = "SELECT * FROM lang WHERE `is_default`='Y'";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 
 	if ( ! empty( $row["lang_code"] ) ) {
@@ -72,7 +72,7 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 	$r_lang = get_lang( $_REQUEST['lang'] );
 
 	$sql = "SELECT * FROM lang WHERE `lang_code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $r_lang ) . "'";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	if ( mysqli_num_rows( $result ) > 0 ) {
 		$_SESSION['MDS_LANG'] = $r_lang;
@@ -85,7 +85,7 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 		] );
 	} else {
 		$sql = "SELECT * FROM lang WHERE `is_default`='Y'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$row                  = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 		$_SESSION['MDS_LANG'] = get_lang( $row["lang_code"] );
 		// save the requested language
@@ -110,7 +110,7 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 
 				// set lang and locale
 				$sql = "SELECT * FROM lang WHERE `is_default`='Y' ";
-				if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) ) {
+				if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) ) ) {
 					$row                  = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 					$_SESSION['MDS_LANG'] = $row['lang_code'];
 					if ( $row['charset'] != '' ) {
@@ -137,7 +137,7 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) ) {
 		// if mapping didn't work, default to english..
 
 		$sql = "SELECT * FROM lang ";
-		if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) ) {
+		if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) ) ) {
 			while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 				$AVAILABLE_LANGS[ $row['lang_code'] ] = $row['name'];
 				$LANG_FILES[ $row['lang_code'] ]      = $row['lang_filename'];
@@ -165,8 +165,6 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) ) {
 				$_SESSION['MDS_LANG'] = "EN";
 				include dirname( __FILE__ ) . "/english.php";
 			}
-		} else {
-			$DB_ERROR = mysqli_error( $GLOBALS['connection'] );
 		}
 	} else {
 		// no db so use defaults

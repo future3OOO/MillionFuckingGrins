@@ -53,7 +53,7 @@ if ( isset( $_REQUEST['action'] ) ) {
 	require_once( "../include/database.php" );
 }
 $sql = "select * from users";
-if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) ) {
+if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) ) ) {
 	?>
     <h2>Database successfully Installed.</h2>
     <h3>Next Steps</h3>

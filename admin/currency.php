@@ -92,7 +92,7 @@ if ( $_REQUEST['action'] == 'delete' ) {
 	if ( ! is_reserved_currency( $_REQUEST['code'] ) ) {
 
 		$sql = "DELETE FROM currencies WHERE code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	} else {
 
 		echo "<p><b>Cannot delete currency: reserved by the system</b></p>";
@@ -101,10 +101,10 @@ if ( $_REQUEST['action'] == 'delete' ) {
 
 if ( $_REQUEST['action'] == 'set_default' ) {
 	$sql = "UPDATE currencies SET is_default = 'N' WHERE code <> '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	$sql = "UPDATE currencies SET is_default = 'Y' WHERE code = '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 }
 
 if ( $_REQUEST['submit'] != '' ) {
@@ -121,7 +121,7 @@ if ( $_REQUEST['submit'] != '' ) {
 
 		//echo $sql;
 
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
 
 		$_REQUEST['new']    = '';
 		$_REQUEST['action'] = '';
@@ -146,7 +146,8 @@ if ( $_REQUEST['submit'] != '' ) {
         </tr>
 		<?php
 
-		$result = mysqli_query( $GLOBALS['connection'], "select * FROM currencies order by name" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+        $sql = "select * FROM currencies order by name";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
 		while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 			?>
@@ -179,7 +180,7 @@ if ( $_REQUEST['action'] == 'edit' ) {
 	echo "<h4>Edit Currency:</h4>";
 
 	$sql = "SELECT * FROM currencies WHERE `code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
 	$row                        = mysqli_fetch_array( $result );
 	$_REQUEST['name']           = $row['name'];
 	$_REQUEST['rate']           = $row['rate'];

@@ -36,7 +36,7 @@ require_once BASE_PATH . "/include/login_functions.php";
 
 $BID = 1; # Banner ID. Change this later & allow users to select multiple banners
 $sql = "select * from banners where banner_id='$BID'";
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $b_row = mysqli_fetch_array( $result );
 if ( $_REQUEST['order_id'] ) {
 	$_SESSION['MDS_order_id'] = $_REQUEST['order_id'];
@@ -58,7 +58,7 @@ if ( $_REQUEST['order_id'] != '' ) {
 }
 
 $sql = "SELECT * from orders where order_id=" . intval( $order_id );
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $order_row = mysqli_fetch_array( $result );
 
 // Proceess confirmation

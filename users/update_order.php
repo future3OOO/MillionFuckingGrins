@@ -77,11 +77,11 @@ if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'] ) ) {
 // reset blocks
 if ( isset( $_REQUEST['reset'] ) && $_REQUEST['reset'] == "true" ) {
 	$sql = "delete from blocks where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	if ( isset( $_SESSION['MDS_order_id'] ) ) {
 		$sql = "UPDATE orders SET blocks = '' WHERE order_id=" . intval( $_SESSION['MDS_order_id'] );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 
 	echo "removed";

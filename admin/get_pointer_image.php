@@ -42,7 +42,7 @@ $BID = $f2->bid();
 
 $sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' and banner_id='" . $BID . "' ";
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $row = mysqli_fetch_array( $result );
 
 if ( $row['image_data'] == '' ) {

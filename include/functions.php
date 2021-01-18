@@ -82,16 +82,13 @@ function expire_orders() {
 
 	// get the time of last run
 	$sql = "SELECT * FROM `config` where `key` = 'LAST_EXPIRE_RUN' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$t_row = @mysqli_fetch_array( $result );
-
-	if ( isset( $DB_ERROR ) && $DB_ERROR != '' ) {
-		return $DB_ERROR;
-	}
 
 	// Poor man's lock
 	$sql = "UPDATE `config` SET `val`='YES' WHERE `key`='EXPIRE_RUNNING' AND `val`='NO' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+
 	if ( @mysqli_affected_rows( $GLOBALS['connection'] ) == 0 ) {
 
 		// make sure it cannot be locked for more than 30 secs
@@ -102,11 +99,11 @@ function expire_orders() {
 			// release the lock
 
 			$sql = "UPDATE `config` SET `val`='NO' WHERE `key`='EXPIRE_RUNNING' ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			// update timestamp
 			$sql = "REPLACE INTO config (`key`, `val`) VALUES ('LAST_EXPIRE_RUN', '$unix_time')  ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		}
 
 		// this function is already executing in another process.
@@ -122,7 +119,7 @@ function expire_orders() {
 
 		$sql = "SELECT session_id, order_date FROM `temp_orders` WHERE  DATE_SUB('$now', INTERVAL $session_duration SECOND) >= temp_orders.order_date AND session_id <> '" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 		while ( $row = @mysqli_fetch_array( $result ) ) {
 
@@ -132,7 +129,7 @@ function expire_orders() {
 		// COMPLETED Orders
 
 		$sql    = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 		$affected_BIDs = array();
 
@@ -159,7 +156,7 @@ function expire_orders() {
 
 			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( HOURS_UNCONFIRMED ) . " HOUR) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				delete_order( $row['order_id'] );
@@ -167,7 +164,7 @@ function expire_orders() {
 				// Now really delete the order.
 
 				$sql = "delete from orders where order_id='" . intval( $row['order_id'] ) . "'";
-				@mysqli_query( $GLOBALS['connection'], $sql );
+				@mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 				global $f2;
 				$f2->debug( "Deleted unconfirmed order - " . $sql );
 			}
@@ -177,7 +174,7 @@ function expire_orders() {
 		if ( DAYS_CONFIRMED != 0 ) {
 			$sql = "SELECT * from orders where (status='new' OR status='confirmed') AND DATE_SUB('$now',INTERVAL " . intval( DAYS_CONFIRMED ) . " DAY) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				expire_order( $row['order_id'] );

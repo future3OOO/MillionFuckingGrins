@@ -40,7 +40,7 @@ $BID = $f2->bid();
 <hr>
 <?php
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 ?>
 <form name="bidselect" method="post" action="price.php">
     <label>
@@ -125,7 +125,7 @@ if ( $BID != '' ) {
 						}
 
 						$sql = "SELECT * FROM prices where row_from <= " . intval( $_REQUEST['row_to'] ) . " AND row_to >=" . intval( $_REQUEST['row_from'] ) . " AND col_from <= " . intval( $_REQUEST['col_to'] ) . " AND col_to >=" . intval( $_REQUEST['col_from'] ) . " $and_price AND banner_id=" . intval( $BID );
-						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 						if ( mysqli_num_rows( $result ) > 0 ) {
 							$error .= "<b> - Cannot create: Price zones cannot overlap other price zones!</b><br>";
@@ -154,7 +154,7 @@ if ( $BID != '' ) {
 
 	if ( $_REQUEST['action'] == 'delete' ) {
 		$sql = "DELETE FROM prices WHERE price_id='" . intval( $_REQUEST['price_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 
 	if ( $_REQUEST['submit'] != '' ) {
@@ -171,14 +171,15 @@ if ( $BID != '' ) {
 			$_REQUEST['block_id_to']   = ( ( ( $_REQUEST['row_to'] ) * $banner_data['G_WIDTH'] ) - 1 );
 
 			$sql = "REPLACE INTO prices(price_id, banner_id, row_from, row_to, col_from, col_to, block_id_from, block_id_to, price, currency, color) VALUES ('" . intval( $_REQUEST['price_id'] ) . "', '" . intval( $BID ) . "', '" . intval( $_REQUEST['row_from'] ) . "', '" . intval( $_REQUEST['row_to'] ) . "', '" . intval( $_REQUEST['col_from'] ) . "', '" . intval( $_REQUEST['col_to'] ) . "', '" . intval( $_REQUEST['block_id_from'] ) . "', '" . intval( $_REQUEST['block_id_to'] ) . "', '" . floatval( $_REQUEST['price'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['currency'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['color'] ) . "') ";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			$_REQUEST['new']    = '';
 			$_REQUEST['action'] = '';
 		}
 	}
 
-	$result = mysqli_query( $GLOBALS['connection'], "select * FROM prices  where banner_id=" . intval( $BID ) ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$sql = "select * FROM prices  where banner_id=" . intval( $BID );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
 		?>
 

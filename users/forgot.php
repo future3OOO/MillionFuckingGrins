@@ -65,7 +65,7 @@ function make_password() {
 if ( $email != '' ) {
 
 	$sql    = "select * from users where `Email`='" . mysqli_real_escape_string( $GLOBALS['connection'], $email ) . "'";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row    = mysqli_fetch_array( $result );
 
 	if ( $row['Email'] != '' ) {
@@ -77,7 +77,7 @@ if ( $email != '' ) {
 			$pass    = make_password();
 			$md5pass = md5( $pass );
 			$sql     = "update `users` SET `Password`='$md5pass' where `ID`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['ID'] ) . "'";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			$to        = trim( $row['Email'] );
 			$from      = trim( SITE_CONTACT_EMAIL );

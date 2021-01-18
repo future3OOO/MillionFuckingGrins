@@ -434,7 +434,7 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 function delete_ads_files( $ad_id ) {
 
 	$sql = "SELECT * FROM form_fields WHERE form_id=1 ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
 
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
@@ -458,13 +458,13 @@ function delete_ad( $ad_id ) {
 	delete_ads_files( $ad_id );
 
 	$sql = "DELETE FROM `ads` WHERE `ad_id`='" . intval( $ad_id ) . "' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
 }
 
 function generate_ad_id() {
 
-	$query = "SELECT max(`ad_id`) FROM `ads`";
-	$result = mysqli_query( $GLOBALS['connection'], $query ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$sql = "SELECT max(`ad_id`) FROM `ads`";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row = mysqli_fetch_row( $result );
 	$row[0] ++;
 
@@ -497,7 +497,7 @@ function insert_ad_data() {
 		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'insert' );
 		$values    = $ad_id . ", '" . $user_id . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', " . intval( $order_id ) . ", " . intval( $BID ) . $ad_values['extra_values'];
 		$sql       = "REPLACE INTO ads VALUES (" . $values . ");";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( "<br />SQL:[$sql]<br />ERROR:[" . mysqli_error( $GLOBALS['connection'] ) . "]<br />" );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	} else {
 
 		$ad_id = intval( $_REQUEST['aid'] );
@@ -512,7 +512,7 @@ function insert_ad_data() {
 			} else {
 				// user is logged in
 				$sql = "SELECT user_id FROM `ads` WHERE ad_id='" . $ad_id . "'";
-				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 				$row = @mysqli_fetch_array( $result );
 
 				if ( $_SESSION['MDS_ID'] !== $row['user_id'] ) {
@@ -522,10 +522,10 @@ function insert_ad_data() {
 			}
 		}
 
-		$now       = ( gmdate( "Y-m-d H:i:s" ) );
+		$now       = gmdate( "Y-m-d H:i:s" );
 		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'update' );
 		$sql       = "UPDATE ads SET ad_date='$now'" . $ad_values['extra_values'] . " WHERE ad_id='" . $ad_id . "'";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( "<br />SQL:[$sql]<br />ERROR:[" . mysqli_error( $GLOBALS['connection'] ) . "]<br />" );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$f2->write_log( $sql );
 	}
 
@@ -547,7 +547,7 @@ function insert_ad_data() {
 			$banner_id = intval( $order_row['banner_id'] );
 
 			$sql = "UPDATE blocks SET url='{$url}', alt_text='{$alt_text}', file_name='{$filename}' WHERE block_id={$block_id} AND banner_id={$banner_id};";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		}
 	}
 

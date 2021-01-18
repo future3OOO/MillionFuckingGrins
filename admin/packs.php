@@ -33,6 +33,7 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
+global $f2;
 $BID = $f2->bid();
 ?>
 
@@ -42,7 +43,7 @@ $BID = $f2->bid();
     <hr>
 <?php
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 ?>
 
     <form name="bidselect" method="post" action="packs.php">
@@ -114,13 +115,13 @@ if ( $BID != '' ) {
 	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete' ) {
 
 		$sql    = "SELECT * FROM orders where package_id='" . intval( $_REQUEST['package_id'] ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		if ( ( mysqli_num_rows( $result ) > 0 ) && ( $_REQUEST['really'] == '' ) ) {
 			echo "<font color='red'>Cannot delete package: This package is a part of another order</font> (<a href='packs.php?BID=$BID&package_id=" . $_REQUEST['package_id'] . "&action=delete&really=yes'>Click here to delete anyway</a>)";
 		} else {
 
 			$sql = "DELETE FROM packages WHERE package_id='" . intval( $_REQUEST['package_id'] ) . "' ";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		}
 	}
 
@@ -129,15 +130,15 @@ if ( $BID != '' ) {
 		global $BID;
 
 		$sql = "SELECT * FROM packages where is_default='Y' and banner_id=" . intval( $BID );
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$row         = mysqli_fetch_array( $result );
 		$old_default = $row['package_id'];
 
 		$sql = "UPDATE packages SET is_default='N' WHERE banner_id=" . intval( $BID );
 
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$sql = "UPDATE packages SET is_default='Y' WHERE package_id='" . intval( $package_id ) . "' AND banner_id=" . intval( $BID );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 		if ( $old_default == '' ) {
 
@@ -145,7 +146,7 @@ if ( $BID != '' ) {
 			// in the 1.7.0 database, all orders must have packages
 
 			$sql = "UPDATE orders SET package_id=" . intval( $package_id ) . " WHERE package_id=0 AND banner_id=" . intval( $BID );
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		}
 	}
 
@@ -174,7 +175,7 @@ if ( $BID != '' ) {
 
 			//echo $sql;
 
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			$_REQUEST['new']    = '';
 			$_REQUEST['action'] = '';

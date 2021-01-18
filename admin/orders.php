@@ -40,7 +40,7 @@ if ( $_REQUEST['mass_complete'] != '' ) {
 	foreach ( $_REQUEST['orders'] as $oid ) {
 
 		$sql = "SELECT * from orders where order_id=" . intval( $oid );
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$order_row = mysqli_fetch_array( $result );
 
 		if ( $order_row['status'] != 'completed' ) {
@@ -53,7 +53,7 @@ if ( $_REQUEST['mass_complete'] != '' ) {
 if ( $_REQUEST['action'] == 'complete' ) {
 
 	$sql = "SELECT * from orders where order_id=" . intval( $_REQUEST['order_id'] );
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$order_row = mysqli_fetch_array( $result );
 
 	complete_order( $_REQUEST['user_id'], $_REQUEST['order_id'] );

@@ -34,17 +34,18 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/include/init.php";
 
+global $f2, $label;
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
 $sql = "select count(*) AS COUNT FROM blocks where status='sold' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 $row = mysqli_fetch_array( $result );
 $sold = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
 $sql = "select count(*) AS COUNT FROM blocks where status='nfs' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 $row = mysqli_fetch_array( $result );
 $nfs = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 

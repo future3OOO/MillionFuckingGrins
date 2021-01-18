@@ -34,6 +34,7 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/../include/init.php";
 
+global $f2;
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
@@ -47,12 +48,12 @@ if ( isset( $_REQUEST['block_id'] ) && $_REQUEST['block_id'] != '' ) {
 	$sql = "SELECT * FROM ads WHERE ad_id='" . intval( $_REQUEST['aid'] ) . "' ";
 }
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $row = mysqli_fetch_array( $result );
 
 // load all the blocks wot
 $sql = "SELECT * FROM blocks WHERE order_id='" . intval( $row['order_id'] ) . "' ";
-$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 $blocks = array();
 

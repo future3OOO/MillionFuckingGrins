@@ -61,6 +61,17 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isse
 }
 
 /**
+ * Returns SQL error output for debug purposes.
+ *
+ * @param $sql
+ *
+ * @return string
+ */
+function mds_sql_error($sql) {
+	return "<br />SQL:[" . htmlspecialchars($sql, ENT_QUOTES) . "]<br />ERROR:[" . htmlspecialchars(mysqli_error( $GLOBALS['connection'] ), ENT_QUOTES) . "]<br />";
+}
+
+/**
  * Database Upgrades
  */
 

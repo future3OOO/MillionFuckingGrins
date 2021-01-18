@@ -39,10 +39,6 @@ $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
-//$sql = "select * from banners where banner_id=$BID";
-//$result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
-//$b_row = mysqli_fetch_array($result);
-
 ?>
     The following screen shows a map of all the orders made on a grid. Move your mouse over the blocks to find who owns the order. Click on the block to manage the order.<br>
     Red blocks are on order (Status can be: 'reserved', 'ordered', 'sold'), Green blocks are currently selected (Status can be: 'new')
@@ -50,7 +46,7 @@ $banner_data = load_banner_constants( $BID );
 <?php
 
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 ?>
 
     <form name="bidselect" method="post" action="ordersmap.php">

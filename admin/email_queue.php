@@ -38,7 +38,7 @@ ini_set( 'max_execution_time', 500 );
 if ( $_REQUEST['action'] == 'delall' ) {
 
 	$sql = "SELECT * FROM mail_queue ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
 		if ( $row['att1_name'] != '' ) {
@@ -54,12 +54,12 @@ if ( $_REQUEST['action'] == 'delall' ) {
 		}
 
 		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 }
 if ( $_REQUEST['action'] == 'delsent' ) {
 	$sql = "SELECT * from mail_queue where `status`='sent' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
 		if ( $row['att1_name'] != '' ) {
@@ -75,12 +75,12 @@ if ( $_REQUEST['action'] == 'delsent' ) {
 		}
 
 		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 }
 if ( $_REQUEST['action'] == 'delerror' ) {
 	$sql = "SELECT * from mail_queue where `status`='error' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
 		if ( $row['att1_name'] != '' ) {
@@ -96,13 +96,13 @@ if ( $_REQUEST['action'] == 'delerror' ) {
 		}
 
 		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 }
 if ( $_REQUEST['action'] == 'resend' ) {
 
 	$sql = "UPDATE mail_queue SET status='queued' WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	process_mail_queue( 1, $_REQUEST['mail_id'] );
 }
@@ -113,9 +113,6 @@ if ( $EMAILS_PER_BATCH == '' ) {
 }
 
 if ( $_REQUEST['action'] == 'send' ) {
-	//$sql = "DELETE FROM mail_queue where `status`='sent' ";
-	//mysqli_query($GLOBALS['connection'], $sql) or die(mysqli_error($GLOBALS['connection']));
-
 	process_mail_queue( $EMAILS_PER_BATCH );
 }
 
@@ -129,12 +126,12 @@ $search    = $_REQUEST['search'];
 $q_string  = "&q_to_add=$q_to_add&q_subj=$q_subj&q_to_name=$q_to_name&q_msg=$q_msg&q_status=$q_status&q_type=$q_type&search=$search";
 
 $sql    = "select count(*) as c from mail_queue  ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 $row    = mysqli_fetch_array( $result );
 $total  = $row['c'];
 
 $sql    = "select count(*) as c from mail_queue where status='queued'  ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 $row    = mysqli_fetch_array( $result );
 $queued = $row['c'];
 

@@ -65,7 +65,7 @@ class functions2 {
 			} else if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 				// $_REQUEST['aid']
 				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['aid'] ) . "'";
-				$res = mysqli_query( $GLOBALS['connection'], $sql );
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 				if ( mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
 					$ret = $row['banner_id'];
@@ -73,7 +73,7 @@ class functions2 {
 			} else if ( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ) {
 				// $_SESSION['MDS_ID']
 				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
-				$res = mysqli_query( $GLOBALS['connection'], $sql );
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 				if ( $res !== false && mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
 					$ret = $row['BID'];
@@ -81,7 +81,7 @@ class functions2 {
 			} else {
 				// temp_orders
 				$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
-				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 				if ( mysqli_num_rows( $order_result ) > 0 ) {
 					$order_row = mysqli_fetch_array( $order_result );
 

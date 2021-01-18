@@ -49,15 +49,16 @@ if ( ! $admin ) {
 	require( 'admin_common.php' );
 }
 
+global $f2;
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
 $sql = "select * from banners where banner_id=" . intval( $BID );
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $b_row = mysqli_fetch_array( $result );
 $sql   = "select * from users where ID=" . intval( $_REQUEST['user_id'] );
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $u_row = mysqli_fetch_array( $result );
 
 if ( $_REQUEST['approve_links'] != '' ) {
@@ -69,17 +70,16 @@ if ( $_REQUEST['approve_links'] != '' ) {
 
 		foreach ( $_REQUEST['urls'] as $url ) {
 			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $BID . "'  ";
-			//echo $sql."<br>";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			$i ++;
 		}
 	}
 	// approve pixels
 	$sql = "UPDATE blocks set approved='Y' WHERE user_id=" . intval( $_REQUEST['user_id'] ) . " AND banner_id=" . intval( $BID );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	$sql = "UPDATE orders set approved='Y' WHERE user_id=" . intval( $_REQUEST['user_id'] ) . " AND banner_id=" . intval( $BID );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	// process the image
 
@@ -93,10 +93,10 @@ if ( $_REQUEST['approve_links'] != '' ) {
 if ( $_REQUEST['disapprove_links'] != '' ) {
 
 	$sql = "UPDATE blocks set approved='N' WHERE user_id=" . intval( $_REQUEST['user_id'] ) . " and banner_id=" . intval( $BID );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	$sql = "UPDATE orders set approved='N' WHERE user_id=" . intval( $_REQUEST['user_id'] ) . " and banner_id=" . intval( $BID );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	echo process_image( $BID );
 	publish_image( $BID );
@@ -121,7 +121,7 @@ if ( $_REQUEST['disapprove_links'] != '' ) {
 
 			$sql = "SELECT alt_text, url, count(alt_text) AS COUNT, banner_id FROM blocks WHERE user_id=" . intval( $_REQUEST['user_id'] ) . "  $bid_sql group by url, alt_text ";
 
-			$m_result = mysqli_query( $GLOBALS['connection'], $sql );
+			$m_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			$i        = 0;
 			while ( $m_row = mysqli_fetch_array( $m_result ) ) {
 				$i ++;

@@ -39,7 +39,7 @@ function format_codes_translation_table( $field_id ) {
 	$field_id = intval( $field_id );
 
 	$sql = "SELECT * FROM codes WHERE `field_id`=$field_id ";
-	$f_result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
+	$f_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	while ( $f_row = mysqli_fetch_array( $f_result ) ) {
 
 		$code         = mysqli_real_escape_string( $GLOBALS['connection'], $f_row['code'] );
@@ -50,10 +50,10 @@ function format_codes_translation_table( $field_id ) {
 			$key = mysqli_real_escape_string( $GLOBALS['connection'], $key );
 
 			$sql = "SELECT t2.code, t2.field_id, t2.description AS FLABEL, lang FROM codes_translations as t1, codes as t2 WHERE t2.code=t1.code AND t2.code='" . $code . "' AND t2.field_id=" . $row_field_id . " AND lang='$key' ";
-			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( $sql . mysqli_error( $GLOBALS['connection'] ) );
+			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			if ( mysqli_num_rows( $result ) == 0 ) {
 				$sql = "REPLACE INTO `codes_translations` (`field_id`, `code`, `lang`, `description`) VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['field_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $f_row['code'] ) . "', '" . $key . "', '" . $description . "')";
-				mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+				mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			}
 		}
 	}
@@ -69,15 +69,15 @@ function change_code_id( $field_id, $code, $new_code ) {
 	// find which form the field_id is from
 
 	$sql = "SELECT form_id FROM form_fields WHERE field_id='" . $field_id . "' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row     = mysqli_fetch_array( $result );
 	$form_id = $row['form_id'];
 
 	$sql = "UPDATE codes SET code='$new_code' where field_id='$field_id' and code='$code' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	$sql = "UPDATE codes_translations SET code='$new_code' where field_id='$field_id' and code='$code' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	switch ( $form_id ) {
 		case '1': // ads form
@@ -87,7 +87,7 @@ function change_code_id( $field_id, $code, $new_code ) {
 			break;
 	}
 
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 		$new_codes = array();
@@ -105,7 +105,7 @@ function change_code_id( $field_id, $code, $new_code ) {
 		$codes = mysqli_real_escape_string( $GLOBALS['connection'], $codes );
 
 		$sql = "UPDATE $table SET `$field_id`='" . $codes . "' WHERE $id = '" . intval( $row['ID'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 }
 

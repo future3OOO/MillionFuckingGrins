@@ -192,12 +192,12 @@ function show_stats() {
 	$banner_data = load_banner_constants( $BID );
 
 	$sql    = "select count(*) AS COUNT FROM blocks where status='sold' and banner_id='$BID' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row    = mysqli_fetch_array( $result );
 	$sold   = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
 	$sql    = "select count(*) AS COUNT FROM blocks where status='nfs' and banner_id='$BID' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row    = mysqli_fetch_array( $result );
 	$nfs    = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
@@ -237,7 +237,7 @@ function store_click( $data ) {
 	if ( ADVANCED_CLICK_COUNT == 'YES' ) {
 		$date = gmdate( 'Y' ) . "-" . gmdate( 'm' ) . "-" . gmdate( 'd' );
 		$sql  = "UPDATE clicks set clicks = clicks + 1 where banner_id='" . intval( $data['bid'] ) . "' AND `date`='$date' AND `block_id`='" . intval( $data['block_id'] ) . "'";
-		mysqli_query( $GLOBALS['connection'], $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$x = @mysqli_affected_rows( $GLOBALS['connection'] );
 
 		if ( ! $x ) {
@@ -245,22 +245,22 @@ function store_click( $data ) {
 			$tag_to_field_id = get_tag_to_field_id( 1 );
 			$field_id        = intval( $tag_to_field_id['URL']['field_id'] );
 			$sql    = "SELECT t1.{$field_id}, t1.user_id FROM ads AS t1 INNER JOIN blocks AS t2 ON t1.ad_id = t2.ad_id WHERE t2.block_id=" . intval( $data['block_id'] ) . ";";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			$row    = @mysqli_fetch_array( $result );
 			$sql = "INSERT into clicks (`banner_id`, `date`, `clicks`, `block_id`, `user_id`) VALUES('" . intval( $data['bid'] ) . "', '$date', '1', '" . intval( $data['block_id'] ) . "', '" . intval( $row['user_id'] ) . "') ";
-			@mysqli_query( $GLOBALS['connection'], $sql );
+			@mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		}
 	}
 
 	$sql = "UPDATE blocks SET click_count = click_count + 1 where block_id='" . intval( $data['block_id'] ) . "' AND banner_id='" . intval( $data['bid'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 }
 
 function store_view( $data ) {
 	if ( ADVANCED_VIEW_COUNT == 'YES' ) {
 		$date = gmdate( 'Y' ) . "-" . gmdate( 'm' ) . "-" . gmdate( 'd' );
 		$sql  = "UPDATE views set views = views + 1 where banner_id='" . intval( $data['bid'] ) . "' AND `date`='$date' AND `block_id`='" . intval( $data['block_id'] ) . "'";
-		mysqli_query( $GLOBALS['connection'], $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 		$x = @mysqli_affected_rows( $GLOBALS['connection'] );
 
 		if ( ! $x ) {
@@ -268,7 +268,7 @@ function store_view( $data ) {
 			$tag_to_field_id = get_tag_to_field_id( 1 );
 			$field_id        = intval( $tag_to_field_id['URL']['field_id'] );
 			$sql    = "SELECT t1.{$field_id}, t1.user_id FROM ads AS t1 INNER JOIN blocks AS t2 ON t1.ad_id = t2.ad_id WHERE t2.block_id=" . intval( $data['block_id'] ) . ";";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 			$row    = @mysqli_fetch_array( $result );
 			$sql = "INSERT into views (`banner_id`, `date`, `views`, `block_id`, `user_id`) VALUES('" . intval( $data['bid'] ) . "', '$date', '1', '" . intval( $data['block_id'] ) . "', '" . intval( $row['user_id'] ) . "') ";
 			@mysqli_query( $GLOBALS['connection'], $sql );

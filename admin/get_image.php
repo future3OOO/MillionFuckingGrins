@@ -39,7 +39,7 @@ header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
 header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 $sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 
 if ( $row['image_data'] == '' ) {
