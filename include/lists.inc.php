@@ -93,7 +93,7 @@ function echo_list_head_data( $form_id, $admin ) {
 
 function echo_ad_list_data( $admin ) {
 
-	global $f2, $column_list, $column_info, $label, $cur_offset, $order_str, $q_offset, $show_emp, $cat, $list_mode;
+	global $column_list, $column_info, $label, $cur_offset, $order_str;
 
 	if ( $_REQUEST['order_by'] != '' ) {
 
