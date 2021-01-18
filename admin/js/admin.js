@@ -60,15 +60,14 @@ function mds_form_submit(formData, $form, options) {
 }
 
 function mds_form_submit_success(responseText, statusText, xhr, $form) {
-	let url = $form.attr('action');
-
-	if (url === "") {
-		url = window.location.hash.substr(1);
-	}
-
 	$(document).scrollTop(0);
 
-	window.location.hash = '#' + url;
+	// let url = $form.attr('action');
+	//
+	// if (url === "") {
+	// 	url = window.location.hash.substr(1);
+	// }
+	//window.location.hash = '#' + url;
 
 	$form.find('input').attr('disabled', false);
 
