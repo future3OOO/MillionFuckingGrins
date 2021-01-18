@@ -186,7 +186,7 @@ function echo_order_arrows( $row ) {
 }
 
 function mds_display_form( $form_id, $mode, $prams, $section ) {
-	global $f2, $label, $admin;
+	global $f2, $label, $admin, $purifier;
 
 	// filter vars
 	$form_id           = intval( $form_id );
@@ -475,7 +475,6 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 
 					} else {
 
-						global $purifier;
 						switch ( $row['field_type'] ) {
 							case "TEXT":
 								if ( $mode == 'view' ) {
@@ -700,7 +699,7 @@ function mds_save_field( $error, $NEW_FIELD ) {
 		$sql = "INSERT INTO `form_fields` ( `form_id` , `field_id` , `reg_expr` , `field_label` , `field_type` , `field_sort` , `is_required` , `display_in_list` , `error_message` , `field_init`, `field_width`, `field_height`, `is_in_search`, `list_sort_order`, `search_sort_order`, `template_tag`, `section`, `is_hidden`, `is_anon`, `field_comment`, `category_init_id`, `is_cat_multiple`, `cat_multiple_rows`, `is_blocked`, `multiple_sel_all`) 
         VALUES (
             '$form_id',
-            '',
+            NULL,
             '" . mysqli_real_escape_string( $GLOBALS['connection'], $reg_expr ) . "',
             '" . mysqli_real_escape_string( $GLOBALS['connection'], $field_label ) . "',
             '" . mysqli_real_escape_string( $GLOBALS['connection'], $field_type ) . "',
@@ -1401,22 +1400,21 @@ function field_form( $NEW_FIELD, $prams, $form_id ) {
 }
 
 function form_text_field( $field_name, $field_value, $width ) {
-	global $purifier;
 
 	$value = "";
 	if ( ! empty( $field_value ) ) {
-		$value = $purifier->purify( $field_value );
+		$value = $field_value;
 	}
 
-	return '<input class="dynamic_form_text_style" type="text" AUTOCOMPLETE="OFF" name="' . $field_name . '" value="' . $value . '" size="' . $width . '" >';
+	return '<input class="dynamic_form_text_style" type="text" AUTOCOMPLETE="OFF" name="' . htmlspecialchars($field_name, ENT_QUOTES ) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '" size="' . intval($width) . '" >';
 }
 
 function form_file_field( $field_name, $field_value ) {
-	return '<input class="dynamic_form_text_style" type="file" name="' . $field_name . '"   >';
+	return '<input class="dynamic_form_text_style" type="file" name="' . htmlspecialchars($field_name, ENT_QUOTES) . '"   >';
 }
 
 function form_image_field( $field_name, $field_value ) {
-	return '<input class="dynamic_form_text_style" type="file" name="' . $field_name . '" >';
+	return '<input class="dynamic_form_text_style" type="file" name="' . htmlspecialchars($field_name, ENT_QUOTES) . '" >';
 }
 
 function form_editor_field( $field_name, $field_value, $width, $height ) {
@@ -1439,7 +1437,7 @@ function form_editor_field( $field_name, $field_value, $width, $height ) {
 		</noscript>
 	</div>
 ';
-	$html .= '			<textarea cols="' . $width . '" id="' . $field_name . '" name="' . $field_name . '" rows="' . $height . '">' . ( escape_html( $field_value ) ) . '</textarea>';
+	$html .= '			<textarea cols="' . $width . '" id="' . $field_name . '" name="' . $field_name . '" rows="' . $height . '">' . htmlspecialchars( $field_value, ENT_QUOTES ) . '</textarea>';
 	$html .= '			<script type="text/javascript">
 			//<![CDATA[
 
@@ -1456,12 +1454,12 @@ function form_editor_field( $field_name, $field_value, $width, $height ) {
 }
 
 function form_textarea_field( $field_name, $field_value, $width, $height ) {
-	//$val = str_replace ("<", "&lt;", $field_value);
-	//$val = str_replace (">", "&gt;", $val);
-	return '<textarea  name="' . $field_name . '" cols="' . $width . '" rows="' . $height . '">' . ( escape_html( $field_value ) ) . '</textarea>';
+	return '<textarea  name="' . $field_name . '" cols="' . $width . '" rows="' . $height . '">' . htmlspecialchars( $field_value, ENT_QUOTES) . '</textarea>';
 }
 
 function form_date_field( $field_name, $day, $month, $year ) {
+
+	global $label;
 
 	$class = "";
 	if ( func_num_args() > 4 ) {
@@ -1473,8 +1471,6 @@ function form_date_field( $field_name, $day, $month, $year ) {
 	}
 
 	$sequence = DATE_INPUT_SEQ;
-
-	global $label;
 
 	?>
 
@@ -1488,188 +1484,34 @@ function form_date_field( $field_name, $day, $month, $year ) {
 					switch ( $widget ) {
 
 						case 'Y':
-							?>
-
-                            <input type="text" class="<?php echo $class; ?>" name="<?php echo $field_name . "y"; ?>" size="4" value="<?php echo $year; ?>"/>
-							<?php
+							echo '<input type="text" class="' . htmlspecialchars($class, ENT_QUOTES) . '" name="' . htmlspecialchars($field_name, ENT_QUOTES) . 'y" size="4" value="' . intval($year) . '"/>';
 							break;
 
 						case 'M':
-							?>
-                            <select name="<?php echo $field_name . "m"; ?>" class="<?php echo $class; ?>">
-                                <option value=""></option>
-                                <option <?php if ( $month == '01' ) {
-									echo ' selected ';
-								} ?> value="01"><?php echo $label['sel_month_1']; ?></option>
-                                <option <?php if ( $month == '02' ) {
-									echo ' selected ';
-								} ?> value="02"><?php echo $label['sel_month_2']; ?></option>
-                                <option <?php if ( $month == '03' ) {
-									echo ' selected ';
-								} ?> value="03"><?php echo $label['sel_month_3']; ?></option>
-                                <option <?php if ( $month == '04' ) {
-									echo ' selected ';
-								} ?> value="04"><?php echo $label['sel_month_4']; ?></option>
-                                <option <?php if ( $month == '05' ) {
-									echo ' selected ';
-								} ?> value="05"><?php echo $label['sel_month_5']; ?></option>
-                                <option <?php if ( $month == '06' ) {
-									echo ' selected ';
-								} ?> value="06"><?php echo $label['sel_month_6']; ?></option>
-                                <option <?php if ( $month == '07' ) {
-									echo ' selected ';
-								} ?> value="07"><?php echo $label['sel_month_7']; ?></option>
-                                <option <?php if ( $month == '08' ) {
-									echo ' selected ';
-								} ?> value="08"><?php echo $label['sel_month_8']; ?></option>
-                                <option <?php if ( $month == '09' ) {
-									echo ' selected ';
-								} ?> value="09"><?php echo $label['sel_month_9']; ?></option>
-                                <option <?php if ( $month == '10' ) {
-									echo ' selected ';
-								} ?> value="10"><?php echo $label['sel_month_10']; ?></option>
-                                <option <?php if ( $month == '11' ) {
-									echo ' selected ';
-								} ?> value="11"><?php echo $label['sel_month_11']; ?></option>
-                                <option <?php if ( $month == '12' ) {
-									echo ' selected ';
-								} ?> value="12"><?php echo $label['sel_month_12']; ?></option>
-                            </select>
-							<?php
+						    $output = '<select name="' . htmlspecialchars($field_name, ENT_QUOTES) . 'm" class="' . htmlspecialchars($class, ENT_QUOTES) . '">
+                                <option value=""></option>';
+
+						    for($x = 1;$x <= 12; $x++) {
+							    $output .= '<option ' . ( ( $month == '0' . $x ) ? 'selected ' : '' ) . 'value="0' . $x . '">' . htmlspecialchars($label['sel_month_' . $x], ENT_QUOTES) . '</option>';
+						    }
+
+                            $output .= '</select>';
+
+							echo $output;
 
 							break;
 
 						case 'D':
-							?>
-                            <select name="<?php echo $field_name . "d"; ?>" class="<?php echo $class; ?>">
-                                <option value=""></option>
-                                <option <?php if ( $day == '01' ) {
-									echo ' selected ';
-								} ?> value="01">1
-                                </option>
-                                <option <?php if ( $day == '02' ) {
-									echo ' selected ';
-								} ?> value="02">2
-                                </option>
-                                <option <?php if ( $day == '03' ) {
-									echo ' selected ';
-								} ?> value="03">3
-                                </option>
-                                <option <?php if ( $day == '04' ) {
-									echo ' selected ';
-								} ?> value="04">4
-                                </option>
-                                <option <?php if ( $day == '05' ) {
-									echo ' selected ';
-								} ?> value="05">5
-                                </option>
-                                <option <?php if ( $day == '06' ) {
-									echo ' selected ';
-								} ?> value="06">6
-                                </option>
-                                <option <?php if ( $day == '07' ) {
-									echo ' selected ';
-								} ?>value="07">7
-                                </option>
-                                <option <?php if ( $day == '08' ) {
-									echo ' selected ';
-								} ?>value="08">8
-                                </option>
-                                <option <?php if ( $day == '09' ) {
-									echo ' selected ';
-								} ?> value="09">9
-                                </option>
-                                <option <?php if ( $day == '10' ) {
-									echo ' selected ';
-								} ?> value="10">10
-                                </option>
-                                <option <?php if ( $day == '11' ) {
-									echo ' selected ';
-								} ?> value="11"> 11
-                                </option>
-                                <option <?php if ( $day == '12' ) {
-									echo ' selected ';
-								} ?> value="12">12
-                                </option>
-                                <option <?php if ( $day == '13' ) {
-									echo ' selected ';
-								} ?> value="13">13
-                                </option>
-                                <option <?php if ( $day == '14' ) {
-									echo ' selected ';
-								} ?> value="14">14
-                                </option>
-                                <option <?php if ( $day == '15' ) {
-									echo ' selected ';
-								} ?> value="15">15
-                                </option>
-                                <option <?php if ( $day == '16' ) {
-									echo ' selected ';
-								} ?> value="16">16
-                                </option>
-                                <option <?php if ( $day == '17' ) {
-									echo ' selected ';
-								} ?> value="17">17
-                                </option>
-                                <option <?php if ( $day == '18' ) {
-									echo ' selected ';
-								} ?> value="18">18
-                                </option>
-                                <option <?php if ( $day == '19' ) {
-									echo ' selected ';
-								} ?> value="19">19
-                                </option>
-                                <option <?php if ( $day == '20' ) {
-									echo ' selected ';
-								} ?> value="20">20
-                                </option>
-                                <option <?php if ( $day == '21' ) {
-									echo ' selected ';
-								} ?> value="21">21
-                                </option>
-                                <option <?php if ( $day == '22' ) {
-									echo ' selected ';
-								} ?> value="22">22
-                                </option>
-                                <option <?php if ( $day == '23' ) {
-									echo ' selected ';
-								} ?> value="23">23
-                                </option>
-                                <option <?php if ( $day == '24' ) {
-									echo ' selected ';
-								} ?> value="24">24
-                                </option>
-                                <option <?php if ( $day == '25' ) {
-									echo ' selected ';
-								} ?> value="25">25
-                                </option>
-                                <option <?php if ( $day == '26' ) {
-									echo ' selected ';
-								} ?> value="26">26
-                                </option>
-                                <option <?php if ( $day == '27' ) {
-									echo ' selected ';
-								} ?> value="27">27
-                                </option>
-                                <option <?php if ( $day == '28' ) {
-									echo ' selected ';
-								} ?> value="28">28
-                                </option>
-                                <option <?php if ( $day == '29' ) {
-									echo ' selected ';
-								} ?> value="29">29
-                                </option>
-                                <option <?php if ( $day == '30' ) {
-									echo ' selected ';
-								} ?> value="30">30
-                                </option>
-                                <option <?php if ( $day == '31' ) {
-									echo ' selected ';
-								} ?> value="31">31
-                                </option>
-                            </select>
+							$output = '<select name="' . htmlspecialchars($field_name, ENT_QUOTES) . 'd" class="' . htmlspecialchars($class, ENT_QUOTES) . '">
+                                <option value=""></option>';
 
-							<?php
+							for($x = 1;$x <= 31; $x++) {
+								$output .= '<option ' . ( ( $day == '0' . $x ) ? 'selected ' : '' ) . 'value="0' . $x . '">' . $x . '</option>';
+							}
+
+							$output .= '</select>';
+
+							echo $output;
 
 							break;
 					}
@@ -1688,7 +1530,7 @@ function form_date_field( $field_name, $day, $month, $year ) {
 
 function form_select_field( $field_id, $selected ) {
 
-	global $f2, $label, $purifier;
+	global $label;
 
 	$field_id = intval( $field_id );
 
@@ -1700,8 +1542,9 @@ function form_select_field( $field_id, $selected ) {
 	}
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
-	echo '<select  name="' . $purifier->purify( $field_id ) . '">';
-	echo '<option value="">' . $purifier->purify( $label['sel_box_select'] ) . '</option>';
+
+	$output = '<select name="' . htmlspecialchars( $field_id, ENT_QUOTES ) . '">';
+	$output .= '<option value="">' . htmlspecialchars( $label['sel_box_select'], ENT_QUOTES ) . '</option>';
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 		if ( $row["code"] == $selected ) {
@@ -1710,16 +1553,16 @@ function form_select_field( $field_id, $selected ) {
 			$checked = '';
 		}
 
-		echo '<option ' . $checked . ' value="' . $purifier->purify( $row["code"] ) . '">';
-		echo $purifier->purify( $row["description"] );
-		echo '</option>';
+		$output .= '<option ' . $checked . ' value="' . htmlspecialchars( $row["code"], ENT_QUOTES ) . '">';
+		$output .= htmlspecialchars($row["description"], ENT_QUOTES);
+		$output .= '</option>';
 	}
-	echo "</select>";
+	$output .= "</select>";
+
+	echo $output;
 }
 
 function form_radio_field( $field_id, $selected ) {
-	global $f2, $purifier;
-
 	$field_id = intval( $field_id );
 
 	if ( $_SESSION['MDS_LANG'] != '' ) {
@@ -1731,6 +1574,7 @@ function form_radio_field( $field_id, $selected ) {
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL:" . $sql . "<br />ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
 
+	$output = '';
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 		if ( $row["code"] == $selected ) {
@@ -1739,14 +1583,14 @@ function form_radio_field( $field_id, $selected ) {
 			$checked = '';
 		}
 
-		echo $purifier->purify( '<input class="dynamic_form_radio_style" ' . $checked . ' id="id' . $field_id . $row["code"] . '" type="radio" name="' . $field_id . '" value="' . $row[ code ] . '">' );
-		echo $purifier->purify( '<label for="id' . $field_id . $row["code"] . '"><font size="2" face="arial">' . $row["description"] . '</font></label> <br>' );
+		$output .= '<input class="dynamic_form_radio_style" ' . $checked . ' id="id' . htmlspecialchars($field_id . $row['code'], ENT_QUOTES) . '" type="radio" name="' . $field_id . '" value="' . htmlspecialchars($row[ 'code' ], ENT_QUOTES) . '">';
+		$output .= '<label for="id' . htmlspecialchars($field_id . $row["code"], ENT_QUOTES) . '">' . htmlspecialchars($row["description"], ENT_QUOTES) . '</label> <br>';
 	}
+
+	echo $output;
 }
 
 function form_checkbox_field( $field_id, $selected, $mode ) {
-
-	global $f2, $purifier;
 
 	$field_id = intval( $field_id );
 	$mode     = strtolower( $mode );
@@ -1762,6 +1606,7 @@ function form_checkbox_field( $field_id, $selected, $mode ) {
 	$checked_codes = explode( ",", $selected );
 
 	$comma = "";
+	$output = "";
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 		if ( in_array( $row["code"], $checked_codes ) ) {
 			$checked = " checked ";
@@ -1771,20 +1616,20 @@ function form_checkbox_field( $field_id, $selected, $mode ) {
 
 		if ( ( $mode == 'view' ) && ( $checked != '' ) ) {
 			//$disabled = " disabled  ";
-			echo $purifier->purify( $comma . $row["description"] );
+			$output .= $comma . htmlspecialchars($row["description"], ENT_QUOTES);
 			$comma = ", ";
 		} else if ( ( $mode != 'view' ) ) {
 			$disabled = "";
 
-			echo $purifier->purify( ' <input class="dynamic_form_checkbox_style" id="id' . $field_id . $row["code"] . '" type="checkbox" ' . $checked . $disabled . ' name="' . $field_id . '[]" value="' . $row["code"] . '">' );
-			echo $purifier->purify( '<label for="id' . $field_id . $row["code"] . '">' . $row["description"] . '</label> <br>' );
+			$output .= '<input class="dynamic_form_checkbox_style" id="id' . htmlspecialchars($field_id . $row['code'], ENT_QUOTES) . '" type="checkbox" ' . $checked . $disabled . ' name="' . htmlspecialchars($field_id, ENT_QUOTES) . '[]" value="' . htmlspecialchars($row['code'], ENT_QUOTES) . '">';
+			$output .= '<label for="id' . htmlspecialchars($field_id . $row["code"], ENT_QUOTES) . '">' . htmlspecialchars($row["description"], ENT_QUOTES) . '</label> <br>';
 		}
 	}
+
+	echo $output;
 }
 
 function form_mselect_field( $field_id, $selected, $size, $mode ) {
-
-	global $f2, $purifier;
 
 	$field_id = intval( $field_id );
 
@@ -1799,16 +1644,17 @@ function form_mselect_field( $field_id, $selected, $size, $mode ) {
 
 	$selected_codes = explode( ",", $selected );
 
+	$output = "";
 	if ( $mode == 'view' ) {
 		require_once( "code_functions.php" );
 		$comma = '';
 		foreach ( $selected_codes as $code ) {
-			echo $purifier->purify( $comma . getCodeDescription( $field_id, $code ) );
+			$output .= $comma . htmlspecialchars(getCodeDescription( $field_id, $code ), ENT_QUOTES);
 			$comma = ', ';
 		}
 	} else {
 
-		echo $purifier->purify( "<select name='" . $field_id . "[]' multiple size='" . $size . "' >" );
+		echo "<select name='" . htmlspecialchars($field_id, ENT_QUOTES) . "[]' multiple size='" . intval($size) . "' >";
 		while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 			if ( in_array( $row['code'], $selected_codes ) ) {
@@ -1823,11 +1669,13 @@ function form_mselect_field( $field_id, $selected, $size, $mode ) {
 				$disabled = "";
 			}
 
-			echo $purifier->purify( "<option " . $checked . " value='" . $row['code'] . "'>" . $row['description'] . "</option>" );
+			$output .= "<option " . $checked . " value='" . htmlspecialchars($row['code'], ENT_QUOTES) . "'>" . htmlspecialchars($row['description'], ENT_QUOTES) . "</option>";
 		}
 
-		echo "</select>";
+		$output .= "</select>";
 	}
+
+	echo $output;
 }
 
 // Not just get..() anymore , but also saves / deletes images, and updates the skills matrix fields..
