@@ -48,9 +48,50 @@ function mds_wp_login_check() {
 
 		mds_load_wp();
 
+		$doredirect = false;
+
 		if ( ! is_user_logged_in() ) {
-			wp_redirect( wp_login_url( BASE_HTTP_PATH . 'users/index.php' ) );
-			exit;
+
+			// Check if MDS WP plugin Options class exists
+			if ( class_exists( '\MillionDollarScript\Classes\Options' ) ) {
+
+				// Get the login page option
+				$loginpage = \MillionDollarScript\Classes\Options::get_option( 'login-page' );
+
+				// validate the URL
+				if ( wp_http_validate_url( $loginpage ) ) {
+
+					// If not in preview or customizer
+					if ( ! is_preview() && ! is_customize_preview() ) {
+
+						// escape the URL
+						$loginhref = esc_url( $loginpage );
+
+						// do a javascript redirect in the parent frame if it exists, otherwise just redirect in the current window
+						echo '
+					<script>
+					if (parent.frames.length > 0) {
+						parent.location.href = "' . $loginhref . '";
+					} else {
+						window.location.href = "' . $loginhref . '";
+					}
+					</script>
+					';
+					}
+				} else {
+					// if the url isn't valid redirect to the default login
+					$doredirect = true;
+				}
+			} else {
+				// if the class doesn't exist then the plugin may not be installed/activated so redirect to the default login
+				$doredirect = true;
+			}
+
+			// redirect to the default login and then back to the users page
+			if ( $doredirect ) {
+				wp_redirect( wp_login_url( BASE_HTTP_PATH . 'users/index.php' ) );
+				exit;
+			}
 		}
 	}
 }
