@@ -67,11 +67,29 @@
     </table>
 	<?php
 
-	$rootpathinfo = pathinfo( '../' );
-	$BASE_PATH    = $rootpathinfo['dirname'];
+	$BASE_PATH    = realpath( __DIR__ . '/../' );
 
 	if ( ! defined( "BASE_PATH" ) ) {
 		define( "BASE_PATH", $BASE_PATH );
+	}
+
+	require_once __DIR__ . '/../include/url_functions.php';
+
+	$parsed_url     = parse_url( full_url() );
+	$BASE_HTTP_PATH = unparse_url( $parsed_url, true );
+
+	$SERVER_PATH_TO_ADMIN = __DIR__ . '/';
+
+	$UPLOAD_PATH = realpath( __DIR__ . '/../upload_files' ) . '/';
+
+	if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
+		define( 'UPLOAD_HTTP_PATH', $BASE_HTTP_PATH . 'upload_files/' );
+		$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
+	}
+	if ( UPLOAD_HTTP_PATH == '/upload_files/' ) {
+		$UPLOAD_HTTP_PATH = $BASE_HTTP_PATH . 'upload_files/';
+	} else {
+		$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
 	}
 
 	?>
@@ -84,7 +102,7 @@
         <tr>
             <td width="20%" bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Site's HTTP URL (address)</span></td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="BASE_HTTP_PATH" size="55" value="<?php echo htmlentities( BASE_HTTP_PATH ); ?>"><br>Recommended: <b>https://<?php echo htmlentities( $host . $http_url ) . "/"; ?></b></span></td>
+      <input type="text" name="BASE_HTTP_PATH" size="55" value="<?php echo htmlentities( BASE_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></span></td>
         </tr>
 
         <tr>
@@ -92,34 +110,34 @@
                 <span style="font-family: Verdana,sans-serif; font-size: small; ">Server Path to MDS Root Directory</span>
             </td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="BASE_PATH" size="55" value="<?php echo htmlentities( BASE_PATH ); ?>"><br>Recommended: <b><?php echo htmlentities( $file_path ); ?></b></span>
+      <input type="text" name="BASE_PATH" size="55" value="<?php echo htmlentities( BASE_PATH ); ?>"><br>Recommended: <b><?php echo $BASE_PATH; ?></b></span>
             </td>
         </tr>
 
         <tr>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Server Path to Admin</span></td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="SERVER_PATH_TO_ADMIN" size="55" value="<?php echo htmlentities( SERVER_PATH_TO_ADMIN ); ?>"><br>Recommended: <b><?php echo htmlentities( str_replace( '\\', '/', getcwd() ) ); ?>/</b></span></td>
+      <input type="text" name="SERVER_PATH_TO_ADMIN" size="55" value="<?php echo htmlentities( SERVER_PATH_TO_ADMIN ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></span></td>
         </tr>
 		<?php
 
 		if ( ! defined( 'UPLOAD_PATH' ) ) {
-			define( 'UPLOAD_PATH', $file_path . "/upload_files/" );
+			define( 'UPLOAD_PATH', $UPLOAD_PATH );
 		}
 		if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
-			define( 'UPLOAD_HTTP_PATH', "https://" . $host . $http_url . "/upload_files/" );
+			define( 'UPLOAD_HTTP_PATH', $UPLOAD_HTTP_PATH );
 		}
 
 		?>
         <tr>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">Path to upload directory</span></td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="UPLOAD_PATH" size="55" value="<?php echo htmlentities( UPLOAD_PATH ); ?>"><br>Recommended: <b><?php echo htmlentities( str_replace( '\\', '/', $file_path . "/upload_files/" ) ); ?></b></span></td>
+      <input type="text" name="UPLOAD_PATH" size="55" value="<?php echo htmlentities( UPLOAD_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></span></td>
         </tr>
         <tr>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">HTTP URL to upload directory</span></td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="UPLOAD_HTTP_PATH" size="55" value="<?php echo htmlentities( UPLOAD_HTTP_PATH ); ?>"><br>Recommended: <b>https://<?php echo htmlentities( str_replace( '\\', '/', $host . $http_url . "/upload_files/" ) ); ?></b></span></td>
+      <input type="text" name="UPLOAD_HTTP_PATH" size="55" value="<?php echo htmlentities( UPLOAD_HTTP_PATH ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></span></td>
         </tr>
         <tr>
             <td colspan="2">
