@@ -30,19 +30,14 @@
  *
  */
 
-// check if a config.php exists, if not then rename the default one and redirect to install
+// check if a config.php exists, if not then redirect to install
 if ( ! file_exists( __DIR__ . "/config.php" ) ) {
-	if ( file_exists( __DIR__ . "/config-default.php" ) ) {
-		if ( rename( __DIR__ . "/config-default.php", __DIR__ . "/config.php" ) ) {
-			$host     = $_SERVER['HTTP_HOST'];
-			$uri      = rtrim( dirname( $_SERVER['PHP_SELF'] ), '/\\' );
-			$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
-			$loc      = $protocol . $host . $uri . "/admin/install.php";
-			header( "Location: $loc" );
-			header( "X-Frame-Options: allow-from " . $protocol . $host . $uri . "/" );
-		}
-	}
-	echo "The file config.php was not found and I was unable to automatically rename it. You may have to manually rename config-default.php to config.php and then visit $loc to install the script.";
+	$host     = $_SERVER['HTTP_HOST'];
+	$uri      = rtrim( dirname( $_SERVER['PHP_SELF'] ), '/\\' );
+	$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
+	$loc      = $protocol . $host . $uri . "/admin/install.php";
+	header( "Location: $loc" );
+	header( "X-Frame-Options: allow-from " . $protocol . $host . $uri . "/" );
 	exit;
 }
 

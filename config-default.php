@@ -50,7 +50,7 @@ define( 'SITE_LOGO_URL', 'https://milliondollarscript.com/logo.gif' );
 define( 'SITE_NAME', 'Million Dollar Script' );
 define( 'SITE_SLOGAN', 'This is the Million Dollar Script Example. 1 pixel = 1 cent' );
 define( 'MDS_RESIZE', 'YES' );
-define( 'MYSQL_HOST', '' );
+define( 'MYSQL_HOST', 'localhost' );
 define( 'MYSQL_USER', '' );
 define( 'MYSQL_PASS', '' );
 define( 'MYSQL_DB', '' );

@@ -30,11 +30,13 @@
  *
  */
 
+$renamed = false;
+
 if ( isset( $_REQUEST['action'] ) ) {
 
 	if ( $_REQUEST['action'] == 'install' ) {
 		save_db_config();
-		require_once __DIR__ . "/../include/init.php";
+		require_once __DIR__ . "/../config.php";
 		install_db();
 	} else if ( $_REQUEST['action'] == 'delete' ) {
 		unlink( __DIR__ . '/install.php' );
@@ -43,17 +45,24 @@ if ( isset( $_REQUEST['action'] ) ) {
 	}
 } else {
 
-	if ( file_exists( "../config.php" ) ) {
-		require_once __DIR__ . "/../include/init.php";
+	if ( file_exists( __DIR__ . "/../config.php" ) ) {
+		require_once __DIR__ . "/../config.php";
 	} else {
-		echo "config.php not found. Maybe you have to rename config-default.php to config.php";
-		die();
+		if ( file_exists( __DIR__ . "/../config-default.php" ) ) {
+			if ( rename( __DIR__ . "/../config-default.php", __DIR__ . "/../config.php" ) ) {
+				$renamed = true;
+				require_once __DIR__ . "/../config.php";
+			} else {
+				echo "Error renaming config-default.php to config.php. Please check that file permissions are correct and that the file exists.";
+				exit;
+			}
+		}
 	}
-
-	require_once( "../include/database.php" );
 }
-$sql = "select * from users";
-if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) ) ) {
+
+require_once __DIR__ . "/../include/database.php";
+
+if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false ) {
 	?>
     <h2>Database successfully Installed.</h2>
     <h3>Next Steps</h3>
@@ -72,14 +81,16 @@ if ( $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_erro
     <h2 style="text-align:center;">Million Dollar Script - Database Installation</h2>
     <div style="font-family:'Arial', sans-serif;padding:10px;background-color:rgba(214,241,255,0.98);border-radius:10px;text-align:center;font-weight:bold;width:50%;margin:0 auto;line-height:1.5;">
         Having issues installing and want the developer to do it for you?<br/>
-        Want to <a target="_blank" href="https://milliondollarscript.com/article/wordpress-integration/">integrate with WordPress</a> and don't want to wait for MDS 3.0?<br/>
-        <a target="_blank" href="https://milliondollarscript.com/product/million-dollar-script-installation-service/">Order the premium install service</a>!
+        <a target="_blank" href="https://milliondollarscript.com/install-service/">Order the premium install service</a>!
     </div>
     <p>
         Please fill in the form and click install.<br>
         Please make sure that the MySQL user has all the permissions to use the database (Admin privileges).<br>
     </p>
 <?php
+if ( $renamed === true ) {
+	echo "- config-default.php renamed to config.php. (OK)</br>";
+}
 if ( is_writable( "../config.php" ) ) {
 	echo "- config.php is writeable. (OK)<br>";
 } else {
@@ -128,7 +139,7 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
 
 		<?php
 
-        require_once __DIR__ . '/../include/url_functions.php';
+		require_once __DIR__ . '/../include/url_functions.php';
 
 		$parsed_url     = parse_url( full_url() );
 		$BASE_HTTP_PATH = unparse_url( $parsed_url, true );
@@ -180,16 +191,16 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
                     <font face="Verdana" size="1"><b>Mysql Settings</b></font></td>
             </tr>
             <tr>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
+                        Server Hostname</font></td>
+                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
+                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? htmlspecialchars( MYSQL_HOST, ENT_QUOTES, 'UTF-8' ) : "localhost"; ?>"></font></td>
+            </tr>
+            <tr>
                 <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Username</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
                         <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? htmlspecialchars( MYSQL_USER, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Database Password</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? htmlspecialchars( MYSQL_PASS, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
@@ -199,9 +210,9 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Server Hostname</font></td>
+                        Database Password</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? htmlspecialchars( MYSQL_HOST, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
+                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? htmlspecialchars( MYSQL_PASS, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -227,10 +238,10 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
 <?php
 
 function save_db_config() {
-	require_once '../include/functions2.php';
+	require_once __DIR__ . '/../include/functions2.php';
 	$f2 = new functions2();
 
-	$filename = "../config.php";
+	$filename = __DIR__ . '/../config.php';
 	$handle   = fopen( $filename, "r" );
 	$contents = fread( $handle, filesize( $filename ) );
 	fclose( $handle );
@@ -274,6 +285,8 @@ function query_parser( $q ) {
 }
 
 function multiple_query( $q ) {
+	require_once __DIR__ . "/../include/database.php";
+
 	$queries = query_parser( $q );
 	$n       = count( $queries );
 	$results = array();
@@ -295,10 +308,12 @@ function install_db() {
 	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
 	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
 
+	// TODO: check for lower versions of MariaDB
+
 	if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
 
 		$sql = "
-        
+
         CREATE TABLE `ads` (
           `ad_id` int(11) NOT NULL auto_increment,
           `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '0',
@@ -310,8 +325,7 @@ function install_db() {
           `3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`ad_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
-        
+
         CREATE TABLE `banners` (
           `banner_id` int(11) NOT NULL auto_increment,
           `grid_width` int(11) NOT NULL default '0',
@@ -342,10 +356,9 @@ function install_db() {
           `time_stamp` int(11) default NULL,
           PRIMARY KEY  (`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
-    
+
         INSERT INTO `banners` VALUES (1, 100, 100, 0, 100, 'Million Pixels. (1000x1000)', 'USD', NULL, 1, 10, 10, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAHklEQVR4nGO8cuUKA27AwsDAoK2tjUuaCY/W4SwNAJbvAxP1WmxKAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFUlEQVR4nGP8//8/A27AhEduBEsDAKXjAxF9kqZqAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4AQMAAAADqqSRAAAABlBMVEXW19b///9ZVCXjAAAAJklEQVR4nGNgQAP197///Y8gBpw/6r5R9426b9R9o+4bdd8wdB8AiRh20BqKw9IAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAHklEQVR4nGO8cuUKA27AwsDAoK2tjUuaCY/W4SwNAJbvAxP1WmxKAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFUlEQVR4nGP8//8/A27AhEduBEsDAKXjAxF9kqZqAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGP83+DAgBsw4ZEbwdIAJ/sB02xWjpQAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAE0lEQVR4nGP8/58BD2DCJzlypQF0BwISHGyJPgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAE0lEQVR4nGNk+M+ABzDhkxy50gBALQETmXEDiQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAEklEQVR4nGP8z4APMOGVHbHSAEEsAROxCnMTAAAAAElFTkSuQmCC', 500, 0, '2007-02-17 10:48:32', '#FFffFF', 'Y', 'Y', 1171775611);;;
-        
+
         CREATE TABLE `categories` (
           `category_id` int(11) NOT NULL default '0',
           `category_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -362,7 +375,7 @@ function install_db() {
           PRIMARY KEY  (`category_id`),
           KEY `composite_index` (`parent_category_id`,`category_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `form_fields` (
           `form_id` int(11) NOT NULL default '0',
           `field_id` int(11) NOT NULL auto_increment,
@@ -392,11 +405,11 @@ function install_db() {
           `is_prefill` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default 'N',
           PRIMARY KEY  (`field_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_fields` VALUES (1, 1, 1, 'not_empty', 'Ad Text', 'TEXT', 1, 'Y', '', '', 'was not filled in', '', 80, 0, 0, 0, 'ALT_TEXT', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', '', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '');;;
-        
+
         CREATE TABLE `form_field_translations` (
           `field_id` int(11) NOT NULL default '0',
           `lang` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -406,11 +419,11 @@ function install_db() {
           PRIMARY KEY  (`field_id`,`lang`),
           KEY `field_id` (`field_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_field_translations` VALUES (1, 'EN', 'Ad Text', 'was not filled in', '');;;
         INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '');;;
         INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)');;;
-    
+
         CREATE TABLE `form_lists` (
           `form_id` int(11) NOT NULL default '0',
           `field_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -427,11 +440,11 @@ function install_db() {
           `no_wrap` set('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`column_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_lists` VALUES (1, 'TIME', 1, 'ad_date', 'DATE', 1, 'N', 0, 'N', 'N', 'N', 'Y', 'N');;;
         INSERT INTO `form_lists` VALUES (1, 'EDITOR', 2, '1', 'ALT_TEXT', 2, 'N', 0, 'Y', 'N', 'N', 'Y', 'N');;;
         INSERT INTO `form_lists` VALUES (1, 'TEXT', 3, '2', 'URL', 3, 'N', 0, 'N', 'N', 'N', 'N', 'N');;;
-            
+
         CREATE TABLE `temp_orders` (
           `session_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `blocks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -447,7 +460,7 @@ function install_db() {
           `block_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           PRIMARY KEY  (`session_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `blocks` (
           `block_id` int(11) NOT NULL default '0',
           `user_id` int(11) default NULL,
@@ -469,7 +482,7 @@ function install_db() {
             `click_count` INT NOT NULL,
           PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `clicks` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
@@ -478,7 +491,7 @@ function install_db() {
             `clicks` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `views` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
@@ -487,18 +500,18 @@ function install_db() {
             `views` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `config` (
           `key` varchar(100) NOT NULL default '',
           `val` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`key`)
         );;;
-    
+
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('dbver', 1);;;
-    
+
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -510,14 +523,14 @@ function install_db() {
           `thousands_sep` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         INSERT INTO `currencies` VALUES ('AUD', 'Australian Dollar', 1.5193, 'N', '$', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('CAD', 'Canadian Dollar', 1.3378, 'N', '$', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('EUR', 'Euro', 0.9095, 'N', '€', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('GBP', 'British Pound', 0.7756, 'N', '£', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('JPY', 'Japanese Yen', 109.6790, 'N', '¥', 0, '.', ',');;;
         INSERT INTO `currencies` VALUES ('USD', 'U.S. Dollar', 1.0000, 'Y', '$', 2, '.', ',');;;
-    
+
         CREATE TABLE `lang` (
           `lang_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `lang_filename` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -530,9 +543,9 @@ function install_db() {
           `is_default` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default 'N',
           PRIMARY KEY  (`lang_code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         INSERT INTO `lang` VALUES ('EN', 'english.php', 'english.gif', 'Y', 'English', 'en_US.utf8', 'R0lGODlhGQARAMQAAAURdBYscgNNfrUOEMkMBdAqE9UTMtItONNUO9w4SdxmaNuObhYuh0Y5lCxVlFJcpqN2ouhfjLCrrOeRmeHKr/Wy3Lje4dPW3PDTz9/q0vXm1ffP7MLt5/f0+AAAAAAAACwAAAAAGQARAAAF02AAMIDDkOgwEF3gukCZIICI1jhFDRmOS4dF50aMVSqEjehFIWQ2kJLUMRoxCCsNzDFBZDCuh1RMpQY6HZYIiOlIYqKy9JZIqHeZTqMWnvoZCgosCkIXDoeIAGJkfmgEB3UHkgp1dYuKVWJXWCsEnp4qAwUcpBwWphapFhoanJ+vKxOysxMRgbcDHRlfeboZF2mvwp+5Eh07YC9naMzNzLmKuggTDy8G19jZ2NAiFB0LBxYuC+TlC7Syai8QGU0TAs7xaNxLDLoDdsPDuS98ABXfQgAAOw==', 'image/gif', 'Y');;;
-    
+
         CREATE TABLE `orders` (
           `user_id` int(11) NOT NULL default '0',
           `order_id` int(11) NOT NULL auto_increment,
@@ -556,7 +569,7 @@ function install_db() {
           `previous_order_id` int(11) NOT NULL default '0',
           PRIMARY KEY  (`order_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `packages` (
           `banner_id` int(11) NOT NULL default '0',
           `days_expire` int(11) NOT NULL default '0',
@@ -568,7 +581,7 @@ function install_db() {
           `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`package_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `prices` (
           `price_id` int(11) NOT NULL auto_increment,
           `banner_id` int(11) NOT NULL default '0',
@@ -583,7 +596,7 @@ function install_db() {
             col_to int(11) default NULL,
           PRIMARY KEY  (`price_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `transactions` (
           `transaction_id` int(11) NOT NULL auto_increment,
           `date` datetime default CURRENT_TIMESTAMP,
@@ -596,7 +609,7 @@ function install_db() {
           `origin` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`transaction_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `users` (
           `ID` int(11) NOT NULL auto_increment,
           `IP` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -621,7 +634,7 @@ function install_db() {
           PRIMARY KEY  (`ID`),
           UNIQUE KEY `Username` (`Username`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-            
+
         CREATE TABLE `mail_queue` (
             `mail_id` int(11) NOT NULL auto_increment,
             `mail_date` datetime default CURRENT_TIMESTAMP,
@@ -643,7 +656,7 @@ function install_db() {
             `date_stamp` datetime default CURRENT_TIMESTAMP,
             PRIMARY KEY  (`mail_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `cat_name_translations` (
           `category_id` int(11) NOT NULL default '0',
           `lang` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -651,14 +664,14 @@ function install_db() {
           PRIMARY KEY  (`category_id`,`lang`),
           KEY `category_id` (`category_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `codes` (
           `field_id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `code` varchar(5) NOT NULL default '',
           `description` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`field_id`,`code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `codes_translations` (
           `field_id` int(11) NOT NULL default '0',
           `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -670,7 +683,7 @@ function install_db() {
 	} else {
 
 		$sql = "
-        
+
         CREATE TABLE `ads` (
           `ad_id` int(11) NOT NULL auto_increment,
           `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '0',
@@ -682,7 +695,7 @@ function install_db() {
           `3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`ad_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `banners` (
           `banner_id` int(11) NOT NULL auto_increment,
           `grid_width` int(11) NOT NULL default '0',
@@ -713,9 +726,9 @@ function install_db() {
           `time_stamp` int(11) default NULL,
           PRIMARY KEY  (`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         INSERT INTO `banners` VALUES (1, 100, 100, 1, 100, 'Million Pixels. (1000x1000)', 'USD', NULL, 1, 10, 10, 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAHklEQVR4nGO8cuUKA27AwsDAoK2tjUuaCY/W4SwNAJbvAxP1WmxKAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFUlEQVR4nGP8//8/A27AhEduBEsDAKXjAxF9kqZqAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4AQMAAAADqqSRAAAABlBMVEXW19b///9ZVCXjAAAAJklEQVR4nGNgQAP197///Y8gBpw/6r5R9426b9R9o+4bdd8wdB8AiRh20BqKw9IAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAHklEQVR4nGO8cuUKA27AwsDAoK2tjUuaCY/W4SwNAJbvAxP1WmxKAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFUlEQVR4nGP8//8/A27AhEduBEsDAKXjAxF9kqZqAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAFElEQVR4nGP83+DAgBsw4ZEbwdIAJ/sB02xWjpQAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAE0lEQVR4nGP8/58BD2DCJzlypQF0BwISHGyJPgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAE0lEQVR4nGNk+M+ABzDhkxy50gBALQETmXEDiQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAEklEQVR4nGP8z4APMOGVHbHSAEEsAROxCnMTAAAAAElFTkSuQmCC', 500, 0, '2007-02-17 10:48:32', '#FFffFF', 'Y', 'Y', 1171775611);;;
-        
+
         CREATE TABLE `categories` (
           `category_id` int(11) NOT NULL default '0',
           `category_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -732,7 +745,7 @@ function install_db() {
           PRIMARY KEY  (`category_id`),
           KEY `composite_index` (`parent_category_id`,`category_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `form_fields` (
           `form_id` int(11) NOT NULL default '0',
           `field_id` int(11) NOT NULL auto_increment,
@@ -762,11 +775,11 @@ function install_db() {
           `is_prefill` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default 'N',
           PRIMARY KEY  (`field_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_fields` VALUES (1, 1, 1, 'not_empty', 'Ad Text', 'TEXT', 1, 'Y', '', '', 'was not filled in', '', 80, 0, 0, 0, 'ALT_TEXT', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', '', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '');;;
         INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '');;;
-        
+
         CREATE TABLE `form_field_translations` (
           `field_id` int(11) NOT NULL default '0',
           `lang` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -776,11 +789,11 @@ function install_db() {
           PRIMARY KEY  (`field_id`,`lang`),
           KEY `field_id` (`field_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_field_translations` VALUES (1, 'EN', 'Ad Text', 'was not filled in', '');;;
         INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '');;;
         INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)');;;
-            
+
         CREATE TABLE `form_lists` (
           `form_id` int(11) NOT NULL default '0',
           `field_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -797,11 +810,11 @@ function install_db() {
           `no_wrap` set('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`column_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         INSERT INTO `form_lists` VALUES (1, 'TIME', 1, 'ad_date', 'DATE', 1, 'N', 0, 'N', 'N', 'N', 'Y', 'N');;;
         INSERT INTO `form_lists` VALUES (1, 'EDITOR', 2, '1', 'ALT_TEXT', 2, 'N', 0, 'Y', 'N', 'N', 'Y', 'N');;;
         INSERT INTO `form_lists` VALUES (1, 'TEXT', 3, '2', 'URL', 3, 'N', 0, 'N', 'N', 'N', 'N', 'N');;;
-        
+
         CREATE TABLE `temp_orders` (
           `session_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `blocks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -817,7 +830,7 @@ function install_db() {
           `block_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           PRIMARY KEY  (`session_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `blocks` (
           `block_id` int(11) NOT NULL default '0',
           `user_id` int(11) default NULL,
@@ -839,7 +852,7 @@ function install_db() {
             `click_count` INT NOT NULL,
           PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `clicks` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
@@ -848,7 +861,7 @@ function install_db() {
             `clicks` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-      
+
         CREATE TABLE `views` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
@@ -857,13 +870,13 @@ function install_db() {
             `views` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` ) 
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `config` (
           `key` varchar(100) NOT NULL default '',
           `val` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`key`)
         );;;
-    
+
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
@@ -880,14 +893,14 @@ function install_db() {
           `thousands_sep` char(3) NOT NULL default '',
           PRIMARY KEY  (`code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         INSERT INTO `currencies` VALUES ('AUD', 'Australian Dollar', 1.52003, 'N', '$', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('CAD', 'Canadian Dollar', 1.33634, 'N', '$', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('EUR', 'Euro', 0.911083, 'N', '€', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('GBP', 'British Pound', 0.776339, 'N', '£', 2, '.', ',');;;
         INSERT INTO `currencies` VALUES ('JPY', 'Japanese Yen', 109.951, 'N', '¥', 0, '.', ',');;;
         INSERT INTO `currencies` VALUES ('USD', 'U.S. Dollar', 1.0000, 'Y', '$', 2, '.', ',');;;
-    
+
         CREATE TABLE `lang` (
           `lang_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `lang_filename` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -900,9 +913,9 @@ function install_db() {
           `is_default` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default 'N',
           PRIMARY KEY  (`lang_code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         INSERT INTO `lang` VALUES ('EN', 'english.php', 'english.gif', 'Y', 'English', 'en_US.utf8', 'R0lGODlhGQARAMQAAAURdBYscgNNfrUOEMkMBdAqE9UTMtItONNUO9w4SdxmaNuObhYuh0Y5lCxVlFJcpqN2ouhfjLCrrOeRmeHKr/Wy3Lje4dPW3PDTz9/q0vXm1ffP7MLt5/f0+AAAAAAAACwAAAAAGQARAAAF02AAMIDDkOgwEF3gukCZIICI1jhFDRmOS4dF50aMVSqEjehFIWQ2kJLUMRoxCCsNzDFBZDCuh1RMpQY6HZYIiOlIYqKy9JZIqHeZTqMWnvoZCgosCkIXDoeIAGJkfmgEB3UHkgp1dYuKVWJXWCsEnp4qAwUcpBwWphapFhoanJ+vKxOysxMRgbcDHRlfeboZF2mvwp+5Eh07YC9naMzNzLmKuggTDy8G19jZ2NAiFB0LBxYuC+TlC7Syai8QGU0TAs7xaNxLDLoDdsPDuS98ABXfQgAAOw==', 'image/gif', 'Y');;;
-    
+
         CREATE TABLE `orders` (
           `user_id` int(11) NOT NULL default '0',
           `order_id` int(11) NOT NULL auto_increment,
@@ -926,7 +939,7 @@ function install_db() {
           `previous_order_id` int(11) NOT NULL default '0',
           PRIMARY KEY  (`order_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `packages` (
           `banner_id` int(11) NOT NULL default '0',
           `days_expire` int(11) NOT NULL default '0',
@@ -938,7 +951,7 @@ function install_db() {
           `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`package_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `prices` (
           `price_id` int(11) NOT NULL auto_increment,
           `banner_id` int(11) NOT NULL default '0',
@@ -953,7 +966,7 @@ function install_db() {
             col_to int(11) default NULL,
           PRIMARY KEY  (`price_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `transactions` (
           `transaction_id` int(11) NOT NULL auto_increment,
           `date` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -966,7 +979,7 @@ function install_db() {
           `origin` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`transaction_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `users` (
           `ID` int(11) NOT NULL auto_increment,
           `IP` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -991,7 +1004,7 @@ function install_db() {
           PRIMARY KEY  (`ID`),
           UNIQUE KEY `Username` (`Username`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-            
+
         CREATE TABLE `mail_queue` (
             `mail_id` int(11) NOT NULL auto_increment,
             `mail_date` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -1013,7 +1026,7 @@ function install_db() {
             `date_stamp` datetime NOT NULL default '0000-00-00 00:00:00',
             PRIMARY KEY  (`mail_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `cat_name_translations` (
           `category_id` int(11) NOT NULL default '0',
           `lang` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -1021,14 +1034,14 @@ function install_db() {
           PRIMARY KEY  (`category_id`,`lang`),
           KEY `category_id` (`category_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-        
+
         CREATE TABLE `codes` (
           `field_id` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `code` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           `description` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
           PRIMARY KEY  (`field_id`,`code`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
-    
+
         CREATE TABLE `codes_translations` (
           `field_id` int(11) NOT NULL default '0',
           `code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -1055,5 +1068,3 @@ function install_db() {
 	//$rows = mysqli_affected_rows ($result);;;
 	echo count( $queries ) . " Operations Completed.";
 }
-
-?>

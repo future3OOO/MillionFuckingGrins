@@ -67,8 +67,8 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isse
  *
  * @return string
  */
-function mds_sql_error($sql) {
-	return "<br />SQL:[" . htmlspecialchars($sql, ENT_QUOTES) . "]<br />ERROR:[" . htmlspecialchars(mysqli_error( $GLOBALS['connection'] ), ENT_QUOTES) . "]<br />";
+function mds_sql_error( $sql ) {
+	return "<br />SQL:[" . htmlspecialchars( $sql, ENT_QUOTES ) . "]<br />ERROR:[" . htmlspecialchars( mysqli_error( $GLOBALS['connection'] ), ENT_QUOTES ) . "]<br />";
 }
 
 /**
@@ -76,13 +76,18 @@ function mds_sql_error($sql) {
  */
 
 // Don't do upgrades on install
-if ( $_POST['action'] == "install" ) {
+if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
 	return;
 }
 
 function up_dbver() {
 	$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
 	mysqli_query( $GLOBALS['connection'], $sql );
+}
+
+// No DB connection yet
+if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] === false ) {
+	return;
 }
 
 // add database version config value
