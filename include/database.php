@@ -91,16 +91,18 @@ if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] === false ) {
 }
 
 // add database version config value
-$sql   = "SELECT `val` FROM `config` WHERE `key`='dbver';";
-$dbver = mysqli_query( $GLOBALS['connection'], $sql );
-if ( mysqli_num_rows( $dbver ) == 0 ) {
-	$sql    = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	$dbver  = 1;
+$sql    = "SELECT `val` FROM `config` WHERE `key`='dbver';";
+$result = mysqli_query( $GLOBALS['connection'], $sql );
+if ( mysqli_num_rows( $result ) == 0 ) {
+	$sql     = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
+	$result  = mysqli_query( $GLOBALS['connection'], $sql );
+	$version = 1;
+} else {
+	$dbver   = mysqli_fetch_array( $result, MYSQLI_ASSOC );
+	$version = intval( $dbver['val'] );
 }
-$dbver = intval( $dbver );
 
-if ( $dbver == 1 ) {
+if ( $version == 1 ) {
 
 	// add views table
 	$sql    = "SELECT 1 FROM views;";
