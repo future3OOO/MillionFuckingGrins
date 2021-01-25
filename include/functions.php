@@ -1880,12 +1880,14 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$url      = get_template_value( 'URL', 1 );
 	$alt_text = get_template_value( 'ALT_TEXT', 1 );
 
-	foreach ( $block_info as $key => $block ) {
-		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`, `view_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0, 0)";
+	if ( is_array( $block_info ) ) {
+		foreach ( $block_info as $key => $block ) {
+			$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`, `view_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0, 0)";
 
-		global $f2;
-		$f2->debug( "Updated block - " . $sql );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			global $f2;
+			$f2->debug( "Updated block - " . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		}
 	}
 
 	delete_temp_order( session_id(), false );
