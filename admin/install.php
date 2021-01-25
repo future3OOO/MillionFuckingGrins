@@ -478,9 +478,10 @@ function install_db() {
           `order_id` int(11) NOT NULL default '0',
           `price` float default NULL,
           `banner_id` int(11) NOT NULL default '1',
-            `ad_id` INT(11)  NOT NULL default '0',
-            `click_count` INT NOT NULL,
-          PRIMARY KEY  (`block_id`,`banner_id`)
+          `ad_id` INT(11)  NOT NULL default '0',
+          `click_count` INT NOT NULL,
+          `view_count` INT NOT NULL,
+         PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 
         CREATE TABLE `clicks` (
@@ -848,8 +849,9 @@ function install_db() {
           `order_id` int(11) NOT NULL default '0',
           `price` float default NULL,
           `banner_id` int(11) NOT NULL default '1',
-            `ad_id` INT(11)  NOT NULL default '0',
-            `click_count` INT NOT NULL,
+          `ad_id` INT(11)  NOT NULL default '0',
+          `click_count` INT NOT NULL,
+          `view_count` INT NOT NULL,
           PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 
