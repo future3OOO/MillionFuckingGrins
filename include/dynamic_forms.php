@@ -190,31 +190,10 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 
 	// filter vars
 	$form_id           = intval( $form_id );
-	$field_id          = intval( $_REQUEST['field_id'] );
+	$field_id          = isset($_REQUEST['field_id']) ? intval( $_REQUEST['field_id'] ) : null;
 	$section           = intval( $section );
-	$reg_expr          = $f2->filter( $_REQUEST['reg_expr'] );
-	$field_label       = $f2->filter( $_REQUEST['field_label'] );
-	$field_type        = $f2->filter( $_REQUEST['field_type'] );
-	$field_sort        = intval( $_REQUEST['field_sort'] );
-	$is_required       = $f2->filter( $_REQUEST['is_required'], "YN" );
-	$display_in_list   = $f2->filter( $_REQUEST['display_in_list'], "YN" );
-	$is_in_search      = $f2->filter( $_REQUEST['is_in_search'], "YN" );
-	$error_message     = $f2->filter( $_REQUEST['error_message'] );
-	$field_init        = $f2->filter( $_REQUEST['field_init'] );
-	$field_width       = intval( $_REQUEST['field_width'] );
-	$field_height      = intval( $_REQUEST['field_height'] );
-	$list_sort_order   = intval( $_REQUEST['list_sort_order'] );
-	$search_sort_order = intval( $_REQUEST['search_sort_order'] );
-	$template_tag      = $f2->filter( $_REQUEST['template_tag'] );
 	$is_hidden         = $f2->filter( $_REQUEST['is_hidden'] );
-	$is_anon           = $f2->filter( $_REQUEST['is_anon'] );
-	$field_comment     = $f2->filter( $_REQUEST['field_comment'] );
-	$category_init_id  = intval( $_REQUEST['category_init_id'] );
-	$is_cat_multiple   = $f2->filter( $_REQUEST['is_cat_multiple'], "YN" );
-	$cat_multiple_rows = intval( $_REQUEST['cat_multiple_rows'] );
 	$is_blocked        = $f2->filter( $_REQUEST['is_blocked'] );
-	$multiple_sel_all  = $f2->filter( $_REQUEST['multiple_sel_all'] );
-	$is_prefill        = $f2->filter( $_REQUEST['is_prefill'] );
 
 	$dont_break_table = true;
 	if ( func_num_args() > 4 ) {
@@ -422,7 +401,8 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
                 </div>
 				<?php
 			}
-		} else if ( $row['field_type'] == "MIME" ) { // do nothing. It is an extra field for FILE type fields..
+		} else if ( $row['field_type'] == "MIME" ) {
+		    // do nothing. It is an extra field for FILE type fields..
 
 		} else {
 
@@ -795,37 +775,37 @@ ON DUPLICATE KEY UPDATE
 function validate_field_form() {
 	global $f2;
 
-	foreach ( $_REQUEST as $key => $val ) {
-		$_REQUEST[ $key ] = trim( $val );
+	foreach ( $_POST as $key => $val ) {
+		$_POST[ $key ] = trim( $val );
 	}
 
 	// filter vars
-	$form_id           = intval( $_REQUEST['form_id'] );
-	$field_id          = intval( $_REQUEST['field_id'] );
-	$section           = intval( $_REQUEST['section'] );
-	$reg_expr          = $f2->filter( $_REQUEST['reg_expr'] );
-	$field_label       = $f2->filter( $_REQUEST['field_label'] );
-	$field_type        = $f2->filter( $_REQUEST['field_type'] );
-	$field_sort        = intval( $_REQUEST['field_sort'] );
-	$is_required       = $f2->filter( $_REQUEST['is_required'], "YN" );
-	$display_in_list   = $f2->filter( $_REQUEST['display_in_list'], "YN" );
-	$is_in_search      = $f2->filter( $_REQUEST['is_in_search'], "YN" );
-	$error_message     = $f2->filter( $_REQUEST['error_message'] );
-	$field_init        = $f2->filter( $_REQUEST['field_init'] );
-	$field_width       = intval( $_REQUEST['field_width'] );
-	$field_height      = intval( $_REQUEST['field_height'] );
-	$list_sort_order   = intval( $_REQUEST['list_sort_order'] );
-	$search_sort_order = intval( $_REQUEST['search_sort_order'] );
-	$template_tag      = $f2->filter( $_REQUEST['template_tag'] );
-	$is_hidden         = $f2->filter( $_REQUEST['is_hidden'] );
-	$is_anon           = $f2->filter( $_REQUEST['is_anon'] );
-	$field_comment     = $f2->filter( $_REQUEST['field_comment'] );
-	$category_init_id  = intval( $_REQUEST['category_init_id'] );
-	$is_cat_multiple   = $f2->filter( $_REQUEST['is_cat_multiple'], "YN" );
-	$cat_multiple_rows = intval( $_REQUEST['cat_multiple_rows'] );
-	$is_blocked        = $f2->filter( $_REQUEST['is_blocked'] );
-	$multiple_sel_all  = $f2->filter( $_REQUEST['multiple_sel_all'] );
-	$is_prefill        = $f2->filter( $_REQUEST['is_prefill'] );
+	$form_id           = intval( $_POST['form_id'] );
+	$field_id          = intval( $_POST['field_id'] );
+	$section           = intval( $_POST['section'] );
+	$reg_expr          = $f2->filter( $_POST['reg_expr'] );
+	$field_label       = $f2->filter( $_POST['field_label'] );
+	$field_type        = $f2->filter( $_POST['field_type'] );
+	$field_sort        = intval( $_POST['field_sort'] );
+	$is_required       = $f2->filter( $_POST['is_required'], "YN" );
+	$display_in_list   = $f2->filter( $_POST['display_in_list'], "YN" );
+	$is_in_search      = $f2->filter( $_POST['is_in_search'], "YN" );
+	$error_message     = $f2->filter( $_POST['error_message'] );
+	$field_init        = $f2->filter( $_POST['field_init'] );
+	$field_width       = intval( $_POST['field_width'] );
+	$field_height      = intval( $_POST['field_height'] );
+	$list_sort_order   = intval( $_POST['list_sort_order'] );
+	$search_sort_order = intval( $_POST['search_sort_order'] );
+	$template_tag      = $f2->filter( $_POST['template_tag'] );
+	$is_hidden         = $f2->filter( $_POST['is_hidden'] );
+	$is_anon           = $f2->filter( $_POST['is_anon'] );
+	$field_comment     = $f2->filter( $_POST['field_comment'] );
+	$category_init_id  = intval( $_POST['category_init_id'] );
+	$is_cat_multiple   = $f2->filter( $_POST['is_cat_multiple'], "YN" );
+	$cat_multiple_rows = intval( $_POST['cat_multiple_rows'] );
+	$is_blocked        = $f2->filter( $_POST['is_blocked'] );
+	$multiple_sel_all  = $f2->filter( $_POST['multiple_sel_all'] );
+	$is_prefill        = $f2->filter( $_POST['is_prefill'] );
 
 	$error = "";
 	if ( $field_label == '' ) {
@@ -927,7 +907,7 @@ function validate_form_data( $form_id ) {
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 		if ( ( $row['field_type'] == 'TEXT' ) || ( $row['field_type'] == 'TEXTAREA' ) || ( $row['field_type'] == 'EDITOR' ) ) {
-			if ( check_for_bad_words( $_REQUEST[ $row['field_id'] ] ) ) {
+			if ( check_for_bad_words( $_POST[ $row['field_id'] ] ) ) {
 				$error .= $row['field_label'] . " - " . $label['bad_words_not_accept'] . "<br>";
 			}
 		}
@@ -936,19 +916,19 @@ function validate_form_data( $form_id ) {
 
 			if ( ( $row['field_type'] == 'TEXT' ) || ( $row['field_type'] == 'TEXTAREA' ) ) {
 				// HTML not allowed
-				$_REQUEST[ $row['field_id'] ] = trim( break_long_words( $_REQUEST[ $row['field_id'] ], false ) );
+				$_POST[ $row['field_id'] ] = trim( break_long_words( $_POST[ $row['field_id'] ], false ) );
 			}
 
 			if ( ( $row['field_type'] == 'EDITOR' ) ) {
 
 				// field where limited HTML is allowed
-				$_REQUEST[ $row['field_id'] ] = trim( break_long_words( $_REQUEST[ $row['field_id'] ], true ) );
+				$_POST[ $row['field_id'] ] = trim( break_long_words( $_POST[ $row['field_id'] ], true ) );
 			}
 		}
 
 		// clean the data..
 		if ( ( $row['field_type'] == 'EDITOR' ) || ( $row['field_type'] == 'TEXTAREA' ) ) {
-			$_REQUEST[ $row['field_id'] ] = $purifier->purify( $_REQUEST[ $row['field_id'] ] );
+			$_POST[ $row['field_id'] ] = $purifier->purify( $_POST[ $row['field_id'] ] );
 		}
 
 		if ( ( ( $row['field_type'] == 'FILE' ) || ( $row['field_type'] == 'IMAGE' ) ) && ( $_FILES[ $row['field_id'] ]['name'] != '' ) ) {
@@ -986,7 +966,7 @@ function validate_form_data( $form_id ) {
 			}
 
 			//if ($row['field_type']=='TEXT') {
-			//$_REQUEST[$row['field_id']] =  htmlspecialchars ($_REQUEST[$row['field_id']]); // escape html...
+			//$_POST[$row['field_id']] =  htmlspecialchars ($_POST[$row['field_id']]); // escape html...
 			//}
 
 			switch ( $row['reg_expr'] ) {
@@ -994,7 +974,7 @@ function validate_form_data( $form_id ) {
 					if ( $row['field_type'] == 'FILE' || $row['field_type'] == 'IMAGE' ) {
 						// check if an image was saved already first by checking for the delete input
 						$del_image_key = 'del_image' . $row['field_id'];
-						if ( isset( $_REQUEST[ $del_image_key ] ) ) {
+						if ( isset( $_POST[ $del_image_key ] ) ) {
 							break;
 						}
 
@@ -1003,12 +983,12 @@ function validate_form_data( $form_id ) {
 							$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 						}
 
-					} else if ( trim( $_REQUEST[ $row['field_id'] ] == '' ) ) {
+					} else if ( trim( $_POST[ $row['field_id'] ] == '' ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					}
 					break;
 				case "email":
-					if ( ! validate_mail( trim( $_REQUEST[ $row['field_id'] ] ) ) ) {
+					if ( ! validate_mail( trim( $_POST[ $row['field_id'] ] ) ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					}
 					break;
@@ -1016,9 +996,9 @@ function validate_form_data( $form_id ) {
 
 					if ( $row['field_type'] == 'DATE' ) {
 
-						$day   = $_REQUEST[ $row['field_id'] . "d" ];
-						$month = $_REQUEST[ $row['field_id'] . "m" ];
-						$year  = $_REQUEST[ $row['field_id'] . "y" ];
+						$day   = $_POST[ $row['field_id'] . "d" ];
+						$month = $_POST[ $row['field_id'] . "m" ];
+						$year  = $_POST[ $row['field_id'] . "y" ];
 					} else {
 
 						$ts    = strtotime( $row['field_id'] . " GMT" );
@@ -1034,12 +1014,12 @@ function validate_form_data( $form_id ) {
 
 					break;
 				case 'url':
-					if ( ( $_REQUEST[ $row['field_id'] ] == '' ) || ( ( $_REQUEST[ $row['field_id'] ] == 'http://' ) ) ) {
+					if ( ( $_POST[ $row['field_id'] ] == '' ) || ( ( $_POST[ $row['field_id'] ] == 'http://' ) ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					} else if ( VALIDATE_LINK == 'YES' ) {
-						//$handle = fopen($_REQUEST[url], "r");
+						//$handle = fopen($_POST[url], "r");
 
-						$url_arr = explode( "/", $_REQUEST[ $row['field_id'] ] );
+						$url_arr = explode( "/", $_POST[ $row['field_id'] ] );
 						$host    = array_shift( $url_arr );
 						$host    = array_shift( $url_arr );
 						$host    = array_shift( $url_arr );
@@ -1066,14 +1046,14 @@ function validate_form_data( $form_id ) {
 					}
 
 					// Check for http or https
-					$url = parse_url( $_REQUEST[ $row['field_id'] ] );
+					$url = parse_url( $_POST[ $row['field_id'] ] );
 					if ( ! empty( $url['scheme'] ) ) {
 						$error .= "- '" . $row['field_label'] . "' <b>" . $label['advertiser_publish_bad_url'] . "</b> <span style='text-decoration:line-through'>" . $url['scheme'] . "://</span><br>";
 					}
 					break;
 
 				default:
-					if ( trim( $_REQUEST[ $row['field_id'] ] == '' ) ) {
+					if ( trim( $_POST[ $row['field_id'] ] == '' ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					}
 					break;
@@ -1694,16 +1674,16 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 			case "IMAGE":
 				if ( $_FILES[ $row['field_id'] ]['name'] != '' ) {
 					$file_name                    = saveImage( $row['field_id'] );
-					$_REQUEST[ $row['field_id'] ] = $file_name;
+					$_POST[ $row['field_id'] ] = $file_name;
 					// delete the old image
 					if ( $object_id != '' ) {
 						deleteImage( $table_name, $object_name, $object_id, $row['field_id'] );
 					}
-					$ret[ $row['field_id'] ] = $_REQUEST[ $row['field_id'] ];
+					$ret[ $row['field_id'] ] = $_POST[ $row['field_id'] ];
 					if ( $op == "update" ) {
 						$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $file_name ) . "'";
 					} else if ( $op == "insert" ) {
-						$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+						$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 					}
 				} else {
 					$ret[ $row['field_id'] ] = '';
@@ -1717,17 +1697,17 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 					$file_name = saveFile( $row['field_id'] );
 					$mime_type = $_FILES[ $row['field_id'] ]['type'];
 					if ( $op == "insert" ) {
-						$_REQUEST[ $row['field_id'] ] = $file_name;
+						$_POST[ $row['field_id'] ] = $file_name;
 					}
 					// delete the old image
 					if ( $object_id != '' ) {
 						deleteFile( $table_name, $object_name, $object_id, $row['field_id'] );
 					}
-					$ret[ $row['field_id'] ] = $_REQUEST[ $row['field_id'] ];
+					$ret[ $row['field_id'] ] = $_POST[ $row['field_id'] ];
 					if ( $op == "update" ) {
 						$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $file_name ) . "'";
 					} else if ( $op == "insert" ) {
-						$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+						$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 					}
 				} else {
 					$ret[ $row['field_id'] ] = '';
@@ -1737,9 +1717,9 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 				}
 				break;
 			case "DATE":
-				$day                          = $_REQUEST[ $row['field_id'] . "d" ];
-				$month                        = $_REQUEST[ $row['field_id'] . "m" ];
-				$year                         = $_REQUEST[ $row['field_id'] . "y" ];
+				$day                          = $_POST[ $row['field_id'] . "d" ];
+				$month                        = $_POST[ $row['field_id'] . "m" ];
+				$year                         = $_POST[ $row['field_id'] . "y" ];
 
 				if ( ! checkdate( $month, $day, $year ) ) {
 					// invalid date so use epoc
@@ -1748,16 +1728,16 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 					$year  = 1970;
 				}
 
-				$_REQUEST[ $row['field_id'] ] = $year . "-" . $month . "-" . $day;
-				$ret[ $row['field_id'] ]      = $_REQUEST[ $row['field_id'] ];
+				$_POST[ $row['field_id'] ] = $year . "-" . $month . "-" . $day;
+				$ret[ $row['field_id'] ]      = $_POST[ $row['field_id'] ];
 				if ( $op == "update" ) {
-					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				} else if ( $op == "insert" ) {
-					$ret['extra_values'] .= ",'" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ",'" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				}
 				break;
 			case "DATE_CAL":
-				$temp_time               = strtotime( $_REQUEST[ $row['field_id'] ] . " GMT" );
+				$temp_time               = strtotime( $_POST[ $row['field_id'] ] . " GMT" );
 				$day                     = date( 'd', $temp_time );
 				$month                   = date( 'm', $temp_time );
 				$year                    = date( 'y', $temp_time );
@@ -1771,7 +1751,7 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 			case "CHECK":
 
 				$selected_codes = array();
-				$selected_codes = $_REQUEST[ $row['field_id'] ]; // the field comes in as an array
+				$selected_codes = $_POST[ $row['field_id'] ]; // the field comes in as an array
 				$tmp            = "";
 				$comma          = "";
 				for ( $i = 0; $i < sizeof( $selected_codes ); $i ++ ) {
@@ -1781,19 +1761,19 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 					$tmp .= $comma . $selected_codes[ $i ] . "";
 				}
 
-				$_REQUEST[ $row['field_id'] ] = $tmp;
-				$ret[ $row['field_id'] ]      = $_REQUEST[ $row['field_id'] ];
+				$_POST[ $row['field_id'] ] = $tmp;
+				$ret[ $row['field_id'] ]      = $_POST[ $row['field_id'] ];
 				if ( $op == "update" ) {
-					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				} else if ( $op == "insert" ) {
-					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				}
-				$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+				$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				break;
 
 			case "MSELECT":
 				$selected_codes = array();
-				$selected_codes = $_REQUEST[ $row['field_id'] ]; // the field comes in as an array
+				$selected_codes = $_POST[ $row['field_id'] ]; // the field comes in as an array
 				$tmp            = "";
 				$comma          = "";
 				for ( $i = 0; $i < sizeof( $selected_codes ); $i ++ ) {
@@ -1803,27 +1783,27 @@ function get_sql_values( $form_id, $table_name, $object_name, $object_id, $user_
 					$tmp .= $comma . $selected_codes[ $i ] . "";
 				}
 
-				$_REQUEST[ $row['field_id'] ] = $tmp;
-				$ret[ $row['field_id'] ]      = $_REQUEST[ $row['field_id'] ];
+				$_POST[ $row['field_id'] ] = $tmp;
+				$ret[ $row['field_id'] ]      = $_POST[ $row['field_id'] ];
 				if ( $op == "update" ) {
-					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				} else if ( $op == "insert" ) {
-					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				}
 				break;
 			case "TEXT":
 				if ( $op == "update" ) {
-					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], html_entity_decode( $_REQUEST[ $row['field_id'] ] ) ) . "'";
+					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], html_entity_decode( $_POST[ $row['field_id'] ] ) ) . "'";
 				} else if ( $op == "insert" ) {
-					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				}
 				break;
 			default:
-				$ret[ $row['field_id'] ] = $_REQUEST[ $row['field_id'] ];
+				$ret[ $row['field_id'] ] = $_POST[ $row['field_id'] ];
 				if ( $op == "update" ) {
-					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", `" . $row['field_id'] . "`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				} else if ( $op == "insert" ) {
-					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST[ $row['field_id'] ] ) . "'";
+					$ret['extra_values'] .= ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $_POST[ $row['field_id'] ] ) . "'";
 				}
 				break;
 		}
@@ -1933,7 +1913,7 @@ function generate_search_sql( $form_id ) {
 							$i ++;
 						}
 					}
-					//$_REQUEST[$row['field_id']] = $tmp;
+					//$_POST[$row['field_id']] = $tmp;
 					if ( $i > 0 ) {
 						$where_sql .= "  AND (" . $tmp . ") ";
 					}
