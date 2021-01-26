@@ -156,8 +156,8 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 	$blk_row = mysqli_fetch_array( $result );
 
 	if ( ! isset( $blk_row['ad_id'] ) || empty( $blk_row['ad_id'] ) ) { // no ad exists, create a new ad_id
-		$_REQUEST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
-		$_REQUEST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
+		$_POST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
+		$_POST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
 		$_REQUEST['order_id']                                    = $blk_row['order_id'];
 		$_REQUEST['BID']                                         = $BID;
 		$_REQUEST['user_id']                                     = $_SESSION['MDS_ID'];
@@ -180,8 +180,8 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		//echo $sql;
 		if ( mysqli_num_rows( $result ) == 0 ) {
 			echo "No ad exists..";
-			$_REQUEST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
-			$_REQUEST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
+			$_POST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
+			$_POST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
 			$_REQUEST['order_id']                                    = $blk_row['order_id'];
 			$_REQUEST['BID']                                         = $BID;
 			$_REQUEST['user_id']                                     = $_SESSION['MDS_ID'];
