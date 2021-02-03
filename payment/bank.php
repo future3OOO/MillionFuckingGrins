@@ -32,7 +32,7 @@
 require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['bank'] = new bank;
-define( IPN_LOGGING, 'Y' );
+define( 'IPN_LOGGING', 'Y' );
 
 function b_mail_error( $msg ) {
 
