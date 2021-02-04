@@ -59,7 +59,7 @@ function mds_wp_login_check() {
 				$loginpage = \MillionDollarScript\Classes\Options::get_option( 'login-page' );
 
 				// if doesn't contain the default wp-login.php and is a valid URL
-				if ( strpos( $loginpage, 'wp-login.php' ) !== false && wp_http_validate_url( $loginpage ) ) {
+				if ( strpos( $loginpage, 'wp-login.php' ) === false && wp_http_validate_url( $loginpage ) ) {
 
 					// If not in preview or customizer
 					if ( ! is_preview() && ! is_customize_preview() ) {
