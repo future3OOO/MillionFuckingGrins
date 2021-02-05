@@ -6,11 +6,20 @@
     'aliases' => 
     array (
     ),
-    'reference' => '4f7cc7d33272cff35d22000b74c49e3b5a522659',
+    'reference' => '6a84fb706debca07e3d241f5c8edd67b75884b9f',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
   array (
+    'ckeditor/ckeditor' => 
+    array (
+      'pretty_version' => '4.16.0',
+      'version' => '4.16.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '98a1bce9c9237e2ee141c0d2e01c3f0576655d5d',
+    ),
     'components/jquery' => 
     array (
       'pretty_version' => '3.5.1',
@@ -63,7 +72,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '4f7cc7d33272cff35d22000b74c49e3b5a522659',
+      'reference' => '6a84fb706debca07e3d241f5c8edd67b75884b9f',
     ),
     'phpmailer/phpmailer' => 
     array (
