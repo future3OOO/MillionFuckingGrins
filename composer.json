@@ -23,6 +23,7 @@
     }
   },
   "require": {
+    "ckeditor/ckeditor": ">=4.15.1",
     "imagine/imagine": ">=1.2.2",
     "ezyang/htmlpurifier": ">=4.11.0",
     "phpmailer/phpmailer": ">=6.0.7",
