@@ -457,7 +457,7 @@ function install_db() {
           `date_stamp` datetime default CURRENT_TIMESTAMP,
           `package_id` int(11) NOT NULL default '0',
           `ad_id` int(11) default '0',
-          `block_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+          `block_info` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           PRIMARY KEY  (`session_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 
@@ -828,7 +828,7 @@ function install_db() {
           `date_stamp` datetime default NULL,
           `package_id` int(11) NOT NULL default '0',
           `ad_id` int(11) default '0',
-          `block_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+          `block_info` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
           PRIMARY KEY  (`session_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 

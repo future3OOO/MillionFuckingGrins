@@ -72,6 +72,22 @@ function mds_sql_error( $sql ) {
 }
 
 /**
+ * Log SQL error to debug log and optionally exit.
+ *
+ * @param $sql
+ * @param bool $exit
+ */
+function mds_sql_log_die( $sql, $exit = true ) {
+	global $f2;
+	$f2->write_log( 'SQL error: ' . mysqli_error( $GLOBALS['connection'] ) );
+	$f2->write_log( '$sql: ' . $sql );
+
+	if ( $exit ) {
+		exit;
+	}
+}
+
+/**
  * Database Upgrades
  */
 
@@ -80,6 +96,31 @@ if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
 	return;
 }
 
+/**
+ * Get database version
+ *
+ * @return int
+ */
+function get_dbver() {
+
+	$sql    = "SELECT `val` FROM `config` WHERE `key`='dbver';";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	if ( mysqli_num_rows( $result ) == 0 ) {
+		// add database version config value
+		$sql     = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
+		mysqli_query( $GLOBALS['connection'], $sql );
+		$version = 1;
+	} else {
+		$dbver   = mysqli_fetch_array( $result, MYSQLI_ASSOC );
+		$version = intval( $dbver['val'] );
+	}
+
+	return $version;
+}
+
+/**
+ * Increment database version by 1
+ */
 function up_dbver() {
 	$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
 	mysqli_query( $GLOBALS['connection'], $sql );
@@ -90,17 +131,7 @@ if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] === false ) {
 	return;
 }
 
-// add database version config value
-$sql    = "SELECT `val` FROM `config` WHERE `key`='dbver';";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
-if ( mysqli_num_rows( $result ) == 0 ) {
-	$sql     = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
-	$result  = mysqli_query( $GLOBALS['connection'], $sql );
-	$version = 1;
-} else {
-	$dbver   = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-	$version = intval( $dbver['val'] );
-}
+$version = get_dbver();
 
 if ( $version == 1 ) {
 
@@ -126,6 +157,12 @@ if ( $version == 1 ) {
 		$sql = "ALTER TABLE `blocks` ADD COLUMN `view_count` INT NOT NULL AFTER `click_count`;";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
+
+	up_dbver();
+} else if ( $version == 2 ) {
+	// Change block_info column to LONGTEXT
+	$sql = "ALTER TABLE `temp_orders` MODIFY `block_info` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
+	mysqli_query( $GLOBALS['connection'], $sql );
 
 	up_dbver();
 }
