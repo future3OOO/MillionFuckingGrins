@@ -247,16 +247,16 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 	// process search result
 	$q_string  = "";
 	$where_sql = "";
-	if ( $_REQUEST['action'] == 'search' ) {
+	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'search' ) {
 		$q_string  = generate_q_string( 1 );
 		$where_sql = generate_search_sql( 1 );
 	}
 
-	$order = $_REQUEST['order_by'];
+	$order = (isset($_REQUEST['order_by']) && $_REQUEST['order_by']) ? $_REQUEST['order_by'] : '';
 
-	if ( $_REQUEST['ord'] == 'asc' ) {
+	if ( isset($_REQUEST['ord']) && $_REQUEST['ord'] == 'asc' ) {
 		$ord = 'ASC';
-	} else if ( $_REQUEST['ord'] == 'desc' ) {
+	} else if ( isset($_REQUEST['ord']) && $_REQUEST['ord'] == 'desc' ) {
 		$ord = 'DESC';
 	} else {
 		$ord = 'DESC';
@@ -294,7 +294,7 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 		if ( $list_mode != 'USER' ) {
 
 			$pages    = ceil( $count / $records_per_page );
-			$cur_page = $_REQUEST['offset'] / $records_per_page;
+			$cur_page = intval( $offset ) / $records_per_page;
 			$cur_page ++;
 
 			$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
@@ -492,7 +492,7 @@ function insert_ad_data() {
 	if ( ! isset( $_REQUEST['aid'] ) || empty( $_REQUEST['aid'] ) ) {
 
 		$ad_id = generate_ad_id();
-		$now   = ( gmdate( "Y-m-d H:i:s" ) );
+		$now       = gmdate( "Y-m-d H:i:s" );
 
 		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'insert' );
 		$values    = $ad_id . ", '" . $user_id . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', " . intval( $order_id ) . ", " . intval( $BID ) . $ad_values['extra_values'];
@@ -592,7 +592,7 @@ function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
 
 		$uploaddir = SERVER_PATH_TO_ADMIN . "temp/";
 
-		$parts = $file_parts = pathinfo( $_FILES['pixels']['name'] );
+		$file_parts = pathinfo( $_FILES['pixels']['name'] );
 		$ext   = $f2->filter( strtolower( $file_parts['extension'] ) );
 
 		// CHECK THE EXTENSION TO MAKE SURE IT IS ALLOWED
@@ -601,7 +601,6 @@ function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
 		$error = '';
 		if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
 			$error              = "<b>" . $label['advertiser_file_type_not_supp'] . "</b><br>";
-			$image_changed_flag = false;
 		}
 
 		if ( ! empty( $error ) ) {
@@ -725,8 +724,8 @@ function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
 							$cb        = ( ( $map_x ) / $banner_data['BLK_WIDTH'] ) + ( ( $map_y / $banner_data['BLK_HEIGHT'] ) * ( $GRD_WIDTH / $banner_data['BLK_WIDTH'] ) );
 
 							// save to db
-							$sql = "UPDATE blocks SET image_data='" . mysqli_real_escape_string( $GLOBALS['connection'], $image_data ) . "' where block_id=" . intval( $cb ) . " AND banner_id=" . intval( $BID );
-							mysqli_query( $GLOBALS['connection'], $sql );
+							$sql = "UPDATE blocks SET image_data='" . mysqli_real_escape_string( $GLOBALS['connection'], $image_data ) . "' where block_id=" . intval( $cb ) . " AND banner_id=" . intval( $BID ) . ' AND order_id=' . intval($order_id);
+							mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 						}
 					}
 				}
