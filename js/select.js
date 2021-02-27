@@ -459,7 +459,11 @@ function change_block_state(OffsetX, OffsetY) {
 			ajaxing = false;
 
 		}).fail(function (data) {
-			messageout("Error: " + data);
+			if(jQuery.isPlainObject(data)) {
+				messageout("Error: " + JSON.stringify(data));
+			} else {
+				messageout("Error: " + data);
+			}
 		});
 	}
 }
