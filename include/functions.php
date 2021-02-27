@@ -233,7 +233,7 @@ function delete_temp_order( $sid, $delete_ad = true ) {
 	$sql = "DELETE FROM temp_orders WHERE session_id='" . $sid . "' ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 
-	if ( $delete_ad ) {
+	if ( $delete_ad && isset( $order_row['ad_id'] ) ) {
 		$sql = "DELETE FROM ads WHERE ad_id='" . intval( $order_row['ad_id'] ) . "' ";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
@@ -1454,7 +1454,7 @@ function render_nav_pages( &$nav_pages_struct, $LINKS, $q_string = '' ) {
 
 function select_block( $map_x, $map_y ) {
 
-	global $BID, $b_row, $label, $order_id, $banner_data;
+	global $BID, $label, $order_id, $banner_data;
 
 	// calculate clicked block from coords.
 
@@ -1466,7 +1466,7 @@ function select_block( $map_x, $map_y ) {
 	}
 
 	//Check if max_orders < order count
-	if ( ! can_user_order( $b_row, $_SESSION['MDS_ID'] ) ) {
+	if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'] ) ) {
 		return $label['advertiser_max_order_html']; // order count > max orders
 	}
 
@@ -1742,7 +1742,7 @@ function select_block( $map_x, $map_y ) {
 			$quantity   = ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) * $num_blocks;
 			$now        = gmdate( "Y-m-d H:i:s" );
 
-			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . intval( $row['order_id'] ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $b_row['days_expire'] ) . ", '$now', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
+			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . intval( $row['order_id'] ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $banner_data['DAYS_EXPIRE'] ) . ", '$now', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
 
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$_SESSION['MDS_order_id'] = mysqli_insert_id( $GLOBALS['connection'] );
@@ -1826,8 +1826,10 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 
 	global $f2;
 
+	$banner_data = load_banner_constants( $temp_order_row['banner_id'] );
+
 	// check if the user can get the order
-	if ( ! can_user_order( load_banner_row( $temp_order_row['banner_id'] ), $_SESSION['MDS_ID'], $temp_order_row['package_id'] ) ) {
+	if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'], $temp_order_row['package_id'] ) ) {
 		echo 'can\'t touch this<br>';
 
 		return false;
