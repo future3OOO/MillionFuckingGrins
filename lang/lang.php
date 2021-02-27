@@ -97,7 +97,7 @@ if ( isset( $_REQUEST["lang"] ) && $_REQUEST["lang"] != '' && basename( $_SERVER
 		] );
 		//echo "Invalid language. Reverting to default language.";
 	}
-} else if ( isset( $_SESSION['MDS_LANG'] ) && $_SESSION['MDS_LANG'] == '' ) {
+} else if ( ! isset( $_SESSION['MDS_LANG'] ) || empty( $_SESSION['MDS_LANG'] ) ) {
 
 	// get the default language, or saved language
 	if ( isset( $_COOKIE['MDS_SAVED_LANG'] ) && $_COOKIE['MDS_SAVED_LANG'] != '' ) {
