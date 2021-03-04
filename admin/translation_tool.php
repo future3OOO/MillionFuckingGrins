@@ -49,36 +49,34 @@ echo "lang filename: $lang_filename ";
 require( BASE_PATH . "/lang/english_default.php" );
 $source_label = $label; // default english labels
 
+$dest_label = "";
 if ( file_exists( BASE_PATH . "/lang/" . $lang_filename ) ) {
-    require( BASE_PATH . "/lang/" . $lang_filename );
-    $dest_label = $label; // dest labels
+	require( BASE_PATH . "/lang/" . $lang_filename );
+	$dest_label = $label; // dest labels
 }
-
-//print_r($dest_label);
-// preload the source code, preg the hash key and use it as a key for the line 
-//$source_code = array();
-//$handle = fopen("../lang/english_default.php", "r");
-//while ($buffer= fgets($handle, 4096)) {
-//	if (preg_match ('/ *\$label\[.([A-z0-9]+).\].*/', $buffer, $m)) {
-//		$source_code[$m[1]] = $buffer;
-//	}
-//}
 
 if ( $_REQUEST['save'] != '' ) {
 	$out = "<?php\n";
 	$out .= 'global $label;' . "\n";
 	foreach ( $source_label as $key => $val ) {
-		$_REQUEST[ $key ]   = str_replace( '\\"', '"', $_REQUEST[ $key ] );
-		$value              = addslashes( $_REQUEST[ $key ] );
-		$out                .= "\$label['$key']='" . $value . "'; \n";
+		// replace wrongly escaped double quotes
+		$_REQUEST[ $key ] = str_replace( '\\"', '"', $_REQUEST[ $key ] );
+
+		// add slashes
+		$value = filter_var( $_REQUEST[ $key ], FILTER_SANITIZE_ADD_SLASHES );
+
+		// replace wrongly placed multiple slashes with a single slash to fix any corrupt language files
+		$_REQUEST[ $key ] = preg_replace( '/\\\\{2,}/', '\\', $_REQUEST[ $key ] );
+
+		// format for output
+		$out .= "\$label['$key']='" . $value . "'; \n";
+
+		// save value to destination
 		$dest_label[ $key ] = $value;
 	}
 	$out     .= "?>\n";
 	$handler = fopen( "../lang/" . $lang_filename, "w" );
 	fputs( $handler, $out );
-	// load the new labels
-	//require( "../lang/" . $lang_filename );
-	//$dest_label = $label; // dest labels
 }
 
 ?>
@@ -152,7 +150,10 @@ if ( ! is_writeable( "../lang/" . $lang_filename ) ) {
                             rows="15"
                             name='<?php echo $key ?>'
                     ><?php
-		                $text = ( stripslashes( $dest_label[ $key ] ) );
+		                // replace wrongly placed multiple slashes with a single slash to fix any corrupt language files
+		                $text = preg_replace( '/\\\\{2,}/', '\\', $dest_label[ $key ] );
+
+		                $text = stripslashes( $text );
 		                echo $text;
 		                ?></textarea>
                 </td>
