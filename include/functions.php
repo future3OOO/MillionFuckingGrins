@@ -1480,16 +1480,21 @@ function select_block( $map_x, $map_y ) {
 
 	$sql = "SELECT status, user_id, ad_id FROM blocks WHERE block_id=" . intval( $clicked_block ) . " AND banner_id=" . intval( $BID );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-	$row = mysqli_fetch_array( $result );
+	$blocksrow = mysqli_fetch_array( $result );
 
-	if ( ( $row['status'] == '' ) || ( ( $row['status'] == 'reserved' ) && ( $row['user_id'] == $_SESSION['MDS_ID'] ) ) ) {
+	if ( ( $blocksrow == null || $blocksrow['status'] == '' ) || ( ( $blocksrow['status'] == 'reserved' ) && ( $blocksrow['user_id'] == $_SESSION['MDS_ID'] ) ) ) {
+
+		$orderid = 0;
+		if ( isset( $_SESSION['MDS_order_id'] ) ) {
+			$orderid = intval( $_SESSION['MDS_order_id'] );
+		}
 
 		// put block on order
-		$sql = "SELECT blocks,status,ad_id,order_id FROM orders WHERE user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND order_id=" . intval( $_SESSION['MDS_order_id'] ) . " AND banner_id=" . intval( $BID ) . " AND status!='deleted'";
+		$sql = "SELECT blocks,status,ad_id,order_id FROM orders WHERE user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND order_id=" . $orderid . " AND banner_id=" . intval( $BID ) . " AND status!='deleted'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-		$row = mysqli_fetch_array( $result );
-		if ( $row['blocks'] != '' ) {
-			$blocks = explode( ",", $row['blocks'] );
+		$ordersrow = mysqli_fetch_array( $result );
+		if ( isset( $ordersrow ) && $ordersrow['blocks'] != '' ) {
+			$blocks = explode( ",", $ordersrow['blocks'] );
 			array_walk( $blocks, 'intval' );
 		}
 
@@ -1742,7 +1747,17 @@ function select_block( $map_x, $map_y ) {
 			$quantity   = ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) * $num_blocks;
 			$now        = gmdate( "Y-m-d H:i:s" );
 
-			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . intval( $row['order_id'] ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $banner_data['DAYS_EXPIRE'] ) . ", '$now', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
+			$orderid = 0;
+			if ( isset( $ordersrow['order_id'] ) ) {
+				$orderid = intval( $ordersrow['order_id'] );
+			}
+
+			$adid = 0;
+			if ( isset( $ordersrow['ad_id'] ) ) {
+				$adid = intval( $ordersrow['ad_id'] );
+			}
+
+			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, ad_id, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . $orderid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $banner_data['DAYS_EXPIRE'] ) . ", '$now', " . $adid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
 
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$_SESSION['MDS_order_id'] = mysqli_insert_id( $GLOBALS['connection'] );
@@ -1766,7 +1781,7 @@ function select_block( $map_x, $map_y ) {
 						$price = get_zone_price( $BID, $y, $x );
 
 						// reserve block
-						$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`) VALUES (" . intval( $cell ) . ",  " . intval( $_SESSION['MDS_ID'] ) . " , 'reserved' , " . intval( $x ) . " , " . intval( $y ) . " , '' , '' , '', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "', " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . floatval( $price ) . ", " . intval( $_SESSION['MDS_order_id'] ) . ", 0, 0)";
+						$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `ad_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`) VALUES (" . intval( $cell ) . ",  " . intval( $_SESSION['MDS_ID'] ) . " , 'reserved' , " . intval( $x ) . " , " . intval( $y ) . " , '' , '' , '', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "', " . intval( $BID ) . ", " . $adid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . floatval( $price ) . ", " . intval( $_SESSION['MDS_order_id'] ) . ", 0, 0)";
 						mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 						$total += $price;
@@ -1783,7 +1798,7 @@ function select_block( $map_x, $map_y ) {
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			// check that we have ad_id, if not then create an ad for this order.
-			if ( ! $row['ad_id'] ) {
+			if ( $adid == 0 ) {
 
 				$_REQUEST['order_id'] = $order_id;
 				$_REQUEST['BID']      = $BID;
@@ -1801,7 +1816,7 @@ function select_block( $map_x, $map_y ) {
 		}
 	} else {
 
-		if ( $row['status'] == 'nfs' ) {
+		if ( $blocksrow['status'] == 'nfs' ) {
 			$return_val = $label['advertiser_sel_nfs_error'];
 		} else {
 			$label['advertiser_sel_sold_error'] = str_replace( "%BLOCK_ID%", $clicked_block, $label['advertiser_sel_sold_error'] );
