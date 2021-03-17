@@ -283,8 +283,8 @@ require_once BASE_PATH . "/html/header.php";
 			OffsetX = Math.floor(OffsetX / <?php echo $banner_data['BLK_WIDTH']; ?>) *<?php echo $banner_data['BLK_WIDTH']; ?>;
 			OffsetY = Math.floor(OffsetY / <?php echo $banner_data['BLK_HEIGHT']; ?>) *<?php echo $banner_data['BLK_HEIGHT']; ?>;
 
-			if (isNaN(OffsetX) || isNaN(OffsetY)) {
-				return
+			if (isNaN(OffsetX) || isNaN(OffsetY) || OffsetX < 0 || OffsetY < 0) {
+				return;
 			}
 
 			if (pointer_height + OffsetY > <?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];?>) {
