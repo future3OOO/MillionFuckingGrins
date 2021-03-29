@@ -280,7 +280,11 @@ function store_view( $data ) {
 }
 
 function show_list() {
-	global $label, $purifier, $BID;
+	global $label, $purifier;
+
+	require_once BASE_PATH . '/include/ads.inc.php';
+	require_once BASE_PATH . '/include/dynamic_forms.php';
+
 	?>
     <div class="list">
         <div class="table-row header">
@@ -301,7 +305,7 @@ function show_list() {
 			$sql = "SELECT *, MAX(order_date) as max_date, sum(quantity) AS pixels FROM orders where status='completed' AND approved='Y' AND published='Y' AND banner_id='" . intval( $banner['banner_id'] ) . "' GROUP BY user_id, banner_id, order_id order by pixels desc ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				$q = "SELECT FirstName, LastName FROM users WHERE ID=" . intval( $row['user_id'] );
+				$q = "SELECT Username FROM users WHERE ID=" . intval( $row['user_id'] );
 				$q = mysqli_query( $GLOBALS['connection'], $q ) or die( mysqli_error( $GLOBALS['connection'] ) );
 				$user = mysqli_fetch_row( $q );
 				?>
@@ -310,14 +314,15 @@ function show_list() {
 						<?php echo $purifier->purify( get_formatted_date( get_local_time( $row['max_date'] ) ) ); ?>
                     </div>
                     <div class="list-cell">
-						<?php echo $purifier->purify( $user['0'] . " " . $user['1'] ); ?>
+						<?php
+                        echo $purifier->purify( $user['0'] ); ?>
                     </div>
                     <div class="list-cell">
 						<?php
-
 						$br  = "";
-						$sql = "Select * FROM  `ads` as t1, `orders` AS t2 WHERE t1.ad_id=t2.ad_id AND t1.banner_id='" . intval( $BID ) . "' and t1.order_id='" . intval( $row['order_id'] ) . "' AND t1.user_id='" . intval( $row['user_id'] ) . "' AND status='completed' AND approved='Y' ORDER BY `ad_date`";
+						$sql = "Select * FROM  `ads` as t1, `orders` AS t2 WHERE t1.ad_id=t2.ad_id AND t1.banner_id='" . intval( $banner['banner_id'] ) . "' and t1.order_id='" . intval( $row['order_id'] ) . "' AND t1.user_id='" . intval( $row['user_id'] ) . "' AND status='completed' AND approved='Y' ORDER BY `ad_date`";
 						$m_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+						global $prams;
 						while ( $prams = mysqli_fetch_array( $m_result, MYSQLI_ASSOC ) ) {
 
 							$blocks   = explode( ',', $prams['blocks'] );
@@ -329,7 +334,7 @@ function show_list() {
 							$data_values = array(
 								'id'        => $prams['ad_id'],
 								'block_id'  => $block_id,
-								'banner_id' => $BID,
+								'banner_id' => $banner['banner_id'],
 								'alt_text'  => $ALT_TEXT,
 								'url'       => get_template_value( 'URL', 1 ),
 							);

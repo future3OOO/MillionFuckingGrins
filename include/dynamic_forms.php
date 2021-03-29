@@ -69,58 +69,75 @@ function get_template_field_id( $tmpl, $form_id ) {
 	return $tag_to_field_id[ $tmpl ]['field_id'];
 }
 
-function get_template_value( $tmpl, $form_id ) {
+function get_template_value( $tmpl, $form_id, $row = null ) {
 	global $prams, $purifier;
-	//global $tag_to_field_id;
+
+	$error = '<b>Configuration error: Failed to bind the "' . $purifier->purify( $tmpl ) . '" template tag. Tag not defined.</b> <br> ';
+
 	$tag_to_field_id = get_tag_to_field_id( $form_id );
 
 	if ( func_num_args() > 2 ) {
 		$admin = func_get_arg( 2 );
 	}
 
+	if ( ! isset( $tag_to_field_id[ $tmpl ] ) || ! isset( $tag_to_field_id[ $tmpl ]['field_id'] ) ) {
+		echo $error;
+
+		return "";
+	}
+
 	$field_id = $tag_to_field_id[ $tmpl ]['field_id'];
+
+	if ( ! isset( $prams[ $field_id ] ) ) {
+		echo $error;
+
+		return "";
+	}
+
 	$val      = $prams[ $field_id ];
 
-	switch ( $tag_to_field_id[ $tmpl ]['field_type'] ) {
-		case "RADIO":
-			$val = getCodeDescription( $field_id, $val );
-			break;
-		case "SELECT":
-			$val = getCodeDescription( $field_id, $val );
-			break;
-		case "MSELECT":
-		case "CHECK":
-			$vals = explode( ",", $val );
-			$str  = $comma = "";
-			foreach ( $vals as $v ) {
-				$str   .= $comma . getCodeDescription( $field_id, $v );
-				$comma = ", ";
-			}
-			$val = $str;
-			break;
-		case "DATE":
-		case "DATE_CAL":
+	if ( isset( $tag_to_field_id[ $tmpl ] ) && isset( $tag_to_field_id[ $tmpl ]['field_type'] ) ) {
+		switch ( $tag_to_field_id[ $tmpl ]['field_type'] ) {
+			case "RADIO":
+				$val = getCodeDescription( $field_id, $val );
+				break;
+			case "SELECT":
+				$val = getCodeDescription( $field_id, $val );
+				break;
+			case "MSELECT":
+			case "CHECK":
+				$vals = explode( ",", $val );
+				$str  = $comma = "";
+				foreach ( $vals as $v ) {
+					$str   .= $comma . getCodeDescription( $field_id, $v );
+					$comma = ", ";
+				}
+				$val = $str;
+				break;
+			case "DATE":
+			case "DATE_CAL":
 
-			if ( $val != '0000-00-00 00:00:00' ) {
-				$val = get_local_time( $val . " GMT" );
-				$val = get_formatted_date( $val );
-			} else {
-				$val = '';
-			}
-			break;
-		case "TIME":
-			$val = get_local_time( $val . " GMT" ); // the time is always stored as GMT
+				if ( $val != '0000-00-00 00:00:00' ) {
+					$val = get_local_time( $val . " GMT" );
+					$val = get_formatted_date( $val );
+				} else {
+					$val = '';
+				}
+				break;
+			case "TIME":
+				$val = get_local_time( $val . " GMT" ); // the time is always stored as GMT
 
-			break;
-		case "TEXT":
-			$val = str_replace( "<", "&lt;", $val ); // block html tags in text fields
-			$val = str_replace( ">", "&gt;", $val );
-			//$val = htmlentities($val);
-			break;
+				break;
+			case "TEXT":
+				$val = str_replace( "<", "&lt;", $val ); // block html tags in text fields
+				$val = str_replace( ">", "&gt;", $val );
+				//$val = htmlentities($val);
+				break;
+		}
 	}
 
 	if ( $field_id == '' ) {
-		echo '<b>Configuration error: Failed to bind the "' . $purifier->purify( $tmpl ) . '" Template Tag. (not defined)</b> <br> ';
+		echo $error;
 	}
 
 	return $purifier->purify( $val );
@@ -192,8 +209,8 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 	$form_id           = intval( $form_id );
 	$field_id          = isset($_REQUEST['field_id']) ? intval( $_REQUEST['field_id'] ) : null;
 	$section           = intval( $section );
-	$is_hidden         = $f2->filter( $_REQUEST['is_hidden'] );
-	$is_blocked        = $f2->filter( $_REQUEST['is_blocked'] );
+	$is_hidden         = isset($_REQUEST['is_hidden']) ? $f2->filter( $_REQUEST['is_hidden'] ) : null;
+	$is_blocked        = isset($_REQUEST['is_blocked']) ? $f2->filter( $_REQUEST['is_blocked'] ) : null;
 
 	$dont_break_table = true;
 	if ( func_num_args() > 4 ) {
@@ -272,7 +289,7 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 							echo $prams[ $row['field_id'] ];
 						} else {
 
-							if ( $_REQUEST[ 'del_image' . $row['field_id'] ] != '' ) {
+							if ( isset($_REQUEST[ 'del_image' . $row['field_id'] ]) && $_REQUEST[ 'del_image' . $row['field_id'] ] != '' ) {
 								unlink( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] );
 								//@unlink (UPLOAD_PATH.''.$prams[$row['field_id']]);
 							}
