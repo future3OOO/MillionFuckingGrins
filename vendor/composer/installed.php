@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'c7c2807f797ea7253a2d68abd5c1ab0e4986f890',
+    'reference' => '424c4af0c35e0991ff273fd1527e64a8b1fa395b',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -72,16 +72,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'c7c2807f797ea7253a2d68abd5c1ab0e4986f890',
+      'reference' => '424c4af0c35e0991ff273fd1527e64a8b1fa395b',
     ),
     'phpmailer/phpmailer' => 
     array (
-      'pretty_version' => 'v6.3.0',
-      'version' => '6.3.0.0',
+      'pretty_version' => 'v6.4.0',
+      'version' => '6.4.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '4a08cf4cdd2c38d12ee2b9fa69e5d235f37a6dcb',
+      'reference' => '050d430203105c27c30efd1dce7aa421ad882d01',
     ),
   ),
 );
