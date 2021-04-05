@@ -853,6 +853,10 @@ NOTES<br>
 	if ( ! defined( 'WP_ADMIN_ENABLED' ) ) {
 		define( 'WP_ADMIN_ENABLED', 'NO' );
 	}
+
+	if ( ! defined( 'WP_USE_MAIL' ) ) {
+		define( 'WP_USE_MAIL', 'NO' );
+	}
 	?>
     <p>&nbsp;</p>
     <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
@@ -899,8 +903,19 @@ NOTES<br>
             <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
 	  <input type="radio" name="WP_ADMIN_ENABLED" value="YES"  <?php if ( WP_ADMIN_ENABLED == 'YES' ) {
 		  echo " checked ";
-      } ?> >Yes - MDS admin is accessible from within the WordPress admin. <a href="https://milliondollarscript.com/million-dollar-script-2-1-wordpress-integration-plugin/" target="_blank">Click here</a> for more information.<br>
+	  } ?> >Yes - MDS admin is accessible from within the WordPress admin. <a href="https://milliondollarscript.com/million-dollar-script-2-1-wordpress-integration-plugin/" target="_blank">Click here</a> for more information.<br>
 	  <input type="radio" name="WP_ADMIN_ENABLED" value="NO"  <?php if ( WP_ADMIN_ENABLED == 'NO' ) {
+		  echo " checked ";
+	  } ?> >No - Normal operation<br>
+	  </span></td>
+        </tr>
+        <tr>
+            <td bgcolor="#e6f2ea" width="20%"><span style="font-family: Verdana,sans-serif; font-size: small; ">WordPress Email Integration</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-size: small; font-family: Verdana,sans-serif; ">
+	  <input type="radio" name="WP_USE_MAIL" value="YES"  <?php if ( WP_USE_MAIL == 'YES' ) {
+		  echo " checked ";
+	  } ?> >Yes - MDS will use the WP mail function instead of it's own functions.<br>
+	  <input type="radio" name="WP_USE_MAIL" value="NO"  <?php if ( WP_USE_MAIL == 'NO' ) {
 		  echo " checked ";
 	  } ?> >No - Normal operation<br>
 	  </span></td>

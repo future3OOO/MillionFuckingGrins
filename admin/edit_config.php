@@ -125,6 +125,7 @@ $defaults = array(
 	'WP_PATH'                     => '',
 	'WP_USERS_ENABLED'            => 'NO',
 	'WP_ADMIN_ENABLED'            => 'NO',
+	'WP_USE_MAIL'                 => 'NO',
 );
 
 $values = array_replace( $defaults, $_REQUEST );
@@ -220,6 +221,7 @@ define( 'WP_URL', '" . $values['WP_URL'] . "' );
 define( 'WP_PATH', '" . $values['WP_PATH'] . "' );
 define( 'WP_USERS_ENABLED', '" . $values['WP_USERS_ENABLED'] . "' );
 define( 'WP_ADMIN_ENABLED', '" . $values['WP_ADMIN_ENABLED'] . "' );
+define( 'WP_USE_MAIL', '" . $values['WP_USE_MAIL'] . "' );
 ";
 	// write out the config..
 

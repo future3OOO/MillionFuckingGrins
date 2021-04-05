@@ -127,25 +127,29 @@ function process_mail_queue( $send_count = 1 ) {
 					echo "Sending mail: " . print_r( $row, true ) . "<br>";
 				}
 
-				if ( USE_SMTP == 'YES' ) {
-					$error = send_smtp_email( $row );
+				if ( WP_ENABLED == 'YES' && WP_USE_MAIL == 'YES' ) {
+					wp_mail( $row['to_address'], $row['subject'], $row['message'] );
 				} else {
+					if ( USE_SMTP == 'YES' ) {
+						$error = send_smtp_email( $row );
+					} else {
 
-					$sql    = "SELECT * FROM mail_queue WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
-					$result = mysqli_query( $GLOBALS['connection'], $sql );
-					$row    = mysqli_fetch_array( $result );
+						$sql    = "SELECT * FROM mail_queue WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
+						$result = mysqli_query( $GLOBALS['connection'], $sql );
+						$row    = mysqli_fetch_array( $result );
 
-					send_phpmail( array(
-						'from_address' => $row['from_address'],
-						'from_name'    => $row['from_name'],
-						'to_address'   => $row['to_address'],
-						'to_name'      => $row['to_name'],
-						'subject'      => $row['subject'],
-						'html_message' => $row['html_message'],
-						'message'      => $row['message'],
-						'mail_id'      => intval( $_REQUEST['mail_id'] ),
+						send_phpmail( array(
+							'from_address' => $row['from_address'],
+							'from_name'    => $row['from_name'],
+							'to_address'   => $row['to_address'],
+							'to_name'      => $row['to_name'],
+							'subject'      => $row['subject'],
+							'html_message' => $row['html_message'],
+							'message'      => $row['message'],
+							'mail_id'      => intval( $_REQUEST['mail_id'] ),
 
-					) );
+						) );
+					}
 				}
 			}
 		}
@@ -279,6 +283,9 @@ function send_smtp_email( $mail_row ) {
 }
 
 function send_phpmail( $mail_row ) {
+	if ( WP_ENABLED == 'YES' && WP_USE_MAIL == 'YES' ) {
+		return wp_mail( $mail_row['to_address'], $mail_row['subject'], $mail_row['message'] );
+	}
 
 	$debug_level = 0;
 	if ( defined( "EMAIL_DEBUG" ) && EMAIL_DEBUG == 'YES' ) {

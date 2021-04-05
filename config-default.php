@@ -117,3 +117,4 @@ define( 'WP_URL', '' );
 define( 'WP_PATH', '' );
 define( 'WP_USERS_ENABLED', 'NO' );
 define( 'WP_ADMIN_ENABLED', 'NO' );
+define( 'WP_USE_MAIL', 'NO' );
