@@ -66,15 +66,19 @@ $tmp_image_file = get_tmp_img_name();
 
 $sql          = "SELECT * from orders where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' and status='new' and banner_id='$BID' ";
 $order_result = mysqli_query( $GLOBALS['connection'], $sql );
-$order_row    = mysqli_fetch_array( $order_result );
 
-if ( ( $order_row['user_id'] != '' ) && $order_row['user_id'] != $_SESSION['MDS_ID'] ) { // do a test, just in case.
+// do a test, just in case.
+if ( mysqli_num_rows( $order_result ) > 0 ) {
+	$order_row    = mysqli_fetch_array( $order_result );
 
-	die( 'you do not own this order!' );
+	if( $order_row['user_id'] != '' && $order_row['user_id'] != $_SESSION['MDS_ID'] ) {
+		die( 'you do not own this order!' );
+	}
 }
 
-if ( ( $_SESSION["MDS_order_id"] == '' ) || ( USE_AJAX == 'YES' ) ) { // guess the order id
-	$_SESSION["MDS_order_id"] = $order_row["order_id"];
+if ( ( ! isset( $_SESSION["MDS_order_id"] ) || $_SESSION["MDS_order_id"] == '' ) || ( USE_AJAX == 'YES' ) ) {
+	// guess the order id
+	$_SESSION["MDS_order_id"] = isset( $order_row ) ? $order_row["order_id"] : get_current_order_id();
 }
 
 $banner_data = load_banner_constants( $BID );
@@ -238,7 +242,7 @@ require_once BASE_PATH . "/html/header.php";
 		}
 
 		// Initialize
-		var block_str = "<?php echo $order_row["blocks"]; ?>";
+		var block_str = "<?php echo (isset( $order_row ) ? $order_row["blocks"] : ''); ?>";
 		trip_count = 0;
 
 		var pos;
@@ -575,27 +579,50 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 			$pixel_count = $size[0] * $size[1];
 			$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
-			if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
+			// if image should be resized automatically make it fit within grid max/min block settings
+			if ( MDS_RESIZE == 'YES' ) {
+				$rescale = [];
+				if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
+					$rescale['x'] = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'];
+					$rescale['y'] = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'];
+				} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
+					$rescale['x'] = $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'];
+					$rescale['y'] = $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'];
+				}
 
-				$limit = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'];
+				if ( isset( $rescale['x'] ) ) {
+					// resize uploaded image
+					$imagine = new Imagine\Gd\Imagine();
+					$image   = $imagine->open( $tmp_image_file );
+					$resize  = new Imagine\Image\Box( $rescale['x'], $rescale['y'] );
+					$image->resize( $resize );
+					$image->save();
+				}
 
-				$label['max_pixels_required'] = str_replace( '%MAX_PIXELS%', $limit, $label['max_pixels_required'] );
-				$label['max_pixels_required'] = str_replace( '%COUNT%', $pixel_count, $label['max_pixels_required'] );
-				echo "<strong><font color='red'>";
-				echo $label['max_pixels_required'];
-				echo "</font></strong>";
-				unlink( $tmp_image_file );
-				unset( $tmp_image_file );
-			} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
+            } else {
 
-				$label['min_pixels_required'] = str_replace( '%COUNT%', $pixel_count, $label['min_pixels_required'] );
-				$label['min_pixels_required'] = str_replace( '%MIN_PIXELS%', $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'], $label['min_pixels_required'] );
-				echo "<strong><font color='red'>";
-				echo $label['min_pixels_required'];
-				echo "</font></strong>";
-				unlink( $tmp_image_file );
-				unset( $tmp_image_file );
-			}
+	            if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
+
+		            $limit = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'];
+
+		            $label['max_pixels_required'] = str_replace( '%MAX_PIXELS%', $limit, $label['max_pixels_required'] );
+		            $label['max_pixels_required'] = str_replace( '%COUNT%', $pixel_count, $label['max_pixels_required'] );
+		            echo "<strong><font color='red'>";
+		            echo $label['max_pixels_required'];
+		            echo "</font></strong>";
+		            unlink( $tmp_image_file );
+		            unset( $tmp_image_file );
+	            } else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
+
+		            $label['min_pixels_required'] = str_replace( '%COUNT%', $pixel_count, $label['min_pixels_required'] );
+		            $label['min_pixels_required'] = str_replace( '%MIN_PIXELS%', $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'], $label['min_pixels_required'] );
+		            echo "<strong><font color='red'>";
+		            echo $label['min_pixels_required'];
+		            echo "</font></strong>";
+		            unlink( $tmp_image_file );
+		            unset( $tmp_image_file );
+	            }
+            }
 		} else {
 			//echo "Possible file upload attack!\n";
 			echo $label['pixel_upload_failed'];
@@ -733,7 +760,7 @@ if ( ! isset( $tmp_image_file ) || empty( $tmp_image_file ) ) {
         <form method="post" action="write_ad.php" name="form1">
             <input type="hidden" name="package" value="">
             <input type="hidden" name="selected_pixels" value=''>
-            <input type="hidden" name="order_id" value="<?php echo $_SESSION['MDS_order_id']; ?>">
+            <input type="hidden" name="order_id" value="<?php echo( isset( $_SESSION['MDS_order_id'] ) ? $_SESSION['MDS_order_id'] : '' ); ?>">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
             <input type="submit" class='big_button' <?php if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != 'temp' ) {
 				echo 'disabled';
