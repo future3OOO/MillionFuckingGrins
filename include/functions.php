@@ -269,7 +269,7 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 
 	$date = ( gmdate( "Y-m-d H:i:s" ) );
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='CREDIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='CREDIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
 	if ( mysqli_num_rows( $result ) != 0 ) {
 		return; // there already is a credit for this txn_id
@@ -277,11 +277,11 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 
 	// check to make sure that there is a debit for this transaction
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='DEBIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
 
-		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . intval( $txn_id ) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
+		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 	}
@@ -307,10 +307,10 @@ function debit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $or
 	$date = ( gmdate( "Y-m-d H:i:s" ) );
 // check to make sure that there is no debit for this transaction already
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='DEBIT' AND order_id=" . intval($order_id);
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	if ( mysqli_fetch_array( $result ) == 0 ) {
-		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . intval( $txn_id ) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
+		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	}
