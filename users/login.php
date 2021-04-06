@@ -49,20 +49,22 @@ if ( $target_page == '' ) {
 	$target_page = "index.php";
 }
 
-?>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td width="35" height="26">&nbsp;</td>
-        <td height="26" valign="bottom">
-            <center><img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-                <h3><?php
-					$label["advertiser_logging_in"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logging_in"] );
-					echo $label["advertiser_logging_in"]; ?> </h3></center>
-        </td>
-    </tr>
-    <tr>
-        <td width="35">&nbsp;</td>
-        <td><span>
+if ( WP_ENABLED == 'NO' || ( WP_ENABLED == 'YES' && WP_USERS_ENABLED == 'NO' ) ) {
+
+	?>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="35" height="26">&nbsp;</td>
+            <td height="26" valign="bottom">
+                <center><img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
+                    <h3><?php
+						$label["advertiser_logging_in"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logging_in"] );
+						echo $label["advertiser_logging_in"]; ?> </h3></center>
+            </td>
+        </tr>
+        <tr>
+            <td width="35">&nbsp;</td>
+            <td><span>
 			<?php
 			if ( do_login() ) {
 				echo "<script>window.location = '$target_page'</script>";
@@ -74,12 +76,15 @@ if ( $target_page == '' ) {
 			}
 			?>
 		</span></td>
-        <td width="35">&nbsp;</td>
-    </tr>
-    <tr>
-        <td width="35" height="26">&nbsp;</td>
-        <td height="26"></td>
-        <td width="35" height="26">&nbsp;</td>
-    </tr>
-</table>
-<?php require_once BASE_PATH . "/html/footer.php"; ?>
+            <td width="35">&nbsp;</td>
+        </tr>
+        <tr>
+            <td width="35" height="26">&nbsp;</td>
+            <td height="26"></td>
+            <td width="35" height="26">&nbsp;</td>
+        </tr>
+    </table>
+	<?php
+}
+
+require_once BASE_PATH . "/html/footer.php";

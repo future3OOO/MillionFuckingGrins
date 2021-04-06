@@ -45,6 +45,8 @@ if ( isset( $_REQUEST['block_id'] ) ) {
 	$block_id = - 1;
 }
 
+global $f2, $banner_data;
+
 $BID           = $f2->bid();
 $output_result = "";
 

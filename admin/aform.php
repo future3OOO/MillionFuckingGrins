@@ -30,15 +30,12 @@
  *
  */
 
-session_start( [
-	'name' => 'MDSADMIN_PHPSESSID',
-] );
 require_once __DIR__ . "/../include/init.php";
-require( "admin_common.php" );
-require_once( '../include/dynamic_forms.php' );
-require_once( '../include/ads.inc.php' );
+require_once __DIR__ . "/admin_common.php";
+require_once __DIR__ . '/../include/dynamic_forms.php';
+require_once __DIR__ . '/../include/ads.inc.php';
 
-$mode = $_REQUEST['mode'];
+$mode = isset( $_REQUEST['mode'] ) ? $_REQUEST['mode'] : 'view';
 
 ?>
 
@@ -46,11 +43,11 @@ $mode = $_REQUEST['mode'];
 <b>[Ads Form]</b><br/><br/>
 <span style="background-color: <?php if ( ( $mode != 'edit' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] == '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( $mode == 'edit' && ( ! isset( $_REQUEST['NEW_FIELD'] ) || $_REQUEST['NEW_FIELD'] == '' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] != '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( $mode == 'edit' && ( isset( $_REQUEST['NEW_FIELD'] ) && $_REQUEST['NEW_FIELD'] != '' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="aform.php?NEW_FIELD=YES&mode=edit">New Field</a></span>&nbsp; &nbsp; <span style="background-color: <?php echo "#F2F2F2"; ?> ; border-style:outset; padding: 5px;"><a href="atemplate.php">Edit Template</a></span> <span style="background-color: <?php echo "#F2F2F2"; ?> ; border-style:outset; padding: 5px;"><a href="alist2.php">Ad List</a></span>
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?NEW_FIELD=YES&mode=edit">New Field</a></span>&nbsp; &nbsp; <span style="background-color: #F2F2F2; border-style:outset; padding: 5px;"><a href="atemplate.php">Edit Template</a></span> <span style="background-color: #F2F2F2; border-style:outset; padding: 5px;"><a href="alist2.php">Ad List</a></span>
 
 <br/>
 <br/>
@@ -65,7 +62,6 @@ echo '<div style="width:250px;float:left;">Current Language: [' . $_SESSION['MDS
 ?>
 
 <form name="lang_form" style="width:100px;float:left;" action="aform.php">
-    <input type="hidden" name="field_id" value="<?php echo $field_id; ?>"/>
     <input type="hidden" name="mode" value="<?php echo $mode; ?>"/>
     <select name='lang' onChange="mds_submit(this)">
 		<?php
@@ -84,14 +80,12 @@ echo '<div style="width:250px;float:left;">Current Language: [' . $_SESSION['MDS
 <div style="clear:both;"></div>
 <?php
 
-//print_r ($_REQUEST);
-
 if ( ( $_REQUEST['NEW_FIELD'] == 'YES' ) ) {
 	$NEW_FIELD = 'YES';
 } else {
 	$NEW_FIELD = 'NO';
 }
-//$NEW_FIELD = 'YES';
+
 $save = $_REQUEST['save'];
 if ( $save != '' ) {
 
@@ -134,7 +128,6 @@ if ( is_table_unsaved( "ads" ) ) {
 
 	require( 'build_ads_table.php' );
 }
-//$mode = "edit";
 ?>
 <table>
 
@@ -162,7 +155,7 @@ if ( is_table_unsaved( "ads" ) ) {
         </td>
         <td valign="top">
 
-			<?php if ( ( ( $mode == 'edit' ) && ( $_REQUEST['field_id'] != '' ) ) || ( $NEW_FIELD == 'YES' ) ) {
+			<?php if ( ( ( $mode == 'edit' ) && ( isset( $_REQUEST['field_id'] ) && $_REQUEST['field_id'] != '' ) ) || ( $NEW_FIELD == 'YES' ) ) {
 				field_form( $NEW_FIELD, $prams, 1 );
 			} ?>
 

@@ -126,8 +126,11 @@ function get_zone_price( $banner_id, $row, $col ) {
 		load_price_zones( $banner_id );
 	}
 
-	if ( is_array( $price_table ) ) {
+	if ( is_array( $price_table ) && count( $price_table ) > 1 ) {
 		foreach ( $price_table as $key => $val ) {
+			if ( $key == 'loaded' ) {
+		        continue;
+            }
 			if ( ( ( $price_table[ $key ]['row_from'] <= $row ) && ( $price_table[ $key ]['row_to'] >= $row ) ) && ( ( $price_table[ $key ]['col_from'] <= $col ) && ( $price_table[ $key ]['col_to'] >= $col ) ) ) {
 
 				$price = convert_to_default_currency( $price_table[ $key ]['currency'], $price_table[ $key ]['price'] );

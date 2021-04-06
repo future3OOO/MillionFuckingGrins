@@ -38,6 +38,7 @@ do_logout();
 
 require_once BASE_PATH . "/html/header.php";
 
+global $label;
 ?>
 
     <div class="logout-container">

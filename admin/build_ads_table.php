@@ -30,10 +30,6 @@
  *
  */
 
-session_start( [
-	'name' => 'MDSADMIN_PHPSESSID',
-] );
-
 if ( ! defined( 'VERSION_INFO' ) ) {
 	exit;
 }
@@ -52,15 +48,13 @@ $fields['banner_id']['field_id'] = 'banner_id';
 $fields['user_id']['field_id']   = 'user_id';
 $fields['ad_date']['field_id']   = 'ad_date';
 
-$sql = " show columns from ads ";
+$columns = [];
+
+$sql = "SHOW COLUMNS FROM ads";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 while ( $row = mysqli_fetch_row( $result ) ) {
 	$columns[ $row[0] ] = $row[0];
 }
-
-//print_r ($columns);
-//echo "<hr>";
-//print_r ($fields);
 
 /*
  * Rules:
@@ -69,19 +63,17 @@ while ( $row = mysqli_fetch_row( $result ) ) {
  * if NOT exists form, but is in table, remove from table
  */
 
-$i = 0;
+$i       = 0;
+$change  = '';
 foreach ( $fields as $key => $val ) {
 
 	if ( $change == '' ) {
 		$sql = "ALTER TABLE `ads` ";
 	}
 
-	# If exists in both, do nothing
-	if ( ( $columns[ $key ] != '' ) && ( $fields[ $key ]['field_id'] != '' ) ) { // do nothing
-
-	}
 	# If exists in form but not table, add to table
-	if ( ( $columns[ $key ] == '' ) && ( $fields[ $key ]['field_id'] != '' ) ) { // ADD to table
+	if ( ( $columns[ $key ] == '' ) && ( $fields[ $key ]['field_id'] != '' ) ) {
+		// ADD to table
 		if ( $i > 0 ) {
 			$sql .= ", ";
 		}
@@ -99,13 +91,9 @@ foreach ( $columns as $key => $val ) {
 		$sql = "ALTER TABLE `ads` ";
 	}
 
-	# If exists in both, do nothing
-	if ( ( $columns[ $key ] != '' ) && ( $fields[ $key ]['field_id'] != '' ) ) { // do nothing
-
-	}
-
 	# if NOT exists form, but is in table, 
-	if ( ( $columns[ $key ] != '' ) && ( $fields[ $key ]['field_id'] == '' ) ) { // REMOVE from table
+	if ( ( $columns[ $key ] != '' ) && ( $fields[ $key ]['field_id'] == '' ) ) {
+		// REMOVE from table
 		if ( $i > 0 ) {
 			$sql .= ", ";
 		}
@@ -122,8 +110,6 @@ if ( $change == 'Y' ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "SQL: " . $sql . "  ERROR: " . mysqli_error( $GLOBALS['connection'] ) );
 
 	echo "Database Structure Updated.";
-} else {
-	//echo "No Changes need to be made.";
 }
 
 function add_field( $field_id, $field_type ) {
@@ -134,5 +120,3 @@ function add_field( $field_id, $field_type ) {
 function remove_field( $field_id ) {
 	return " DROP  `$field_id` ";
 }
-
-?>

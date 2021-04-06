@@ -122,9 +122,10 @@ function is_logged_in() {
 		//$_SESSION['MDS_order_id'] = '';
 		$_SESSION['MDS_Domain'] = 'ADVERTISER';
 
-		if ( $row['lang'] != '' ) {
-			$_SESSION['MDS_LANG'] = $row['lang'];
-		}
+		// TODO: why is this even here? should per-user lang be a thing?
+//		if ( $row['lang'] != '' ) {
+//			$_SESSION['MDS_LANG'] = $row['lang'];
+//		}
 
 		return true;
 	}

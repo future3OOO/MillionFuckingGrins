@@ -276,7 +276,7 @@ if ( USE_SMTP != 'YES' ) {
         </tr>
     </table>
 <?php
-
+$where_sql = "";
 if ( $q_to_add != '' ) {
 	$where_sql .= " AND `to_address` like '%" . mysqli_real_escape_string( $GLOBALS['connection'], $q_to_add ) . "%' ";
 }
@@ -306,9 +306,10 @@ $sql = "SELECT * FROM mail_queue where 1=1 $where_sql order by mail_date DESC";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 $count            = mysqli_num_rows( $result );
 $records_per_page = 40;
+$offset = intval($_REQUEST['offset']);
 if ( $count > $records_per_page ) {
 
-	mysqli_data_seek( $result, $_REQUEST['offset'] );
+	mysqli_data_seek( $result, $offset );
 }
 if ( $count > $records_per_page ) {
 	$pages    = ceil( $count / $records_per_page );

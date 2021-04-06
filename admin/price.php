@@ -32,6 +32,8 @@
 
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
+
+global $f2;
 $BID = $f2->bid();
 ?>
 
@@ -152,12 +154,12 @@ if ( $BID != '' ) {
 		return $error;
 	}
 
-	if ( $_REQUEST['action'] == 'delete' ) {
+	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
 		$sql = "DELETE FROM prices WHERE price_id='" . intval( $_REQUEST['price_id'] ) . "' ";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 
-	if ( $_REQUEST['submit'] != '' ) {
+	if ( isset($_REQUEST['submit']) && $_REQUEST['submit'] != '' ) {
 		$error = validate_input();
 
 		if ( $error != '' ) {
@@ -231,11 +233,11 @@ if ( $BID != '' ) {
 		echo "There are no custom price zones for this grid.<br>";
 	}
 
-	if ( $_REQUEST['new'] == '1' ) {
+	if ( isset($_REQUEST['new']) && $_REQUEST['new'] == '1' ) {
 		echo "<h4>Add Price Zone:</h4>";
 	}
 
-	if ( $_REQUEST['action'] == 'edit' ) {
+	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ) {
 		echo "<h4>Edit Price Zone:</h4>";
 
 		$sql = "SELECT * FROM prices WHERE `price_id`='" . intval( $_REQUEST['price_id'] ) . "' ";
@@ -254,7 +256,7 @@ if ( $BID != '' ) {
 		}
 	}
 
-	if ( ( $_REQUEST['new'] != '' ) || ( $_REQUEST['action'] == 'edit' ) ) {
+	if ( ( isset($_REQUEST['new']) && $_REQUEST['new'] != '' ) || ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ) ) {
 		if ( $_REQUEST['col_from'] == '' ) {
 			$_REQUEST['col_from'] = 1;
 		}

@@ -30,19 +30,20 @@
  *
  */
 
-use Imagine\Filter\Basic\Autorotate;
-
 @set_time_limit( 260 );
 session_start();
 require_once __DIR__ . "/../include/init.php";
 require_once BASE_PATH . "/include/login_functions.php";
-require_once( "../include/ads.inc.php" );
+require_once BASE_PATH . "/include/ads.inc.php";
 
 process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
 $gd_info = gd_info();
+$gif_support = '';
+$jpeg_support = '';
+$png_support = '';
 if ( isset( $gd_info['GIF Read Support'] ) && ! empty( $gd_info['GIF Read Support'] ) ) {
 	$gif_support = "GIF";
 }
@@ -64,11 +65,11 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 $user_row = mysqli_fetch_array( $result );
 
 // Entry point for completion of orders which are made by super users or if the order was for free
-if ( $_REQUEST['action'] == 'complete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'complete' ) {
 
 	// check if order is $0 & complete it
 
-	if ( $_REQUEST['order_id'] == 'temp' ) {
+	if ( isset($_REQUEST['order_id']) && $_REQUEST['order_id'] == 'temp' ) {
 		// convert the temp order to an order.
 
 		$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
@@ -217,7 +218,6 @@ if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 
 	$size   = get_pixel_image_size( $row['order_id'] );
 	$pixels = $size['x'] * $size['y'];
-
 	upload_changed_pixels( $order_id, $BID, $size, $banner_data );
 
 	// Ad forms:
@@ -254,10 +254,6 @@ if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
                     <input type="hidden" name="aid" value="<?php echo $_REQUEST['aid']; ?>">
                     <input type="submit" name="change_pixels" value="<?php echo $label['adv_pub_pixupload']; ?>">
                 </form>
-				<?php if ( $error ) {
-					echo "<font color='red'>" . $error . "</font>";
-					$error = '';
-				} ?>
                 <font size='1'><?php echo $label['advertiser_publish_supp_formats']; ?><?php echo "$gif_support $jpeg_support $png_support"; ?></font>
             </td>
         </tr>
@@ -316,7 +312,7 @@ if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 
 # List Ads
 ob_start();
-$count    = list_ads( false, $offset, 'USER' );
+$count    = list_ads( false, 0, 'USER' );
 $contents = ob_get_contents();
 ob_end_clean();
 

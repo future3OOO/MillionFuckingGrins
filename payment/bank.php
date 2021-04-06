@@ -45,7 +45,7 @@ function b_mail_error( $msg ) {
 	$headers .= "Date: $date" . "\r\n";
 	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit bank payment mod. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script bank payment mod. ", $msg, $headers );
 }
 
 function b_log_entry( $entry_line ) {

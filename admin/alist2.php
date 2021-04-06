@@ -30,36 +30,31 @@
  *
  */
 
-session_start( [
-	'name' => 'MDSADMIN_PHPSESSID',
-] );
-
 require_once __DIR__ . "/../include/init.php";
 
 require( "admin_common.php" );
 require_once( '../include/ads.inc.php' );
 require_once( '../include/dynamic_forms.php' );
-error_reporting( E_ALL & ~E_NOTICE );
 
-$mode = $_REQUEST['mode'];
+$mode = isset( $_REQUEST['mode'] ) ? $_REQUEST['mode'] : 'view';
 
 ?>
 
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000; "></div>
-<b>[Ads List]</b><span style="background-color: <?php if ( ( $_REQUEST['mode'] != 'edit' ) ) {
+<b>[Ads List]</b><span style="background-color: <?php if ( $mode != 'edit' ) {
 	echo "#F2F2F2";
-} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] == '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=view">View Form</a></span> <span style="background-color:  <?php if ( $mode == 'edit' && ( ! isset( $_REQUEST['NEW_FIELD'] ) || $_REQUEST['NEW_FIELD'] == '' ) ) {
 	echo "#FFFFCC";
-} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( ( $_REQUEST['mode'] == 'edit' ) && ( $_REQUEST['NEW_FIELD'] != '' ) ) {
+} ?>; border-style:outset; padding: 5px;"><a href="aform.php?mode=edit">Edit Fields</a></span> <span style="background-color: <?php if ( $mode == 'edit' && ( isset( $_REQUEST['NEW_FIELD'] ) && $_REQUEST['NEW_FIELD'] != '' ) ) {
 	echo "#FFFFCC";
 } else {
 	echo "#F2F2F2";
-} ?> ; border-style:outset; padding: 5px;"><a href="aform.php?NEW_FIELD=YES&mode=edit">New Field</a></span> &nbsp; &nbsp; <span style="background-color: <?php echo "#FFFFCC"; ?> ; border-style:outset; padding: 5px;"><a href="alist2.php">Ads List</a></span>
+} ?> ; border-style:outset; padding: 5px;"><a href="aform.php?NEW_FIELD=YES&mode=edit">New Field</a></span> &nbsp; &nbsp; <span style="background-color: #FFFFCC; border-style:outset; padding: 5px;"><a href="alist2.php">Ads List</a></span>
 
 <hr>
 
 <?php
-
+$col_row = [];
 if ( $_REQUEST['action'] == 'del' ) {
 
 	$sql    = "DELETE FROM form_lists WHERE column_id='" . intval( $_REQUEST['column_id'] ) . "' ";
@@ -74,6 +69,7 @@ if ( $_REQUEST['column_id'] != '' ) {
 
 if ( $_REQUEST['save_col'] != '' ) {
 
+    $error = '';
 	if ( $_REQUEST['field_id'] == '' ) {
 		$error = "Did not select a field ";
 	}

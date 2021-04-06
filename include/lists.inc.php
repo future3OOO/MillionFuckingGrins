@@ -40,7 +40,7 @@ function echo_list_head_data( $form_id, $admin ) {
 
 	global $q_string, $column_list, $column_info;
 
-	$ord = $_REQUEST['ord'];
+	$ord = isset($_REQUEST['ord']) ? $_REQUEST['ord'] : 'asc';
 	if ( $ord == 'asc' ) {
 		$ord = 'desc';
 	} else if ( $ord == 'desc' ) {
@@ -95,9 +95,9 @@ function echo_ad_list_data( $admin ) {
 
 	global $column_list, $column_info, $label, $cur_offset, $order_str;
 
-	if ( $_REQUEST['order_by'] != '' ) {
+	if ( isset($_REQUEST['order_by']) && $_REQUEST['order_by'] != '' ) {
 
-		$ord = $_REQUEST['ord'];
+		$ord = isset($_REQUEST['ord']) ? $_REQUEST['ord'] : 'asc';
 		if ( $ord == 'asc' ) {
 			$ord = 'desc';
 		} else if ( $ord == 'desc' ) {
@@ -124,8 +124,12 @@ function echo_ad_list_data( $admin ) {
 		// process the value depending on what kind of template tag it was given.
 		if ( $template_tag == 'DATE' ) {
 
-			$init_date = strtotime( trim_date( $val ) . " GMT" ); // the last date modified
-			$dst_date  = strtotime( trim_date( ( gmdate( "r" ) ) ) . " GMT" ); // now
+			// the last date modified
+			$init_date = strtotime( trim_date( $val ) . " GMT" );
+
+			// now
+			$dst_date = strtotime( gmdate( "Y-m-d" ) . " GMT" );
+
 			if ( ! $init_date ) {
 				$days = "x";
 			} else {

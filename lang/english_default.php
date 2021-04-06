@@ -264,6 +264,7 @@ $label['advertiser_home_line2']              = 'Here you can manage your pixels.
 $label['advertiser_home_blkyouown']          = 'You own %PIXEL_COUNT% blocks. <a href=\'publish.php\'>Manage my Pixels</a>';
 $label['advertiser_home_blkonorder']         = 'You have %PIXEL_ORD_COUNT% pixels on order. <a href=\'select.php\'>Order Pixels</a> / <a href=\'orders.php\'>View Order History</a>';
 $label['advertiser_home_click_count']        = 'Your pixels were clicked %CLICK_COUNT% times.';
+$label['advertiser_home_view_count']         = 'Your pixels were viewed %VIEW_COUNT% times.';
 $label['advertiser_home_sub_head']           = 'Here is what you can do:';
 $label['advertiser_home_selectlink']         = '- <a href=\'select.php\'>Order</a>: Choose and order new pixels.';
 $label['advertiser_home_managelink']         = '- <a href=\'publish.php\'>Manage</a>: Manage pixels owned by you.';
@@ -826,5 +827,5 @@ $label['list_pixels']                                 = 'Pixels';
 $label['reserving_pixels']                            = 'Please Wait! Reserving Pixels...';
 $label['not_adjacent']                                = 'You must select a block adjacent to another one.';
 $label['no_blocks_selected']                          = 'You have no blocks selected.';
-
-$label['advertiser_reset_button'] = "Reset";
+$label['advertiser_reset_button']                     = "Reset";
+$label['ads_not_found']                               = 'No ads were found';

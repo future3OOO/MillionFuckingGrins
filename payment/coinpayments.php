@@ -71,24 +71,29 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 	} else if ( COINPAYMENTS_IPN_MODE == "HMAC" ) {
 
 		if ( ! isset( $_SERVER['HTTP_HMAC'] ) || empty( $_SERVER['HTTP_HMAC'] ) ) {
+			error_log('MDS CoinPayments IPN: No HMAC signature sent');
 			die( "No HMAC signature sent" );
 		}
 
 		$request = file_get_contents( 'php://input' );
 		if ( $request === false || empty( $request ) ) {
+			error_log('MDS CoinPayments IPN: Error reading POST data');
 			die( "Error reading POST data" );
 		}
 
 		$merchant = isset( $_POST['merchant'] ) ? $_POST['merchant'] : '';
 		if ( empty( $merchant ) ) {
+			error_log('MDS CoinPayments IPN: No Merchant ID passed');
 			die( "No Merchant ID passed" );
 		}
 		if ( $merchant != COINPAYMENTS_MERCHANT_ID ) {
+			error_log('MDS CoinPayments IPN: Invalid Merchant ID');
 			die( "Invalid Merchant ID" );
 		}
 
 		$hmac = hash_hmac( "sha512", $request, COINPAYMENTS_IPN_SECRET );
 		if ( $hmac != $_SERVER['HTTP_HMAC'] ) {
+			error_log('MDS CoinPayments IPN: HMAC signature does not match');
 			die( "HMAC signature does not match" );
 		}
 

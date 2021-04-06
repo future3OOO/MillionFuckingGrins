@@ -36,6 +36,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
+global $f2;
 $BID = $f2->bid();
 
 function nice_format( $val ) {
@@ -65,7 +66,7 @@ function nice_format( $val ) {
 	return $val;
 }
 
-if ( $_FILES['blend_image']['tmp_name'] != '' ) {
+if ( isset($_FILES['blend_image']) && isset($_FILES['blend_image']['tmp_name']) && $_FILES['blend_image']['tmp_name'] != '' ) {
 
 	$temp = explode( ".", $_FILES['blend_image']['name'] );
 	if ( array_pop( $temp ) != 'png' ) {
@@ -78,7 +79,7 @@ if ( $_FILES['blend_image']['tmp_name'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'delete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
 
 	if ( file_exists( SERVER_PATH_TO_ADMIN . "temp/background$BID.png" ) ) {
 		unlink( SERVER_PATH_TO_ADMIN . "temp/background$BID.png" );

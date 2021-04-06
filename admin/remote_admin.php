@@ -30,17 +30,19 @@
  *
  */
 
-session_start( [
-	'name' => 'MDSADMIN_PHPSESSID',
-] );
 require_once __DIR__ . "/../include/init.php";
 
-if ( $_REQUEST['key'] != '' ) {
+$admin = false;
+if ( isset($_REQUEST['key']) && $_REQUEST['key'] != '' ) {
 
 	$mykey = substr( md5( ADMIN_PASSWORD ), 1, 15 );
 
 	if ( $mykey == $_REQUEST['key'] ) {
-		$_SESSION['ADMIN'] = '1'; // automatically log in
+		// automatically log in
+		session_start( [
+			'name' => 'MDSADMIN_PHPSESSID',
+		] );
+		$_SESSION['ADMIN'] = '1';
 		$admin             = true;
 	}
 }
@@ -61,10 +63,10 @@ $sql   = "select * from users where ID=" . intval( $_REQUEST['user_id'] );
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $u_row = mysqli_fetch_array( $result );
 
-if ( $_REQUEST['approve_links'] != '' ) {
+if ( isset($_REQUEST['approve_links']) && $_REQUEST['approve_links'] != '' ) {
 
 	//echo "Saving links...";
-	if ( sizeof( $_REQUEST['urls'] ) > 0 ) {
+	if ( isset($_REQUEST['urls']) && sizeof( $_REQUEST['urls'] ) > 0 ) {
 		//echo " * * *";
 		$i = 0;
 
@@ -90,7 +92,7 @@ if ( $_REQUEST['approve_links'] != '' ) {
 	echo "<p><b>Links Approved, grid updated!</b></p>";
 }
 
-if ( $_REQUEST['disapprove_links'] != '' ) {
+if ( isset($_REQUEST['disapprove_links']) && $_REQUEST['disapprove_links'] != '' ) {
 
 	$sql = "UPDATE blocks set approved='N' WHERE user_id=" . intval( $_REQUEST['user_id'] ) . " and banner_id=" . intval( $BID );
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
@@ -142,5 +144,5 @@ if ( $_REQUEST['disapprove_links'] != '' ) {
     </form>
 
 <?php
-echo "<iframe width=\"" . ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ) . "\" height=\"" . ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ) . "\" frameborder=0 marginwidth=0 marginheight=0 VSPACE=0 HSPACE=0 SCROLLING=no  src=\"" . "show_map.php?BID=$BID&user_id=" . $_REQUEST['user_id'] . "\"></iframe>";
+echo "<iframe width=\"" . ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ) . "\" height=\"" . ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ) . "\" frameborder=0 marginwidth=0 marginheight=0 VSPACE=0 HSPACE=0 SCROLLING=no  src=\"" . "show_map.php?BID=$BID&user_id=" . intval($_REQUEST['user_id']) . "\"></iframe>";
 ?>

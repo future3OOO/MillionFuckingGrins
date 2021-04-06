@@ -30,17 +30,18 @@
  *
  */
 
-session_start( [
-	'name' => 'MDSADMIN_PHPSESSID',
-] );
 require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 require_once( "../include/ads.inc.php" );
 
+global $f2, $label;
+
 $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
+
+$error = '';
 
 if ( isset( $_REQUEST['aid'] ) && is_numeric( $_REQUEST['aid'] ) ) {
 
@@ -199,4 +200,4 @@ if ( isset( $_REQUEST['aid'] ) && is_numeric( $_REQUEST['aid'] ) ) {
 	<?php
 }
 
-$count = list_ads( true, $offset );
+$count = list_ads( true, 0 );

@@ -103,7 +103,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		$prams = load_ad_values( $ad_id );
 
 		?>
-            <div class='ok_msg_label'><input type="button" class='big_button' value="<?php echo $label['write_ad_saved'] . " " . $label['write_ad_continue_button']; ?>" onclick="window.location='confirm_order.php'"></div>
+        <div class='ok_msg_label'><input type="button" class='big_button' value="<?php echo $label['write_ad_saved'] . " " . $label['write_ad_continue_button']; ?>" onclick="window.location='confirm_order.php'"></div>
         <p>&nbsp;</p>
 		<?php
 		display_ad_form( 1, "user", $prams );
@@ -116,10 +116,10 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row   = mysqli_fetch_array( $result );
 	$ad_id = $row['ad_id'];
-	//echo "adid is: ".$ad_id;
-	$prams = load_ad_values( $ad_id ); // user is not logged in
 
-	//print_r($prams);
+	// user is not logged in
+	$prams = load_ad_values( $ad_id );
+
 	display_ad_form( 1, 'user', $prams );
 }
 

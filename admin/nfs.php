@@ -57,7 +57,7 @@ $tmp_block->resize( $block_size );
 $default_nfs_block->paste( $tmp_block, $zero_point );
 $data = base64_encode( $default_nfs_block->get( "png", array( 'png_compression_level' => 9 ) ) );
 
-if ( $_REQUEST['action'] == 'save' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'save' ) {
 	//$sql = "delete from blocks where status='nfs' AND banner_id=$BID ";
 	//mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
 
@@ -92,7 +92,7 @@ if ( $_REQUEST['action'] == 'save' ) {
 	}
 	echo "Success!";
 	exit();
-} else if ( $_REQUEST['action'] == 'reset' ) {
+} else if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'reset' ) {
 	$sql = "DELETE FROM blocks WHERE status='nfs' AND banner_id=$BID";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	echo "Success!";
@@ -301,6 +301,7 @@ if ( $_REQUEST['action'] == 'save' ) {
 			}
 		}
 	}
+	$blocks = [];
 	$sql = "select block_id, status, user_id FROM blocks WHERE banner_id=" . intval( $BID );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	while ( $row = mysqli_fetch_array( $result ) ) {
@@ -316,26 +317,28 @@ if ( $_REQUEST['action'] == 'save' ) {
 			for ( $i = 0; $i < $banner_data['G_HEIGHT']; $i ++ ) {
 				echo "<div class='block_row'>";
 				for ( $j = 0; $j < $banner_data['G_WIDTH']; $j ++ ) {
-					switch ( $blocks[ $cell ] ) {
-						case 'sold':
-							echo '<span class="block sold" data-block="' . $cell . '"></span>';
-							break;
-						case 'reserved':
-							echo '<span class="block reserved" data-block="' . $cell . '"></span>';
-							break;
-						case 'nfs':
-							echo '<span class="block nfs" data-block="' . $cell . '"></span>';
-							break;
-						case 'ordered':
-							echo '<span class="block ordered" data-block="' . $cell . '"></span>';
-							break;
-						case 'onorder':
-							echo '<span class="block onorder" data-block="' . $cell . '"></span>';
-							break;
-						case 'free':
-						case '':
-							echo '<span class="block free" data-block="' . $cell . '"></span>';
-					}
+					if ( isset( $blocks[ $cell ] ) ) {
+					    switch ( $blocks[ $cell ] ) {
+						    case 'sold':
+							    echo '<span class="block sold" data-block="' . $cell . '"></span>';
+							    break;
+						    case 'reserved':
+							    echo '<span class="block reserved" data-block="' . $cell . '"></span>';
+							    break;
+						    case 'nfs':
+							    echo '<span class="block nfs" data-block="' . $cell . '"></span>';
+							    break;
+						    case 'ordered':
+							    echo '<span class="block ordered" data-block="' . $cell . '"></span>';
+							    break;
+						    case 'onorder':
+							    echo '<span class="block onorder" data-block="' . $cell . '"></span>';
+							    break;
+						    case 'free':
+						    case '':
+							    echo '<span class="block free" data-block="' . $cell . '"></span>';
+					    }
+				    }
 					$cell ++;
 				}
 				echo '</div>

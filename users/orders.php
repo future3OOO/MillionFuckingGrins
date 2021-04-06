@@ -39,6 +39,8 @@ process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
+global $label;
+
 if ( isset( $_REQUEST['cancel'] ) && $_REQUEST['cancel'] == 'yes' && isset( $_REQUEST['order_id'] ) ) {
 	if ( $_REQUEST['order_id'] == "temp" ) {
 
@@ -156,7 +158,7 @@ usort( $orders, "date_sort" );
 <tr onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);" bgColor="#ffffff">
 			<td><font face="Arial" size="2"><?php echo get_local_time($order['order_date']);?></font></td>
 			<td><font face="Arial" size="2"><?php echo isset($order['FirstName']) ? $order['FirstName']." ".$order['LastName'] : "";?></font></td>
-			<td><font face="Arial" size="2"><?php echo isset($order['Username']) ? $order['Username'] : "";?> (#<?php echo $order['ID'];?>)</font></td>
+			<td><font face="Arial" size="2"><?php echo isset($order['Username']) ? $order['Username'] : "";?> <?php echo (isset($order['ID']) ? '(#' . $order['ID'] . ')' : '');?></font></td>
 			<td><font face="Arial" size="2">#<?php echo isset($order['order_id']) ? $order['order_id'] : "";?></font></td>
 			<td><font face="Arial" size="2"><?php echo $order['quantity'];?></font></td>
 	<td><font face="Arial" size="2"><?php 

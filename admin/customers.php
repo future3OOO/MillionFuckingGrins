@@ -41,7 +41,7 @@ function validate_advertiser( $user_id ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 }
 
-if ( $_REQUEST['action'] == 'validate' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'validate' ) {
 	validate_advertiser( $_REQUEST['user_id'] );
 }
 
@@ -58,11 +58,11 @@ function delete_advertiser( $user_id ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'delete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
 	delete_advertiser( $_REQUEST['user_id'] );
 }
 
-if ( $_REQUEST['delete_anyway'] != '' ) {
+if ( isset($_REQUEST['delete_anyway']) && $_REQUEST['delete_anyway'] != '' ) {
 
 	$sql = "DELETE FROM orders where user_id=" . intval( $_REQUEST['user_id'] );
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
@@ -86,7 +86,7 @@ if ( $_REQUEST['delete_anyway'] != '' ) {
 	echo "<p>User deleted. Please remember to process the image if the user had some pixels. </p>";
 }
 
-if ( $_REQUEST['mass_del'] != '' ) {
+if ( isset($_REQUEST['mass_del']) && $_REQUEST['mass_del'] != '' ) {
 	if ( sizeof( $_REQUEST['users'] ) > 0 ) {
 		foreach ( $_REQUEST['users'] as $user_id ) {
 			delete_advertiser( $user_id );
@@ -94,7 +94,7 @@ if ( $_REQUEST['mass_del'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['mass_val'] != '' ) {
+if ( isset($_REQUEST['mass_del']) && $_REQUEST['mass_val'] != '' ) {
 	if ( sizeof( $_REQUEST['users'] ) > 0 ) {
 		foreach ( $_REQUEST['users'] as $user_id ) {
 			validate_advertiser( $user_id );
@@ -102,16 +102,19 @@ if ( $_REQUEST['mass_val'] != '' ) {
 	}
 }
 
-$q_aday     = $_REQUEST['q_aday'];
-$q_amon     = $_REQUEST['q_amon'];
-$q_ayear    = $_REQUEST['q_ayear'];
-$q_name     = $_REQUEST['q_name'];
-$q_username = $_REQUEST['q_username'];
-$q_resumes  = $_REQUEST['q_resumes'];
-$q_news     = $_REQUEST['q_news'];
-$q_email    = $_REQUEST['q_email'];
-$q_company  = $_REQUEST['q_company'];
-$search     = $_REQUEST['search'];
+$offset = isset($_REQUEST['offset']) ? intval($_REQUEST['offset']) : 0;
+
+$q_aday     = isset($_REQUEST['q_aday']) ? $_REQUEST['q_aday'] : '';
+$q_amon     = isset($_REQUEST['q_amon']) ? $_REQUEST['q_amon'] : '';
+$q_ayear     = isset($_REQUEST['q_ayear']) ? $_REQUEST['q_ayear'] : '';
+$q_name     = isset($_REQUEST['q_name']) ? $_REQUEST['q_name'] : '';
+$q_username     = isset($_REQUEST['q_username']) ? $_REQUEST['q_username'] : '';
+$q_resumes     = isset($_REQUEST['q_resumes']) ? $_REQUEST['q_resumes'] : '';
+$q_news     = isset($_REQUEST['q_news']) ? $_REQUEST['q_news'] : '';
+$q_email     = isset($_REQUEST['q_email']) ? $_REQUEST['q_email'] : '';
+$q_company     = isset($_REQUEST['q_company']) ? $_REQUEST['q_company'] : '';
+$search     = isset($_REQUEST['search']) ? $_REQUEST['search'] : '';
+
 $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_name&q_username=$q_username&q_news=$q_news&q_resumes=$q_resumes&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&q_company=$q_company&search=$search" );
 ?>
     <p>
@@ -341,7 +344,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
     <tr>
         <td width="731" bgcolor="#EDF8FC" colspan="4">
       <span style="font-family: Arial; "><b>
-      <input type="submit" value="Find" name="B1" style="float: left"><?php if ( $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></span><b>[<span style="font-family: Arial; "><a href="<?php echo $_SERVER['PHP_SELF'] ?>">Start a New Search</a></span>]</b><?php } ?></td>
+      <input type="submit" value="Find" name="B1" style="float: left"><?php if ( isset($_REQUEST['search']) && $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></span><b>[<span style="font-family: Arial; "><a href="<?php echo $_SERVER['PHP_SELF'] ?>">Start a New Search</a></span>]</b><?php } ?></td>
     </tr>
     </table>
 
@@ -352,14 +355,16 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
     <p>Listing advertisers. Click on a username to edit details / change password / change status<p>
 
 	<?php
-	$q_aday     = intval( $_REQUEST['q_aday'] );
-	$q_amon     = intval( $_REQUEST['q_amon'] );
-	$q_ayear    = intval( $_REQUEST['q_ayear'] );
-	$q_name     = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_name'] );
-	$q_username = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_username'] );
-	$q_resumes  = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_resumes'] );
-	$q_news     = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_news'] );
-	$q_email    = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_email'] );
+	$q_aday     = intval( $q_aday );
+	$q_amon     = intval( $q_amon );
+	$q_ayear    = intval( $q_ayear );
+	$q_name     = mysqli_real_escape_string( $GLOBALS['connection'], $q_name );
+	$q_username = mysqli_real_escape_string( $GLOBALS['connection'], $q_username );
+	$q_resumes  = mysqli_real_escape_string( $GLOBALS['connection'], $q_resumes );
+	$q_news     = mysqli_real_escape_string( $GLOBALS['connection'], $q_news );
+	$q_email    = mysqli_real_escape_string( $GLOBALS['connection'], $q_email );
+
+    $where_sql = '';
 
 	if ( $q_name != '' ) {
 		$list = preg_split( "/[\s,]+/", $q_name );
@@ -417,14 +422,15 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 
 	?>
     <form style="margin: 0px;" method="post" action="<?php echo $_SERVER['PHP_SELF'];
-	echo "?offset=" . $_REQUEST['offset'] . $q_string; ?>" name="form1">
-        <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
+	echo "?offset=" . $offset . $q_string; ?>" name="form1">
+        <input type="hidden" name="offset" value="<?php echo $offset; ?>">
         <center><b><?php echo mysqli_num_rows( $result ); ?> Advertiser's Accounts Returned (<?php echo $pages; ?> pages) </b></center>
 		<?php
 		if ( $count > $records_per_page ) {
 			// calculate number of pages & current page
 
 			echo "<center>";
+			global $label;
 			$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 			$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 			//	echo "<span > ".$label["navigation_page"]."</span> ";

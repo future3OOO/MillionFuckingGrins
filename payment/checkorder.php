@@ -46,7 +46,7 @@ function ch_mail_error( $msg ) {
 	$headers .= "Date: $date" . "\r\n";
 	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit check payment mod. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script check payment mod. ", $msg, $headers );
 }
 
 function ch_log_entry( $entry_line ) {

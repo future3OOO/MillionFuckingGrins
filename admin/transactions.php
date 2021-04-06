@@ -54,7 +54,7 @@ if ( $_REQUEST['action'] == 'refund' ) {
 
 	if ( $row['status'] != 'completed' ) {
 		// check that there's no other refund...
-		$sql = "SELECT * FROM transactions where txn_id='" . intval( $row['txn_id'] ) . "' AND type='CREDIT' ";
+		$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $row['txn_id']) . "' AND type='CREDIT' ";
 		$r = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 		if ( mysqli_num_rows( $r ) == 0 ) {
 			// do the refund

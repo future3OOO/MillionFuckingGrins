@@ -240,7 +240,7 @@ and follow the recommendations
 2. Permission problems. This is a common problem. Please check your permission 
 settings.
 
-3. Your PHP is too old. Check to make sure you have at least 5.2.x
+3. Your PHP is too old. Check to make sure you have at least 7.3
 
 4. The files were not uploaded with the original directory structure in tact.
 
@@ -502,7 +502,6 @@ PHPMailer
 https://github.com/PHPMailer/PHPMailer
 
 AREA Map code contributed by Martin Diekhoff
-http://www.onecentads.com/
 
 Imagine - Image manipulation library for PHP 5.3 inspired by Python's PIL and other image libraries.
 https://github.com/avalanche123/Imagine

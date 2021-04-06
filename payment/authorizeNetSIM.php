@@ -51,7 +51,7 @@ function authnet_mail_error( $msg ) {
 	@fputs( $log_fp, $entry_line );
 	@fclose( $log_fp );
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit authnet script. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script authnet script. ", $msg, $headers );
 }
 
 function authnet_log_entry( $entry_line ) {

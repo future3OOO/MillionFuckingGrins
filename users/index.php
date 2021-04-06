@@ -80,8 +80,12 @@ $user_row = mysqli_fetch_array( $result );
 		}
 		echo $label['advertiser_home_blkonorder'] . "<br>";
 
+		//TODO: make these work right
 		$label['advertiser_home_click_count'] = str_replace( "%CLICK_COUNT%", number_format( $user_row['click_count'] ), $label['advertiser_home_click_count'] );
 		echo $label['advertiser_home_click_count'] . "<br>";
+
+		$label['advertiser_home_view_count'] = str_replace( "%VIEW_COUNT%", number_format( $user_row['view_count'] ), $label['advertiser_home_view_count'] );
+		echo $label['advertiser_home_view_count'] . "<br>";
 		?>
     </p>
 
