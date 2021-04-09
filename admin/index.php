@@ -109,6 +109,9 @@ if(WP_ENABLED == 'YES') {
         - <a href="currency.php">Currencies</a><br/>
         - <a href="payment.php">Payment Modules</a><br/>
         - <a href="aform.php">Ad Form</a><br/>
+        <hr>
+        <b>Other</b><br/>
+        - <a href="clear_orders.php">Clear Orders</a><br/>
 		<?php
 		if ( WP_ENABLED == 'NO' || WP_ADMIN_ENABLED == 'NO' ) {
 			?>
