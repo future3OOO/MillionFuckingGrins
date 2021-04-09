@@ -38,8 +38,9 @@ if ( isset($_REQUEST['key']) && $_REQUEST['key'] != '' ) {
 	$mykey = substr( md5( ADMIN_PASSWORD ), 1, 15 );
 
 	if ( $mykey == $_REQUEST['key'] ) {
+		require_once __DIR__ . "/../include/login_functions.php";
 		// automatically log in
-		session_start( [
+		mds_session_start( [
 			'name' => 'MDSADMIN_PHPSESSID',
 		] );
 		$_SESSION['ADMIN'] = '1';

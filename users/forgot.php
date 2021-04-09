@@ -29,9 +29,10 @@
  *        https://milliondollarscript.com/
  *
  */
-session_start();
+
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-require_once BASE_PATH . "/include/login_functions.php";
 
 $submit = $_REQUEST['submit'];
 $email  = $_REQUEST['email'];

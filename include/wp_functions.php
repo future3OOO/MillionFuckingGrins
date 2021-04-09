@@ -34,9 +34,15 @@ function mds_load_wp() {
 
 	$wpdomain = parse_url( WP_URL );
 
-	define( 'COOKIE_DOMAIN', '.' . $wpdomain['host'] );
-	define( 'COOKIEPATH', '/' );
-	define( 'COOKIEHASH', md5( $wpdomain['host'] ) );
+	if ( ! defined( 'COOKIE_DOMAIN' ) ) {
+		define( 'COOKIE_DOMAIN', '.' . $wpdomain['host'] );
+	}
+	if ( ! defined( 'COOKIEPATH' ) ) {
+		define( 'COOKIEPATH', '/' );
+	}
+	if ( ! defined( 'COOKIEHASH' ) ) {
+		define( 'COOKIEHASH', md5( $wpdomain['host'] ) );
+	}
 
 	require_once WP_PATH . '/wp-load.php';
 	require_once WP_PATH . '/wp-includes/pluggable.php';

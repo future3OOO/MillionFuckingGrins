@@ -30,7 +30,8 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 define( 'NO_HOUSE_KEEP', 'YES' );
 
 header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1

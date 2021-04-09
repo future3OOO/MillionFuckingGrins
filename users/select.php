@@ -30,14 +30,14 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
 if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
 	mds_wp_login_check();
 }
 
 require_once BASE_PATH . "/html/header.php";
-require_once BASE_PATH . "/include/login_functions.php";
 process_login();
 
 global $f2;

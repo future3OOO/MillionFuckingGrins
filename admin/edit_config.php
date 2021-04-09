@@ -89,7 +89,7 @@ $defaults = array(
 	'EMAILS_DAYS_KEEP'            => '30',
 	'DAYS_RENEW'                  => '7',
 	'DAYS_CONFIRMED'              => '7',
-	'HOURS_UNCONFIRMED'           => '1',
+	'MINUTES_UNCONFIRMED'         => '60',
 	'DAYS_CANCEL'                 => '3',
 	'ENABLE_MOUSEOVER'            => 'POPUP',
 	'ENABLE_CLOAKING'             => 'YES',
@@ -185,7 +185,7 @@ define( 'EMAIL_USER_EXPIRE_WARNING', '" . $values['EMAIL_USER_EXPIRE_WARNING'] .
 define( 'EMAILS_DAYS_KEEP', '" . $values['EMAILS_DAYS_KEEP'] . "' );
 define( 'DAYS_RENEW', '" . $values['DAYS_RENEW'] . "' );
 define( 'DAYS_CONFIRMED', '" . $values['DAYS_CONFIRMED'] . "' );
-define( 'HOURS_UNCONFIRMED', '" . $values['HOURS_UNCONFIRMED'] . "' );
+define( 'MINUTES_UNCONFIRMED', '" . $values['MINUTES_UNCONFIRMED'] . "' );
 define( 'DAYS_CANCEL', '" . $values['DAYS_CANCEL'] . "' );
 define( 'ENABLE_MOUSEOVER', '" . $values['ENABLE_MOUSEOVER'] . "' );
 define( 'ENABLE_CLOAKING', '" . $values['ENABLE_CLOAKING'] . "' );

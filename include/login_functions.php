@@ -553,3 +553,23 @@ function do_logout() {
 		setcookie( 'PHPSESSID', null, - 1 );
 	}
 }
+
+/**
+ * Start a session with a 1 hour limit.
+ *
+ * @link https://stackoverflow.com/a/8311400/311458
+ */
+function mds_start_session( $options = [] ) {
+	ini_set( 'session.gc_maxlifetime', 3600 );
+	session_set_cookie_params( 3600 );
+	session_start( $options );
+
+	$now = time();
+	if ( isset( $_SESSION['discard_after'] ) && $now > $_SESSION['discard_after'] ) {
+		session_unset();
+		session_destroy();
+		session_start( $options );
+	}
+
+	$_SESSION['discard_after'] = $now + 3600;
+}

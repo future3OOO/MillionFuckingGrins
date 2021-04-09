@@ -82,7 +82,7 @@ define( 'EMAIL_USER_EXPIRE_WARNING', '' );
 define( 'EMAILS_DAYS_KEEP', '30' );
 define( 'DAYS_RENEW', '7' );
 define( 'DAYS_CONFIRMED', '7' );
-define( 'HOURS_UNCONFIRMED', '1' );
+define( 'MINUTES_UNCONFIRMED', '60' );
 define( 'DAYS_CANCEL', '3' );
 define( 'ENABLE_MOUSEOVER', 'POPUP' );
 define( 'ENABLE_CLOAKING', 'YES' );

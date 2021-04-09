@@ -38,6 +38,14 @@ if ( defined( 'MEMORY_LIMIT' ) ) {
 	ini_set( 'memory_limit', '128M' );
 }
 
+if ( ! defined( 'MINUTES_UNCONFIRMED' ) ) {
+	$minutes = 60;
+	if ( defined( 'HOURS_UNCONFIRMED' ) ) {
+		$minutes = HOURS_UNCONFIRMED * 60;
+	}
+	define( 'MINUTES_UNCONFIRMED', $minutes );
+}
+
 require_once( BASE_PATH . '/include/database.php' );
 require_once BASE_PATH . '/vendor/autoload.php';
 

@@ -30,10 +30,9 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-
-require_once BASE_PATH . "/include/login_functions.php";
 
 process_login();
 
@@ -204,12 +203,12 @@ usort( $orders, "date_sort" );
 				}
 
 				$elapsed_time = strtotime(gmdate('r')) - $time_start;
-				$elapsed_days = floor ($elapsed_time / 60 / 60 / 24);
-				
-				$exp_time =  ($order['days_expire']  * 24 * 60 * 60);
+                $elapsed_days = floor( $elapsed_time / 60 / 60 );
+
+                $exp_time = ( $order['days_expire'] * 60 * 60 );
 
 				$exp_time_to_go = $exp_time - $elapsed_time;
-				$exp_days_to_go =  floor ($exp_time_to_go / 60 / 60 / 24);
+                $exp_days_to_go = floor( $exp_time_to_go / 60 / 60 );
 
 				$to_go = elapsedtime($exp_time_to_go);
 

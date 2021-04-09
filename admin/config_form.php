@@ -636,10 +636,21 @@ NOTES<br>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
       <input type="text" name="DAYS_CONFIRMED" size="2" value="<?php echo DAYS_CONFIRMED; ?>">(Enter a number. 0 = never cancel)</span></td>
         </tr>
+        <?php
+
+        if ( ! defined( 'MINUTES_UNCONFIRMED' ) ) {
+	        $minutes = 60;
+	        if ( defined( 'HOURS_UNCONFIRMED' ) ) {
+		        $minutes = HOURS_UNCONFIRMED * 60;
+	        }
+	        define( 'MINUTES_UNCONFIRMED', $minutes );
+        }
+
+        ?>
         <tr>
-            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many <b>hours</b> to keep Unconfirmed orders before deletion?</span></td>
+            <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many <b>minutes</b> to keep Unconfirmed orders before deletion?</span></td>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">
-      <input type="text" name="HOURS_UNCONFIRMED" size="2" value="<?php echo HOURS_UNCONFIRMED; ?>">(Enter a number. 0 = never delete)</span></td>
+      <input type="text" name="MINUTES_UNCONFIRMED" size="2" value="<?php echo MINUTES_UNCONFIRMED; ?>">(Enter a number. 0 = never delete)</span></td>
         </tr>
         <tr>
             <td bgcolor="#e6f2ea"><span style="font-family: Verdana,sans-serif; font-size: small; ">How many days to keep Cancelled orders before deletion?</span></td>

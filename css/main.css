@@ -43,7 +43,7 @@ body.mds-container {
 }
 
 body.mds-container.wp {
-	overflow: hidden;
+	overflow: auto;
 }
 
 .mds-container .outer {

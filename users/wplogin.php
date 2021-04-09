@@ -30,7 +30,8 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
 
 // check if WP integration is enabled
@@ -39,12 +40,10 @@ if ( WP_ENABLED !== 'YES' ) {
 	exit;
 }
 
-require_once( __DIR__ . '/../include/login_functions.php' );
-
 // if user isn't logged in then log them out
 if ( ! is_logged_in() ) {
 	do_logout();
-	session_start();
+	mds_start_session();
 }
 
 // try to login

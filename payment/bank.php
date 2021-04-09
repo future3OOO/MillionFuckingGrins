@@ -323,7 +323,7 @@ class bank {
 
 		if ( ( $_REQUEST['order_id'] != '' ) && ( $_REQUEST['nhezk5'] != '' ) ) {
 
-			//session_start();
+			//mds_start_session();
 
 			//print_r($_SESSION);
 

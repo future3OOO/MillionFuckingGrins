@@ -154,7 +154,7 @@ function expire_orders() {
 
 		if ( HOURS_UNCONFIRMED != 0 ) {
 
-			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( HOURS_UNCONFIRMED ) . " HOUR) >= date_stamp AND date_stamp IS NOT NULL ";
+			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( MINUTES_UNCONFIRMED ) . " MINUTE) >= date_stamp AND date_stamp IS NOT NULL ";
 
 			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
@@ -324,7 +324,6 @@ function complete_order( $user_id, $order_id ) {
 	$order_row = mysqli_fetch_array( $result );
 
 	if ( $order_row['status'] != 'completed' ) {
-
 		$now = ( gmdate( "Y-m-d H:i:s" ) );
 
 		$sql = "UPDATE orders set status='completed', date_published=NULL, date_stamp='$now' WHERE order_id='" . intval( $order_id ) . "'";

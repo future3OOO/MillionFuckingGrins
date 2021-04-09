@@ -31,12 +31,12 @@
  */
 
 @set_time_limit( 260 );
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 if ( isset( $_REQUEST['order_id'] ) ) {
 	$_SESSION['MDS_order_id'] = $_REQUEST['order_id'];
 }
 require_once __DIR__ . "/../include/init.php";
-require_once BASE_PATH . "/include/login_functions.php";
 
 process_login();
 

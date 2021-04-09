@@ -373,12 +373,12 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 								}
 
 								$elapsed_time = strtotime( gmdate( 'r' ) ) - $time_start;
-								$elapsed_days = floor( $elapsed_time / 60 / 60 / 24 );
+								$elapsed_days = floor( $elapsed_time / 60 / 60 );
 
-								$exp_time = ( $prams['days_expire'] * 24 * 60 * 60 );
+								$exp_time = ( $prams['days_expire'] * 60 * 60 );
 
 								$exp_time_to_go = $exp_time - $elapsed_time;
-								$exp_days_to_go = floor( $exp_time_to_go / 60 / 60 / 24 );
+								$exp_days_to_go = floor( $exp_time_to_go / 60 / 60 );
 
 								$to_go = elapsedtime( $exp_time_to_go );
 
