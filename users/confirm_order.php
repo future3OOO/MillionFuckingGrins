@@ -76,8 +76,6 @@ $BID = $order_row['banner_id'];
 $banner_data = load_banner_constants( $BID );
 
 /* Login -> Select pixels -> Write ad -> Confirm order */
-require_once BASE_PATH . "/include/login_functions.php";
-
 if ( $_SESSION['MDS_ID'] == '' ) {
 	if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
         mds_wp_login_check();
