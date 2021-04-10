@@ -179,6 +179,25 @@ function add_tippy() {
 		placement: 'auto',
 		touch: true,
 		appendTo: 'parent',
+		popperOptions: {
+			strategy: 'fixed',
+			modifiers: [
+				{
+					name: 'flip',
+					options: {
+						fallbackPlacements: ['bottom', 'right'],
+					},
+				},
+				{
+					name: 'preventOverflow',
+					options: {
+						altAxis: true,
+						tether: false,
+						padding: 40,
+					},
+				},
+			],
+		},
 		onCreate(instance) {
 			instance._isFetching = false;
 			instance._content = null;
