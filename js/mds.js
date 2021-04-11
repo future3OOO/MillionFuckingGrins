@@ -106,7 +106,7 @@ function mds_list(container, bid, width, height) {
 	};
 
 	$(list).load(window.mds_data.ajax, data, function () {
-		mds_init('#' + container, false, false);
+		mds_init('#' + container, false, true);
 	});
 }
 
@@ -165,7 +165,7 @@ function add_tippy() {
 	const defaultContent = $('.tooltip-source').html();
 	const isIOS = /iPhone|iPad|iPod/.test(navigator.platform);
 
-	window.tippy_instance = tippy('.mds-container area', {
+	window.tippy_instance = tippy('.mds-container area,.list-link', {
 		theme: 'light',
 		content: defaultContent,
 		duration: 50,
@@ -258,6 +258,11 @@ function add_tippy() {
 		if (!window.is_touch && window.tippy_instance != null && typeof window.tippy_instance.hide === 'function') {
 			window.tippy_instance.hide();
 		}
+	});
+
+	$(document).on('click', '.list-link', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 	});
 }
 
