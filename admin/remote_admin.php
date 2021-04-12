@@ -40,7 +40,7 @@ if ( isset($_REQUEST['key']) && $_REQUEST['key'] != '' ) {
 	if ( $mykey == $_REQUEST['key'] ) {
 		require_once __DIR__ . "/../include/login_functions.php";
 		// automatically log in
-		mds_session_start( [
+		mds_start_session( [
 			'name' => 'MDSADMIN_PHPSESSID',
 		] );
 		$_SESSION['ADMIN'] = '1';
