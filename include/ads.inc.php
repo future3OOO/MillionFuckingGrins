@@ -228,7 +228,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
             <div class="flex-row">
                 <input type="hidden" name="save" id="save101" value="">
 				<?php if ( $mode == 'edit' || $mode == 'user' ) { ?>
-                    <input class="form_submit_button big_button" type="submit" name="savebutton" value="<?php echo $label['ad_save_button']; ?>" onClick="save101.value='1';">
+                    <input class="mds_save_ad_button form_submit_button big_button" type="submit" name="savebutton" value="<?php echo $label['ad_save_button']; ?>" onClick="save101.value='1';">
 				<?php } ?>
             </div>
         </div>

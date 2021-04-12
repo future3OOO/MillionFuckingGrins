@@ -33,14 +33,18 @@
 function publish_image( $BID ) {
 
 	if ( ! is_numeric( $BID ) ) {
-		return false;
+		return;
 	}
 
-	$imagine = new Imagine\Gd\Imagine();
+	if ( class_exists( 'Imagick' ) ) {
+		$imagine = new Imagine\Imagick\Imagine();
+	} else if ( function_exists( 'gd_info' ) ) {
+		$imagine = new Imagine\Gd\Imagine();
+	}
 
 	$BANNER_DIR = get_banner_dir();
 
-	$file_path = SERVER_PATH_TO_ADMIN; // eg e:/apache/htdocs/ojo/admin/
+	$file_path = SERVER_PATH_TO_ADMIN;
 
 	$p = preg_split( '%[/\\\]%', $file_path );
 	array_pop( $p );
@@ -99,6 +103,7 @@ function publish_image( $BID ) {
 	// update the time-stamp on the banner
 	$sql = "UPDATE banners SET time_stamp='" . time() . "' WHERE banner_id='" . intval( $BID ) . "' ";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+
 }
 
 function process_image( $BID ) {

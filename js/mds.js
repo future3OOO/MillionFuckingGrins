@@ -360,3 +360,22 @@ function mds_init(el, scalemap, tippy, type) {
 
 	remove_ajax_loader();
 }
+
+$(function () {
+	$('.mds_upload_image').on('click', function(e){
+		$(this).prop('disabled', true);
+		$(this).attr('value', 'Uploading...');
+		$(this).parent('form').submit();
+	});
+
+	$('.mds_pointer_graphic').on('load', function(e) {
+		$('.mds_upload_image').prop('disabled', false);
+		$(this).attr('value', 'Upload');
+	});
+
+	$('.mds_save_ad_button').on('click', function(){
+		$(this).prop('disabled', true);
+		$(this).attr('value', 'Saving...');
+		$(this).closest('form').submit();
+	});
+});

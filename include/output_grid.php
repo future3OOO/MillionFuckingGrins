@@ -66,7 +66,11 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 
 	$progress = 'Please wait.. Processing the Grid image with GD';
 
-	$imagine = new Imagine\Gd\Imagine();
+	if ( class_exists( 'Imagick' ) ) {
+		$imagine = new Imagine\Imagick\Imagine();
+	} else if ( function_exists( 'gd_info' ) ) {
+		$imagine = new Imagine\Gd\Imagine();
+	}
 
 	$banner_data = load_banner_constants( $BID );
 
@@ -429,27 +433,34 @@ function output_grid( $show, $file, $BID, $types, $user_id = 0 ) {
 
 	// output price zone text
 	if ( isset( $show_price_zones_text ) ) {
+		$imagine = new Imagine\Gd\Imagine();
+
+		$zmap = $imagine->load($map);
+
+		unset($map);
 
 		$row_c       = 0;
 		$col_c       = 0;
-		$textcolor   = imagecolorallocate( $map->getGdResource(), 0, 0, 0 );
-		$textcolor_w = imagecolorallocate( $map->getGdResource(), 255, 255, 255 );
+		$textcolor   = imagecolorallocate( $zmap->getGdResource(), 0, 0, 0 );
+		$textcolor_w = imagecolorallocate( $zmap->getGdResource(), 255, 255, 255 );
 
 		for ( $y = 0; $y < ( $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'] ); $y += $banner_data['BLK_HEIGHT'] ) {
 			for ( $x = 0; $x < ( $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'] ); $x += $banner_data['BLK_WIDTH'] ) {
 
 				if ( $y == 0 ) {
 					$spaces = str_repeat( ' ', 3 - strlen( $col_c ) );
-					imagestringup( $map->getGdResource(), 1, $x, 15, $spaces . "$col_c", $textcolor_w );
-					imagestringup( $map->getGdResource(), 1, $x + 1, 15 + 1, $spaces . "$col_c", $textcolor );
+					imagestringup( $zmap->getGdResource(), 1, $x, 15, $spaces . "$col_c", $textcolor_w );
+					imagestringup( $zmap->getGdResource(), 1, $x + 1, 15 + 1, $spaces . "$col_c", $textcolor );
 					$col_c ++;
 				}
 			}
 
-			imagestring( $map->getGdResource(), 1, 1, $y, "$row_c", $textcolor_w );
-			imagestring( $map->getGdResource(), 1, 2, $y + 1, "$row_c", $textcolor );
+			imagestring( $zmap->getGdResource(), 1, 1, $y, "$row_c", $textcolor_w );
+			imagestring( $zmap->getGdResource(), 1, 2, $y + 1, "$row_c", $textcolor );
 			$row_c ++;
 		}
+
+		$map = $zmap;
 	}
 
 	// set output options
