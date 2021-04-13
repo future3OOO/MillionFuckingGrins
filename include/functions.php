@@ -152,7 +152,7 @@ function expire_orders() {
 
 		// unconfirmed Orders
 
-		if ( HOURS_UNCONFIRMED != 0 ) {
+		if ( MINUTES_UNCONFIRMED != 0 ) {
 
 			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( MINUTES_UNCONFIRMED ) . " MINUTE) >= date_stamp AND date_stamp IS NOT NULL ";
 
