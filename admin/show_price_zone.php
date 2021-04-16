@@ -38,6 +38,7 @@ require( 'admin_common.php' );
 
 require_once( "../include/output_grid.php" );
 
+global $f2;
 $BID = $f2->bid();
 
 output_grid( true, "", $BID, array(

@@ -42,7 +42,7 @@ $BID = $f2->bid();
 <hr>
 <?php
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 ?>
 <form name="bidselect" method="post" action="price.php">
     <label>
@@ -127,7 +127,7 @@ if ( $BID != '' ) {
 						}
 
 						$sql = "SELECT * FROM prices where row_from <= " . intval( $_REQUEST['row_to'] ) . " AND row_to >=" . intval( $_REQUEST['row_from'] ) . " AND col_from <= " . intval( $_REQUEST['col_to'] ) . " AND col_to >=" . intval( $_REQUEST['col_from'] ) . " $and_price AND banner_id=" . intval( $BID );
-						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 						if ( mysqli_num_rows( $result ) > 0 ) {
 							$error .= "<b> - Cannot create: Price zones cannot overlap other price zones!</b><br>";
@@ -154,12 +154,12 @@ if ( $BID != '' ) {
 		return $error;
 	}
 
-	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete' ) {
 		$sql = "DELETE FROM prices WHERE price_id='" . intval( $_REQUEST['price_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	}
 
-	if ( isset($_REQUEST['submit']) && $_REQUEST['submit'] != '' ) {
+	if ( isset( $_REQUEST['submit'] ) && $_REQUEST['submit'] != '' ) {
 		$error = validate_input();
 
 		if ( $error != '' ) {
@@ -173,7 +173,7 @@ if ( $BID != '' ) {
 			$_REQUEST['block_id_to']   = ( ( ( $_REQUEST['row_to'] ) * $banner_data['G_WIDTH'] ) - 1 );
 
 			$sql = "REPLACE INTO prices(price_id, banner_id, row_from, row_to, col_from, col_to, block_id_from, block_id_to, price, currency, color) VALUES ('" . intval( $_REQUEST['price_id'] ) . "', '" . intval( $BID ) . "', '" . intval( $_REQUEST['row_from'] ) . "', '" . intval( $_REQUEST['row_to'] ) . "', '" . intval( $_REQUEST['col_from'] ) . "', '" . intval( $_REQUEST['col_to'] ) . "', '" . intval( $_REQUEST['block_id_from'] ) . "', '" . intval( $_REQUEST['block_id_to'] ) . "', '" . floatval( $_REQUEST['price'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['currency'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['color'] ) . "') ";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			$_REQUEST['new']    = '';
 			$_REQUEST['action'] = '';
@@ -181,7 +181,7 @@ if ( $BID != '' ) {
 	}
 
 	$sql = "select * FROM prices  where banner_id=" . intval( $BID );
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
 		?>
 
@@ -233,18 +233,18 @@ if ( $BID != '' ) {
 		echo "There are no custom price zones for this grid.<br>";
 	}
 
-	if ( isset($_REQUEST['new']) && $_REQUEST['new'] == '1' ) {
+	if ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] == '1' ) {
 		echo "<h4>Add Price Zone:</h4>";
 	}
 
-	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) {
 		echo "<h4>Edit Price Zone:</h4>";
 
 		$sql = "SELECT * FROM prices WHERE `price_id`='" . intval( $_REQUEST['price_id'] ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row = mysqli_fetch_array( $result );
 
-		if ( isset( $error ) && $error == '' ) {
+		if ( ! isset( $error ) || $error == '' ) {
 			$_REQUEST['color']    = $row['color'];
 			$_REQUEST['price_id'] = $row['price_id'];
 			$_REQUEST['row_from'] = $row['row_from'];
@@ -256,7 +256,7 @@ if ( $BID != '' ) {
 		}
 	}
 
-	if ( ( isset($_REQUEST['new']) && $_REQUEST['new'] != '' ) || ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit' ) ) {
+	if ( ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] != '' ) || ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) ) {
 		if ( $_REQUEST['col_from'] == '' ) {
 			$_REQUEST['col_from'] = 1;
 		}
