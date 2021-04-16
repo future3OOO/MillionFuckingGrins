@@ -531,13 +531,13 @@ function do_logout() {
 	// check for $_SESSION before trying to use it
 	if ( isset( $_SESSION ) ) {
 		if ( isset( $_SESSION['MDS_Username'] ) ) {
-	$now = ( gmdate( "Y-m-d H:i:s" ) );
-	$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
-	mysqli_query( $GLOBALS['connection'], $sql );
+			$now = ( gmdate( "Y-m-d H:i:s" ) );
+			$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
+			mysqli_query( $GLOBALS['connection'], $sql );
 		}
 
 		if ( isset( $_SESSION['MDS_ID'] ) ) {
-	unset( $_SESSION['MDS_ID'] );
+			unset( $_SESSION['MDS_ID'] );
 		}
 	}
 
@@ -560,16 +560,19 @@ function do_logout() {
  * @link https://stackoverflow.com/a/8311400/311458
  */
 function mds_start_session( $options = [] ) {
-	ini_set( 'session.gc_maxlifetime', 3600 );
-	session_set_cookie_params( 3600 );
-	session_start( $options );
+	if ( ! isset( $_SESSION ) ) {
 
-	$now = time();
-	if ( isset( $_SESSION['discard_after'] ) && $now > $_SESSION['discard_after'] ) {
-		session_unset();
-		session_destroy();
+		ini_set( 'session.gc_maxlifetime', 3600 );
+		session_set_cookie_params( 3600 );
 		session_start( $options );
-	}
 
-	$_SESSION['discard_after'] = $now + 3600;
+		$now = time();
+		if ( isset( $_SESSION['discard_after'] ) && $now > $_SESSION['discard_after'] ) {
+			session_unset();
+			session_destroy();
+			session_start( $options );
+		}
+
+		$_SESSION['discard_after'] = $now + 3600;
+	}
 }
