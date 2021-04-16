@@ -118,7 +118,7 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 		$txn_id         = $_POST['txn_id'];
 		$parent_txn_id  = $_POST['parent_txn_id'];
 		$txn_type       = $_POST['txn_type'];
-		$receiver_email = $_POST['receiver_email'];
+		$receiver_email = strtolower( urldecode( $_POST['receiver_email'] ) );
 		$payer_email    = $_POST['payer_email'];
 
 		$item_number = $_POST['item_number'];
@@ -127,18 +127,15 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or pp_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order_row = mysqli_fetch_array( $result );
 
-		$business    = $_POST['business'];
-		$employer_id = $_POST['custom']; // employer_id
-
 		// check that receiver_email is your Primary PayPal email
-		if ( strcmp( strtolower( PAYPAL_EMAIL ), strtolower( $business ) ) != 0 ) {
-			pp_mail_error( "Possible fraud. Error with receiver_email. " . strtolower( PAYPAL_EMAIL ) . " != " . strtolower( $business ) . "\n" );
-			pp_log_entry( "Possible fraud. Error with receiver_email. " . strtolower( PAYPAL_EMAIL ) . " != " . strtolower( $business ) );
+		if ( strcmp( strtolower( PAYPAL_EMAIL ), $receiver_email ) != 0 ) {
+			pp_mail_error( "Possible fraud. Error with receiver_email. " . strtolower( PAYPAL_EMAIL ) . " != " . $receiver_email . "\n" );
+			pp_log_entry( "Possible fraud. Error with receiver_email. " . strtolower( PAYPAL_EMAIL ) . " != " . $receiver_email );
 			$verified = false;
 		}
 
 		// check so that transaction id cannot be reused
-		$sql = "SELECT * FROM transactions WHERE txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' ";
+		$sql = "SELECT * FROM transactions WHERE txn_id='" . mysqli_real_escape_string( $GLOBALS['connection'], $txn_id ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or pp_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		if ( mysqli_num_rows( $result ) > 0 ) {
 			pp_log_entry( "transaction $txn_id already processed" );
@@ -186,7 +183,6 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 						break;
 					case "Failed":
 						// only happens when payment is from customers' bank account
-						//insert_transaction ($employer_id, $payment_status, $pending_reason, $reason_code, $payment_date, $txn_id, $parent_txn_id, $txn_type, $payment_type, $mc_gross, $mc_currency, $item_name, $item_number, $item_number);
 						break;
 					case "Pending":
 						$sql = "select user_id FROM orders where order_id='" . intval( $item_number ) . "'";
