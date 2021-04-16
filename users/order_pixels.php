@@ -179,21 +179,11 @@ require_once BASE_PATH . "/html/header.php";
 
 			window.reserving = true;
 
-			var xmlhttp;
-
-			if (typeof XMLHttpRequest !== "undefined") {
-				xmlhttp = new XMLHttpRequest();
-			}
-
-			// Note: do not use &amp; for & here
-
-			xmlhttp.open("GET", "make_selection.php?user_id=<?php echo $_SESSION['MDS_ID'];?>&map_x=" + window.$block_pointer.map_x + "&map_y=" + window.$block_pointer.map_y + "&block_id=" + get_clicked_block() + "&BID=<?php echo $BID . "&t=" . time(); ?>", true);
-
 			window.$block_pointer.css('cursor', 'wait');
 			window.$pixelimg.css('cursor', 'wait');
 			document.body.style.cursor = 'wait';
-			var submit1 = document.getElementById('submit_button1');
-			var submit2 = document.getElementById('submit_button2');
+			let submit1 = document.getElementById('submit_button1');
+			let submit2 = document.getElementById('submit_button2');
 			submit1.disabled = true;
 			submit2.disabled = true;
 			submit1.value = "<?php echo $f2->nl2html( $label['reserving_pixels'] ); ?>";
@@ -201,13 +191,43 @@ require_once BASE_PATH . "/html/header.php";
 			submit1.style.cursor = 'wait';
 			submit2.style.cursor = 'wait';
 
-			xmlhttp.onreadystatechange = function () {
-				if (xmlhttp.readyState === 4) {
-					document.form1.submit();
-				}
+			let ajax_data = {
+				user_id: <?php echo $_SESSION['MDS_ID'];?>,
+				map_x: window.$block_pointer.map_x,
+				map_y: window.$block_pointer.map_y,
+				block_id: get_clicked_block(),
+				BID: <?php echo $BID; ?>,
+                t: <?php echo time(); ?>
 			};
 
-			xmlhttp.send(null);
+			$.ajax({
+				method: 'POST',
+				url: 'make_selection.php',
+				data: ajax_data,
+				dataType: 'html',
+				crossDomain: true,
+			}).done(function (data) {
+				if (data.indexOf('E432') > -1) {
+					alert(data);
+					window.$block_pointer.css('cursor', 'pointer');
+					window.$pixelimg.css('cursor', 'pointer');
+					document.body.style.cursor = 'pointer';
+					submit1.disabled = false;
+					submit2.disabled = false;
+					submit1.value = "<?php echo $f2->rmnlraw( $label['advertiser_write_ad_button'] ); ?>";
+					submit2.value = "<?php echo $f2->rmnlraw( $label['advertiser_write_ad_button'] ); ?>";
+					submit1.style.cursor = 'pointer';
+					submit2.style.cursor = 'pointer';
+					window.reserving = false;
+					is_moving = true;
+				} else {
+					document.form1.submit();
+				}
+
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+			}).always(function () {
+			});
+
 		}
 
 		// Initialize
@@ -385,17 +405,12 @@ require_once BASE_PATH . "/html/header.php";
 				return;
 			}
 
-			if (is_moving) {
-				var cb = get_clicked_block();
-				trip_count = 1;
-				check_selection(window.$block_pointer.map_x, window.$block_pointer.map_y);
-				low_x = window.$block_pointer.map_x;
-				low_y = window.$block_pointer.map_y;
+			trip_count = 1;
+			check_selection(window.$block_pointer.map_x, window.$block_pointer.map_y);
+			low_x = window.$block_pointer.map_x;
+			low_y = window.$block_pointer.map_y;
 
-				is_moving = false;
-			} else {
-				is_moving = true;
-			}
+			is_moving = !is_moving;
 		}
 
 		var low_x = 0;
@@ -733,6 +748,9 @@ if ( isset( $tmp_image_file ) && ! empty( $tmp_image_file ) ) {
     <script type="text/javascript">
 		document.form1.selected_pixels.value = block_str;
 		$(function () {
+			$(document).on('click', function(e){
+				console.log(e);
+            });
 			window.pointer_width = <?php echo $reqsize[0]; ?>;
 			window.pointer_height =  <?php echo $reqsize[1]; ?>;
 

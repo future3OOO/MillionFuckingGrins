@@ -39,7 +39,7 @@ header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
 header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 global $f2, $banner_data;
-$BID = $f2->bid();
+$BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 
 // normalize...
@@ -83,7 +83,7 @@ function place_temp_order( $in_str ) {
 		$ad_id      = intval( $row['ad_id'] );
 		$block_info = mysqli_real_escape_string( $GLOBALS['connection'], $row['block_info'] );
 	} else {
-		$ad_id = 0;
+		$ad_id      = 0;
 		$block_info = '';
 	}
 
@@ -108,6 +108,7 @@ function reserve_temp_order_pixels( $block_info, $in_str ) {
 	// cannot reserve pixels if there is no session
 	if ( session_id() == '' ) {
 		$f2->write_log( 'Cannot reserve pixels if there is no session!' );
+
 		return false;
 	}
 
@@ -198,6 +199,10 @@ function check_selection_main() {
 	}
 
 	$in_str = implode( ',', $cb_array );
+
+	if ( ! check_pixels( $in_str ) ) {
+		return;
+	}
 
 	// create a temporary order and place the blocks on a temp order
 	place_temp_order( $in_str );

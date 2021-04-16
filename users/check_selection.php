@@ -50,55 +50,6 @@ $_REQUEST['map_x']    = floor( $_REQUEST['map_x'] / $banner_data['BLK_WIDTH'] ) 
 $_REQUEST['map_y']    = floor( $_REQUEST['map_y'] / $banner_data['BLK_HEIGHT'] ) * $banner_data['BLK_HEIGHT'];
 $_REQUEST['block_id'] = floor( $_REQUEST['block_id'] );
 
-/**
- * Check available pixels
- *
- * @param $in_str
- *
- * @return bool
- */
-function check_pixels( $in_str ) {
-
-	global $f2, $label;
-
-	// cannot reserve pixels if there is no session
-	if ( session_id() == '' ) {
-		return false;
-	}
-
-	$BID = $f2->bid();
-
-	// check if it is free
-	$available = true;
-
-	$sql = "SELECT block_id FROM blocks WHERE banner_id='" . intval( $BID ) . "' AND block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ")";
-
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
-	if ( mysqli_num_rows( $result ) > 0 ) {
-		echo js_out_prep( $label['check_sel_notavailable'] . " (E432)" );
-		$available = false;
-	}
-
-	if ( $available ) {
-
-		// from temp_orders table
-		$sql = "SELECT blocks FROM temp_orders WHERE banner_id='" . intval( $BID ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-
-		$selected = explode( ",", $in_str );
-		while ( $row = mysqli_fetch_array( $result ) ) {
-			$entries = explode( ",", $row['blocks'] );
-			if ( ! empty( array_intersect( $entries, $selected ) ) ) {
-				echo js_out_prep( $label['check_sel_notavailable'] . " (E432)" );
-				$available = false;
-				break;
-			}
-		}
-	}
-
-	return $available;
-}
-
 // MAIN
 // return true, or false if the image can fit
 
