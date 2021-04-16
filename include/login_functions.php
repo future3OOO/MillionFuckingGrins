@@ -560,7 +560,7 @@ function do_logout() {
  * @link https://stackoverflow.com/a/8311400/311458
  */
 function mds_start_session( $options = [] ) {
-	if ( ! isset( $_SESSION ) ) {
+	if ( session_status() == PHP_SESSION_NONE ) {
 
 		ini_set( 'session.gc_maxlifetime', 3600 );
 		session_set_cookie_params( 3600 );
