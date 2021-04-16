@@ -2168,12 +2168,11 @@ then check how many orders the user had.
 function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 	// check rank
 
-	$sql = "select Rank from users where ID='" . intval( $user_id ) . "'";
+	$sql = "SELECT `Rank` FROM `users` WHERE `ID`=" . intval( $user_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$u_row = mysqli_fetch_array( $result );
 
 	if ( $u_row['Rank'] == '2' ) {
-
 		return true;
 	}
 
