@@ -140,6 +140,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 #########################################################################
 
 error_reporting( " . $values['ERROR_REPORTING'] . " );
+@ini_set( 'display_errors', 0 );
 define( 'DEBUG', " . ( $values['DEBUG'] ? 'true' : 'false' ) . " );
 define( 'MDS_LOG', " . ( $values['MDS_LOG'] ? 'true' : 'false' ) . " );
 define( 'MDS_LOG_FILE', '" . $values['MDS_LOG_FILE'] . "' );

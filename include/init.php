@@ -46,7 +46,7 @@ if ( ! defined( 'MINUTES_UNCONFIRMED' ) ) {
 	define( 'MINUTES_UNCONFIRMED', $minutes );
 }
 
-require_once( BASE_PATH . '/include/database.php' );
+require_once BASE_PATH . '/include/database.php';
 require_once BASE_PATH . '/vendor/autoload.php';
 
 global $purifier;

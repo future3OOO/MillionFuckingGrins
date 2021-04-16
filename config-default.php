@@ -36,6 +36,7 @@
 #########################################################################
 
 error_reporting( 0 );
+@ini_set( 'display_errors', 0 );
 define( 'DEBUG', false );
 define( 'MDS_LOG', false );
 define( 'MDS_LOG_FILE', __DIR__ . '/.mds.log' );
