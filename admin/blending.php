@@ -41,7 +41,7 @@ $BID = $f2->bid();
 
 function nice_format( $val ) {
 	$val  = trim( $val );
-	$last = strtolower( $val{strlen( $val ) - 1} );
+	$last = strtolower( $val[ strlen( $val ) - 1 ] );
 	switch ( $last ) {
 		// The 'G' modifier is available since PHP 5.1.0
 		case 'g':
