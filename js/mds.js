@@ -260,7 +260,7 @@ function add_tippy() {
 		}
 	});
 
-	$(document).on('click', '.list-link', function(e) {
+	$(document).on('click', '.list-link', function (e) {
 		e.preventDefault();
 		e.stopPropagation();
 	});
@@ -269,9 +269,12 @@ function add_tippy() {
 function mds_init(el, scalemap, tippy, type) {
 	let $el = $(el);
 
+	let origWidth;
+	let origHeight;
+
 	if ($el.length > 0) {
-		let origWidth = $el.width();
-		let origHeight = $el.height();
+		origWidth = $el.width();
+		origHeight = $el.height();
 
 		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
 	}
@@ -285,17 +288,27 @@ function mds_init(el, scalemap, tippy, type) {
 			align: "top",
 			rescaleOnResize: true,
 			didScale: function (firstTime, options) {
-				if (firstTime) {
-					$elParent.height($el.height());
-				}
-				$elParent.parent().height($el.height() + parseInt($el.css('border-bottom-width'), 10));
-				$elParent.parent().width($el.width() + parseInt($el.css('border-right-width'), 10));
 
-				// https://github.com/clarketm/image-map
-				$el.imageMap();
+				if ($elParent.parent().height() < origHeight) {
+					$elParent.width(origWidth);
+					$elParent.height(origHeight);
+					$elParent.parent().width(origWidth);
+					$elParent.parent().height(origHeight);
+					rescale($el);
+				}
+
+				$elParent.parent().width($el.width());
+				$elParent.parent().height($el.height());
 			}
 		});
+
+		// https://github.com/clarketm/image-map
+		$el.imageMap();
 	}
+
+	$el.on('load', function() {
+		$el.parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+	});
 
 	$('area').on('click', function (e) {
 		e.preventDefault();
@@ -362,18 +375,18 @@ function mds_init(el, scalemap, tippy, type) {
 }
 
 $(function () {
-	$('.mds_upload_image').on('click', function(e){
+	$('.mds_upload_image').on('click', function (e) {
 		$(this).prop('disabled', true);
 		$(this).attr('value', 'Uploading...');
 		$(this).parent('form').submit();
 	});
 
-	$('.mds_pointer_graphic').on('load', function(e) {
+	$('.mds_pointer_graphic').on('load', function (e) {
 		$('.mds_upload_image').prop('disabled', false);
 		$(this).attr('value', 'Upload');
 	});
 
-	$('.mds_save_ad_button').on('click', function(){
+	$('.mds_save_ad_button').on('click', function () {
 		$(this).prop('disabled', true);
 		$(this).attr('value', 'Saving...');
 		$(this).closest('form').submit();
