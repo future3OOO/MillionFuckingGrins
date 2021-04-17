@@ -581,6 +581,8 @@ The value of the field (on the right from the field label)
 
 .ajax-loader {
 	width:100%;
-	min-height:16px;
+	min-height:32px;
+	position:absolute;
 	background:url(../images/ajax-loader.gif) no-repeat center center;
+	z-index:9999;
 }

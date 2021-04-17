@@ -56,7 +56,7 @@ function mds_grid(container, bid, width, height) {
 		return;
 	}
 
-	add_ajax_loader(container);
+	add_ajax_loader('.' + container);
 
 	let grid = $("<div class='grid-inner' id='" + container + "'></div>");
 	grid.css('width', width).css('height', height);
@@ -68,7 +68,7 @@ function mds_grid(container, bid, width, height) {
 	};
 
 	$(grid).load(window.mds_data.ajax, data, function () {
-		mds_init('#theimage', true, window.mds_data.ENABLE_MOUSEOVER !== 'NO');
+		mds_init('#theimage', true, window.mds_data.ENABLE_MOUSEOVER !== 'NO', false, true);
 	});
 }
 
@@ -87,7 +87,7 @@ function mds_stats(container, bid, width, height) {
 	};
 
 	$(stats).load(window.mds_data.ajax, data, function () {
-		mds_init('#' + container, false, false);
+		mds_init('#' + container, false, false, false, false);
 	});
 }
 
@@ -106,7 +106,7 @@ function mds_list(container, bid, width, height) {
 	};
 
 	$(list).load(window.mds_data.ajax, data, function () {
-		mds_init('#' + container, false, true);
+		mds_init('#' + container, false, true, false, false);
 	});
 }
 
@@ -266,7 +266,7 @@ function add_tippy() {
 	});
 }
 
-function mds_init(el, scalemap, tippy, type) {
+function mds_init(el, scalemap, tippy, type, isgrid) {
 	let $el = $(el);
 
 	let origWidth;
@@ -279,7 +279,7 @@ function mds_init(el, scalemap, tippy, type) {
 		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
 	}
 
-	if (scalemap) {
+	if (isgrid && scalemap) {
 		let $elParent = $el;
 
 		// https://github.com/GestiXi/image-scale
@@ -289,12 +289,24 @@ function mds_init(el, scalemap, tippy, type) {
 			rescaleOnResize: true,
 			didScale: function (firstTime, options) {
 
+				if (window.mds_data.wp !== "") {
+					if ($elParent.parent().parent().parent().parent().height() < origHeight) {
+						$elParent.parent().parent().parent().parent().width(origWidth);
+						$elParent.parent().parent().parent().parent().height(origHeight);
+					}
+				}
+
 				if ($elParent.parent().height() < origHeight) {
 					$elParent.width(origWidth);
 					$elParent.height(origHeight);
 					$elParent.parent().width(origWidth);
 					$elParent.parent().height(origHeight);
 					rescale($el);
+				}
+
+				if (window.mds_data.wp !== "") {
+					$elParent.parent().parent().parent().parent().width($el.width());
+					$elParent.parent().parent().parent().parent().height($el.height());
 				}
 
 				$elParent.parent().width($el.width());
@@ -304,10 +316,26 @@ function mds_init(el, scalemap, tippy, type) {
 
 		// https://github.com/clarketm/image-map
 		$el.imageMap();
+
+		$(window).on('resize', function () {
+			rescale($el);
+		});
 	}
 
-	$el.on('load', function() {
-		$el.parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+	$el.on('load', function () {
+		if (isgrid) {
+			if (window.mds_data.wp !== "") {
+				$el.parent().parent().parent().parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+			} else {
+				$el.parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+			}
+
+			if (scalemap) {
+				rescale($el);
+			}
+		}
+
+		remove_ajax_loader();
 	});
 
 	$('area').on('click', function (e) {
@@ -370,8 +398,6 @@ function mds_init(el, scalemap, tippy, type) {
 	}
 
 	initialized = true;
-
-	remove_ajax_loader();
 }
 
 $(function () {

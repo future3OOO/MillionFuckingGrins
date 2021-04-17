@@ -97,7 +97,7 @@ if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 				let mds_init_call = function () {
 					var load_wait = setInterval(function () {
 						if (typeof mds_init == 'function') {
-							mds_init(null, null, null, 'iframe');
+							mds_init(null, null, null, 'iframe', false);
 							clearInterval(load_wait);
 						}
 					}, 100);
