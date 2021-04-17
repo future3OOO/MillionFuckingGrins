@@ -530,6 +530,8 @@ https://github.com/gestixi/image-scale
 BrowserStack - App & Browser Testing Made Easy
 https://www.browserstack.com/
 
+AJAX loader image
+https://loading.io/
 
 And of course anything else I might be missing.
 
