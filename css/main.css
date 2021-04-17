@@ -221,6 +221,7 @@ Ads list page
 .mds-container .table-row {
 	display: table;
 	width: 100%;
+	table-layout: fixed;
 }
 
 .mds-container .list-cell,
