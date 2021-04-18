@@ -318,7 +318,7 @@ ob_end_clean();
 
 if ( $count > 0 ) {
 	?>
-    <div class="fancy_heading" width="85%"><?php echo $label['adv_pub_yourads']; ?></div>
+    <div class="fancy_heading"><?php echo $label['adv_pub_yourads']; ?></div>
 	<?php
 	echo $contents;
 	?>
@@ -326,7 +326,7 @@ if ( $count > 0 ) {
 }
 
 ?>
-    <div class="fancy_heading" width="85%"><?php echo $label['advertiser_publish_head']; ?></div>
+    <div class="fancy_heading"><?php echo $label['advertiser_publish_head']; ?></div>
 <?php echo $label['advertiser_publish_instructions2']; ?>
 
 <?php
@@ -338,7 +338,7 @@ $result4 = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $
 
 if ( mysqli_num_rows( $result4 ) > 0 ) {
 	?>
-    <div width='100%' style="border-color:#FF9797; border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_pixwait']; ?></div>
+    <div style="border-color:#FF9797; border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_pixwait']; ?></div>
 	<?php
 } else {
 
@@ -348,7 +348,7 @@ if ( mysqli_num_rows( $result4 ) > 0 ) {
 
 	if ( mysqli_num_rows( $result4 ) > 0 ) {
 		?>
-        <div width='100%' style="border-color:green;border-style:solid;padding:5px;margin:10px;"><?php echo $label['advertiser_publish_published']; ?></div>
+        <div style="border-color:green;border-style:solid;padding:5px;margin:10px;"><?php echo $label['advertiser_publish_published']; ?></div>
 		<?php
 	} else {
 
@@ -358,7 +358,7 @@ if ( mysqli_num_rows( $result4 ) > 0 ) {
 
 		if ( mysqli_num_rows( $result4 ) > 0 ) {
 			?>
-            <div width='100%' style="border-color:yellow;border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_waiting']; ?></div>
+            <div style="border-color:yellow;border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_waiting']; ?></div>
 			<?php
 		}
 	}

@@ -152,15 +152,6 @@ function receiveMessage(event, $el) {
 	}
 }
 
-function rescale($el) {
-	// https://github.com/GestiXi/image-scale
-	$el.imageScale({
-		scale: "best-fit",
-		align: "top",
-		rescaleOnResize: true
-	});
-}
-
 function add_tippy() {
 	const defaultContent = $('.tooltip-source').html();
 	const isIOS = /iPhone|iPad|iPod/.test(navigator.platform);
@@ -266,6 +257,27 @@ function add_tippy() {
 	});
 }
 
+let rescaling = false;
+
+function rescale($el) {
+
+	if (rescaling) {
+		return;
+	}
+
+	rescaling = true;
+
+	// https://github.com/GestiXi/image-scale
+	$el.imageScale({
+		scale: "best-fit",
+		align: "top",
+		rescaleOnResize: true,
+		didScale: function (firstTime, options) {
+			rescaling = false;
+		}
+	});
+}
+
 function mds_init(el, scalemap, tippy, type, isgrid) {
 	let $el = $(el);
 
@@ -288,7 +300,6 @@ function mds_init(el, scalemap, tippy, type, isgrid) {
 			align: "top",
 			rescaleOnResize: true,
 			didScale: function (firstTime, options) {
-
 				if (window.mds_data.wp !== "") {
 					if ($elParent.parent().parent().parent().parent().height() < origHeight) {
 						$elParent.parent().parent().parent().parent().width(origWidth);
@@ -311,8 +322,12 @@ function mds_init(el, scalemap, tippy, type, isgrid) {
 
 				$elParent.parent().width($el.width());
 				$elParent.parent().height($el.height());
+
+				rescaling = false;
 			}
 		});
+
+		rescale($el);
 
 		// https://github.com/clarketm/image-map
 		$el.imageMap();
