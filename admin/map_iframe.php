@@ -338,7 +338,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 		?>
 
         <area
-                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo BASE_HTTP_PATH; ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
+                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
 
                 href="<?php echo( $row['url'] ); ?>"
 

@@ -34,7 +34,7 @@ $renamed = false;
 
 if ( isset( $_REQUEST['action'] ) ) {
 
-	if ( $_REQUEST['action'] == 'install' ) {
+	if ( $_REQUEST['action'] == 'install' && file_exists( __DIR__ . "/../config.php" ) ) {
 		save_db_config();
 		require_once __DIR__ . "/../config.php";
 		install_db();
@@ -61,6 +61,9 @@ if ( isset( $_REQUEST['action'] ) ) {
 }
 
 require_once __DIR__ . "/../include/database.php";
+require_once __DIR__ . "/../include/functions2.php";
+
+global $f2;
 
 if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false ) {
 	?>
@@ -68,7 +71,7 @@ if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false ) {
     <h3>Next Steps</h3>
     <ol>
         <li><a target="_blank" href="install.php?action=delete">Click here</a> to delete this file (/admin/install.php) from the server.</li>
-        <li><a target="_blank" href="<?php echo htmlspecialchars( BASE_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
+        <li><a target="_blank" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
         <li>Install, enable and configure a payment module under Payment Modules.</li>
         <li>Edit your grid settings under Manage Grids.</li>
         <li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
@@ -155,7 +158,7 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
 		if ( UPLOAD_HTTP_PATH == '/upload_files/' ) {
 			$UPLOAD_HTTP_PATH = $BASE_HTTP_PATH . 'upload_files/';
 		} else {
-			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
+			$UPLOAD_HTTP_PATH = $f2->value( UPLOAD_HTTP_PATH );
 		}
 
 		?>
@@ -168,23 +171,23 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
             <tr>
                 <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Site's HTTP URL (address)</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="base_http_path" size="49" value="<?php echo htmlspecialchars( $BASE_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
+                        <input type="text" name="base_http_path" size="49" value="<?php echo $f2->value( $BASE_HTTP_PATH, false ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
             </tr>
 
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Server Path to Admin</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo htmlspecialchars( $SERVER_PATH_TO_ADMIN, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
+                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo $f2->value( $SERVER_PATH_TO_ADMIN, false ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Path to upload directory</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_path" size="55" value="<?php echo htmlspecialchars( $UPLOAD_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
+                        <input type="text" name="upload_path" size="55" value="<?php echo $f2->value( $UPLOAD_PATH, false ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_http_path" size="55" value="<?php echo htmlspecialchars( $UPLOAD_HTTP_PATH, ENT_QUOTES, 'UTF-8' ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
+                        <input type="text" name="upload_http_path" size="55" value="<?php echo $f2->value( $UPLOAD_HTTP_PATH, false ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
             </tr>
             <tr>
                 <td colspan="2" bgcolor="#e6f2ea">
@@ -194,25 +197,25 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Server Hostname</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? htmlspecialchars( MYSQL_HOST, ENT_QUOTES, 'UTF-8' ) : "localhost"; ?>"></font></td>
+                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? $f2->value( MYSQL_HOST ) : "localhost"; ?>"></font></td>
             </tr>
             <tr>
                 <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Username</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? htmlspecialchars( MYSQL_USER, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
+                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? $f2->value( MYSQL_USER ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Name</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? htmlspecialchars( MYSQL_DB, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
+                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? $f2->value( MYSQL_DB ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
                         Database Password</font></td>
                 <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? htmlspecialchars( MYSQL_PASS, ENT_QUOTES, 'UTF-8' ) : ""; ?>"></font></td>
+                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? $f2->value( MYSQL_PASS ) : ""; ?>"></font></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -512,6 +515,77 @@ function install_db() {
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('dbver', 1);;;
+
+        INSERT INTO `config` VALUES ('MDS_LOG', false);;;
+        INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . realpath( __DIR__ . '/.mds.log' ) . "');;;
+        INSERT INTO `config` VALUES ('VERSION_INFO', '2.1');;;
+        INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '/');;;
+        INSERT INTO `config` VALUES ('BASE_PATH', '" . realpath( __DIR__ ) . "');;;
+        INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . realpath( __DIR__ . '/admin/' ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . realpath( __DIR__ . '/upload_files/' ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '/upload_files/');;;
+        INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', 'test@example.com');;;
+        INSERT INTO `config` VALUES ('SITE_LOGO_URL', 'https://milliondollarscript.com/logo.gif');;;
+        INSERT INTO `config` VALUES ('SITE_NAME', 'Million Dollar Script');;;
+        INSERT INTO `config` VALUES ('SITE_SLOGAN', 'This is the Million Dollar Script Example. 1 pixel = 1 cent');;;
+        INSERT INTO `config` VALUES ('MDS_RESIZE', 'YES');;;
+        INSERT INTO `config` VALUES ('ADMIN_PASSWORD', 'ok');;;
+        INSERT INTO `config` VALUES ('DATE_FORMAT', 'Y-M-d');;;
+        INSERT INTO `config` VALUES ('GMT_DIF', '" . date_default_timezone_get() . "');;;
+        INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', 'YMD');;;
+        INSERT INTO `config` VALUES ('OUTPUT_JPEG', 'N');;;
+        INSERT INTO `config` VALUES ('JPEG_QUALITY', '75');;;
+        INSERT INTO `config` VALUES ('INTERLACE_SWITCH', 'YES');;;
+        INSERT INTO `config` VALUES ('BANNER_DIR', 'pixels/');;;
+        INSERT INTO `config` VALUES ('DISPLAY_PIXEL_BACKGROUND', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_CONFIRMED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_CONFIRMED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_COMPLETED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_COMPLETED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_PENDED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_PENDED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_EXPIRED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_EXPIRED', 'YES');;;
+        INSERT INTO `config` VALUES ('EM_NEEDS_ACTIVATION', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ACTIVATION', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_PUBLISH_NOTIFY', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_EXPIRE_WARNING', '');;;
+        INSERT INTO `config` VALUES ('EMAILS_DAYS_KEEP', '30');;;
+        INSERT INTO `config` VALUES ('DAYS_RENEW', '7');;;
+        INSERT INTO `config` VALUES ('DAYS_CONFIRMED', '7');;;
+        INSERT INTO `config` VALUES ('MINUTES_UNCONFIRMED', '60');;;
+        INSERT INTO `config` VALUES ('DAYS_CANCEL', '3');;;
+        INSERT INTO `config` VALUES ('ENABLE_MOUSEOVER', 'POPUP');;;
+        INSERT INTO `config` VALUES ('ENABLE_CLOAKING', 'YES');;;
+        INSERT INTO `config` VALUES ('VALIDATE_LINK', 'NO');;;
+        INSERT INTO `config` VALUES ('ADVANCED_CLICK_COUNT', 'YES');;;
+        INSERT INTO `config` VALUES ('USE_SMTP', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_SERVER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_USER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_PASS', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_AUTH_HOST', '');;;
+        INSERT INTO `config` VALUES ('SMTP_PORT', '465');;;
+        INSERT INTO `config` VALUES ('POP3_PORT', '995');;;
+        INSERT INTO `config` VALUES ('EMAIL_TLS', '1');;;
+        INSERT INTO `config` VALUES ('EMAIL_POP_SERVER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_POP_BEFORE_SMTP', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAIL_DEBUG', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAILS_PER_BATCH', '12');;;
+        INSERT INTO `config` VALUES ('EMAILS_MAX_RETRY', '15');;;
+        INSERT INTO `config` VALUES ('EMAILS_ERROR_WAIT', '20');;;
+        INSERT INTO `config` VALUES ('USE_AJAX', 'SIMPLE');;;
+        INSERT INTO `config` VALUES ('MEMORY_LIMIT', '128M');;;
+        INSERT INTO `config` VALUES ('REDIRECT_SWITCH', 'NO');;;
+        INSERT INTO `config` VALUES ('REDIRECT_URL', 'http://www.example.com');;;
+        INSERT INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', 'NO');;;
+        INSERT INTO `config` VALUES ('BLOCK_SELECTION_MODE', 'YES');;;
+        INSERT INTO `config` VALUES ('ERROR_REPORTING', 0);;;
+        INSERT INTO `config` VALUES ('WP_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_URL', '');;;
+        INSERT INTO `config` VALUES ('WP_PATH', '');;;
+        INSERT INTO `config` VALUES ('WP_USERS_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_ADMIN_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_USE_MAIL', 'NO');;;
 
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',

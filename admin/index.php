@@ -30,11 +30,13 @@
  *
  */
 
-define( 'MAIN_PHP', '1' );
+const MAIN_PHP = '1';
 
 require_once __DIR__ . "/../include/init.php";
 require_once __DIR__ . '/admin_common.php';
 require_once __DIR__ . '/router.php';
+
+global $f2;
 
 if(WP_ENABLED == 'YES') {
     $mds_site_url = WP_URL;
@@ -47,22 +49,22 @@ if(WP_ENABLED == 'YES') {
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Million Dollar Script Administration</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>admin/css/admin.css?ver=<?php echo filemtime( BASE_PATH . "/admin/css/admin.css" ); ?>">
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
-    <link rel="stylesheet" href="<?php echo BASE_HTTP_PATH; ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>admin/js/admin.js?ver=<?php echo filemtime( BASE_PATH . "/admin/js/admin.js" ); ?>"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/css/admin.css?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/admin/css/admin.css" ); ?>">
+    <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
+    <link rel="stylesheet" href="<?php echo $f2->value(BASE_HTTP_PATH); ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
+    <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/js/admin.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/admin/js/admin.js" ); ?>"></script>
 
 </head>
 <body>
 <div id="mds-top"></div>
 <div class="admin-container">
     <div class="admin-menu">
-        <img src="<?php echo BASE_HTTP_PATH; ?>images/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
+        <img src="<?php echo $f2->value(BASE_HTTP_PATH); ?>images/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
         <br>
         <a href="main.php">Main Summary</a><br/>
-        <a href="<?php echo $mds_site_url; ?>" target="_blank">View Site</a><br/>
+        <a href="<?php echo $f2->value($mds_site_url); ?>" target="_blank">View Site</a><br/>
         <hr>
         <b>Pixel Inventory</b><br/>
         + <a href="inventory.php">Manage Grids</a><br/>
@@ -129,7 +131,7 @@ if(WP_ENABLED == 'YES') {
         <br/>
         <small>Copyright <?php echo date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
             <br/>
-            MDS Build Date:<br/><?php echo VERSION_INFO; ?></small>
+            MDS Build Date:<br/><?php echo MDSConfig::get('VERSION_INFO'); ?></small>
     </div>
     <div class="admin-content"></div>
 </div>

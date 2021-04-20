@@ -34,7 +34,9 @@ ini_set( 'max_execution_time', 500 );
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-if ( $_REQUEST['process'] == '1' ) {
+global $f2;
+
+if ( isset($_REQUEST['process']) && $_REQUEST['process'] == '1' ) {
 
 	if ( ( $_REQUEST['banner_list'][0] ) == 'all' ) {
 		// process all
@@ -67,7 +69,7 @@ if ( $_REQUEST['process'] == '1' ) {
 if ( ! is_writable( SERVER_PATH_TO_ADMIN . "temp/" ) ) {
 	echo "<b>Warning:</b> The script does not have permission write to " . SERVER_PATH_TO_ADMIN . "admin/temp/ or the directory does not exist <br>";
 }
-$BANNER_PATH = BASE_PATH . "/" . get_banner_dir();
+$BANNER_PATH = get_banner_dir();
 if ( ! is_writable( $BANNER_PATH ) ) {
 	echo "<b>Warning:</b> The script does not have permission write to " . $BANNER_PATH . " or the directory does not exist<br>";
 }
@@ -85,7 +87,7 @@ if ( $c > 0 ) {
 <p>
     Here you can process the images. This is where the script gets all the user's approved pixels, and merges it into a single image. It automatically publishes the final grid into the <?php echo $BANNER_PATH; ?> directory where the grid images are served from. Click the button below after approving pixels.
 </p>
-<form method='post' action='<?php echo BASE_HTTP_PATH; ?>admin/process.php'>
+<form method='post' action='<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/process.php'>
     <input value='1' name="process" type="hidden"/>
     <select name="banner_list[]" multiple size='3'>
         <option value="all" selected>Process All</option>

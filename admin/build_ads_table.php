@@ -30,7 +30,7 @@
  *
  */
 
-if ( ! defined( 'VERSION_INFO' ) ) {
+if ( ! constant('MAIN_PHP') ) {
 	exit;
 }
 

@@ -63,7 +63,7 @@ if ( $label['available_stats'] == '' ) {
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value(BASE_HTTP_PATH); ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
 </head>
 <body class="status_body">
 <div class="status">

@@ -143,13 +143,7 @@ function show_grid() {
 
 	$banner_data = load_banner_constants( $BID );
 
-	if ( BANNER_DIR == 'BANNER_DIR' ) {
-		$BANNER_DIR = "banners/";
-	} else {
-		$BANNER_DIR = BANNER_DIR;
-	}
-
-	$BANNER_PATH = BASE_PATH . "/" . $BANNER_DIR;
+	$BANNER_PATH = BASE_PATH . '/' . BANNER_DIR;
 
 	$map_file = get_map_file_name( $BID );
 
@@ -168,9 +162,11 @@ function show_grid() {
 		$ext = 'gif';
 	}
 
+	header( 'Expires: Sat, 28 Sept 2005 00:00:00 GMT' );
+
 	if ( file_exists( $BANNER_PATH . "main" . $BID . ".$ext" ) ) {
 		?>
-        <img id="theimage" src="<?php echo BASE_HTTP_PATH . '/' . $BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?time=<?php echo( $banner_data['TIME'] ); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
+        <img id="theimage" src="<?php echo BASE_HTTP_PATH . '/' . BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main" />
 		<?php
 	} else {
 		echo "<b>The file: " . $BANNER_PATH . "main" . $BID . ".$ext" . " doesn't exist.</b><br>";
@@ -179,7 +175,7 @@ function show_grid() {
 
 	?>
     <div class="tooltip-source">
-        <img src="<?php echo BASE_HTTP_PATH; ?>images/periods.gif" alt=""/>
+        <img src="<?php echo $f2->value(BASE_HTTP_PATH); ?>images/periods.gif" alt=""/>
     </div>
 	<?php
 }

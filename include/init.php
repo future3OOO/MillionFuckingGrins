@@ -30,40 +30,35 @@
  *
  */
 
-require_once __DIR__ . "/../config.php";
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../include/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../include/MDSConfig.php';
 
-if ( defined( 'MEMORY_LIMIT' ) ) {
-	ini_set( 'memory_limit', MEMORY_LIMIT );
-} else {
-	ini_set( 'memory_limit', '128M' );
-}
-
-if ( ! defined( 'MINUTES_UNCONFIRMED' ) ) {
-	$minutes = 60;
-	if ( defined( 'HOURS_UNCONFIRMED' ) ) {
-		$minutes = HOURS_UNCONFIRMED * 60;
+$MDSCONFIG = MDSConfig::load();
+foreach ( $MDSCONFIG as $key => $value ) {
+	if ( ! defined( $key ) ) {
+		define( $key, stripslashes($value) );
 	}
-	define( 'MINUTES_UNCONFIRMED', $minutes );
 }
 
-require_once BASE_PATH . '/include/database.php';
-require_once BASE_PATH . '/vendor/autoload.php';
+ini_set( 'memory_limit', $MDSCONFIG['MEMORY_LIMIT'] );
 
 global $purifier;
 $purifier = new HTMLPurifier();
 
-require_once BASE_PATH . '/include/functions2.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/functions2.php';
 global $f2;
 $f2 = new functions2();
 
 global $label;
-require_once BASE_PATH . '/lang/lang.php';
-require_once BASE_PATH . '/include/mail_manager.php';
-require_once BASE_PATH . '/include/currency_functions.php';
-require_once BASE_PATH . '/include/price_functions.php';
-require_once BASE_PATH . '/include/functions.php';
-require_once BASE_PATH . '/include/image_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/lang/lang.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/mail_manager.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/currency_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/price_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/image_functions.php';
 
-if ( WP_ENABLED == 'YES' ) {
-	require_once BASE_PATH . '/include/wp_functions.php';
+if ( $MDSCONFIG['WP_ENABLED'] == 'YES' ) {
+	require_once $MDSCONFIG['BASE_PATH'] . '/include/wp_functions.php';
 }

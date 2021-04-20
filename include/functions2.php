@@ -32,15 +32,13 @@
 
 class functions2 {
 
-	function get_doc() {
-		$doc = '<!DOCTYPE html>
+	function get_doc(): string {
+		return '<!DOCTYPE html>
 <html>
 <head>
 	<title> ' . SITE_NAME . '</title>
 	<meta name="Description" content="' . SITE_SLOGAN . '">
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>';
-
-		return $doc;
 	}
 
 	/**
@@ -65,7 +63,7 @@ class functions2 {
 			} else if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 				// $_REQUEST['aid']
 				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['aid'] ) . "'";
-				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				if ( mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
 					$ret = $row['banner_id'];
@@ -73,7 +71,7 @@ class functions2 {
 			} else if ( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ) {
 				// $_SESSION['MDS_ID']
 				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
-				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				if ( $res !== false && mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
 					$ret = $row['BID'];
@@ -81,7 +79,7 @@ class functions2 {
 			} else {
 				// temp_orders
 				$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
-				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				if ( mysqli_num_rows( $order_result ) > 0 ) {
 					$order_row = mysqli_fetch_array( $order_result );
 
@@ -164,22 +162,33 @@ class functions2 {
 	 *
 	 * @param $value
 	 * @param bool $stripslashes
+	 * @param int $quotes
+	 * @param string $encoding
 	 *
 	 * @return string
 	 */
-	function value( $value, $stripslashes = false ) {
-		$value = htmlspecialchars( $value, ENT_COMPAT, 'UTF-8' );
-
+	function value( $value, $stripslashes = true, $quotes = ENT_QUOTES, $encoding = 'UTF-8' ): string {
 		if ( $stripslashes ) {
 			$value = stripslashes( $value );
 		}
 
-		return $value;
+		return htmlspecialchars( $value, $quotes, $encoding );
+	}
+
+	/**
+	 * Adds slashes to a string.
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	function slashes( string $str ): string {
+		return addcslashes( $str, "\\'" );
 	}
 
 	function write_log( $text ) {
-		if ( DEBUG === true ) {
-			$output_file = fopen( MDS_LOG_FILE, 'a' );
+		if ( MDSConfig::get('DEBUG') === true ) {
+			$output_file = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), 'a' );
 			fwrite( $output_file, $text . "\n" );
 			fclose( $output_file );
 		}
@@ -189,9 +198,9 @@ class functions2 {
 	function debug( $line = "null", $label = "debug" ) {
 
 		// log file
-		if ( MDS_LOG === true && file_exists( MDS_LOG_FILE ) ) {
+		if ( MDSConfig::get('MDS_LOG') === true && file_exists( MDSConfig::get( 'MDS_LOG_FILE' ) ) ) {
 			$entry_line = "[" . date( 'r' ) . "]	" . $line . "\r\n";
-			$log_fp     = fopen( MDS_LOG_FILE, "a" );
+			$log_fp     = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), "a" );
 			fputs( $log_fp, $entry_line );
 			fclose( $log_fp );
 		}
@@ -216,25 +225,11 @@ class functions2 {
 }
 
 function get_banner_dir() {
-	if ( BANNER_DIR == 'BANNER_DIR' ) {
+	$dest = BASE_PATH . '/' . MDSConfig::get( 'BANNER_DIR' );
 
-		$base = BASE_PATH;
-		if ( empty( BASE_PATH ) || $base == 'BASE_PATH' ) {
-			$base = __DIR__;
-		}
-		$dest = $base . '/banners/';
-
-		if ( file_exists( $dest ) ) {
-			$BANNER_DIR = 'banners/';
-		} else {
-			$BANNER_DIR = 'pixels/';
-		}
-	} else {
-		$BANNER_DIR = BANNER_DIR;
+	if ( file_exists( $dest ) ) {
+		return $dest;
 	}
 
-	return $BANNER_DIR;
-}
-
-class MDSException extends Exception {
+	return realpath( __DIR__ . '/../pixels' );
 }

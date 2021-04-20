@@ -118,7 +118,6 @@ class Mds_Ajax {
 												winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
 												time: '<?php echo time(); ?>',
 												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-												HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
 												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
 												REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
 												ENABLE_MOUSEOVER: '<?php echo ENABLE_MOUSEOVER; ?>',

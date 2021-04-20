@@ -360,13 +360,5 @@ function get_map_file_name( $BID ) {
 		return false;
 	}
 
-	if ( BANNER_DIR == 'BANNER_DIR' ) {
-		$BANNER_DIR = "banners/";
-	} else {
-		$BANNER_DIR = BANNER_DIR;
-	}
-
-	$BANNER_PATH = BASE_PATH . "/" . $BANNER_DIR;
-
-	return $BANNER_PATH . "map_$BID.inc";
+	return get_banner_dir() . "map_$BID.inc";
 }

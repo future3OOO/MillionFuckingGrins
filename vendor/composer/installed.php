@@ -1,12 +1,12 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
+    'pretty_version' => '2.2.x-dev',
+    'version' => '2.2.9999999.9999999-dev',
     'aliases' => 
     array (
     ),
-    'reference' => 'd087904d1e4c9f8e4997ea2fca008e8e8a7a527d',
+    'reference' => 'c0b7994e94b4c465948ffec33507209fb94d590e',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -67,12 +67,12 @@
     ),
     'milliondollarscript/milliondollarscript' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => '2.2.x-dev',
+      'version' => '2.2.9999999.9999999-dev',
       'aliases' => 
       array (
       ),
-      'reference' => 'd087904d1e4c9f8e4997ea2fca008e8e8a7a527d',
+      'reference' => 'c0b7994e94b4c465948ffec33507209fb94d590e',
     ),
     'phpmailer/phpmailer' => 
     array (

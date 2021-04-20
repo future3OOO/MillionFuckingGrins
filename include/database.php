@@ -30,10 +30,10 @@
  *
  */
 
-$dbhost        = MYSQL_HOST;
-$dbusername    = MYSQL_USER;
-$dbpassword    = MYSQL_PASS;
-$database_name = MYSQL_DB;
+$dbhost        = stripslashes( MYSQL_HOST );
+$dbusername    = stripslashes( MYSQL_USER );
+$dbpassword    = stripslashes( MYSQL_PASS );
+$database_name = stripslashes( MYSQL_DB );
 
 if ( ! defined( 'MYSQL_PORT' ) ) {
 	define( 'MYSQL_PORT', 3306 );
@@ -41,8 +41,8 @@ if ( ! defined( 'MYSQL_PORT' ) ) {
 if ( ! defined( 'MYSQL_SOCKET' ) ) {
 	define( 'MYSQL_SOCKET', "" );
 }
-$database_port   = MYSQL_PORT;
-$database_socket = MYSQL_SOCKET;
+$database_port   = intval( MYSQL_PORT );
+$database_socket = stripslashes( MYSQL_SOCKET );
 
 if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isset( $database_port ) ) {
 	if ( ! empty( $dbhost ) && ! empty( $dbusername ) && ! empty( $database_name ) && ! empty( $database_port ) ) {
@@ -67,7 +67,7 @@ if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isse
  *
  * @return string
  */
-function mds_sql_error( $sql ) {
+function mds_sql_error( $sql ): string {
 	return "<br />SQL:[" . htmlspecialchars( $sql, ENT_QUOTES ) . "]<br />ERROR:[" . htmlspecialchars( mysqli_error( $GLOBALS['connection'] ), ENT_QUOTES ) . "]<br />";
 }
 
@@ -101,13 +101,13 @@ if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
  *
  * @return int
  */
-function get_dbver() {
+function get_dbver(): int {
 
 	$sql    = "SELECT `val` FROM `config` WHERE `key`='dbver';";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	if ( mysqli_num_rows( $result ) == 0 ) {
 		// add database version config value
-		$sql     = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
+		$sql = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
 		mysqli_query( $GLOBALS['connection'], $sql );
 		$version = 1;
 	} else {
@@ -163,6 +163,119 @@ if ( $version == 1 ) {
 	// Change block_info column to LONGTEXT
 	$sql = "ALTER TABLE `temp_orders` MODIFY `block_info` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
 	mysqli_query( $GLOBALS['connection'], $sql );
+
+	up_dbver();
+} else if ( $version == 3 ) {
+
+	// Add config variables to config database table
+
+	// Arrays of queries sorted by variable types for preparing for database.
+	$types = [
+
+		// strings
+		's' => [
+			'MDS_LOG_FILE'                => "INSERT INTO `config` VALUES ('MDS_LOG_FILE', ?);",
+			'VERSION_INFO'                => "INSERT INTO `config` VALUES ('VERSION_INFO', ?);",
+			'BASE_HTTP_PATH'              => "INSERT INTO `config` VALUES ('BASE_HTTP_PATH', ?);",
+			'BASE_PATH'                   => "INSERT INTO `config` VALUES ('BASE_PATH', ?);",
+			'SERVER_PATH_TO_ADMIN'        => "INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', ?);",
+			'UPLOAD_PATH'                 => "INSERT INTO `config` VALUES ('UPLOAD_PATH', ?);",
+			'UPLOAD_HTTP_PATH'            => "INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', ?);",
+			'SITE_CONTACT_EMAIL'          => "INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', ?);",
+			'SITE_LOGO_URL'               => "INSERT INTO `config` VALUES ('SITE_LOGO_URL', ?);",
+			'SITE_NAME'                   => "INSERT INTO `config` VALUES ('SITE_NAME', ?);",
+			'SITE_SLOGAN'                 => "INSERT INTO `config` VALUES ('SITE_SLOGAN', ?);",
+			'MDS_RESIZE'                  => "INSERT INTO `config` VALUES ('MDS_RESIZE', ?);",
+			'ADMIN_PASSWORD'              => "INSERT INTO `config` VALUES ('ADMIN_PASSWORD', ?);",
+			'DATE_FORMAT'                 => "INSERT INTO `config` VALUES ('DATE_FORMAT', ?);",
+			'GMT_DIF'                     => "INSERT INTO `config` VALUES ('GMT_DIF', ?);",
+			'DATE_INPUT_SEQ'              => "INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', ?);",
+			'OUTPUT_JPEG'                 => "INSERT INTO `config` VALUES ('OUTPUT_JPEG', ?);",
+			'INTERLACE_SWITCH'            => "INSERT INTO `config` VALUES ('INTERLACE_SWITCH', ?);",
+			'BANNER_DIR'                  => "INSERT INTO `config` VALUES ('BANNER_DIR', ?);",
+			'DISPLAY_PIXEL_BACKGROUND'    => "INSERT INTO `config` VALUES ('DISPLAY_PIXEL_BACKGROUND', ?);",
+			'EMAIL_USER_ORDER_CONFIRMED'  => "INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_CONFIRMED', ?);",
+			'EMAIL_ADMIN_ORDER_CONFIRMED' => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_CONFIRMED', ?);",
+			'EMAIL_USER_ORDER_COMPLETED'  => "INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_COMPLETED', ?);",
+			'EMAIL_ADMIN_ORDER_COMPLETED' => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_COMPLETED', ?);",
+			'EMAIL_USER_ORDER_PENDED'     => "INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_PENDED', ?);",
+			'EMAIL_ADMIN_ORDER_PENDED'    => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_PENDED', ?);",
+			'EMAIL_USER_ORDER_EXPIRED'    => "INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_EXPIRED', ?);",
+			'EMAIL_ADMIN_ORDER_EXPIRED'   => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_EXPIRED', ?);",
+			'EM_NEEDS_ACTIVATION'         => "INSERT INTO `config` VALUES ('EM_NEEDS_ACTIVATION', ?);",
+			'EMAIL_ADMIN_ACTIVATION'      => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_ACTIVATION', ?);",
+			'EMAIL_ADMIN_PUBLISH_NOTIFY'  => "INSERT INTO `config` VALUES ('EMAIL_ADMIN_PUBLISH_NOTIFY', ?);",
+			'EMAIL_USER_EXPIRE_WARNING'   => "INSERT INTO `config` VALUES ('EMAIL_USER_EXPIRE_WARNING', ?);",
+			'ENABLE_MOUSEOVER'            => "INSERT INTO `config` VALUES ('ENABLE_MOUSEOVER', ?);",
+			'ENABLE_CLOAKING'             => "INSERT INTO `config` VALUES ('ENABLE_CLOAKING', ?);",
+			'VALIDATE_LINK'               => "INSERT INTO `config` VALUES ('VALIDATE_LINK', ?);",
+			'ADVANCED_CLICK_COUNT'        => "INSERT INTO `config` VALUES ('ADVANCED_CLICK_COUNT', ?);",
+			'ADVANCED_VIEW_COUNT'         => "INSERT INTO `config` VALUES ('ADVANCED_VIEW_COUNT', ?);",
+			'USE_SMTP'                    => "INSERT INTO `config` VALUES ('USE_SMTP', ?);",
+			'EMAIL_SMTP_SERVER'           => "INSERT INTO `config` VALUES ('EMAIL_SMTP_SERVER', ?);",
+			'EMAIL_SMTP_USER'             => "INSERT INTO `config` VALUES ('EMAIL_SMTP_USER', ?);",
+			'EMAIL_SMTP_PASS'             => "INSERT INTO `config` VALUES ('EMAIL_SMTP_PASS', ?);",
+			'EMAIL_SMTP_AUTH_HOST'        => "INSERT INTO `config` VALUES ('EMAIL_SMTP_AUTH_HOST', ?);",
+			'EMAIL_POP_SERVER'            => "INSERT INTO `config` VALUES ('EMAIL_POP_SERVER', ?);",
+			'EMAIL_POP_BEFORE_SMTP'       => "INSERT INTO `config` VALUES ('EMAIL_POP_BEFORE_SMTP', ?);",
+			'EMAIL_DEBUG'                 => "INSERT INTO `config` VALUES ('EMAIL_DEBUG', ?);",
+			'USE_AJAX'                    => "INSERT INTO `config` VALUES ('USE_AJAX', ?);",
+			'MEMORY_LIMIT'                => "INSERT INTO `config` VALUES ('MEMORY_LIMIT', ?);",
+			'REDIRECT_SWITCH'             => "INSERT INTO `config` VALUES ('REDIRECT_SWITCH', ?);",
+			'REDIRECT_URL'                => "INSERT INTO `config` VALUES ('REDIRECT_URL', ?);",
+			'MDS_AGRESSIVE_CACHE'         => "INSERT INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', ?);",
+			'BLOCK_SELECTION_MODE'        => "INSERT INTO `config` VALUES ('BLOCK_SELECTION_MODE', ?);",
+			'WP_ENABLED'                  => "INSERT INTO `config` VALUES ('WP_ENABLED', ?);",
+			'WP_URL'                      => "INSERT INTO `config` VALUES ('WP_URL', ?);",
+			'WP_PATH'                     => "INSERT INTO `config` VALUES ('WP_PATH', ?);",
+			'WP_USERS_ENABLED'            => "INSERT INTO `config` VALUES ('WP_USERS_ENABLED', ?);",
+			'WP_ADMIN_ENABLED'            => "INSERT INTO `config` VALUES ('WP_ADMIN_ENABLED', ?);",
+			'WP_USE_MAIL'                 => "INSERT INTO `config` VALUES ('WP_USE_MAIL', ?);"
+		],
+
+		// integers
+		'i' => [
+			'DEBUG'               => "INSERT INTO `config` VALUES ('DEBUG', ?);",
+			'MDS_LOG'             => "INSERT INTO `config` VALUES ('MDS_LOG', ?);",
+			'JPEG_QUALITY'        => "INSERT INTO `config` VALUES ('JPEG_QUALITY', ?);",
+			'EMAILS_DAYS_KEEP'    => "INSERT INTO `config` VALUES ('EMAILS_DAYS_KEEP', ?);",
+			'DAYS_RENEW'          => "INSERT INTO `config` VALUES ('DAYS_RENEW', ?);",
+			'DAYS_CONFIRMED'      => "INSERT INTO `config` VALUES ('DAYS_CONFIRMED', ?);",
+			'MINUTES_UNCONFIRMED' => "INSERT INTO `config` VALUES ('MINUTES_UNCONFIRMED', ?);",
+			'DAYS_CANCEL'         => "INSERT INTO `config` VALUES ('DAYS_CANCEL', ?);",
+			'SMTP_PORT'           => "INSERT INTO `config` VALUES ('SMTP_PORT', ?);",
+			'POP3_PORT'           => "INSERT INTO `config` VALUES ('POP3_PORT', ?);",
+			'EMAIL_TLS'           => "INSERT INTO `config` VALUES ('EMAIL_TLS', ?);",
+			'EMAILS_PER_BATCH'    => "INSERT INTO `config` VALUES ('EMAILS_PER_BATCH', ?);",
+			'EMAILS_MAX_RETRY'    => "INSERT INTO `config` VALUES ('EMAILS_MAX_RETRY', ?);",
+			'EMAILS_ERROR_WAIT'   => "INSERT INTO `config` VALUES ('EMAILS_ERROR_WAIT', ?);",
+			'ERROR_REPORTING'     => "INSERT INTO `config` VALUES ('ERROR_REPORTING', ?);"
+		]
+
+		// doubles
+
+		// blobs
+	];
+
+	foreach ( $types as $type => $queries ) {
+		foreach ( $queries as $key => $query ) {
+			$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
+			if ( ! mysqli_stmt_prepare( $stmt, $query ) ) {
+				die ( mds_sql_error( $query ) );
+			}
+
+			$var = constant( $key );
+			mysqli_stmt_bind_param( $stmt, $type, $var );
+
+			mysqli_stmt_execute( $stmt );
+			$res = mysqli_stmt_get_result( $stmt );
+			$error = mysqli_stmt_error( $stmt );
+			if ( ! empty( $error ) ) {
+				die ( mds_sql_error( $query ) );
+			}
+			mysqli_stmt_close( $stmt );
+		}
+	}
 
 	up_dbver();
 }
