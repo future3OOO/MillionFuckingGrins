@@ -38,9 +38,9 @@
 error_reporting( 0 );
 @ini_set( 'display_errors', 0 );
 
-const MYSQL_HOST = 'localhost';
-const MYSQL_USER = '';
-const MYSQL_PASS = '';
-const MYSQL_DB   = '';
-const MYSQL_PORT = 3306;
+const MYSQL_HOST   = 'localhost';
+const MYSQL_USER   = '';
+const MYSQL_PASS   = '';
+const MYSQL_DB     = '';
+const MYSQL_PORT   = 3306;
 const MYSQL_SOCKET = '';

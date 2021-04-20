@@ -140,55 +140,8 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
     <form method="post" action="install.php">
         <input type="hidden" name="action" value="install">
 
-		<?php
-
-		require_once __DIR__ . '/../include/url_functions.php';
-
-		$parsed_url     = parse_url( full_url() );
-		$BASE_HTTP_PATH = unparse_url( $parsed_url, true );
-
-		$SERVER_PATH_TO_ADMIN = __DIR__ . '/';
-
-		$UPLOAD_PATH = realpath( __DIR__ . '/../upload_files' ) . '/';
-
-		if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
-			define( 'UPLOAD_HTTP_PATH', $BASE_HTTP_PATH . 'upload_files/' );
-			$UPLOAD_HTTP_PATH = UPLOAD_HTTP_PATH;
-		}
-		if ( UPLOAD_HTTP_PATH == '/upload_files/' ) {
-			$UPLOAD_HTTP_PATH = $BASE_HTTP_PATH . 'upload_files/';
-		} else {
-			$UPLOAD_HTTP_PATH = $f2->value( UPLOAD_HTTP_PATH );
-		}
-
-		?>
         <p>&nbsp;</p>
         <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
-            <tr>
-                <td colspan="2" bgcolor="#e6f2ea">
-                    <p><font face="Verdana" size="1"><b>Paths and Locations</b><br></font></td>
-            </tr>
-            <tr>
-                <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Site's HTTP URL (address)</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="base_http_path" size="49" value="<?php echo $f2->value( $BASE_HTTP_PATH, false ); ?>"><br>Recommended: <b><?php echo $BASE_HTTP_PATH; ?></b></font></td>
-            </tr>
-
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Server Path to Admin</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="server_path_to_admin" size="49" value="<?php echo $f2->value( $SERVER_PATH_TO_ADMIN, false ); ?>"><br>Recommended: <b><?php echo $SERVER_PATH_TO_ADMIN; ?></b></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Path to upload directory</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_path" size="55" value="<?php echo $f2->value( $UPLOAD_PATH, false ); ?>"><br>Recommended: <b><?php echo $UPLOAD_PATH; ?></b></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">HTTP URL to upload directory</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="upload_http_path" size="55" value="<?php echo $f2->value( $UPLOAD_HTTP_PATH, false ); ?>"><br>Recommended: <b><?php echo $UPLOAD_HTTP_PATH; ?></b></font></td>
-            </tr>
             <tr>
                 <td colspan="2" bgcolor="#e6f2ea">
                     <font face="Verdana" size="1"><b>Mysql Settings</b></font></td>
@@ -250,21 +203,10 @@ function save_db_config() {
 	fclose( $handle );
 	$handle = fopen( $filename, "w" );
 
-	$contents = preg_replace( "/.*define\( 'MYSQL_HOST',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_HOST', '" . $f2->filter( $_REQUEST['mysql_host'] ) . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_USER',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_USER', '" . $f2->filter( $_REQUEST['mysql_user'] ) . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_PASS',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_PASS', '" . $f2->filter( $_REQUEST['mysql_pass'] ) . "' );", $contents );
-	$contents = preg_replace( "/.*define\( 'MYSQL_DB',[ ]*'[^']*' \);[ ]*/U", "define( 'MYSQL_DB', '" . $f2->filter( $_REQUEST['mysql_db'] ) . "' );", $contents );
-
-	$contents = preg_replace( "/.*define\( 'SERVER_PATH_TO_ADMIN',[ ]*'[^']*' \);[ ]*/U", "define( 'SERVER_PATH_TO_ADMIN', '" . $f2->filter( $_REQUEST['server_path_to_admin'] ) . "' );", $contents );
-
-	$contents = preg_replace( "/.*define\( 'BASE_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'BASE_HTTP_PATH', '" . $f2->filter( $_REQUEST['base_http_path'] ) . "' );", $contents );
-
-	$contents = preg_replace( "/.*define\( 'UPLOAD_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_PATH', '" . $f2->filter( $_REQUEST['upload_path'] ) . "' );", $contents );
-
-	$contents = preg_replace( "/.*define\( 'UPLOAD_HTTP_PATH',[ ]*'[^']*' \);[ ]*/U", "define( 'UPLOAD_HTTP_PATH', '" . $f2->filter( $_REQUEST['upload_http_path'] ) . "' );", $contents );
-
-	$password = bin2hex( openssl_random_pseudo_bytes( 12 ) );
-	$contents = preg_replace( "/.*define\( 'ADMIN_PASSWORD',[ ]*'[^']*' \);[ ]*/U", "define( 'ADMIN_PASSWORD', '" . $password . "' );", $contents );
+	$contents = preg_replace( "/^const\s*MYSQL_HOST\s*=\s*'?(.+)'?;$/", "const MYSQL_HOST   = '" . $f2->filter( $_REQUEST['mysql_host'] ) . "';", $contents );
+	$contents = preg_replace( "/^const\s*MYSQL_USER\s*=\s*'?(.+)'?;$/", "const MYSQL_USER   = '" . $f2->filter( $_REQUEST['mysql_user'] ) . "';", $contents );
+	$contents = preg_replace( "/^const\s*MYSQL_PASS\s*=\s*'?(.+)'?;$/", "const MYSQL_PASS   = '" . $f2->filter( $_REQUEST['mysql_pass'] ) . "';", $contents );
+	$contents = preg_replace( "/^const\s*MYSQL_DB\s*=\s*'?(.+)'?;$/", "const MYSQL_DB     = '" . $f2->filter( $_REQUEST['mysql_db'] ) . "';", $contents );
 
 	fwrite( $handle, $contents );
 
@@ -514,7 +456,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 1);;;
+        INSERT INTO `config` VALUES ('dbver', 3);;;
 
         INSERT INTO `config` VALUES ('MDS_LOG', false);;;
         INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . realpath( __DIR__ . '/.mds.log' ) . "');;;
@@ -956,7 +898,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 1);;;
+        INSERT INTO `config` VALUES ('dbver', 3);;;
 
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
