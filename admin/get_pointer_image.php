@@ -40,12 +40,12 @@ require_once __DIR__ . "/../include/init.php";
 global $f2;
 $BID = $f2->bid();
 
-$sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' and banner_id='" . $BID . "' ";
+$sql = "SELECT * FROM blocks where block_id=" . intval( $_REQUEST['block_id'] ) . " and banner_id=" . $BID;
 
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $row = mysqli_fetch_array( $result );
 
-if ( $row['image_data'] == '' ) {
+if ( isset($row['image_data']) && $row['image_data'] == '' ) {
 	$banner_data       = load_banner_constants( $BID );
 	$row['image_data'] = base64_encode( $banner_data['GRID_BLOCK'] );
 	//$row['image_data'] =  "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABZJREFUKFNj/N/gwIAHAKXxIIYRKg0AB3qe55E8bNQAAAAASUVORK5CYII=";

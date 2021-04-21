@@ -94,26 +94,26 @@ $banner_data = load_banner_constants( $BID );
 
 		if (button === 'MOVE_ORDER') {
 			bm_move_block_state = false;
-			document.button_move_b.src = 'move_b.gif';
+			document.button_move_b.src = 'images/move_b.gif';
 			if (bm_move_order_state) {
 				bm_move_order_state = false;
-				document.button_move.src = 'move.gif';
+				document.button_move.src = 'images/move.gif';
 			} else {
 				bm_move_order_state = true;
-				document.button_move.src = 'move_down.gif';
+				document.button_move.src = 'images/move_down.gif';
 			}
 		}
 
 		if (button === 'MOVE_BLOCK') {
 			bm_move_order_state = false;
-			document.button_move.src = 'move.gif';
+			document.button_move.src = 'images/move.gif';
 
 			if (bm_move_block_state) {
 				bm_move_block_state = false;
-				document.button_move_b.src = 'move_b.gif';
+				document.button_move_b.src = 'images/move_b.gif';
 			} else {
 				bm_move_block_state = true
-				document.button_move_b.src = 'move_b_down.gif';
+				document.button_move_b.src = 'images/move_b_down.gif';
 			}
 		}
 
@@ -135,7 +135,7 @@ $banner_data = load_banner_constants( $BID );
 
 		document.body.style.cursor = 'default';
 		is_moving = true;
-		var cb = get_clicked_block();
+		let cb = get_clicked_block();
 
 		if (bm_move_order_state) {
 			document.pointer_img.src = 'get_pointer_image2.php?BID=' + banner_id + '&block_id=' + cb;
@@ -151,9 +151,7 @@ $banner_data = load_banner_constants( $BID );
 
 		is_moving = false;
 
-		cb_to = get_clicked_block();
-
-		document.move_form.cb_to.value = cb_to;
+		document.move_form.cb_to.value = get_clicked_block();
 		document.move_form.cb_from.value = cb_from;
 
 		if (bm_move_order_state) {
@@ -201,15 +199,11 @@ $banner_data = load_banner_constants( $BID );
 		}
 
 		if (pos.y + OffsetY) {
-
 			pointer.style.top = pos.y + OffsetY;
 			pointer.style.left = pos.x + OffsetX;
 
 			pointer.map_x = OffsetX;
 			pointer.map_y = OffsetY;
-
-			window.status = 'co-ords: x:' + OffsetX + " y:" + OffsetY;
-
 		}
 
 		return true;
@@ -271,16 +265,16 @@ $banner_data = load_banner_constants( $BID );
 
 if ( isset( $_REQUEST['move_type'] ) && ! empty( $_REQUEST['move_type'] ) ) {
 
-	if ( $_REQUEST['move_type'] == 'B' ) {// move block
-
+	if ( $_REQUEST['move_type'] == 'B' ) {
+		// move block
 		move_block( $_REQUEST['cb_from'], $_REQUEST['cb_to'], $BID );
-	} else {
-
+	} else if ( $_REQUEST['move_type'] == 'O' ) {
+		// move order
 		move_order( $_REQUEST['cb_from'], $_REQUEST['cb_to'], $BID );
 	}
 }
 
-$sql = "SELECT * FROM blocks WHERE  banner_id='" . intval( $BID ) . "'";
+$sql = "SELECT * FROM blocks WHERE  banner_id=" . intval( $BID );
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 ?>
@@ -293,11 +287,11 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
-		$sql = "select * from users where ID='" . intval( $row['user_id'] ) . "'";
+		$sql = "select * from users where ID=" . intval( $row['user_id'] );
 		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$user_row = mysqli_fetch_array( $res );
 
-		$sql = "select * from orders where order_id='" . intval( $row['order_id'] ) . "'";
+		$sql = "select * from orders where order_id=" . intval( $row['order_id'] );
 		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order_row = mysqli_fetch_array( $res );
 
@@ -338,8 +332,8 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 		?>
 
         <area
-                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
-
+                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
+                onmousemove="show_pointer(event)"
                 href="<?php echo( $row['url'] ); ?>"
 
                 shape="RECT" coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
