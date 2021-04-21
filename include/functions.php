@@ -1982,10 +1982,10 @@ function move_block( $block_from, $block_to, $banner_id ) {
 	}
 
 	#load block_from
-	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks where block_id=" . intval( $block_from ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
-
+error_log($sql);
 	// get the position and check range, do not move if out of range
 
 	$pos = get_block_position( $block_to, $banner_id );
@@ -2007,7 +2007,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 		return false;
 	}
 
-	$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `file_name`, `mime_type`,  `approved`, `published`, `banner_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`, `ad_id`) VALUES ('" . intval( $block_to ) . "',  '" . intval( $source_block['user_id'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['status'] ) . "' , '" . intval( $x ) . "' , '" . intval( $y ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['url'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['alt_text'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['file_name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['mime_type'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['approved'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['published'] ) . "', '" . intval( $banner_id ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['currency'] ) . "', '" . floatval( $source_block['price'] ) . "', '" . intval( $source_block['order_id'] ) . "', '" . intval( $source_block['click_count'] ) . "', '" . intval( $source_block['view_count'] ) . "', '" . intval( $source_block['ad_id'] ) . "')";
+	$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `file_name`, `mime_type`,  `approved`, `published`, `banner_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`, `ad_id`) VALUES (" . intval( $block_to ) . ",  " . intval( $source_block['user_id'] ) . " , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['status'] ) . "' , " . intval( $x ) . " , " . intval( $y ) . " , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['url'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['alt_text'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['file_name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['mime_type'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['approved'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['published'] ) . "', " . intval( $banner_id ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['currency'] ) . "', " . floatval( $source_block['price'] ) . ", " . intval( $source_block['order_id'] ) . ", " . intval( $source_block['click_count'] ) . ", " . intval( $source_block['view_count'] ) . ", " . intval( $source_block['ad_id'] ) . ")";
 
 	global $f2;
 	$f2->debug( "Moved Block - " . $sql );
@@ -2036,7 +2036,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 
 	$sql_blocks = implode( ',', $new_blocks );
 
-	$sql = "UPDATE orders SET blocks='" . $sql_blocks . "' WHERE order_id='" . intval( $source_block['order_id'] ) . "' ";
+	$sql = "UPDATE orders SET blocks='" . $sql_blocks . "' WHERE order_id=" . intval( $source_block['order_id'] );
 	# update the customer's order
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
@@ -2067,11 +2067,11 @@ function move_order( $block_from, $block_to, $banner_id ) {
 
 	// get the order
 
-	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks where block_id=" . intval( $block_from ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
 
-	$sql = "SELECT * from blocks WHERE order_id='" . intval( $source_block['order_id'] ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks WHERE order_id=" . intval( $source_block['order_id'] ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	$banner_data = load_banner_constants( $banner_id );
@@ -2208,12 +2208,12 @@ function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 
 function get_blocks_min_max( $block_id, $banner_id ) {
 
-	$sql = "SELECT * FROM blocks where block_id='" . intval( $block_id ) . "' and banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * FROM blocks where block_id=" . intval( $block_id ) . " and banner_id=" . intval( $banner_id );
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result );
 
-	$sql = "select * from blocks where order_id='" . intval( $row['order_id'] ) . "' ";
+	$sql = "select * from blocks where order_id=" . intval( $row['order_id'] );
 	$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	// find high x, y & low x, y
