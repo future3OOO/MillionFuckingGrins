@@ -64,6 +64,7 @@ require_once __DIR__ . "/../include/database.php";
 require_once __DIR__ . "/../include/functions2.php";
 
 global $f2;
+$f2 = new functions2();
 
 if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false ) {
 	?>
