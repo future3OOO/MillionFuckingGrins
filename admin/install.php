@@ -36,7 +36,7 @@ if ( isset( $_REQUEST['action'] ) ) {
 
 	if ( $_REQUEST['action'] == 'install' && file_exists( __DIR__ . "/../config.php" ) ) {
 		save_db_config();
-		require_once __DIR__ . "/../config.php";
+		require_once __DIR__ . "/../include/init.php";
 		install_db();
 	} else if ( $_REQUEST['action'] == 'delete' ) {
 		unlink( __DIR__ . '/install.php' );
@@ -141,78 +141,91 @@ if ( is_writable( "../vendor/ezyang/htmlpurifier/library/HTMLPurifier/Definition
     <form method="post" action="install.php">
         <input type="hidden" name="action" value="install">
 
-        <p>&nbsp;</p>
-        <table border="0" cellpadding="5" cellspacing="2" style="border-style:groove" width="100%" bgcolor="#FFFFFF">
-            <tr>
-                <td colspan="2" bgcolor="#e6f2ea">
-                    <font face="Verdana" size="1"><b>Mysql Settings</b></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Server Hostname</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_host" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? $f2->value( MYSQL_HOST ) : "localhost"; ?>"></font></td>
-            </tr>
-            <tr>
-                <td width="20%" bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Database Username</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_user" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? $f2->value( MYSQL_USER ) : ""; ?>"></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Database Name</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="text" name="mysql_db" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? $f2->value( MYSQL_DB ) : ""; ?>"></font></td>
-            </tr>
-            <tr>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Mysql
-                        Database Password</font></td>
-                <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                        <input type="password" name="mysql_pass" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? $f2->value( MYSQL_PASS ) : ""; ?>"></font></td>
-            </tr>
-            <tr>
-                <td colspan="2">
+        <h2>Mysql Settings</h2>
 
-                </td>
-            </tr>
-        </table>
-        <p>
-            <input type="submit" value="Install">
-        </p>
+        <h3>MySQL Server Hostname</h3>
+        <label>
+            <input type="text" name="MYSQL_HOST" size="29" value="<?php echo defined( 'MYSQL_HOST' ) ? $f2->value( MYSQL_HOST ) : "localhost"; ?>">
+        </label>
+
+        <h3>MySQL Database Username</h3>
+
+        <label>
+            <input type="text" name="MYSQL_USER" size="29" value="<?php echo defined( 'MYSQL_USER' ) ? $f2->value( MYSQL_USER ) : ""; ?>">
+        </label>
+
+        <h3>MySQL Database Name</h3>
+        <label>
+            <input type="text" name="MYSQL_DB" size="29" value="<?php echo defined( 'MYSQL_DB' ) ? $f2->value( MYSQL_DB ) : ""; ?>">
+        </label>
+
+        <h3>MySQL Database Password</h3>
+        <label>
+            <input type="password" name="MYSQL_PASS" size="29" value="<?php echo defined( 'MYSQL_PASS' ) ? $f2->value( MYSQL_PASS ) : ""; ?>">
+        </label>
+
+        <h3>MySQL Port</h3>
+        <label>
+            <input type="text" name="MYSQL_PORT" size="29" value="<?php echo defined( 'MYSQL_PORT' ) ? $f2->value( MYSQL_PORT ) : "3306"; ?>">
+        </label>
+
+        <h3>MySQL Socket (optional)</h3>
+        <label>
+            <input type="text" name="MYSQL_SOCKET" size="29" value="<?php echo defined( 'MYSQL_SOCKET' ) ? $f2->value( MYSQL_SOCKET ) : ""; ?>">
+        </label>
+
+        <br/>
+        <br/>
+        <input type="submit" value="Install">
     </form>
 
-    <h3>NOTES</h3>
-    <ul>
-        <li>It is strongly recommended to use https to install and access your site.</li>
-        <li>Server Path to Admin is the full path to your admin directory, <font color="red">including a slash at the end</font></li>
-        <li>The Site's HTTP URL must include a<font color="red"> slash at the end</font></li>
-        <li>Use the recommended settings unless you are sure otherwise</li>
-        <li>Most modern hosts you do not have to worry about file and folder permissions. However on some hosts you may have to adjust the permissions of some folders to make them writable by the web server.</li>
-        <li>Sometimes your web server configuration may requipre different permissions in order for files to execute properly. i.e. if you are running suExec, etc.</li>
-        <li>You should check with your host if you are unsure.</li>
-    </ul>
 <?php
+// https://stackoverflow.com/a/63741626/311458
+function is_ssl() {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == "https" ) {
+		return true;
+	} else if ( isset( $_SERVER['HTTPS'] ) ) {
+		return true;
+	} else if ( $_SERVER['SERVER_PORT'] == 443 ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+if ( ! is_ssl() ) {
+	?>
+    <p>It is strongly recommended to use https to install and access your site.</p>
+	<?php
+}
 
 function save_db_config() {
 	require_once __DIR__ . '/../include/functions2.php';
 	$f2 = new functions2();
 
 	$filename = __DIR__ . '/../config.php';
-	$handle   = fopen( $filename, "r" );
-	$contents = fread( $handle, filesize( $filename ) );
+	$handle   = fopen( $filename, "w" );
+
+	$config_str = "<?php
+/**
+ * Million Dollar Script Configuration
+ * Note: Please do not edit this file. Edit in MDS admin under Main Config.
+ */
+
+error_reporting( E_ALL & ~E_NOTICE );
+@ini_set( 'display_errors', 0 );
+
+const MYSQL_HOST = '" . $f2->slashes( $_REQUEST['MYSQL_HOST'] ) . "';
+const MYSQL_USER = '" . $f2->slashes( $_REQUEST['MYSQL_USER'] ) . "';
+const MYSQL_PASS = '" . $f2->slashes( $_REQUEST['MYSQL_PASS'] ) . "';
+const MYSQL_DB   = '" . $f2->slashes( $_REQUEST['MYSQL_DB'] ) . "';
+const MYSQL_PORT = " . intval( $_REQUEST['MYSQL_PORT'] ) . ";
+const MYSQL_SOCKET = '" . $f2->slashes( $_REQUEST['MYSQL_SOCKET'] ) . "';
+";
+
+	fwrite( $handle, $config_str );
+
 	fclose( $handle );
-	$handle = fopen( $filename, "w" );
-
-	$contents = preg_replace( "/^const\s*MYSQL_HOST\s*=\s*'?(.+)'?;$/", "const MYSQL_HOST   = '" . $f2->filter( $_REQUEST['mysql_host'] ) . "';", $contents );
-	$contents = preg_replace( "/^const\s*MYSQL_USER\s*=\s*'?(.+)'?;$/", "const MYSQL_USER   = '" . $f2->filter( $_REQUEST['mysql_user'] ) . "';", $contents );
-	$contents = preg_replace( "/^const\s*MYSQL_PASS\s*=\s*'?(.+)'?;$/", "const MYSQL_PASS   = '" . $f2->filter( $_REQUEST['mysql_pass'] ) . "';", $contents );
-	$contents = preg_replace( "/^const\s*MYSQL_DB\s*=\s*'?(.+)'?;$/", "const MYSQL_DB     = '" . $f2->filter( $_REQUEST['mysql_db'] ) . "';", $contents );
-
-	fwrite( $handle, $contents );
-
-	fclose( $handle );
-	//echo " done.";
 }
 
 function query_parser( $q ) {
