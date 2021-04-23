@@ -36,8 +36,10 @@ if ( isset( $_REQUEST['action'] ) ) {
 
 	if ( $_REQUEST['action'] == 'install' && file_exists( __DIR__ . "/../config.php" ) ) {
 		save_db_config();
-		require_once __DIR__ . "/../include/init.php";
+		require_once __DIR__ . "/../config.php";
+		require_once __DIR__ . '/../include/database.php';
 		install_db();
+		require_once __DIR__ . "/../include/init.php";
 	} else if ( $_REQUEST['action'] == 'delete' ) {
 		unlink( __DIR__ . '/install.php' );
 		echo "Deleted!";
@@ -66,7 +68,7 @@ require_once __DIR__ . "/../include/functions2.php";
 global $f2;
 $f2 = new functions2();
 
-if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false ) {
+if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false && mds_sql_installed() ) {
 	?>
     <h2>Database successfully Installed.</h2>
     <h3>Next Steps</h3>
@@ -263,6 +265,8 @@ function multiple_query( $q ) {
 }
 
 function install_db() {
+	$url     = parse_url( "http" . ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ) ? "s" : "" ) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+	$baseurl = $url['scheme'] . "://" . $url['host'] . trim( $url['path'], '/admin/install.php' );
 
 	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
 	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
@@ -470,24 +474,24 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 3);;;
+        INSERT INTO `config` VALUES ('dbver', 5);;;
 
         INSERT INTO `config` VALUES ('MDS_LOG', false);;;
-        INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . realpath( __DIR__ . '/.mds.log' ) . "');;;
+        INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../.mds.log' ) ) . "');;;
         INSERT INTO `config` VALUES ('VERSION_INFO', '2.1');;;
-        INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '/');;;
-        INSERT INTO `config` VALUES ('BASE_PATH', '" . realpath( __DIR__ ) . "');;;
-        INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . realpath( __DIR__ . '/admin/' ) . "');;;
-        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . realpath( __DIR__ . '/upload_files/' ) . "');;;
-        INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '/upload_files/');;;
+        INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/upload_files/' ) . "');;;
         INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', 'test@example.com');;;
-        INSERT INTO `config` VALUES ('SITE_LOGO_URL', 'https://milliondollarscript.com/logo.gif');;;
+        INSERT INTO `config` VALUES ('SITE_LOGO_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/images/logo.gif' ) . "');;;
         INSERT INTO `config` VALUES ('SITE_NAME', 'Million Dollar Script');;;
         INSERT INTO `config` VALUES ('SITE_SLOGAN', 'This is the Million Dollar Script Example. 1 pixel = 1 cent');;;
         INSERT INTO `config` VALUES ('MDS_RESIZE', 'YES');;;
-        INSERT INTO `config` VALUES ('ADMIN_PASSWORD', 'ok');;;
+        INSERT INTO `config` VALUES ('ADMIN_PASSWORD', '" . mysqli_real_escape_string( $GLOBALS['connection'], bin2hex( openssl_random_pseudo_bytes( 12 ) ) ) . "');;;
         INSERT INTO `config` VALUES ('DATE_FORMAT', 'Y-M-d');;;
-        INSERT INTO `config` VALUES ('GMT_DIF', '" . date_default_timezone_get() . "');;;
+        INSERT INTO `config` VALUES ('GMT_DIF', '" . mysqli_real_escape_string( $GLOBALS['connection'], date_default_timezone_get() ) . "');;;
         INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', 'YMD');;;
         INSERT INTO `config` VALUES ('OUTPUT_JPEG', 'N');;;
         INSERT INTO `config` VALUES ('JPEG_QUALITY', '75');;;
@@ -515,6 +519,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('ENABLE_CLOAKING', 'YES');;;
         INSERT INTO `config` VALUES ('VALIDATE_LINK', 'NO');;;
         INSERT INTO `config` VALUES ('ADVANCED_CLICK_COUNT', 'YES');;;
+        INSERT INTO `config` VALUES ('ADVANCED_VIEW_COUNT', 'YES');;;
         INSERT INTO `config` VALUES ('USE_SMTP', '');;;
         INSERT INTO `config` VALUES ('EMAIL_SMTP_SERVER', '');;;
         INSERT INTO `config` VALUES ('EMAIL_SMTP_USER', '');;;
@@ -662,6 +667,7 @@ function install_db() {
           `login_count` int(11) NOT NULL default '0',
           `last_request_time` datetime default CURRENT_TIMESTAMP,
           `click_count` int(11) NOT NULL default '0',
+          `view_count` int(11) NOT NULL default '0',
           PRIMARY KEY  (`ID`),
           UNIQUE KEY `Username` (`Username`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
@@ -912,7 +918,79 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 3);;;
+        INSERT INTO `config` VALUES ('dbver', 5);;;
+
+        INSERT INTO `config` VALUES ('MDS_LOG', false);;;
+        INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../.mds.log' ) ) . "');;;
+        INSERT INTO `config` VALUES ('VERSION_INFO', '2.1');;;
+        INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/upload_files/' ) . "');;;
+        INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', 'test@example.com');;;
+        INSERT INTO `config` VALUES ('SITE_LOGO_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/images/logo.gif' ) . "');;;
+        INSERT INTO `config` VALUES ('SITE_NAME', 'Million Dollar Script');;;
+        INSERT INTO `config` VALUES ('SITE_SLOGAN', 'This is the Million Dollar Script Example. 1 pixel = 1 cent');;;
+        INSERT INTO `config` VALUES ('MDS_RESIZE', 'YES');;;
+        INSERT INTO `config` VALUES ('ADMIN_PASSWORD', '" . mysqli_real_escape_string( $GLOBALS['connection'], bin2hex( openssl_random_pseudo_bytes( 12 ) ) ) . "');;;
+        INSERT INTO `config` VALUES ('DATE_FORMAT', 'Y-M-d');;;
+        INSERT INTO `config` VALUES ('GMT_DIF', '" . mysqli_real_escape_string( $GLOBALS['connection'], date_default_timezone_get() ) . "');;;
+        INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', 'YMD');;;
+        INSERT INTO `config` VALUES ('OUTPUT_JPEG', 'N');;;
+        INSERT INTO `config` VALUES ('JPEG_QUALITY', '75');;;
+        INSERT INTO `config` VALUES ('INTERLACE_SWITCH', 'YES');;;
+        INSERT INTO `config` VALUES ('BANNER_DIR', 'pixels/');;;
+        INSERT INTO `config` VALUES ('DISPLAY_PIXEL_BACKGROUND', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_CONFIRMED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_CONFIRMED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_COMPLETED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_COMPLETED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_PENDED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_PENDED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_ORDER_EXPIRED', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ORDER_EXPIRED', 'YES');;;
+        INSERT INTO `config` VALUES ('EM_NEEDS_ACTIVATION', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_ACTIVATION', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_ADMIN_PUBLISH_NOTIFY', 'YES');;;
+        INSERT INTO `config` VALUES ('EMAIL_USER_EXPIRE_WARNING', '');;;
+        INSERT INTO `config` VALUES ('EMAILS_DAYS_KEEP', '30');;;
+        INSERT INTO `config` VALUES ('DAYS_RENEW', '7');;;
+        INSERT INTO `config` VALUES ('DAYS_CONFIRMED', '7');;;
+        INSERT INTO `config` VALUES ('MINUTES_UNCONFIRMED', '60');;;
+        INSERT INTO `config` VALUES ('DAYS_CANCEL', '3');;;
+        INSERT INTO `config` VALUES ('ENABLE_MOUSEOVER', 'POPUP');;;
+        INSERT INTO `config` VALUES ('ENABLE_CLOAKING', 'YES');;;
+        INSERT INTO `config` VALUES ('VALIDATE_LINK', 'NO');;;
+        INSERT INTO `config` VALUES ('ADVANCED_CLICK_COUNT', 'YES');;;
+        INSERT INTO `config` VALUES ('ADVANCED_VIEW_COUNT', 'YES');;;
+        INSERT INTO `config` VALUES ('USE_SMTP', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_SERVER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_USER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_PASS', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_SMTP_AUTH_HOST', '');;;
+        INSERT INTO `config` VALUES ('SMTP_PORT', '465');;;
+        INSERT INTO `config` VALUES ('POP3_PORT', '995');;;
+        INSERT INTO `config` VALUES ('EMAIL_TLS', '1');;;
+        INSERT INTO `config` VALUES ('EMAIL_POP_SERVER', '');;;
+        INSERT INTO `config` VALUES ('EMAIL_POP_BEFORE_SMTP', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAIL_DEBUG', 'NO');;;
+        INSERT INTO `config` VALUES ('EMAILS_PER_BATCH', '12');;;
+        INSERT INTO `config` VALUES ('EMAILS_MAX_RETRY', '15');;;
+        INSERT INTO `config` VALUES ('EMAILS_ERROR_WAIT', '20');;;
+        INSERT INTO `config` VALUES ('USE_AJAX', 'SIMPLE');;;
+        INSERT INTO `config` VALUES ('MEMORY_LIMIT', '128M');;;
+        INSERT INTO `config` VALUES ('REDIRECT_SWITCH', 'NO');;;
+        INSERT INTO `config` VALUES ('REDIRECT_URL', 'http://www.example.com');;;
+        INSERT INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', 'NO');;;
+        INSERT INTO `config` VALUES ('BLOCK_SELECTION_MODE', 'YES');;;
+        INSERT INTO `config` VALUES ('ERROR_REPORTING', 0);;;
+        INSERT INTO `config` VALUES ('WP_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_URL', '');;;
+        INSERT INTO `config` VALUES ('WP_PATH', '');;;
+        INSERT INTO `config` VALUES ('WP_USERS_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_ADMIN_ENABLED', 'NO');;;
+        INSERT INTO `config` VALUES ('WP_USE_MAIL', 'NO');;;
 
         CREATE TABLE `currencies` (
           `code` char(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '',
@@ -1033,7 +1111,8 @@ function install_db() {
           `login_count` int(11) NOT NULL default '0',
           `last_request_time` datetime NOT NULL default '0000-00-00 00:00:00',
           `click_count` int(11) NOT NULL default '0',
-          PRIMARY KEY  (`ID`),
+          `view_count` int(11) NOT NULL default '0',
+         PRIMARY KEY  (`ID`),
           UNIQUE KEY `Username` (`Username`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 

@@ -1985,7 +1985,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 	$sql = "SELECT * from blocks where block_id=" . intval( $block_from ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
-error_log($sql);
+
 	// get the position and check range, do not move if out of range
 
 	$pos = get_block_position( $block_to, $banner_id );

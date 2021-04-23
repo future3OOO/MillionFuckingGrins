@@ -87,6 +87,15 @@ function mds_sql_log_die( $sql, $exit = true ) {
 	}
 }
 
+function mds_sql_installed() {
+	$exists = mysqli_query( $GLOBALS['connection'], 'SELECT 1 FROM `config` LIMIT 1' );
+	if ( $exists === false ) {
+		return false;
+	}
+
+	return true;
+}
+
 /**
  * Database Upgrades
  */
@@ -99,16 +108,18 @@ if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
 /**
  * Get database version
  *
- * @return int
+ * @return int|void
  */
-function get_dbver(): int {
-
-	$sql    = "SELECT `val` FROM `config` WHERE `key`='dbver';";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+function get_dbver() {
+	if ( ! mds_sql_installed() ) {
+		return;
+	}
+	$sql = "SELECT `val` FROM `config` WHERE `key`='dbver';";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	if ( mysqli_num_rows( $result ) == 0 ) {
 		// add database version config value
 		$sql = "INSERT INTO config(`key`, `val`) VALUES('dbver', 1);";
-		mysqli_query( $GLOBALS['connection'], $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 		$version = 1;
 	} else {
 		$dbver   = mysqli_fetch_array( $result, MYSQLI_ASSOC );
@@ -268,13 +279,24 @@ if ( $version == 1 ) {
 			mysqli_stmt_bind_param( $stmt, $type, $var );
 
 			mysqli_stmt_execute( $stmt );
-			$res = mysqli_stmt_get_result( $stmt );
+
 			$error = mysqli_stmt_error( $stmt );
 			if ( ! empty( $error ) ) {
 				die ( mds_sql_error( $query ) );
 			}
 			mysqli_stmt_close( $stmt );
 		}
+	}
+
+	up_dbver();
+} else if ( $version == 4 ) {
+
+	// add missing view_count column to users table
+	$sql    = "SELECT `view_count` FROM `users`;";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	if ( $result && mysqli_num_rows( $result ) == 0 ) {
+		$sql = "ALTER TABLE `users` ADD COLUMN `view_count` INT(11) NOT NULL default '0' AFTER `click_count`;";
+		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
 	up_dbver();

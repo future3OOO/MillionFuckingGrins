@@ -175,8 +175,9 @@ class MDSConfig {
 		mysqli_stmt_bind_param( $stmt, "s", $key );
 		mysqli_stmt_execute( $stmt );
 
-		$result = mysqli_stmt_get_result( $stmt );
-		$value  = mysqli_fetch_field( $result );
+		mysqli_stmt_bind_result($stmt, $value);
+//		$result = mysqli_stmt_get_result( $stmt );
+//		$value  = mysqli_fetch_field( $result );
 
 		$error = mysqli_stmt_error( $stmt );
 		if ( ! empty( $error ) ) {
@@ -200,7 +201,10 @@ class MDSConfig {
 	public static function load() {
 		$sql    = "SELECT `key`, `val` FROM `config`";
 		$result = mysqli_query( $GLOBALS['connection'], $sql );
-		$rows = mysqli_fetch_all( $result, MYSQLI_ASSOC ) or die ( mds_sql_error( $sql ) );
+		$rows = [];
+		while($row = $result->fetch_assoc()) {
+			$rows[] = $row;
+		}
 
 		if ( ! is_array( $rows ) ) {
 			return null;
