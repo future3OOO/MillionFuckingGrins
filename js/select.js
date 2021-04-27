@@ -459,7 +459,7 @@ function change_block_state(OffsetX, OffsetY) {
 			ajaxing = false;
 
 		}).fail(function (data) {
-			if(jQuery.isPlainObject(data)) {
+			if (jQuery.isPlainObject(data)) {
 				messageout("Error: " + JSON.stringify(data));
 			} else {
 				messageout("Error: " + data);
@@ -502,7 +502,7 @@ function getObjCoords(obj) {
 	return pos;
 }
 
-function getOffset(x, y) {
+function getOffset(x, y, touch) {
 	if (grid == null) {
 		// grid may not be loaded yet
 		return null;
@@ -512,9 +512,16 @@ function getOffset(x, y) {
 	let size = get_pointer_size();
 
 	let offset = {};
+	let scrollLeft = 0;
+	let scrollTop = 0;
 
-	offset.x = x - pos.x;
-	offset.y = y - pos.y;
+	if (touch) {
+		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	}
+
+	offset.x = x - pos.x + scrollLeft;
+	offset.y = y - pos.y + scrollTop;
 
 	// drop 1/10 from the OffsetX and OffsetY, eg 612 becomes 610
 	// expand to original scale first
@@ -667,8 +674,8 @@ function handle_touch_events() {
 		taps: 1
 	});
 	manager.add(Tap);
-	manager.on('tap', function(e) {
-		let offset = getOffset(e.center.x, e.center.y);
+	manager.on('tap', function (e) {
+		let offset = getOffset(e.center.x, e.center.y, true);
 		if (offset == null) {
 			return true;
 		}
