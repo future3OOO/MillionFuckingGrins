@@ -744,18 +744,6 @@ if ( ! does_field_exist( "blocks", "ad_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 }
 
-if ( ! does_field_exist( "cat_name_translations", "category_id" ) ) {
-
-	$sql = "CREATE TABLE `cat_name_translations` (
-  `category_id` int(11) NOT NULL default '0',
-  `lang` char(2) NOT NULL default '',
-  `category_name` text NOT NULL,
-  PRIMARY KEY  (`category_id`,`lang`),
-  KEY `category_id` (`category_id`)
-)";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-}
-
 if ( ! does_field_exist( "codes", "field_id" ) ) {
 
 	$sql = "CREATE TABLE `codes` (
