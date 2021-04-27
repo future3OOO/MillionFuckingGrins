@@ -90,6 +90,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 			'EMAIL_DEBUG'                 => "REPLACE INTO `config` VALUES ('EMAIL_DEBUG', ?);",
 			'USE_AJAX'                    => "REPLACE INTO `config` VALUES ('USE_AJAX', ?);",
 			'MEMORY_LIMIT'                => "REPLACE INTO `config` VALUES ('MEMORY_LIMIT', ?);",
+			'ERROR_REPORTING'             => "REPLACE INTO `config` VALUES ('ERROR_REPORTING', ?);",
 			'REDIRECT_SWITCH'             => "REPLACE INTO `config` VALUES ('REDIRECT_SWITCH', ?);",
 			'REDIRECT_URL'                => "REPLACE INTO `config` VALUES ('REDIRECT_URL', ?);",
 			'MDS_AGRESSIVE_CACHE'         => "REPLACE INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', ?);",
@@ -118,7 +119,6 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 			'EMAILS_PER_BATCH'    => "REPLACE INTO `config` VALUES ('EMAILS_PER_BATCH', ?);",
 			'EMAILS_MAX_RETRY'    => "REPLACE INTO `config` VALUES ('EMAILS_MAX_RETRY', ?);",
 			'EMAILS_ERROR_WAIT'   => "REPLACE INTO `config` VALUES ('EMAILS_ERROR_WAIT', ?);",
-			'ERROR_REPORTING'     => "REPLACE INTO `config` VALUES ('ERROR_REPORTING', ?);"
 		]
 
 		// doubles
