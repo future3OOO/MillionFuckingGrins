@@ -91,19 +91,27 @@ if ( $email != '' ) {
 			$message = $label["forget_pass_email_template"];
 			$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 			$message = str_replace( "%LNAME%", $row['LastName'], $message );
+			$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 			$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
 			$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
-			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
-			$message = str_replace( "%MEMBERID%", $row['Username'], $message );
+			if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+				$message = str_replace( "%SITE_URL%", WP_URL, $message );
+			} else {
+				$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+			}
 			$message = str_replace( "%PASSWORD%", $pass, $message );
 
 			$html_msg = $label["forget_pass_email_template_html"];
 			$html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
 			$html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
+			$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
 			$html_msg = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_msg );
 			$html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
-			$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
-			$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
+			if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+				$html_msg = str_replace( "%SITE_URL%", WP_URL, $html_msg );
+			} else {
+				$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
+			}
 			$html_msg = str_replace( "%PASSWORD%", $pass, $html_msg );
 
 			if ( USE_SMTP == 'YES' ) {

@@ -361,23 +361,33 @@ function complete_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $user_row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $user_row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $user_row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $order_row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_completed_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $user_row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $user_row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $user_row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $order_row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $user_row['Email'] );
 		$subject = $label['order_completed_email_subject'];
@@ -466,25 +476,35 @@ function confirm_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%DEADLINE%", intval( DAYS_CONFIRMED ), $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_confirmed_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%DEADLINE%", intval( DAYS_CONFIRMED ), $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_confirmed_email_subject'];
@@ -548,23 +568,33 @@ function pend_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_pending_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_pending_email_subject'];
@@ -648,23 +678,33 @@ function expire_order( $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_expired_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_expired_email_subject'];
@@ -904,25 +944,35 @@ function complete_renew_order( $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $user_row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $user_row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $user_row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $order_row['order_id'], $message );
 		$message = str_replace( "%ORIGINAL_ORDER_ID%", $order_row['original_order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_completed_renewal_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $user_row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $user_row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $user_row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $order_row['order_id'], $html_message );
 		$html_message = str_replace( "%ORIGINAL_ORDER_ID%", $order_row['original_order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $user_row['Email'] );
 		$subject = $label['order_completed_email_subject'];
@@ -980,6 +1030,7 @@ function send_confirmation_email( $email ) {
 	$message = $label["confirmation_email_templaltev2"];
 	$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 	$message = str_replace( "%LNAME%", $row['LastName'], $message );
+	$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 		$message = str_replace( "%SITE_URL%", WP_URL, $message );
 	} else {
@@ -992,7 +1043,12 @@ function send_confirmation_email( $email ) {
 	$html_msg = $label["confirmation_email_templaltev2_html"];
 	$html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
 	$html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
-	$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH . "users/", $html_msg );
+	$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
+	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+		$html_msg = str_replace( "%SITE_URL%", WP_URL, $html_msg );
+	} else {
+		$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
+	}
 	$html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
 	$html_msg = str_replace( "%VERIFY_URL%", $verify_url, $html_msg );
 	$html_msg = str_replace( "%VALIDATION_CODE%", $code, $html_msg );
