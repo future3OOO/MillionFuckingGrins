@@ -442,8 +442,8 @@ function install_db() {
           `price` float default NULL,
           `banner_id` int(11) NOT NULL default '1',
           `ad_id` INT(11)  NOT NULL default '0',
-          `click_count` INT NOT NULL,
-          `view_count` INT NOT NULL,
+          `click_count` INT(11) NOT NULL default '0',
+          `view_count` INT(11) NOT NULL default '0',
          PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 
@@ -886,8 +886,8 @@ function install_db() {
           `price` float default NULL,
           `banner_id` int(11) NOT NULL default '1',
           `ad_id` INT(11)  NOT NULL default '0',
-          `click_count` INT NOT NULL,
-          `view_count` INT NOT NULL,
+          `click_count` INT(11) NOT NULL default '0',
+          `view_count` INT(11) NOT NULL default '0',
           PRIMARY KEY  (`block_id`,`banner_id`)
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;;
 

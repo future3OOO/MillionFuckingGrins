@@ -300,4 +300,23 @@ if ( $version == 1 ) {
 	}
 
 	up_dbver();
+} else if ( $version == 5 ) {
+
+	// modify blocks.view_count column to have a default value
+	$sql    = "SELECT `view_count` FROM `blocks`;";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	if ( $result && mysqli_num_rows( $result ) == 0 ) {
+		$sql = "ALTER TABLE `blocks` MODIFY COLUMN `view_count` INT(11) NOT NULL default '0';";
+		mysqli_query( $GLOBALS['connection'], $sql );
+	}
+
+	// modify blocks.click_count column to have a default value
+	$sql    = "SELECT `click_count` FROM `blocks`;";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	if ( $result && mysqli_num_rows( $result ) == 0 ) {
+		$sql = "ALTER TABLE `blocks` MODIFY COLUMN `click_count` INT(11) NOT NULL default '0';";
+		mysqli_query( $GLOBALS['connection'], $sql );
+	}
+
+	up_dbver();
 }
