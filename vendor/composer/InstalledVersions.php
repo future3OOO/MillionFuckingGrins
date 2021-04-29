@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'c0b7994e94b4c465948ffec33507209fb94d590e',
+    'reference' => '28a535e46681e568f4be3fec6f718c75c96b6c1b',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -95,16 +95,16 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'c0b7994e94b4c465948ffec33507209fb94d590e',
+      'reference' => '28a535e46681e568f4be3fec6f718c75c96b6c1b',
     ),
     'phpmailer/phpmailer' => 
     array (
-      'pretty_version' => 'v6.4.0',
-      'version' => '6.4.0.0',
+      'pretty_version' => 'v6.4.1',
+      'version' => '6.4.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '050d430203105c27c30efd1dce7aa421ad882d01',
+      'reference' => '9256f12d8fb0cd0500f93b19e18c356906cbed3d',
     ),
   ),
 );
