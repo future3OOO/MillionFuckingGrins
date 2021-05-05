@@ -35,6 +35,7 @@ $renamed = false;
 if ( isset( $_REQUEST['action'] ) ) {
 
 	if ( $_REQUEST['action'] == 'install' && file_exists( __DIR__ . "/../config.php" ) ) {
+		copy_default_language();
 		save_db_config();
 		require_once __DIR__ . "/../config.php";
 		require_once __DIR__ . '/../include/database.php';
@@ -1178,4 +1179,16 @@ function install_db() {
 	//$result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']));
 	//$rows = mysqli_affected_rows ($result);;;
 	echo count( $queries ) . " Operations Completed.";
+}
+
+function copy_default_language() {
+	if ( file_exists( __DIR__ . "/../lang/english-default.php" ) ) {
+		if ( ! copy( __DIR__ . "/../lang/english-default.php", __DIR__ . "/../lang/english.php" ) ) {
+			echo "Unable to copy default language file from " . realpath( __DIR__ . "/../lang/english-default.php" ) . " to " . realpath( __DIR__ . "/../lang/english.php" );
+			exit;
+		}
+	} else {
+		echo "Default language file not found at " . realpath( __DIR__ . "/../lang/english-default.php" );
+		exit;
+	}
 }

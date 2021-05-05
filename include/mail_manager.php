@@ -286,7 +286,8 @@ function send_smtp_email( $mail_row ) {
 function send_phpmail( $mail_row ) {
 	if ( WP_ENABLED == 'YES' && WP_USE_MAIL == 'YES' ) {
 		mds_load_wp();
-		return wp_mail( $mail_row['to_address'], $mail_row['subject'], $mail_row['message'] );
+		add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+		return wp_mail( $mail_row['to_address'], $mail_row['subject'], $mail_row['html_message'] );
 	}
 
 	$debug_level = 0;

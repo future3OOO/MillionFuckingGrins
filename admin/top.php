@@ -47,10 +47,8 @@ if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
 $sql = "Select * from banners ";
 $res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
-// TODO: what's up with this $order_id?
 ?>
 <form name="bidselect" method="post" action="top.php">
-    <input type="hidden" name="old_order_id" value="<?php echo $order_id; ?>">
     Select grid: <select name="BID" onchange="mds_submit(this)">
         <option value='all' <?php if ( $BID == 'all' ) {
 			echo 'selected';
@@ -97,7 +95,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) 
 
 	//$sql = "SELECT *, DATE_FORMAT(MAX(order_date), '%Y-%c-%d') as max_date, sum(quantity) AS pixels FROM orders where status='completed' $bid_sql GROUP BY user_id, banner_id order by pixels desc ";
 
-	$sql = "SELECT *, sum(click_count) as clicksum, sum(view_count) as viewsum, count(order_id) as b from blocks WHERE status='sold' AND image_data <> '' $bid_sql group by url order by clicksum desc ";
+	$sql = "SELECT *, sum(click_count) AS clicksum, sum(view_count) AS viewsum, count(order_id) AS b FROM blocks WHERE STATUS='sold' AND image_data <> '' $bid_sql GROUP BY order_id ORDER BY clicksum DESC";
 
 	//echo $sql;
 

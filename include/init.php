@@ -42,7 +42,12 @@ foreach ( $MDSCONFIG as $key => $value ) {
 	}
 }
 
-ini_set( 'memory_limit', $MDSCONFIG['MEMORY_LIMIT'] );
+@ini_set( 'memory_limit', $MDSCONFIG['MEMORY_LIMIT'] );
+
+if ( $MDSCONFIG['WP_ENABLED'] == 'YES' ) {
+	require_once $MDSCONFIG['BASE_PATH'] . '/include/wp_functions.php';
+	mds_load_wp();
+}
 
 global $purifier;
 $purifier = new HTMLPurifier();
@@ -58,7 +63,3 @@ require_once $MDSCONFIG['BASE_PATH'] . '/include/currency_functions.php';
 require_once $MDSCONFIG['BASE_PATH'] . '/include/price_functions.php';
 require_once $MDSCONFIG['BASE_PATH'] . '/include/functions.php';
 require_once $MDSCONFIG['BASE_PATH'] . '/include/image_functions.php';
-
-if ( $MDSCONFIG['WP_ENABLED'] == 'YES' ) {
-	require_once $MDSCONFIG['BASE_PATH'] . '/include/wp_functions.php';
-}

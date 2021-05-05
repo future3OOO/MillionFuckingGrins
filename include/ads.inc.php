@@ -139,13 +139,22 @@ function assign_ad_template( $prams ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
-		if ( $row['field_type'] == 'IMAGE' ) {
-			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( ! empty( $prams[ $row['field_id'] ] ) ) ) {
-				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
-			} else {
-				//$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
-				$str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
-			}
+	    if ( $row['field_type'] == 'IMAGE' ) {
+		    if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( ! empty( $prams[ $row['field_id'] ] ) ) ) {
+			    $str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
+		    } else {
+			    //$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
+			    $str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
+		    }
+	    } else if($row['template_tag'] == 'URL') {
+            $str = str_replace('href="http://%URL%"', 'href="%URL%"', $str);
+	        $value = get_template_value( $row['template_tag'], 1 );
+		    $url = parse_url( $value );
+		    if ( empty( $url['scheme'] ) ) {
+			    $value = 'https://' . $value;
+		    }
+		    $str = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
+
 		} else {
 			$str = str_replace( '%' . $row['template_tag'] . '%', get_template_value( $row['template_tag'], 1 ), $str );
 		}

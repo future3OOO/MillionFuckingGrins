@@ -158,7 +158,7 @@ $label['select6']                            = '6 blocks at a time (3x2 rectangl
 $label['advertiser_sel_nfs_error']           = 'Sorry, cannot select this block of pixels because it is not for sale!';
 $label['advertiser_sel_sold_error']          = 'Sorry, cannot select block %BLOCK_ID% because it is on order / sold!';
 $label['advertiser_max_order']               = 'Cannot place pixels on order. You have reached the order limit for this grid. Please review your Order History.';
-$label['advertiser_max_order_html']          = '<b><span color="red">Cannot place pixels on order.</span> You have reached the order limit for this grid. Please review your <a href="orders.php">Order History.</a></b>';
+$label['advertiser_max_order_html']          = '<b><span style="color:red">Cannot place pixels on order.</span> You have reached the order limit for this grid. Please review your <a href="orders.php">Order History.</a></b>';
 $label['advertiser_sel_trail']               = '1. <b>Select Your Pixels</b> -> 2. Confirm Order -> 3. Payment -> 4. Image Upload & Publish your pixels';
 $label['advertiser_nav_status1']             = 'Upload Your pixels';
 $label['advertiser_nav_status2']             = 'Write Your Ad';
@@ -313,7 +313,7 @@ $label['pack_head_price']                    = 'Price';
 $label['pack_head_exp']                      = 'Expires';
 $label['pack_head_mo']                       = 'Max Orders';
 $label['pack_price_per100']                  = '/ 100 pixels';
-$label['pack_cannot_select']                 = '<span color=\'red\'>Error: Cannot place order. This price option is limited to %MAX_ORDERS% per customer.</span><br>Please select another option, or check your <a href=\'orders.php\'>Order History.</a>';
+$label['pack_cannot_select']                 = '<span style=\'color:red\'>Error: Cannot place order. This price option is limited to %MAX_ORDERS% per customer.</span><br>Please select another option, or check your <a href=\'orders.php\'>Order History.</a>';
 $label['payment_paypal_name']                = 'PayPal';
 $label['payment_paypal_descr']               = 'PayPal Secure Credit Card Payment';
 $label['payment_paypal_head']                = 'Pay with PayPal (Secure credit card payment)';

@@ -71,6 +71,7 @@ $user_row = mysqli_fetch_array( $result );
     <p>
 		<?php
 		$label['advertiser_home_blkyouown'] = str_replace( "%PIXEL_COUNT%", $pixels, $label['advertiser_home_blkyouown'] );
+		$label['advertiser_home_blkyouown'] = str_replace( "%BLOCK_COUNT%", ($pixels / ($b_row['block_width'] * $b_row['block_height'])), $label['advertiser_home_blkyouown'] );
 		echo $label['advertiser_home_blkyouown'] . "<br>";
 
 		$label['advertiser_home_blkonorder'] = str_replace( "%PIXEL_ORD_COUNT%", $ordered, $label['advertiser_home_blkonorder'] );
@@ -80,7 +81,6 @@ $user_row = mysqli_fetch_array( $result );
 		}
 		echo $label['advertiser_home_blkonorder'] . "<br>";
 
-		//TODO: make these work right
 		$label['advertiser_home_click_count'] = str_replace( "%CLICK_COUNT%", number_format( $user_row['click_count'] ), $label['advertiser_home_click_count'] );
 		echo $label['advertiser_home_click_count'] . "<br>";
 
@@ -103,6 +103,6 @@ $user_row = mysqli_fetch_array( $result );
 		<?php echo $label['advertiser_home_editlink']; ?><br>
     </p>
     <p>
-		<?php echo $label['advertiser_home_quest']; ?><?php echo SITE_CONTACT_EMAIL; ?>
+		<?php echo $label['advertiser_home_quest']; ?>
     </p>
 <?php require_once BASE_PATH . "/html/footer.php"; ?>

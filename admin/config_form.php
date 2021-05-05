@@ -733,7 +733,7 @@
 				$ADVANCED_CLICK_COUNT = MDSConfig::get( 'ADVANCED_CLICK_COUNT' );
 				?>
                 <input type="radio" name="ADVANCED_CLICK_COUNT" value="YES" <?php echo( $ADVANCED_CLICK_COUNT == 'YES' ? 'checked' : '' ); ?> /> Yes - Clicks (clicking the link on the popup) will be counted by day <br/>
-                <input type="radio" name="ADVANCED_CLICK_COUNT" value="NO" <?php echo( $ADVANCED_CLICK_COUNT == 'NO' ? 'checked' : '' ); ?> /> No (default)
+                <input type="radio" name="ADVANCED_CLICK_COUNT" value="NO" <?php echo( $ADVANCED_CLICK_COUNT == 'NO' ? 'checked' : '' ); ?> /> No
             </label>
         </div>
 
@@ -746,7 +746,7 @@
 				$ADVANCED_VIEW_COUNT = MDSConfig::get( 'ADVANCED_VIEW_COUNT' );
 				?>
                 <input type="radio" name="ADVANCED_VIEW_COUNT" value="YES" <?php echo( $ADVANCED_VIEW_COUNT == 'YES' ? 'checked' : '' ); ?> /> Yes - Views (clicking the block to trigger the popup) will be counted by day <br/>
-                <input type="radio" name="ADVANCED_VIEW_COUNT" value="NO" <?php echo( $ADVANCED_VIEW_COUNT == 'NO' ? 'checked' : '' ); ?> /> No (default)
+                <input type="radio" name="ADVANCED_VIEW_COUNT" value="NO" <?php echo( $ADVANCED_VIEW_COUNT == 'NO' ? 'checked' : '' ); ?> /> No
             </label>
         </div>
 

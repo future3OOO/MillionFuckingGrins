@@ -153,7 +153,7 @@ function receiveMessage(event, $el) {
 }
 
 function add_tippy() {
-	const defaultContent = $('.tooltip-source').html();
+	const defaultContent = "<div class='ajax-loader'></div>";
 	const isIOS = /iPhone|iPad|iPod/.test(navigator.platform);
 
 	window.tippy_instance = tippy('.mds-container area,.list-link', {
@@ -281,17 +281,18 @@ function rescale($el) {
 function mds_init(el, scalemap, tippy, type, isgrid) {
 	let $el = $(el);
 
-	let origWidth;
-	let origHeight;
-
-	if ($el.length > 0) {
-		origWidth = $el.width();
-		origHeight = $el.height();
-
-		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
-	}
-
 	if (isgrid && scalemap) {
+
+		let origWidth;
+		let origHeight;
+
+		if ($el.length > 0) {
+			origWidth = $el.width();
+			origHeight = $el.height();
+
+			$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
+		}
+
 		let $elParent = $el;
 
 		// https://github.com/GestiXi/image-scale
@@ -353,50 +354,52 @@ function mds_init(el, scalemap, tippy, type, isgrid) {
 		remove_ajax_loader();
 	});
 
-	$('area').on('click', function (e) {
-		e.preventDefault();
-		e.stopPropagation();
-	});
+	if (isgrid) {
+		$('area').off('click').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
 
-	$(document).on('click', '.pixel-url', function (e) {
-		e.preventDefault();
-		e.stopPropagation();
+			window.click_data = $(this).data('data');
+		});
 
-		const $link = $(this);
+		$(document).off('click', '.pixel-url').on('click', '.pixel-url', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
 
-		const data = $(this).parent().parent().parent().siblings('area').data('data');
+			const $link = $(this);
 
-		let ajax_data = {
-			aid: data.id,
-			bid: data.banner_id,
-			block_id: data.block_id,
-			action: 'click'
-		};
+			let ajax_data = {
+				aid: window.click_data.ad_id,
+				bid: window.click_data.banner_id,
+				block_id: window.click_data.block_id,
+				action: 'click'
+			};
 
-		$.ajax({
-			method: 'POST',
-			url: window.mds_data.ajax,
-			data: ajax_data,
-			dataType: 'html',
-			crossDomain: true,
-		}).done(function () {
-			let win = window.open($link.attr('href'), '_blank');
-			if (win) {
-				win.focus();
+			$.ajax({
+				method: 'POST',
+				url: window.mds_data.ajax,
+				data: ajax_data,
+				dataType: 'html',
+				crossDomain: true,
+			}).done(function () {
+				let win = window.open($link.attr('href'), '_blank');
+				if (win) {
+					win.focus();
+				}
+			});
+		});
+
+		$(document).off('click', '#theimage').on('click', '#theimage', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			if (window.mds_data.REDIRECT_SWITCH === 'YES') {
+				window.open(window.mds_data.REDIRECT_URL);
+				return false;
 			}
 		});
-	});
+	}
 
-	$(document).on('click', '#theimage', function (e) {
-		e.preventDefault();
-		e.stopPropagation();
-		if (window.mds_data.REDIRECT_SWITCH === 'YES') {
-			window.open(window.mds_data.REDIRECT_URL);
-			return false;
-		}
-	});
-
-	if (tippy && window.mds_data.ENABLE_MOUSEOVER !== 'NO') {
+	if (tippy && window.tippy_instance == undefined && window.mds_data.ENABLE_MOUSEOVER !== 'NO') {
 		defer('Popper', () => {
 			defer('tippy', () => {
 				add_tippy();

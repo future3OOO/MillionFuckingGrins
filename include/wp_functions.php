@@ -73,6 +73,13 @@ function mds_wp_login_check() {
 						// escape the URL
 						$loginhref = esc_url( $loginpage );
 
+						$woocommerce_enabled = \MillionDollarScript\Classes\Options::get_option( 'woocommerce' );
+						$login_redirect_url  = \MillionDollarScript\Classes\Options::get_option( 'login-redirect' );
+
+						if ( $woocommerce_enabled ) {
+							$loginhref .= ( strpos( $loginhref, '?' ) !== false ? '&' : '?' ) . 'redirect_to=' . esc_url_raw( $login_redirect_url ) . '&redirect=' . esc_url_raw( $login_redirect_url );
+						}
+
 						// do a javascript redirect in the parent frame if it exists, otherwise just redirect in the current window
 						echo '
 					<script>

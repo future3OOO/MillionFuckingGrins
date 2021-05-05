@@ -3108,7 +3108,7 @@ function check_pixels( $in_str ) {
 	// check if it is free
 	$available = true;
 
-	$sql = "SELECT block_id FROM blocks WHERE banner_id='" . intval( $BID ) . "' AND block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ")";
+	$sql = "SELECT block_id FROM blocks WHERE banner_id=" . intval( $BID ) . " AND block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ")";
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
@@ -3119,7 +3119,7 @@ function check_pixels( $in_str ) {
 	if ( $available ) {
 
 		// from temp_orders table
-		$sql = "SELECT blocks FROM temp_orders WHERE banner_id='" . intval( $BID ) . "'";
+		$sql = "SELECT blocks FROM temp_orders WHERE banner_id=" . intval( $BID ) . " AND session_id != '" . session_id() . "'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 		$selected = explode( ",", $in_str );

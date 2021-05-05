@@ -419,7 +419,7 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 				<?php
 			}
 		} else if ( $row['field_type'] == "MIME" ) {
-		    // do nothing. It is an extra field for FILE type fields..
+			// do nothing. It is an extra field for FILE type fields..
 
 		} else {
 
@@ -444,9 +444,9 @@ function mds_display_form( $form_id, $mode, $prams, $section ) {
 					}
 
 					// avoid triggering mod_security by not posting http:// in the form fields
-					if ( strtolower( $row['field_label'] ) == "url" ) {
-						echo "<span class=\"httplabel\">http(s)://</span>";
-					}
+					//					if ( strtolower( $row['field_label'] ) == "url" ) {
+					//						echo "<span class=\"httplabel\">http(s)://</span>";
+					//					}
 
 					if ( ( $mode == 'edit' ) && is_reserved_template_tag( $row['template_tag'] ) ) {
 						$alt = get_reserved_tag_description( $row['template_tag'] );
@@ -999,7 +999,6 @@ function validate_form_data( $form_id ) {
 						if ( $_FILES[ $row['field_id'] ]['name'] == '' || $_FILES[ $row['field_id'] ]['size'] == 0 ) {
 							$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 						}
-
 					} else if ( trim( $_POST[ $row['field_id'] ] == '' ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					}
@@ -1031,6 +1030,13 @@ function validate_form_data( $form_id ) {
 
 					break;
 				case 'url':
+
+					// Check for http or https
+					$url = parse_url( $_POST[ $row['field_id'] ] );
+					if ( empty( $url['scheme'] ) ) {
+						$_POST[ $row['field_id'] ] = 'https://' . $_POST[ $row['field_id'] ];
+					}
+
 					if ( ( $_POST[ $row['field_id'] ] == '' ) || ( ( $_POST[ $row['field_id'] ] == 'http://' ) ) ) {
 						$error .= " - '" . $row['field_label'] . "' " . $row['error_message'] . "<br>";
 					} else if ( VALIDATE_LINK == 'YES' ) {
@@ -1060,12 +1066,6 @@ function validate_form_data( $form_id ) {
 
 							fclose( $fp );
 						}
-					}
-
-					// Check for http or https
-					$url = parse_url( $_POST[ $row['field_id'] ] );
-					if ( ! empty( $url['scheme'] ) ) {
-						$error .= "- '" . $row['field_label'] . "' <b>" . $label['advertiser_publish_bad_url'] . "</b> <span style='text-decoration:line-through'>" . $url['scheme'] . "://</span><br>";
 					}
 					break;
 
@@ -1485,14 +1485,14 @@ function form_date_field( $field_name, $day, $month, $year ) {
 							break;
 
 						case 'M':
-						    $output = '<select name="' . htmlspecialchars($field_name, ENT_QUOTES) . 'm" class="' . htmlspecialchars($class, ENT_QUOTES) . '">
+							$output = '<select name="' . htmlspecialchars($field_name, ENT_QUOTES) . 'm" class="' . htmlspecialchars($class, ENT_QUOTES) . '">
                                 <option value=""></option>';
 
-						    for($x = 1;$x <= 12; $x++) {
-							    $output .= '<option ' . ( ( $month == '0' . $x ) ? 'selected ' : '' ) . 'value="0' . $x . '">' . htmlspecialchars($label['sel_month_' . $x], ENT_QUOTES) . '</option>';
-						    }
+							for($x = 1;$x <= 12; $x++) {
+								$output .= '<option ' . ( ( $month == '0' . $x ) ? 'selected ' : '' ) . 'value="0' . $x . '">' . htmlspecialchars($label['sel_month_' . $x], ENT_QUOTES) . '</option>';
+							}
 
-                            $output .= '</select>';
+							$output .= '</select>';
 
 							echo $output;
 

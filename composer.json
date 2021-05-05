@@ -23,13 +23,10 @@
     }
   },
   "require": {
-    "ckeditor/ckeditor": ">=4.15.1",
-    "imagine/imagine": ">=1.2.2",
-    "ezyang/htmlpurifier": ">=4.11.0",
-    "phpmailer/phpmailer": ">=6.0.7",
-    "components/jquery": ">=3.3.1",
-    "components/jqueryui": "1.11.4",
-    "jquery-form/form": ">=4.2.2",
+    "ckeditor/ckeditor": ">=4.16.0",
+    "imagine/imagine": ">=1.2.4",
+    "ezyang/htmlpurifier": ">=4.13.0",
+    "phpmailer/phpmailer": ">=6.4.1",
     "ext-mysqli": "*",
     "ext-gd": "*",
     "ext-json": "*",

@@ -99,7 +99,14 @@ if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 	exit();
 }
 
-$grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
+$grid_img = '../' . BANNER_DIR . 'main' . $BID;
+if ( OUTPUT_JPEG == 'Y' ) {
+	$grid_img .= '.jpg';
+} else if ( OUTPUT_JPEG == 'N' ) {
+	$grid_img .= '.png';
+} else if ( ( OUTPUT_JPEG == 'GIF' ) ) {
+	$grid_img .= '.gif';
+}
 
 ?>
 <script>
@@ -117,40 +124,64 @@ $grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
 		});
 
 		function processBlock(block) {
-			let blockid = block.attr("data-block");
-			if (block.hasClass("nfs")) {
-				block.removeClass("nfs").addClass("free");
+			let $block = $(block);
+			let blockid = $block.attr("data-block");
+			if ($block.hasClass("nfs") && !$block.hasClass("selected")) {
+				$block.removeClass("nfs").addClass("free");
 				remnfs.push(blockid);
 				let index = addnfs.indexOf(blockid);
 				if (index !== -1) {
 					addnfs.splice(index, 1);
 				}
-			} else if (block.hasClass("free")) {
-				block.removeClass("free").addClass("nfs");
-				blockid = block.attr("data-block");
+			} else if ($block.hasClass("free") && $block.hasClass("selected")) {
+				$block.removeClass("free").addClass("nfs");
+				blockid = $block.attr("data-block");
 				addnfs.push(blockid);
 				let index = remnfs.indexOf(blockid);
 				if (index !== -1) {
 					remnfs.splice(index, 1);
 				}
-			} else if (!block.hasClass("free")) {
-				block.removeClass("ui-selected");
+			} else if (!$block.hasClass("nfs") && !$block.hasClass("free") && $block.hasClass("selected")) {
+				$block.removeClass("selected");
 			}
 		}
 
-		if ($grid.hasClass('ui-selectable')) {
-			$grid.selectable("destroy");
-		}
-		$grid.selectable({
-			//delay: 75,
-			//distance: <?php //echo $banner_data['BLK_WIDTH']; ?>//,
-			autoRefresh: false,
-			filter: 'span',
-			stop: function () {
-				$(".ui-selected", this).each(function () {
-					processBlock($(this));
-				});
-				$(this).selectable("refresh");
+		// https://github.com/Simonwep/selection
+		const selection = new SelectionArea({
+			document: window.document,
+			class: 'selection-area',
+			container: 'body',
+			selectables: ['span.block'],
+			startareas: ['.grid'],
+			boundaries: ['.grid'],
+			startThreshold: 10,
+			allowTouch: true,
+			intersect: 'touch',
+			overlap: 'invert',
+			singleTap: {
+				allow: true,
+				intersect: 'native'
+			},
+			scrolling: {
+				speedDivider: 10,
+				manualSpeed: 750
+			}
+		}).on('move', ({store: {changed: {added, removed}}}) => {
+
+			for (const el of added) {
+				el.classList.add('selected');
+			}
+
+			for (const el of removed) {
+				el.classList.remove('selected');
+			}
+
+		}).on('stop', evt => {
+
+			selection.keepSelection();
+
+			for (const el of selection.getSelection()) {
+				processBlock(el);
 			}
 		});
 
@@ -202,6 +233,7 @@ $grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
 				modal: true,
 				width: 'auto',
 				resizable: false,
+				position: { my: "center top", at: "center top+1%", of: window },
 				buttons: {
 					Yes: function () {
 
@@ -222,17 +254,25 @@ $grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
 							$save.prop('disabled', false);
 							$reset.prop('disabled', false);
 
-							$(".block.nfs").removeClass("ui-selected").removeClass("nfs").addClass("free");
+							$(".block.nfs,.block.selected").removeClass("selected").removeClass("nfs").addClass("free");
+
+							selection.clearSelection();
 						});
 
 						$(this).dialog("close");
 					},
 					No: function () {
 						$(this).dialog("close");
+
+						$save.prop('disabled', false);
+						$reset.prop('disabled', false);
 					}
 				},
 				close: function () {
 					$(this).remove();
+
+					$save.prop('disabled', false);
+					$reset.prop('disabled', false);
 				}
 			});
 		}
@@ -264,6 +304,7 @@ $grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
         z-index: 0;
         width: <?php echo $banner_data['G_WIDTH']*$banner_data['BLK_WIDTH']; ?>px;
         height: <?php echo $banner_data['G_HEIGHT']*$banner_data['BLK_HEIGHT']; ?>px;
+        user-select: none;
     }
 
     .block_row {
@@ -319,8 +360,13 @@ $grid_img = '../' . BANNER_DIR . 'main' . $BID . '.png';
         z-index: 10000;
     }
 
-    .grid .ui-selecting {
-        background: #FECA40;
+    .selection-area {
+        background: rgba(254, 202, 64, 0.33);
+        border: 1px solid rgba(135, 110, 42, 0.33);
+    }
+
+    .selected {
+        outline: 1px solid rgba(0, 0, 0, 0.45);
     }
 </style>
 
