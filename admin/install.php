@@ -75,7 +75,7 @@ if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false && mds_
     <h3>Next Steps</h3>
     <ol>
         <li><a target="_blank" href="install.php?action=delete">Click here</a> to delete this file (/admin/install.php) from the server.</li>
-        <li><a target="_blank" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
+        <li><a target="_blank" href="index.php">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
         <li>Install, enable and configure a payment module under Payment Modules.</li>
         <li>Edit your grid settings under Manage Grids.</li>
         <li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
@@ -1182,13 +1182,13 @@ function install_db() {
 }
 
 function copy_default_language() {
-	if ( file_exists( __DIR__ . "/../lang/english-default.php" ) ) {
-		if ( ! copy( __DIR__ . "/../lang/english-default.php", __DIR__ . "/../lang/english.php" ) ) {
-			echo "Unable to copy default language file from " . realpath( __DIR__ . "/../lang/english-default.php" ) . " to " . realpath( __DIR__ . "/../lang/english.php" );
+	if ( file_exists( __DIR__ . "/../lang/english_default.php" ) ) {
+		if ( ! copy( __DIR__ . "/../lang/english_default.php", __DIR__ . "/../lang/english.php" ) ) {
+			echo "Unable to copy default language file from " . realpath( __DIR__ . "/../lang/english_default.php" ) . " to " . realpath( __DIR__ . "/../lang/english.php" );
 			exit;
 		}
 	} else {
-		echo "Default language file not found at " . realpath( __DIR__ . "/../lang/english-default.php" );
+		echo "Default language file not found at " . realpath( __DIR__ . "/../lang/english_default.php" );
 		exit;
 	}
 }
