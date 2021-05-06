@@ -34,7 +34,7 @@
  * Class MDSConfig
  */
 class MDSConfig {
-	private static array $config;
+	private static $config;
 
 	/**
 	 * MDSConfig constructor.
