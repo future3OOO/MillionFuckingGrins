@@ -551,11 +551,11 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 			if ( MDS_RESIZE == 'YES' ) {
 				$rescale = [];
 				if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
-					$rescale['x'] = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'];
-					$rescale['y'] = $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'];
+					$rescale['x'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0]);
+					$rescale['y'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0]);
 				} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
-					$rescale['x'] = $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'];
-					$rescale['y'] = $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'];
+					$rescale['x'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0]);
+					$rescale['y'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0]);
 				}
 
 				if ( isset( $rescale['x'] ) ) {
