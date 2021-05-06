@@ -75,7 +75,7 @@ if ( isset( $GLOBALS['connection'] ) && $GLOBALS['connection'] !== false && mds_
     <h3>Next Steps</h3>
     <ol>
         <li><a target="_blank" href="install.php?action=delete">Click here</a> to delete this file (/admin/install.php) from the server.</li>
-        <li><a target="_blank" href="index.php">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
+        <li><a target="_blank" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/">Go to Admin</a> &gt; Main Config and configure it to your liking. Default password is: <?php echo htmlspecialchars( ADMIN_PASSWORD, ENT_QUOTES, 'UTF-8' ); ?></li>
         <li>Install, enable and configure a payment module under Payment Modules.</li>
         <li>Edit your grid settings under Manage Grids.</li>
         <li>Run the Process Pixels task from the admin area to generate your initial grid image.</li>
@@ -267,7 +267,7 @@ function multiple_query( $q ) {
 
 function install_db() {
 	$url     = parse_url( "http" . ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ) ? "s" : "" ) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-	$baseurl = $url['scheme'] . "://" . $url['host'] . trim( $url['path'], '/admin/install.php' );
+	$baseurl = $url['scheme'] . "://" . $url['host'] . str_replace( '/admin/install.php', '', $url['path'] );
 
 	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
 	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
