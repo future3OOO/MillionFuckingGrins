@@ -483,7 +483,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
         INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
-        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/upload_files/' ) . "');;;
         INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', 'test@example.com');;;
         INSERT INTO `config` VALUES ('SITE_LOGO_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/images/logo.gif' ) . "');;;
@@ -927,7 +927,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
         INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
-        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) ) . "');;;
+        INSERT INTO `config` VALUES ('UPLOAD_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../upload_files/' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('UPLOAD_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/upload_files/' ) . "');;;
         INSERT INTO `config` VALUES ('SITE_CONTACT_EMAIL', 'test@example.com');;;
         INSERT INTO `config` VALUES ('SITE_LOGO_URL', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/images/logo.gif' ) . "');;;
