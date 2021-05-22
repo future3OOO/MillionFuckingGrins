@@ -45,7 +45,6 @@ $error = '';
 
 if ( isset( $_REQUEST['aid'] ) && is_numeric( $_REQUEST['aid'] ) ) {
 
-
 	$gd_info = @gd_info();
 	if ( $gd_info['GIF Read Support'] ) {
 		$gif_support = "GIF";
@@ -200,4 +199,6 @@ if ( isset( $_REQUEST['aid'] ) && is_numeric( $_REQUEST['aid'] ) ) {
 	<?php
 }
 
-$count = list_ads( true, 0 );
+$offset = isset( $_REQUEST['offset'] ) ? intval( $_REQUEST['offset'] ) : 0;
+
+$count = list_ads( true, $offset );

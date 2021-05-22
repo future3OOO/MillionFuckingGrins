@@ -580,7 +580,7 @@ The value of the field (on the right from the field label)
 }
 
 .ajax-loader {
-	width:100%;
+	width:32px;
 	min-height:32px;
 	position:absolute;
 	background:url(../images/ajax-loader.gif) no-repeat center center;

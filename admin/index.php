@@ -55,6 +55,14 @@ if(WP_ENABLED == 'YES') {
     <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>js/third-party/selection.min.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/js/third-party/selection.min.js" ); ?>"></script>
     <link rel="stylesheet" href="<?php echo $f2->value(BASE_HTTP_PATH); ?>css/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/css/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
     <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>js/third-party/jquery.form.min.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/js/third-party/jquery.form.min.js" ); ?>"></script>
+
+    <script>
+	    window.mds_data = {
+		    ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+		    mds_site_url: '<?php echo $mds_site_url; ?>',
+		    BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>'
+	    };
+    </script>
     <script src="<?php echo $f2->value(BASE_HTTP_PATH); ?>admin/js/admin.js?ver=<?php echo filemtime( $f2->value(BASE_PATH) . "/admin/js/admin.js" ); ?>"></script>
 </head>
 <body>

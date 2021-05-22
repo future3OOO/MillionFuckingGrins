@@ -138,7 +138,7 @@ function up_dbver() {
 }
 
 // No DB connection yet
-if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] === false ) {
+if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] == false ) {
 	return;
 }
 

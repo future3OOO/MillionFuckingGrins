@@ -43,8 +43,9 @@ function defer(toWaitFor, method) {
 }
 
 function add_ajax_loader(container) {
-	let ajax_loader = $("<div class='ajax-loader'></div>");
-	$(container).append(ajax_loader)
+	let $ajax_loader = $("<div class='ajax-loader'></div>");
+	$(container).append($ajax_loader)
+	$ajax_loader.css('top', $(container).position().top).css('left', ($(container).width() / 2) - ($ajax_loader.width() / 2));
 }
 
 function remove_ajax_loader() {

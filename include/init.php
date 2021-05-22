@@ -38,7 +38,7 @@ require_once __DIR__ . '/../include/MDSConfig.php';
 $MDSCONFIG = MDSConfig::load();
 foreach ( $MDSCONFIG as $key => $value ) {
 	if ( ! defined( $key ) ) {
-		define( $key, stripslashes($value) );
+		define( $key, stripslashes( $value ) );
 	}
 }
 

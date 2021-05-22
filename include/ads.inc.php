@@ -153,6 +153,7 @@ function assign_ad_template( $prams ) {
 		    if ( empty( $url['scheme'] ) ) {
 			    $value = 'https://' . $value;
 		    }
+		    $value = '<a href="' . esc_url( $value ) . '">' . esc_html( $value ) . '</a>';
 		    $str = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
 
 		} else {
@@ -213,7 +214,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
 	$action    = strpos( $_SERVER['PHP_SELF'], '/admin/' ) !== false ? basename( $_SERVER['PHP_SELF'] ) : $_SERVER['PHP_SELF'];
 	?>
     <form method="POST" action="<?php echo htmlentities( $action ); ?>" name="form1" enctype="multipart/form-data">
-
+        <input type="hidden" name="0" value="placeholder">
         <input type="hidden" name="mode" value="<?php echo $mode; ?>">
         <input type="hidden" name="aid" value="<?php echo $ad_id; ?>">
         <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">

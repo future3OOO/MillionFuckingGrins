@@ -717,7 +717,7 @@
 				<?php
 				$REDIRECT_SWITCH = MDSConfig::get( 'REDIRECT_SWITCH' );
 				?>
-                <input type="radio" name="REDIRECT_SWITCH" value="YES" <?php echo( $REDIRECT_SWITCH == 'YES' ? 'checked' : '' ); ?> /> Yes - When an available block is clicked, redirect to: <input type="text" name="redirect_url" size="30" value="<?php echo MDSConfig::get( 'REDIRECT_URL', true ); ?>">
+                <input type="radio" name="REDIRECT_SWITCH" value="YES" <?php echo( $REDIRECT_SWITCH == 'YES' ? 'checked' : '' ); ?> /> Yes - When an available block is clicked, redirect to: <input type="text" name="REDIRECT_URL" size="30" value="<?php echo MDSConfig::get( 'REDIRECT_URL', true ); ?>">
                 <br/>Note: This option will only work for grids that are on the same domain as the script (browser security). If the grid is placed on another domain, IE may report a 'permission denied' JavaScript error. <br/>
                 <input type="radio" name="REDIRECT_SWITCH" value="NO" <?php echo( $REDIRECT_SWITCH == 'NO' ? 'checked' : '' ); ?> /> No (default)<br/>
                 Note: You will need to process your grids after changing this option.
