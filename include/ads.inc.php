@@ -32,8 +32,8 @@
 
 use Imagine\Filter\Basic\Autorotate;
 
-require_once( 'lists.inc.php' );
-require_once( 'dynamic_forms.php' );
+require_once __DIR__ . '/lists.inc.php';
+require_once __DIR__ . '/dynamic_forms.php';
 
 global $ad_tag_to_field_id, $ad_tag_to_search;
 $ad_tag_to_search   = tag_to_search_init( 1 );
@@ -131,7 +131,7 @@ function load_ad_values( $ad_id ) {
 
 function assign_ad_template( $prams ) {
 
-	global $label, $prams;
+	global $f2, $label, $prams;
 
 	$str = $label['mouseover_ad_template'];
 
@@ -153,7 +153,7 @@ function assign_ad_template( $prams ) {
 		    if ( empty( $url['scheme'] ) ) {
 			    $value = 'https://' . $value;
 		    }
-		    $value = '<a href="' . esc_url( $value ) . '">' . esc_html( $value ) . '</a>';
+		    $value = '<a href="' . $f2->value( $value ) . '">' . $f2->value( $value ) . '</a>';
 		    $str = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
 
 		} else {
