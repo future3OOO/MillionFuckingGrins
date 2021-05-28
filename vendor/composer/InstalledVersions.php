@@ -29,19 +29,19 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '74ea2b31e9977f096d90b82714fb672627b245fd',
+    'reference' => 'cc5261003a82fcdc0a5cce2ad77d6bf457cbf470',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
   array (
     'ckeditor/ckeditor' => 
     array (
-      'pretty_version' => '4.16.0',
-      'version' => '4.16.0.0',
+      'pretty_version' => '4.16.1',
+      'version' => '4.16.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '98a1bce9c9237e2ee141c0d2e01c3f0576655d5d',
+      'reference' => '814c5891714b9de2aaf0d44ca4a5538e9596275c',
     ),
     'ezyang/htmlpurifier' => 
     array (
@@ -68,7 +68,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '74ea2b31e9977f096d90b82714fb672627b245fd',
+      'reference' => 'cc5261003a82fcdc0a5cce2ad77d6bf457cbf470',
     ),
     'phpmailer/phpmailer' => 
     array (
