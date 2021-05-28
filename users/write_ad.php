@@ -61,7 +61,6 @@ if ( mysqli_num_rows( $order_result ) == 0 ) {
 	die();
 }
 
-require_once BASE_PATH . "/html/header.php";
 $row = mysqli_fetch_array( $order_result );
 
 update_temp_order_timestamp();
@@ -90,6 +89,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 
 	$error = validate_ad_data( 1 );
 	if ( $error != '' ) { // we have an error
+		require_once BASE_PATH . "/html/header.php";
 		$mode = "user";
 		//display_ad_intro();
 		display_ad_form( 1, $mode, '' );
@@ -101,15 +101,11 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		$sql = "UPDATE temp_orders SET ad_id='$ad_id' where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		$prams = load_ad_values( $ad_id );
-
-		?>
-        <div class='ok_msg_label'><input type="button" class='big_button' value="<?php echo $label['write_ad_saved'] . " " . $label['write_ad_continue_button']; ?>" onclick="window.location='confirm_order.php'"></div>
-        <p>&nbsp;</p>
-		<?php
-		display_ad_form( 1, "user", $prams );
+		header("Location: " . BASE_HTTP_PATH . "users/confirm_order.php");
+		exit;
 	}
 } else {
+	require_once BASE_PATH . "/html/header.php";
 
 	// get the ad_id form the temp_orders table..
 

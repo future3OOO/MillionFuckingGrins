@@ -219,6 +219,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 			echo "<p>" . $label['advertiser_max_order'] . "</p>";
 		} else {
 
+		    // TODO: Add option to auto forward to next page
 			if ( ( $order_row['price'] == 0 ) || ( $u_row['Rank'] == 2 ) ) { // go straight to publish...
 				?>
                 <input type='button' class='big_button' value="<?php echo htmlspecialchars( $label['advertiser_o_completebutton'] ); ?>" onclick="window.location='publish.php?action=complete&BID=<?php echo $BID; ?>&order_id=temp'">

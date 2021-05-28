@@ -197,7 +197,7 @@ require_once BASE_PATH . "/html/header.php";
 				map_y: window.$block_pointer.map_y,
 				block_id: get_clicked_block(),
 				BID: <?php echo $BID; ?>,
-                t: <?php echo time(); ?>
+				t: <?php echo time(); ?>
 			};
 
 			$.ajax({
@@ -471,7 +471,6 @@ require_once BASE_PATH . "/html/header.php";
 
 			window.$block_pointer.css('visibility', 'visible');
 		}
-
     </script>
     <style>
 		#block_pointer {
@@ -551,11 +550,11 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 			if ( MDS_RESIZE == 'YES' ) {
 				$rescale = [];
 				if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
-					$rescale['x'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0]);
-					$rescale['y'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0]);
+					$rescale['x'] = min( $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0] );
+					$rescale['y'] = min( $banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0] );
 				} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
-					$rescale['x'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0]);
-					$rescale['y'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0]);
+					$rescale['x'] = min( $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $reqsize[0] );
+					$rescale['y'] = min( $banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $reqsize[0] );
 				}
 
 				if ( isset( $rescale['x'] ) ) {
@@ -748,9 +747,6 @@ if ( isset( $tmp_image_file ) && ! empty( $tmp_image_file ) ) {
     <script type="text/javascript">
 		document.form1.selected_pixels.value = block_str;
 		$(function () {
-			$(document).on('click', function(e){
-				console.log(e);
-            });
 			window.pointer_width = <?php echo $reqsize[0]; ?>;
 			window.pointer_height =  <?php echo $reqsize[1]; ?>;
 
@@ -772,6 +768,12 @@ if ( isset( $tmp_image_file ) && ! empty( $tmp_image_file ) ) {
 			window.$pixelimg.on('mousemove', function (event) {
 				show_pointer(event);
 			});
+
+			window.$pixelimg.on('load', function () {
+				remove_ajax_loader();
+			});
+
+			add_ajax_loader(window.$pixelimg.parent());
 		});
     </script>
 

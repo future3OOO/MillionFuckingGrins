@@ -49,13 +49,14 @@ if ( ! defined( 'UPLOAD_PATH' ) ) {
 if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
 
 	$host     = $_SERVER['SERVER_NAME']; // hostname
+	$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
 	$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
 	$http_url = explode( "/", $http_url );
 	array_pop( $http_url ); // get rid of filename
 	array_pop( $http_url ); // get rid of /admin
 	$http_url = implode( "/", $http_url );
 
-	define( 'UPLOAD_HTTP_PATH', "http://" . $host . $http_url . "/upload_files/" );
+	define( 'UPLOAD_HTTP_PATH', $protocol . $host . $http_url . "/upload_files/" );
 }
 
 // Written for having magic quotes enabled

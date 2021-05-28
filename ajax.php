@@ -350,7 +350,7 @@ function show_list() {
 								'url'       => get_template_value( 'URL', 1 ),
 							);
 
-							echo $br . '<a target="_blank" data-data="' . htmlspecialchars( json_encode( $data_values, JSON_HEX_QUOT | JSON_HEX_APOS ), ENT_QUOTES, 'UTF-8' ) . '" data-alt-text="' . $ALT_TEXT . '" class="list-link" href="http://' . $data_values['url'] . '">' . get_template_value( 'ALT_TEXT', 1 ) . '</a>';
+							echo $br . '<a target="_blank" data-data="' . htmlspecialchars( json_encode( $data_values, JSON_HEX_QUOT | JSON_HEX_APOS ), ENT_QUOTES, 'UTF-8' ) . '" data-alt-text="' . $ALT_TEXT . '" class="list-link" href="' . $data_values['url'] . '">' . get_template_value( 'ALT_TEXT', 1 ) . '</a>';
 							$br = '<br>';
 						}
 
