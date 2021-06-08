@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'cc5261003a82fcdc0a5cce2ad77d6bf457cbf470',
+    'reference' => 'ad9cb0f409fe497ce9b7b0a8a34d980f518c522e',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
@@ -68,7 +68,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'cc5261003a82fcdc0a5cce2ad77d6bf457cbf470',
+      'reference' => 'ad9cb0f409fe497ce9b7b0a8a34d980f518c522e',
     ),
     'phpmailer/phpmailer' => 
     array (
