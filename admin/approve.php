@@ -67,7 +67,12 @@ require( BASE_PATH . '/include/mouseover_js.inc.php' );
 echo '</script>';
 
 global $f2;
-$BID = $f2->bid();
+
+if ( isset( $_REQUEST['BID'] ) ) {
+	$BID = $f2->bid();
+} else {
+    $BID = 'all';
+}
 
 $bid_sql = " AND banner_id=$BID ";
 if ( ( $BID == 'all' ) || empty($BID) ) {
