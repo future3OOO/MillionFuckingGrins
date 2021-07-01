@@ -153,7 +153,7 @@ function assign_ad_template( $prams ) {
 		    if ( empty( $url['scheme'] ) ) {
 			    $value = 'https://' . $value;
 		    }
-		    $value = '<a href="' . $f2->value( $value ) . '">' . $f2->value( $value ) . '</a>';
+		    $value = '<a class="pixel-url" href="' . $f2->value( $value ) . '">' . $f2->value( $value ) . '</a>';
 		    $str = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
 
 		} else {
