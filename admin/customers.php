@@ -119,236 +119,236 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 ?>
     <p>
 
-        <form style="margin: 0" action="customers.php?search=search" method="post">
+    <form style="margin: 0" action="customers.php?search=search" method="post">
 
-            <center>
-                <table border="0" cellpadding="2" cellspacing="0" style="border-collapse: collapse" id="AutoNumber2" width="100%">
+        <center>
+            <table border="0" cellpadding="2" cellspacing="0" style="border-collapse: collapse" id="AutoNumber2" width="100%">
 
-                    <tr>
-                        <td width="63" bgcolor="#EDF8FC" valign="top">
-    <p align="right"><span style="font-size: x-small; font-family: Arial,serif; "><b>Name</b></span></p></td>
-    <td width="286" bgcolor="#EDF8FC" valign="top">
+                <tr>
+                    <td width="63" bgcolor="#EDF8FC" valign="top">
+                        <p align="right"><span style="font-size: x-small; font-family: Arial,serif; "><b>Name</b></span></p></td>
+                    <td width="286" bgcolor="#EDF8FC" valign="top">
       <span style="font-family: Arial; ">
       <input type="text" name="q_name" size="39" value="<?php echo $q_name; ?>"/></span></td>
-    <td width="71" bgcolor="#EDF8FC" valign="top">
-        <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Username</span></b></p></td>
-    <td width="299" bgcolor="#EDF8FC" valign="top">
-        <input type="text" name="q_username" size="28" value="<?php echo $q_username; ?>"/></td>
-    </tr>
-    <tr>
-        <td width="63" bgcolor="#EDF8FC" valign="top">
-            <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Signed Up After:</span></b></td>
-        <td width="286" bgcolor="#EDF8FC" valign="top">
-            <b>
-                <span style="font-family: Arial; font-size: x-small; "></span></b><span style="font-size: x-small; font-family: Arial; "><b>
+                    <td width="71" bgcolor="#EDF8FC" valign="top">
+                        <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Username</span></b></p></td>
+                    <td width="299" bgcolor="#EDF8FC" valign="top">
+                        <input type="text" name="q_username" size="28" value="<?php echo $q_username; ?>"/></td>
+                </tr>
+                <tr>
+                    <td width="63" bgcolor="#EDF8FC" valign="top">
+                        <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Signed Up After:</span></b></td>
+                    <td width="286" bgcolor="#EDF8FC" valign="top">
+                        <b>
+                            <span style="font-family: Arial; font-size: x-small; "></span></b><span style="font-size: x-small; font-family: Arial; "><b>
        </b></span>
-			<?php
+						<?php
 
-			if ( $q_aday == '' ) {
+						if ( $q_aday == '' ) {
 
-				// $q_aday = date("d");
-				//   $q_amon = date("m");
-				//   $q_ayear = date("Y");
+							// $q_aday = date("d");
+							//   $q_amon = date("m");
+							//   $q_ayear = date("Y");
 
-			}
+						}
 
-			?>
-            <select name="q_aday">
-                <option></option>
-                <option <?php if ( $q_aday == '01' ) {
-					echo ' selected ';
-				} ?> >1
-                </option>
-                <option <?php if ( $q_aday == '02' ) {
-					echo ' selected ';
-				} ?> >2
-                </option>
-                <option <?php if ( $q_aday == '03' ) {
-					echo ' selected ';
-				} ?> >3
-                </option>
-                <option <?php if ( $q_aday == '04' ) {
-					echo ' selected ';
-				} ?> >4
-                </option>
-                <option <?php if ( $q_aday == '05' ) {
-					echo ' selected ';
-				} ?> >5
-                </option>
-                <option <?php if ( $q_aday == '06' ) {
-					echo ' selected ';
-				} ?> >6
-                </option>
-                <option <?php if ( $q_aday == '07' ) {
-					echo ' selected ';
-				} ?>>7
-                </option>
-                <option <?php if ( $q_aday == '08' ) {
-					echo ' selected ';
-				} ?>>8
-                </option>
-                <option <?php if ( $q_aday == '09' ) {
-					echo ' selected ';
-				} ?> >9
-                </option>
-                <option <?php if ( $q_aday == '25' ) {
-					echo ' selected ';
-				} ?> >25
-                </option>
-                <option <?php if ( $q_aday == '26' ) {
-					echo ' selected ';
-				} ?> >26
-                </option>
-                <option <?php if ( $q_aday == '10' ) {
-					echo ' selected ';
-				} ?> >10
-                </option>
-                <option <?php if ( $q_aday == '11' ) {
-					echo ' selected ';
-				} ?> > 11
-                </option>
-                <option <?php if ( $q_aday == '12' ) {
-					echo ' selected ';
-				} ?> >12
-                </option>
-                <option <?php if ( $q_aday == '13' ) {
-					echo ' selected ';
-				} ?> >13
-                </option>
-                <option <?php if ( $q_aday == '14' ) {
-					echo ' selected ';
-				} ?> >14
-                </option>
-                <option <?php if ( $q_aday == '15' ) {
-					echo ' selected ';
-				} ?> >15
-                </option>
-                <option <?php if ( $q_aday == '16' ) {
-					echo ' selected ';
-				} ?> >16
-                </option>
-                <option <?php if ( $q_aday == '17' ) {
-					echo ' selected ';
-				} ?> >17
-                </option>
-                <option <?php if ( $q_aday == '18' ) {
-					echo ' selected ';
-				} ?> >18
-                </option>
-                <option <?php if ( $q_aday == '19' ) {
-					echo ' selected ';
-				} ?> >19
-                </option>
-                <option <?php if ( $q_aday == '20' ) {
-					echo ' selected ';
-				} ?> >20
-                </option>
-                <option <?php if ( $q_aday == '21' ) {
-					echo ' selected ';
-				} ?> >21
-                </option>
-                <option <?php if ( $q_aday == '22' ) {
-					echo ' selected ';
-				} ?> >22
-                </option>
-                <option <?php if ( $q_aday == '23' ) {
-					echo ' selected ';
-				} ?> >23
-                </option>
-                <option <?php if ( $q_aday == '24' ) {
-					echo ' selected ';
-				} ?> >24
-                </option>
-                <option <?php if ( $q_aday == '27' ) {
-					echo ' selected ';
-				} ?> >27
-                </option>
-                <option <?php if ( $q_aday == '28' ) {
-					echo ' selected ';
-				} ?> >28
-                </option>
-                <option <?php if ( $q_aday == '29' ) {
-					echo ' selected ';
-				} ?> >29
-                </option>
-                <option <?php if ( $q_aday == '30' ) {
-					echo ' selected ';
-				} ?> >30
-                </option>
-                <option <?php if ( $q_aday == '31' ) {
-					echo ' selected ';
-				} ?> >31
-                </option>
-            </select>
-            <select name="q_amon">
-                <option></option>
-                <option <?php if ( $q_amon == '01' ) {
-					echo ' selected ';
-				} ?> value="1">Jan
-                </option>
-                <option <?php if ( $q_amon == '02' ) {
-					echo ' selected ';
-				} ?> value="2">Feb
-                </option>
-                <option <?php if ( $q_amon == '03' ) {
-					echo ' selected ';
-				} ?> value="3">Mar
-                </option>
-                <option <?php if ( $q_amon == '04' ) {
-					echo ' selected ';
-				} ?> value="4">Apr
-                </option>
-                <option <?php if ( $q_amon == '05' ) {
-					echo ' selected ';
-				} ?> value="5">May
-                </option>
-                <option <?php if ( $q_amon == '06' ) {
-					echo ' selected ';
-				} ?> value="6">Jun
-                </option>
-                <option <?php if ( $q_amon == '07' ) {
-					echo ' selected ';
-				} ?> value="7">Jul
-                </option>
-                <option <?php if ( $q_amon == '08' ) {
-					echo ' selected ';
-				} ?> value="8">Aug
-                </option>
-                <option <?php if ( $q_amon == '09' ) {
-					echo ' selected ';
-				} ?> value="9">Sep
-                </option>
-                <option <?php if ( $q_amon == '10' ) {
-					echo ' selected ';
-				} ?> value="10">Oct
-                </option>
-                <option <?php if ( $q_amon == '11' ) {
-					echo ' selected ';
-				} ?> value="11">Nov
-                </option>
-                <option <?php if ( $q_amon == '12' ) {
-					echo ' selected ';
-				} ?> value="12">Dec
-                </option>
-            </select>
-            <input type="text" name="q_ayear" size="4" value="<?php echo $q_ayear; ?>"/>
+						?>
+                        <select name="q_aday">
+                            <option></option>
+                            <option <?php if ( $q_aday == '01' ) {
+								echo ' selected ';
+							} ?> >1
+                            </option>
+                            <option <?php if ( $q_aday == '02' ) {
+								echo ' selected ';
+							} ?> >2
+                            </option>
+                            <option <?php if ( $q_aday == '03' ) {
+								echo ' selected ';
+							} ?> >3
+                            </option>
+                            <option <?php if ( $q_aday == '04' ) {
+								echo ' selected ';
+							} ?> >4
+                            </option>
+                            <option <?php if ( $q_aday == '05' ) {
+								echo ' selected ';
+							} ?> >5
+                            </option>
+                            <option <?php if ( $q_aday == '06' ) {
+								echo ' selected ';
+							} ?> >6
+                            </option>
+                            <option <?php if ( $q_aday == '07' ) {
+								echo ' selected ';
+							} ?>>7
+                            </option>
+                            <option <?php if ( $q_aday == '08' ) {
+								echo ' selected ';
+							} ?>>8
+                            </option>
+                            <option <?php if ( $q_aday == '09' ) {
+								echo ' selected ';
+							} ?> >9
+                            </option>
+                            <option <?php if ( $q_aday == '25' ) {
+								echo ' selected ';
+							} ?> >25
+                            </option>
+                            <option <?php if ( $q_aday == '26' ) {
+								echo ' selected ';
+							} ?> >26
+                            </option>
+                            <option <?php if ( $q_aday == '10' ) {
+								echo ' selected ';
+							} ?> >10
+                            </option>
+                            <option <?php if ( $q_aday == '11' ) {
+								echo ' selected ';
+							} ?> > 11
+                            </option>
+                            <option <?php if ( $q_aday == '12' ) {
+								echo ' selected ';
+							} ?> >12
+                            </option>
+                            <option <?php if ( $q_aday == '13' ) {
+								echo ' selected ';
+							} ?> >13
+                            </option>
+                            <option <?php if ( $q_aday == '14' ) {
+								echo ' selected ';
+							} ?> >14
+                            </option>
+                            <option <?php if ( $q_aday == '15' ) {
+								echo ' selected ';
+							} ?> >15
+                            </option>
+                            <option <?php if ( $q_aday == '16' ) {
+								echo ' selected ';
+							} ?> >16
+                            </option>
+                            <option <?php if ( $q_aday == '17' ) {
+								echo ' selected ';
+							} ?> >17
+                            </option>
+                            <option <?php if ( $q_aday == '18' ) {
+								echo ' selected ';
+							} ?> >18
+                            </option>
+                            <option <?php if ( $q_aday == '19' ) {
+								echo ' selected ';
+							} ?> >19
+                            </option>
+                            <option <?php if ( $q_aday == '20' ) {
+								echo ' selected ';
+							} ?> >20
+                            </option>
+                            <option <?php if ( $q_aday == '21' ) {
+								echo ' selected ';
+							} ?> >21
+                            </option>
+                            <option <?php if ( $q_aday == '22' ) {
+								echo ' selected ';
+							} ?> >22
+                            </option>
+                            <option <?php if ( $q_aday == '23' ) {
+								echo ' selected ';
+							} ?> >23
+                            </option>
+                            <option <?php if ( $q_aday == '24' ) {
+								echo ' selected ';
+							} ?> >24
+                            </option>
+                            <option <?php if ( $q_aday == '27' ) {
+								echo ' selected ';
+							} ?> >27
+                            </option>
+                            <option <?php if ( $q_aday == '28' ) {
+								echo ' selected ';
+							} ?> >28
+                            </option>
+                            <option <?php if ( $q_aday == '29' ) {
+								echo ' selected ';
+							} ?> >29
+                            </option>
+                            <option <?php if ( $q_aday == '30' ) {
+								echo ' selected ';
+							} ?> >30
+                            </option>
+                            <option <?php if ( $q_aday == '31' ) {
+								echo ' selected ';
+							} ?> >31
+                            </option>
+                        </select>
+                        <select name="q_amon">
+                            <option></option>
+                            <option <?php if ( $q_amon == '01' ) {
+								echo ' selected ';
+							} ?> value="1">Jan
+                            </option>
+                            <option <?php if ( $q_amon == '02' ) {
+								echo ' selected ';
+							} ?> value="2">Feb
+                            </option>
+                            <option <?php if ( $q_amon == '03' ) {
+								echo ' selected ';
+							} ?> value="3">Mar
+                            </option>
+                            <option <?php if ( $q_amon == '04' ) {
+								echo ' selected ';
+							} ?> value="4">Apr
+                            </option>
+                            <option <?php if ( $q_amon == '05' ) {
+								echo ' selected ';
+							} ?> value="5">May
+                            </option>
+                            <option <?php if ( $q_amon == '06' ) {
+								echo ' selected ';
+							} ?> value="6">Jun
+                            </option>
+                            <option <?php if ( $q_amon == '07' ) {
+								echo ' selected ';
+							} ?> value="7">Jul
+                            </option>
+                            <option <?php if ( $q_amon == '08' ) {
+								echo ' selected ';
+							} ?> value="8">Aug
+                            </option>
+                            <option <?php if ( $q_amon == '09' ) {
+								echo ' selected ';
+							} ?> value="9">Sep
+                            </option>
+                            <option <?php if ( $q_amon == '10' ) {
+								echo ' selected ';
+							} ?> value="10">Oct
+                            </option>
+                            <option <?php if ( $q_amon == '11' ) {
+								echo ' selected ';
+							} ?> value="11">Nov
+                            </option>
+                            <option <?php if ( $q_amon == '12' ) {
+								echo ' selected ';
+							} ?> value="12">Dec
+                            </option>
+                        </select>
+                        <input type="text" name="q_ayear" size="4" value="<?php echo $q_ayear; ?>"/>
 
-        </td>
-        <td width="71" bgcolor="#EDF8FC" valign="top">
-            <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Email</span></b></td>
-        <td width="299" bgcolor="#EDF8FC" valign="top">
+                    </td>
+                    <td width="71" bgcolor="#EDF8FC" valign="top">
+                        <p align="right"><b><span style="font-family: Arial; font-size: x-small; ">Email</span></b></td>
+                    <td width="299" bgcolor="#EDF8FC" valign="top">
 
-            <input type="text" name="q_email" size="28" value="<?php echo $q_email; ?>"/></td>
-    </tr>
+                        <input type="text" name="q_email" size="28" value="<?php echo $q_email; ?>"/></td>
+                </tr>
 
-    <tr>
-        <td width="731" bgcolor="#EDF8FC" colspan="4">
+                <tr>
+                    <td width="731" bgcolor="#EDF8FC" colspan="4">
       <span style="font-family: Arial; "><b>
       <input type="submit" value="Find" name="B1" style="float: left"><?php if ( isset($_REQUEST['search']) && $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></span><b>[<span style="font-family: Arial; "><a href="<?php echo $_SERVER['PHP_SELF'] ?>">Start a New Search</a></span>]</b><?php } ?></td>
-    </tr>
-    </table>
+                </tr>
+            </table>
 
-    </center>
+        </center>
 
     </form>
     </p>
@@ -364,7 +364,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 	$q_news     = mysqli_real_escape_string( $GLOBALS['connection'], $q_news );
 	$q_email    = mysqli_real_escape_string( $GLOBALS['connection'], $q_email );
 
-    $where_sql = '';
+	$where_sql = '';
 
 	if ( $q_name != '' ) {
 		$list = preg_split( "/[\s,]+/", $q_name );
@@ -457,6 +457,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Orders</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Pixels</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Clicks</span></b></td>
+                <td><b><span style="font-family: Arial; font-size: x-small; ">Views</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Action</span></b></td>
             </tr>
 			<?php
@@ -492,6 +493,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo mysqli_num_rows( $result3 ); ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $order_row['Pixels']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['click_count']; ?></span></td>
+                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['view_count']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; ">
 	<?php if ( $row['Validated'] == 0 ) { ?>
         <input style="font-size: 9px;" type="button" value="Validate" onclick="if ( !confirmLink(this, 'Validate account?')) return false;" data-link="customers.php?action=validate&user_id=<?php echo $row['ID'] . $q_string; ?>"><?php } ?> <input style="font-size: 9px;" type="button" value="Delete" onclick="if ( !confirmLink(this, 'Delete account?')) return false;" data-link="customers.php?action=delete&user_id=<?php echo $row['ID'] . $q_string; ?>"></span>
