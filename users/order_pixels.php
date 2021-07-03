@@ -192,7 +192,7 @@ require_once BASE_PATH . "/html/header.php";
 			submit2.style.cursor = 'wait';
 
 			let ajax_data = {
-				user_id: <?php echo $_SESSION['MDS_ID'];?>,
+				user_id: <?php echo intval($_SESSION['MDS_ID']); ?>,
 				map_x: window.$block_pointer.map_x,
 				map_y: window.$block_pointer.map_y,
 				block_id: get_clicked_block(),
