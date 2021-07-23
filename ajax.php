@@ -322,7 +322,7 @@ function show_list() {
 				?>
                 <div class="table-row">
                     <div class="list-cell">
-						<?php echo $purifier->purify( get_formatted_date( get_local_time( $row['max_date'] ) ) ); ?>
+						<?php echo $purifier->purify( get_formatted_date( get_local_datetime( $row['max_date'] ) ) ); ?>
                     </div>
                     <div class="list-cell">
 						<?php

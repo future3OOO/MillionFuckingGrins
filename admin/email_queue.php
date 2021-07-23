@@ -357,7 +357,7 @@ if ( $count > $records_per_page ) {
 			?>
 
             <tr bgColor="#ffffff">
-                <td><font size="1"><?php echo get_local_time( $row['mail_date'] ); ?></font></td>
+                <td><font size="1"><?php echo get_local_datetime( $row['mail_date'], true ); ?></font></td>
                 <td><font size="1"><?php echo $row['template_id']; ?></font></td>
                 <td><font size="1"><?php echo $row['to_address']; ?></font></td>
                 <td><font size="1"><?php echo $row['to_name']; ?></font></td>

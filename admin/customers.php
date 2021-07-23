@@ -481,7 +481,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                     <td><span style="font-family: Arial; font-size: x-small; "><a href="edit.php?user_id=<?php echo $row['ID']; ?>" name="Edit"><?php echo $row['Username']; ?></a></span></td>
                     <td><span style="font-family: Arial; font-size: x-small; "><?php echo $row['Email']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['CompName']; ?></span></td>
-                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo get_local_time( $row['SignupDate'] ); ?></span></td>
+                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo get_local_datetime( $row['SignupDate'], true ); ?></span></td>
                     <td><span style="font-family: Arial; font-size: x-small; "><?php if ( $row['Validated'] == 1 ) {
 								echo "Yes";
 							} else {

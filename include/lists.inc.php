@@ -137,7 +137,7 @@ function echo_ad_list_data( $admin ) {
 				$days = floor( $diff / 60 / 60 / 24 );
 			}
 			//echo $days;
-			$FORMATTED_DATE = get_formatted_date( get_local_time( $val ) );
+			$FORMATTED_DATE = get_formatted_date( get_local_datetime( $val ) );
 			$val            = $FORMATTED_DATE . "<br>";
 
 			if ( $days == 0 ) {

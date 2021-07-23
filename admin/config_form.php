@@ -225,6 +225,16 @@
         </div>
 
         <div class="admin-config-left">
+            Display Time Format
+        </div>
+        <div class="admin-config-right">
+            <label>
+                <input type="text" name="TIME_FORMAT" size="49" value="<?php echo MDSConfig::get( 'TIME_FORMAT', true ); ?>"/>
+                <br/> Note: See <a href="https://www.php.net/manual/en/function.date.php" target="_blank">here</a> for formatting info.
+            </label>
+        </div>
+
+        <div class="admin-config-left">
             Input Date Sequence
         </div>
         <div class="admin-config-right">

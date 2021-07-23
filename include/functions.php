@@ -2678,7 +2678,7 @@ function get_formatted_date( $date ) {
 	return date( DATE_FORMAT, $time );
 }
 
-function get_local_time( $gmdate ) {
+function get_local_datetime( $gmdate, $formatted = false ) {
 
 	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) {
 		// gmt not found
@@ -2697,7 +2697,11 @@ function get_local_time( $gmdate ) {
 			$dateTime = new DateTime( $gmdate );
 			$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
 
-			return $dateTime->format( "Y-m-d H:i:s" );
+			if ( ! $formatted ) {
+				return $dateTime->format( "Y-m-d H:i:s" );
+			} else {
+				return $dateTime->format( DATE_FORMAT . ' ' . TIME_FORMAT );
+			}
 		} catch ( Exception $e ) {
 			return gmdate( "Y-m-d H:i:s", $gmtime );
 		}

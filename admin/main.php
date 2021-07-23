@@ -59,7 +59,8 @@ $waiting = mysqli_num_rows( $result );
 ?>
 
     <p align="left"><h3>Main Summary</h3></p>
-    <font size='1'>Current GMT Time: <?php echo( gmdate( "Y-m-d H:i:s" ) ); ?></font>
+    <div class="mds-time mds-gmt">Current GMT Time: <?php echo gmdate( "Y-m-d H:i:s" ); ?></div>
+    <div class="mds-time mds-local">Current Local Time: <?php echo get_local_datetime( gmdate( "Y-m-d H:i:s" ), true ); ?></div>
     <table width="80%" border="0" cellpadding="5" style="border-collapse: collapse">
         <tr>
             <td style="border-bottom-style: solid; border-bottom-width: 1px"><?php echo $advertisers; ?></td>

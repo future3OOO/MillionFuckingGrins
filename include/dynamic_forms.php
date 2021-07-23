@@ -118,14 +118,14 @@ function get_template_value( $tmpl, $form_id, $row = null ) {
 			case "DATE_CAL":
 
 				if ( $val != '0000-00-00 00:00:00' ) {
-					$val = get_local_time( $val . " GMT" );
+					$val = get_local_datetime( $val . " GMT" );
 					$val = get_formatted_date( $val );
 				} else {
 					$val = '';
 				}
 				break;
 			case "TIME":
-				$val = get_local_time( $val . " GMT" ); // the time is always stored as GMT
+				$val = get_local_datetime( $val . " GMT" ); // the time is always stored as GMT
 
 				break;
 			case "TEXT":

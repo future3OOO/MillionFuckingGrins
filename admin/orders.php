@@ -463,7 +463,7 @@ $cur_page ++;
 				echo '#ffffff';
 			} ?>">
                 <td><input type="checkbox" name="orders[]" value="<?php echo $row['order_id']; ?>"></td>
-                <td><?php echo get_local_time( $row['order_date'] ); ?></td>
+                <td><?php echo get_local_datetime( $row['order_date'], true ); ?></td>
                 <td><?php echo escape_html( $row['FirstName'] . " " . $row['LastName'] ); ?></td>
                 <td><?php echo $row['Username']; ?> (<a href='edit.php?user_id=<?php echo $row['ID']; ?>'>#<?php echo $row['ID']; ?></a>)</td>
                 <td>#<?php echo $row['order_id']; ?></td>

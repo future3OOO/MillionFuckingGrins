@@ -220,7 +220,7 @@ if ( $_REQUEST['to_year'] == '' ) {
 
 				?>
                 <tr>
-                    <td><?php echo get_local_time( $row['date'] ) ?></td>
+                    <td><?php echo get_local_datetime( $row['date'], true ) ?></td>
                     <td><?php echo $row['CLICKSUM'] ?></td>
                     <td><?php echo $row['VIEWSUM'] ?></td>
 

@@ -319,4 +319,24 @@ if ( $version == 1 ) {
 	}
 
 	up_dbver();
+} else if ($version == 6) {
+	$query = "INSERT INTO `config` VALUES ('TIME_FORMAT', ?);";
+	$var = 'H:i:s';
+
+	$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
+	if ( ! mysqli_stmt_prepare( $stmt, $query ) ) {
+		die ( mds_sql_error( $query ) );
+	}
+
+	mysqli_stmt_bind_param( $stmt, 's', $var );
+
+	mysqli_stmt_execute( $stmt );
+
+	$error = mysqli_stmt_error( $stmt );
+	if ( ! empty( $error ) ) {
+		die ( mds_sql_error( $query ) );
+	}
+	mysqli_stmt_close( $stmt );
+
+	up_dbver();
 }
