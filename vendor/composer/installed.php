@@ -6,19 +6,19 @@
     'aliases' => 
     array (
     ),
-    'reference' => '2f0d99d93c8bfddb0109447de50e0cecc30a5ba7',
+    'reference' => '6bc8585089de733eaee4fdfbfca251aef3caf928',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
   array (
     'ckeditor/ckeditor' => 
     array (
-      'pretty_version' => '4.16.1',
-      'version' => '4.16.1.0',
+      'pretty_version' => '4.17.1',
+      'version' => '4.17.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '814c5891714b9de2aaf0d44ca4a5538e9596275c',
+      'reference' => 'b71b8bf724174f2feaf53f64ee424bf1f5ba61fa',
     ),
     'ezyang/htmlpurifier' => 
     array (
@@ -45,16 +45,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => '2f0d99d93c8bfddb0109447de50e0cecc30a5ba7',
+      'reference' => '6bc8585089de733eaee4fdfbfca251aef3caf928',
     ),
     'phpmailer/phpmailer' => 
     array (
-      'pretty_version' => 'v6.5.0',
-      'version' => '6.5.0.0',
+      'pretty_version' => 'v6.5.3',
+      'version' => '6.5.3.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'a5b5c43e50b7fba655f793ad27303cd74c57363c',
+      'reference' => 'baeb7cde6b60b1286912690ab0693c7789a31e71',
     ),
   ),
 );
