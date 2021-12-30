@@ -49,6 +49,11 @@ function process_login() {
 		}
 
 		require_once BASE_PATH . "/html/header.php";
+
+		if ( isset( $_REQUEST['forgot'] ) ) {
+			$str = str_replace( "%BASE_HTTP_PATH%", BASE_HTTP_PATH, $label["advertiser_forgot_success1"] );
+			echo "<p style='text-align:center;'>" . $str . "</p>";
+		}
 		?>
         <table cellpadding=5 border=1 style="width: 100%;border-collapse: collapse; border-style:solid; border-color:#E8E8E8">
 

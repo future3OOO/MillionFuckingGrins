@@ -36,23 +36,6 @@ require_once __DIR__ . "/../include/init.php";
 
 $submit = $_REQUEST['submit'];
 $email  = $_REQUEST['email'];
-?>
-<?php echo $f2->get_doc();
-
-require_once BASE_PATH . "/html/header.php";
-
-?>
-    <div style='text-align:center;'>
-        <h3><?php echo $label["advertiser_forgot_title"]; ?></h3>
-        <form method="post">
-            <label><?php echo $label["advertiser_forgot_enter_email"] ?>:
-                <input type="text" name="email" size="30"/>
-            </label>
-            <input class="form_submit_button" type="submit" name="submit" value="<?php echo $label["advertiser_forgot_submit"]; ?>">
-
-        </form>
-    </div>
-<?php
 
 function make_password() {
 	$pass = "";
@@ -72,6 +55,7 @@ if ( $email != '' ) {
 	if ( $row['Email'] != '' ) {
 
 		if ( $row['Validated'] == '0' ) {
+            require_once BASE_PATH . "/html/header.php";
 			$label["advertiser_forgot_error1"] = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $label["advertiser_forgot_error1"] );
 			echo "<div style='text-align:center;'>" . $label["advertiser_forgot_error1"] . "</div>";
 		} else {
@@ -121,13 +105,28 @@ if ( $email != '' ) {
 				send_email( $to, $row['FirstName'] . " " . $row['LastName'], SITE_CONTACT_EMAIL, SITE_NAME, $subject, $message, $html_msg, 6 );
 			}
 
-			$str = str_replace( "%BASE_HTTP_PATH%", BASE_HTTP_PATH, $label["advertiser_forgot_success1"] );
-
-			echo "<p style='text-align:center;'>" . $str . "</p>";
+			header( "Location: " . BASE_HTTP_PATH . '/users/?forgot=1', true, 301 );
+			exit;
 		}
 	} else {
+		require_once BASE_PATH . "/html/header.php";
 		echo "<div style='text-align:center;'>" . $label["advertiser_forgot_email_notfound"] . "</div>";
 	}
+} else {
+	require_once BASE_PATH . "/html/header.php";
+
+	?>
+    <div style='text-align:center;'>
+        <h3><?php echo $label["advertiser_forgot_title"]; ?></h3>
+        <form method="post">
+            <label><?php echo $label["advertiser_forgot_enter_email"] ?>:
+                <input type="text" name="email" size="30"/>
+            </label>
+            <input class="form_submit_button" type="submit" name="submit" value="<?php echo $label["advertiser_forgot_submit"]; ?>">
+
+        </form>
+    </div>
+	<?php
 }
 
 if ( WP_ENABLED == "yes" && ! empty( WP_URL ) ) {
