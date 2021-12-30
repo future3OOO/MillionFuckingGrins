@@ -192,7 +192,7 @@ require_once BASE_PATH . "/html/header.php";
 			submit2.style.cursor = 'wait';
 
 			let ajax_data = {
-				user_id: <?php echo intval($_SESSION['MDS_ID']); ?>,
+				user_id: <?php echo( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ? intval( $_SESSION['MDS_ID'] ) : '""' ); ?>,
 				map_x: window.$block_pointer.map_x,
 				map_y: window.$block_pointer.map_y,
 				block_id: get_clicked_block(),
@@ -473,14 +473,14 @@ require_once BASE_PATH . "/html/header.php";
 		}
     </script>
     <style>
-		#block_pointer {
-			height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-			width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
-			padding: 0;
-			margin: 0;
-			line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-			font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-		}
+        #block_pointer {
+            height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+            width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
+            padding: 0;
+            margin: 0;
+            line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+            font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+        }
     </style>
 <?php
 
@@ -539,11 +539,18 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 
 			setMemoryLimit( $uploadfile );
 
-			// check the file size for min an max blocks.
+			// check the file size for min and max blocks.
 
-			$size        = getimagesize( $tmp_image_file );
-			$reqsize     = get_required_size( $size[0], $size[1], $banner_data );
+            // uploaded image size
+			$size    = getimagesize( $tmp_image_file );
+
+            // maximum size snapped to block size
+			$reqsize = get_required_size( $size[0], $size[1], $banner_data );
+
+            // pixel count
 			$pixel_count = $reqsize[0] * $reqsize[1];
+
+            // final size
 			$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
 			// if image should be resized automatically make it fit within grid max/min block settings
@@ -572,6 +579,12 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 					$size[1]    = $rescale['y'];
 					$reqsize[0] = $rescale['x'];
 					$reqsize[1] = $rescale['y'];
+
+					// recount pixel count
+					$pixel_count = $reqsize[0] * $reqsize[1];
+
+					// recount final size
+					$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 				}
 			} else {
 
