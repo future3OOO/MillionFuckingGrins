@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:54 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['authorizeNet'] = new authorizeNet;
 
-define( 'IPN_LOGGING', 'Y' );
+define( 'AUTHNET_LOGGING', 'Y' );
 
 function authnet_mail_error( $msg ) {
 
@@ -56,7 +56,7 @@ function authnet_mail_error( $msg ) {
 
 function authnet_log_entry( $entry_line ) {
 
-	if ( IPN_LOGGING == 'Y' ) {
+	if ( AUTHNET_LOGGING == 'Y' ) {
 
 		$entry_line = "$entry_line\r\n ";
 		$log_fp     = @fopen( "logs.txt", "a" );
@@ -414,7 +414,7 @@ class authorizeNet {
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Authorize.Net
                             Relay Response URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_relay_url" size="50" value="<?php echo $authnet_x_relay_url; ?>"><br>(Recommended: <b>http://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?> </b> )</font></td>
+                            <input type="text" name="authnet_x_relay_url" size="50" value="<?php echo $authnet_x_relay_url; ?>"><br>(Recommended: <b>https://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?> </b> )</font></td>
                 </tr>
 
                 <tr>
@@ -434,7 +434,7 @@ class authorizeNet {
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Authorize.Net
                             Receipt link URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_receipt_link_url" size="50" value="<?php echo $authnet_x_receipt_link_url; ?>"><br>(eg. http://<?php echo $host . $http_url . "/users/index.php"; ?> - where customers return back to the MDS)</font></td>
+                            <input type="text" name="authnet_x_receipt_link_url" size="50" value="<?php echo $authnet_x_receipt_link_url; ?>"><br>(eg. https://<?php echo $host . $http_url . "/users/index.php"; ?> - where customers return back to the MDS)</font></td>
                 </tr>
 
                 <tr>
@@ -453,7 +453,7 @@ class authorizeNet {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Logo URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_logo_url" size="50" value="<?php echo $authnet_x_logo_url; ?>"><br>(Logo on the Payment form & Receipt Page, eg http://www.example.com/test.gif)</font></td>
+                            <input type="text" name="authnet_x_logo_url" size="50" value="<?php echo $authnet_x_logo_url; ?>"><br>(Logo on the Payment form & Receipt Page, eg https://www.example.com/test.gif)</font></td>
                 </tr>
 
                 <tr>

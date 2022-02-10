@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -300,7 +300,7 @@ class VoguePay {
                         <strong>failed@ivoryserver.com</strong> or <strong>failed@trashmail.com</strong>.<br><br>
                         To simulate a successful transaction, use any email and any password to pay for the transaction. You may use your real email since a notification will be sent to the email address you use for the transaction.<br><br>
                         The transaction ID will be sent to the notify_url parameter submitted by your form e.g:
-                        <br><span class="red"><strong>&lt;input type="hidden" name="notify_url" value="http://www.mydomain.com/notification.php" /&gt;</strong></span><br>
+                        <br><span class="red"><strong>&lt;input type="hidden" name="notify_url" value="https://www.mydomain.com/notification.php" /&gt;</strong></span><br>
                         You may then call the notification/order processing API from there.<br>
                         For demo transactions, use add demo=true to the notification API as shown below:<br>
                         <b>https://voguepay.com/?v_transaction_id=11111&amp;type=xml&amp;demo=true</b>

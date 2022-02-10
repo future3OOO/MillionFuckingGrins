@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require_once( "Twocheckout/Twocheckout.php" );
 
-define( 'LOGGING', 'Y' );
+define( 'TWOCOLOGGING', 'Y' );
 $_PAYMENT_OBJECTS['_2CO'] = new _2CO;
 
 function _2co_mail_error( $msg ) {
@@ -58,24 +58,13 @@ function _2co_mail_error( $msg ) {
 
 function _2co_log_entry( $entry_line ) {
 
-	if ( LOGGING == 'Y' ) {
+	if ( TWOCOLOGGING == 'Y' ) {
 
 		$entry_line = "$entry_line\r\n ";
 		$log_fp     = @fopen( "logs.txt", "a" );
 		@fputs( $log_fp, $entry_line );
 		@fclose( $log_fp );
 	}
-}
-
-function format_number( $str, $decimal_places = '2', $decimal_padding = "0" ) {
-	/* firstly format number and shorten any extra decimal places */
-	/* Note this will round off the number pre-format $str if you dont want this fucntionality */
-	$str       = number_format( $str, $decimal_places, '.', '' );    // will return 12345.67
-	$number    = explode( '.', $str );
-	$number[1] = ( isset( $number[1] ) ) ? $number[1] : ''; // to fix the PHP Notice error if str does not contain a decimal placing.
-	$decimal   = str_pad( $number[1], $decimal_places, $decimal_padding );
-
-	return (float) $number[0] . '.' . $decimal;
 }
 
 // Payment Object
@@ -236,7 +225,7 @@ class _2CO {
 		array_pop( $http_url ); // get rid of /admin
 		$http_url = implode( "/", $http_url );
 
-		$returnlink = ( empty( $_2co_x_receipt_link_url ) ? "http://" . $host . $http_url . "/users/thanks.php?m=" . $this->className : $_2co_x_receipt_link_url );
+		$returnlink = ( empty( $_2co_x_receipt_link_url ) ? "https://" . $host . $http_url . "/users/thanks.php?m=" . $this->className : $_2co_x_receipt_link_url );
 
 		?>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -295,7 +284,7 @@ class _2CO {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">2Checkout receipt link URL.</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="_2co_x_receipt_link_url" size="50" value="<?php echo $returnlink; ?>"><br> (Enter the return URL here. The return URL for should be: <b>http://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?></b> <br>This setting overwrites the 'direct return' URL set in the Look and Feel section your 2CO account.)</font></td>
+                            <input type="text" name="_2co_x_receipt_link_url" size="50" value="<?php echo $returnlink; ?>"><br> (Enter the return URL here. The return URL for should be: <b>https://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?></b> <br>This setting overwrites the 'direct return' URL set in the Look and Feel section your 2CO account.)</font></td>
                 </tr>
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">2Checkout Currency is passed in as USD</font></td>

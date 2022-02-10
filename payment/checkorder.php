@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -51,7 +51,7 @@ function ch_mail_error( $msg ) {
 
 function ch_log_entry( $entry_line ) {
 
-	if ( IPN_LOGGING == 'Y' ) {
+	if ( CHECK_LOGGING == 'Y' ) {
 
 		$entry_line = "Check:$entry_line\r\n ";
 		$log_fp     = fopen( "logs.txt", "a" );
@@ -179,7 +179,7 @@ class check {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Check Currency</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <select name="check_currency"><?php echo currency_option_list( $check_currency ); ?></select></font></td>
+                            <select name="check_currency"><?php currency_option_list( $check_currency ); ?></select></font></td>
                 </tr>
                 <!--
 <tr>

@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -331,7 +331,7 @@ class external {
 		$url = $f2->filter( EXTERNAL_URL );
 
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 		$row = mysqli_fetch_array( $result );
 
 		complete_order( $row['user_id'], $order_id );
@@ -340,7 +340,7 @@ class external {
 
 	function get_quantity( $order_id ) {
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 		$row = mysqli_fetch_array( $result );
 
 		return $row['quantity'];
