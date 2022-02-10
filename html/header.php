@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -58,7 +58,7 @@ if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
     <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
 
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.jquery.js"></script>
+    <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.js"></script>
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">

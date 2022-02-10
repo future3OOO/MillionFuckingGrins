@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -70,7 +70,7 @@ class functions2 {
 				}
 			} else if ( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ) {
 				// $_SESSION['MDS_ID']
-				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
+				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id, orders.order_id order by orders.banner_id ";
 				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				if ( $res !== false && mysqli_num_rows( $res ) > 0 ) {
 					$row = mysqli_fetch_array( $res );
@@ -113,7 +113,7 @@ class functions2 {
 	 *
 	 * more info: http://www.php.net/manual/en/filter.filters.php
 	 */
-	function filter( $var, $filter = FILTER_SANITIZE_STRING ) {
+	function filter( $var, $filter = null ) {
 
 		// check for BID filter
 		if ( $filter == "BID" ) {
@@ -146,7 +146,7 @@ class functions2 {
 		//echo $var . "<br />" . $filter . "<br />";
 
 		// filter
-		$var = filter_var( $var, $filter );
+		$var = htmlspecialchars( $var );
 
 		// if filter_var returns false error out
 		if ( $var === false ) {
@@ -187,7 +187,7 @@ class functions2 {
 	}
 
 	function write_log( $text ) {
-		if ( MDSConfig::get('DEBUG') === true ) {
+		if ( MDSConfig::get( 'DEBUG' ) === true ) {
 			$output_file = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), 'a' );
 			fwrite( $output_file, $text . "\n" );
 			fclose( $output_file );
@@ -198,7 +198,7 @@ class functions2 {
 	function debug( $line = "null", $label = "debug" ) {
 
 		// log file
-		if ( MDSConfig::get('MDS_LOG') === true && file_exists( MDSConfig::get( 'MDS_LOG_FILE' ) ) ) {
+		if ( MDSConfig::get( 'MDS_LOG' ) === true && file_exists( MDSConfig::get( 'MDS_LOG_FILE' ) ) ) {
 			$entry_line = "[" . date( 'r' ) . "]	" . $line . "\r\n";
 			$log_fp     = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), "a" );
 			fputs( $log_fp, $entry_line );
@@ -225,7 +225,7 @@ class functions2 {
 }
 
 function get_banner_dir() {
-	$dest = BASE_PATH . '/' . MDSConfig::get( 'BANNER_DIR' );
+	$dest = realpath( BASE_PATH . '/' . MDSConfig::get( 'BANNER_DIR' ) );
 
 	if ( file_exists( $dest ) ) {
 		return $dest;

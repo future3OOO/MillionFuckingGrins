@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -67,22 +67,23 @@ update_temp_order_timestamp();
 
 $has_packages = banner_get_packages( $BID );
 
-?>
+function display_ad_intro() {
+	global $label;
+	?>
     <p>
 		<?php
 		show_nav_status( 2 );
 		?>
     </p>
     <h3><?php echo $label['write_ad_instructions']; ?></h3>
-<?php
-if ( session_valid_id( session_id() ) ) {
-	$_REQUEST['user_id'] = $user_id = session_id();
-} else {
-	echo "Sorry there was an error with your session.";
-	die;
+	<?php
+	if ( session_valid_id( session_id() ) ) {
+		$_REQUEST['user_id'] = $user_id = session_id();
+	} else {
+		echo "Sorry there was an error with your session.";
+		die;
+	}
 }
-
-// TODO: fixing save / edit form
 
 // saving
 if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
@@ -91,7 +92,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 	if ( $error != '' ) { // we have an error
 		require_once BASE_PATH . "/html/header.php";
 		$mode = "user";
-		//display_ad_intro();
+		display_ad_intro();
 		display_ad_form( 1, $mode, '' );
 	} else {
 		$ad_id = intval( insert_ad_data() );
@@ -101,11 +102,12 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		$sql = "UPDATE temp_orders SET ad_id='$ad_id' where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		header("Location: " . BASE_HTTP_PATH . "users/confirm_order.php");
+		header( "Location: " . BASE_HTTP_PATH . "users/confirm_order.php" );
 		exit;
 	}
 } else {
 	require_once BASE_PATH . "/html/header.php";
+	display_ad_intro();
 
 	// get the ad_id form the temp_orders table..
 

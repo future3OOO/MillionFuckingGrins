@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -58,7 +58,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GL
 $waiting = mysqli_num_rows( $result );
 ?>
 
-    <p align="left"><h3>Main Summary</h3></p>
+    <p><h3>Main Summary</h3></p>
     <div class="mds-time mds-gmt">Current GMT Time: <?php echo gmdate( "Y-m-d H:i:s" ); ?></div>
     <div class="mds-time mds-local">Current Local Time: <?php echo get_local_datetime( gmdate( "Y-m-d H:i:s" ), true ); ?></div>
     <table width="80%" border="0" cellpadding="5" style="border-collapse: collapse">
@@ -104,7 +104,6 @@ if ( file_exists( $check_path ) ) {
     <hr>
 
 <?php
-
 $sql    = "show columns from blocks ";
 $result = mysqli_query( $GLOBALS['connection'], $sql );
 while ( $row = mysqli_fetch_array( $result ) ) {
@@ -125,12 +124,12 @@ while ( $row = mysqli_fetch_array( $result ) ) {
 
 	if ( $row['Field'] == 'status' ) {
 
-		if ( strpos( $row['Type'], 'expired' ) == 0 ) {
+//		if ( strpos( $row['Type'], 'expired' ) == 0 ) {
 
-			//	$sql = "ALTER TABLE `orders` CHANGE `status` `status`  set('pending','completed','cancelled','confirmed','new', 'expired') NOT NULL ";
-			//	 mysqli_query($GLOBALS['connection'], $sql) or die ("<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error($GLOBALS['connection']) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>".mysqli_error($GLOBALS['connection']));
+		//	$sql = "ALTER TABLE `orders` CHANGE `status` `status`  set('pending','completed','cancelled','confirmed','new', 'expired') NOT NULL ";
+		//	 mysqli_query($GLOBALS['connection'], $sql) or die ("<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error($GLOBALS['connection']) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>".mysqli_error($GLOBALS['connection']));
 
-		}
+//		}
 
 		if ( strpos( $row['Type'], 'deleted' ) == 0 ) {
 
@@ -214,7 +213,7 @@ if ( ! does_field_exist( "currencies", "code" ) ) {
 	$sql = "CREATE TABLE `currencies` (
 		  `code` char(3) NOT NULL default '',
 		  `name` varchar(50) NOT NULL default '',
-		  `rate` decimal(10,4) NOT NULL default '1.0000',
+		  `rate` decimal(20,10) NOT NULL default '1.0000000000',
 		  `is_default` set('Y','N') NOT NULL default 'N',
 		  `sign` varchar(8) NOT NULL default '',
 		  `decimal_places` smallint(6) NOT NULL default '0',
@@ -884,7 +883,7 @@ if ( ! does_field_exist( "ads", "ad_id" ) ) {
 $sql = "SELECT * FROM `config` WHERE `key`='DELETE_CHECKED' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql    = "SELECT * from orders where status='deleted' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	while ( $order_row = mysqli_fetch_array( $result ) ) {
@@ -909,7 +908,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='EXPIRE_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('EXPIRE_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }
@@ -917,7 +916,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='SELECT_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('SELECT_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }
@@ -925,7 +924,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='MAIL_QUEUE_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('MAIL_QUEUE_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }

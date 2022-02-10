@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -257,18 +257,18 @@ if ( $BID != '' ) {
 	}
 
 	if ( ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] != '' ) || ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) ) {
-		if ( $_REQUEST['col_from'] == '' ) {
+		if ( isset( $_REQUEST['col_from'] ) && $_REQUEST['col_from'] == '' ) {
 			$_REQUEST['col_from'] = 1;
 		}
 
-		if ( $_REQUEST['col_to'] == '' ) {
+		if ( isset( $_REQUEST['col_to'] ) && $_REQUEST['col_to'] == '' ) {
 			$_REQUEST['col_to'] = $banner_data['G_HEIGHT'];
 		}
 		?>
         <form action='price.php' method="post">
-            <input type="hidden" value="<?php echo intval( $row['price_id'] ); ?>" name="price_id">
-            <input type="hidden" value="<?php echo intval( $_REQUEST['new'] ); ?>" name="new">
-            <input type="hidden" value="<?php echo $f2->filter( $_REQUEST['action'] ); ?>" name="action">
+            <input type="hidden" value="<?php echo intval( $row['price_id'] ?? '' ); ?>" name="price_id">
+            <input type="hidden" value="<?php echo intval( $_REQUEST['new'] ?? '' ); ?>" name="new">
+            <input type="hidden" value="<?php echo $f2->filter( $_REQUEST['action'] ?? '' ); ?>" name="action">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
             <table border="0" cellSpacing="1" cellPadding="3" bgColor="#d9d9d9">
                 <tr bgcolor="#ffffff">
@@ -276,19 +276,19 @@ if ( $BID != '' ) {
                     <td>
                         <select name="color">
                             <option value="">[Select]</option>
-                            <option value="yellow" <?php if ( $_REQUEST['color'] == 'yellow' ) {
+                            <option value="yellow" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'yellow' ) {
 								echo ' selected ';
 							} ?> style="background-color: #FFFF00">Yellow
                             </option>
-                            <option value="cyan" <?php if ( $_REQUEST['color'] == 'cyan' ) {
+                            <option value="cyan" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'cyan' ) {
 								echo ' selected ';
 							} ?> style="background-color: #00FFFF">Cyan
                             </option>
-                            <option value="magenta" <?php if ( $_REQUEST['color'] == 'magenta' ) {
+                            <option value="magenta" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'magenta' ) {
 								echo ' selected ';
 							} ?> style="background-color: #FF00FF">Magenta
                             </option>
-                            <option value="white" <?php if ( $_REQUEST['color'] == 'white' ) {
+                            <option value="white" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'white' ) {
 								echo ' selected ';
 							} ?> style="background-color: #FFffFF">White
                             </option>
@@ -298,27 +298,27 @@ if ( $BID != '' ) {
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Start from Row :</font></td>
-                    <td><input size="2" type="text" name="row_from" value="<?php echo intval( $_REQUEST['row_from'] ); ?>"> eg. 1</td>
+                    <td><input size="2" type="text" name="row_from" value="<?php echo intval( $_REQUEST['row_from'] ?? 0 ); ?>"> eg. 1</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">End at Row:</font></td>
-                    <td><input size="2" type="text" name="row_to" value="<?php echo intval( $_REQUEST['row_to'] ); ?>"> eg. 25</td>
+                    <td><input size="2" type="text" name="row_to" value="<?php echo intval( $_REQUEST['row_to'] ?? 0 ); ?>"> eg. 25</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Start from Column :</font></td>
-                    <td><input size="2" type="text" name="col_from" value="<?php echo intval( $_REQUEST['col_from'] ); ?>"> eg. 1</td>
+                    <td><input size="2" type="text" name="col_from" value="<?php echo intval( $_REQUEST['col_from'] ?? 0 ); ?>"> eg. 1</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">End at Column:</font></td>
-                    <td><input size="2" type="text" name="col_to" value="<?php echo intval( $_REQUEST['col_to'] ); ?>"> eg. 25</td>
+                    <td><input size="2" type="text" name="col_to" value="<?php echo intval( $_REQUEST['col_to'] ?? 0 ); ?>"> eg. 25</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Price Per Block:</font></td>
-                    <td><input size="5" type="text" name="price" value="<?php echo floatval( $_REQUEST['price'] ); ?>">Price per block (<?php echo $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT']; ?> pixels). Enter a decimal</td>
+                    <td><input size="5" type="text" name="price" value="<?php echo floatval( $_REQUEST['price'] ?? 0 ); ?>">Price per block (<?php echo $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT']; ?> pixels). Enter a decimal</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Currency:</font></td>
-                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ); ?>The price's currency</td>
+                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ?? '' ); ?>The price's currency</td>
                 </tr>
 
             </table>

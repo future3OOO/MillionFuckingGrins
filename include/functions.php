@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -83,12 +83,12 @@ function expire_orders() {
 
 	// get the time of last run
 	$sql = "SELECT * FROM `config` where `key` = 'LAST_EXPIRE_RUN' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	$t_row = @mysqli_fetch_array( $result );
 
 	// Poor man's lock
 	$sql = "UPDATE `config` SET `val`='YES' WHERE `key`='EXPIRE_RUNNING' AND `val`='NO' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 	if ( @mysqli_affected_rows( $GLOBALS['connection'] ) == 0 ) {
 
@@ -100,11 +100,11 @@ function expire_orders() {
 			// release the lock
 
 			$sql = "UPDATE `config` SET `val`='NO' WHERE `key`='EXPIRE_RUNNING' ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			// update timestamp
 			$sql = "REPLACE INTO config (`key`, `val`) VALUES ('LAST_EXPIRE_RUN', '$unix_time')  ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
 
 		// this function is already executing in another process.
@@ -120,7 +120,7 @@ function expire_orders() {
 
 		$sql = "SELECT session_id, order_date FROM `temp_orders` WHERE  DATE_SUB('$now', INTERVAL $session_duration SECOND) >= temp_orders.order_date AND session_id <> '" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		while ( $row = @mysqli_fetch_array( $result ) ) {
 
@@ -129,8 +129,8 @@ function expire_orders() {
 
 		// COMPLETED Orders
 
-		$sql    = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+		$sql = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		$affected_BIDs = array();
 
@@ -157,7 +157,7 @@ function expire_orders() {
 
 			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( MINUTES_UNCONFIRMED ) . " MINUTE) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				delete_order( $row['order_id'] );
@@ -165,7 +165,7 @@ function expire_orders() {
 				// Now really delete the order.
 
 				$sql = "delete from orders where order_id='" . intval( $row['order_id'] ) . "'";
-				@mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				@mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				global $f2;
 				$f2->debug( "Deleted unconfirmed order - " . $sql );
 			}
@@ -175,7 +175,7 @@ function expire_orders() {
 		if ( DAYS_CONFIRMED != 0 ) {
 			$sql = "SELECT * from orders where (status='new' OR status='confirmed') AND DATE_SUB('$now',INTERVAL " . intval( DAYS_CONFIRMED ) . " DAY) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				expire_order( $row['order_id'] );
@@ -2173,13 +2173,15 @@ function get_required_size( $x, $y, $banner_data ) {
 
 	$mod = ( $x % $block_width );
 
-	if ( $mod > 0 ) { // width does not fit
+	if ( $mod > 0 ) {
+        // width does not fit
 		$size[0] = $x + ( $block_width - $mod );
 	}
 
 	$mod = ( $y % $block_height );
 
-	if ( $mod > 0 ) { // height does not fit
+	if ( $mod > 0 ) {
+        // height does not fit
 		$size[1] = $y + ( $block_height - $mod );
 	}
 
@@ -2330,11 +2332,11 @@ function get_definition( $field_type ) {
 			break;
 		case "DATE":
 		case "DATE_CAL":
-		    if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
-			    return "DATETIME NOT NULL default '1000-01-01 00:00:00'";
-		    } else {
-			    return "DATETIME NOT NULL ";
-            }
+			if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
+				return "DATETIME NOT NULL default '1000-01-01 00:00:00'";
+			} else {
+				return "DATETIME NOT NULL ";
+			}
 			break;
 		case "FILE":
 			return "VARCHAR( 255 ) NOT NULL ";
@@ -2392,7 +2394,7 @@ function saveImage( $field_id ) {
 
 	if ( $_SESSION['MDS_ID'] != '' ) {
 		$name = $_SESSION['MDS_ID'] . "_" . $name;
-	} else {
+//	} else {
 		//	$name = subssession_id().$name;
 
 	}
@@ -2470,7 +2472,7 @@ function saveImage( $field_id ) {
 		// Resize to max size
 		$image->resize( new Imagine\Image\Box( $final_width, $final_height ) );
 		$image->save( $uploadfile );
-	} else {
+//	} else {
 		//echo 'No need to resize.<br>';
 
 	}
@@ -2483,7 +2485,7 @@ function deleteImage( $table_name, $object_name, $object_id, $field_id ) {
 	$sql = "SELECT `" . mysqli_real_escape_string( $GLOBALS['connection'], $field_id ) . "` FROM `" . mysqli_real_escape_string( $GLOBALS['connection'], $table_name ) . "` WHERE `" . mysqli_real_escape_string( $GLOBALS['connection'], $object_name ) . "`='" . intval( $object_id ) . "'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-	if ( $row[ $field_id ] != '' ) {
+	if ( isset( $row ) && $row[ $field_id ] != '' ) {
 		// delete the original
 		@unlink( UPLOAD_PATH . "images/" . $row[ $field_id ] );
 		// delete the thumb
@@ -2948,7 +2950,7 @@ function _GetMaxAllowedUploadSize() {
  *
  * @param array $Sizes
  *
- * @return array
+ * @return int
  */
 function convertMemoryToBytes( $Sizes ) {
 	for ( $x = 0; $x < count( $Sizes ); $x ++ ) {

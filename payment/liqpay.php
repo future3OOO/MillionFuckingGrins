@@ -198,7 +198,9 @@ class LiqPay {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -274,7 +276,7 @@ class LiqPay {
 	}
 
 	function config_form() {
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$liqpay_test_mode   = filter_var( $_REQUEST['liqpay_test_mode'], FILTER_SANITIZE_STRING );
 			$liqpay_public_key  = filter_var( $_REQUEST['liqpay_public_key'], FILTER_SANITIZE_STRING );
 			$liqpay_private_key = filter_var( $_REQUEST['liqpay_private_key'], FILTER_SANITIZE_STRING );
@@ -366,7 +368,7 @@ class LiqPay {
 		$sql = "SELECT val FROM config WHERE `key`='LIQPAY_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

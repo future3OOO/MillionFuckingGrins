@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -117,8 +117,8 @@ function load_ad_values( $ad_id ) {
 					$prams[ $fields['field_id'] ] = $_REQUEST[ $fields['field_id'] ];
 				}
 			} else if ( $fields['field_type'] == 'TEXTAREA' ) {
-				$val = escape_html( $prams[ $fields['field_id'] ] );
-				$val = str_replace( "\n", "<br>", $val );
+				$val                          = escape_html( $prams[ $fields['field_id'] ] );
+				$val                          = str_replace( "\n", "<br>", $val );
 				$prams[ $fields['field_id'] ] = $purifier->purify( $val );
 			}
 		}
@@ -139,23 +139,22 @@ function assign_ad_template( $prams ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
-	    if ( $row['field_type'] == 'IMAGE' ) {
-		    if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( ! empty( $prams[ $row['field_id'] ] ) ) ) {
-			    $str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
-		    } else {
-			    //$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
-			    $str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
-		    }
-	    } else if($row['template_tag'] == 'URL') {
-            $str = str_replace('href="http://%URL%"', 'href="%URL%"', $str);
-	        $value = get_template_value( $row['template_tag'], 1 );
-		    $url = parse_url( $value );
-		    if ( empty( $url['scheme'] ) ) {
-			    $value = 'https://' . $value;
-		    }
-		    $value = '<a class="pixel-url" href="' . $f2->value( $value ) . '">' . $f2->value( $value ) . '</a>';
-		    $str = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
-
+		if ( $row['field_type'] == 'IMAGE' ) {
+			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( ! empty( $prams[ $row['field_id'] ] ) ) ) {
+				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
+			} else {
+				//$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
+				$str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
+			}
+		} else if ( $row['template_tag'] == 'URL' ) {
+			$str   = str_replace( 'href="http://%URL%"', 'href="%URL%"', $str );
+			$value = get_template_value( $row['template_tag'], 1 );
+			$url   = parse_url( $value );
+			if ( empty( $url['scheme'] ) ) {
+				$value = 'https://' . $value;
+			}
+			$value = '<a class="pixel-url" href="' . $f2->value( $value ) . '">' . $f2->value( $value ) . '</a>';
+			$str   = str_replace( '%' . $row['template_tag'] . '%', $value, $str );
 		} else {
 			$str = str_replace( '%' . $row['template_tag'] . '%', get_template_value( $row['template_tag'], 1 ), $str );
 		}
@@ -182,9 +181,9 @@ function display_ad_form( $form_id, $mode, $prams ) {
 		while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
 			if ( $row['field_type'] == 'DATE' ) {
-				$day                       = $_REQUEST[ $row['field_id'] . "d" ];
-				$month                     = $_REQUEST[ $row['field_id'] . "m" ];
-				$year                      = $_REQUEST[ $row['field_id'] . "y" ];
+				$day   = $_REQUEST[ $row['field_id'] . "d" ];
+				$month = $_REQUEST[ $row['field_id'] . "m" ];
+				$year  = $_REQUEST[ $row['field_id'] . "y" ];
 
 				if ( ! checkdate( $month, $day, $year ) ) {
 					// invalid date so use epoc
@@ -238,7 +237,7 @@ function display_ad_form( $form_id, $mode, $prams ) {
             <div class="flex-row">
                 <input type="hidden" name="save" id="save101" value="">
 				<?php if ( $mode == 'edit' || $mode == 'user' ) { ?>
-                    <input class="mds_save_ad_button form_submit_button big_button" type="submit" name="savebutton" value="<?php echo $label['ad_save_button']; ?>" onClick="save101.value='1';">
+                    <input<?php echo( $mode == 'edit' ? ' disabled' : '' ); ?> class="mds_save_ad_button form_submit_button big_button" type="submit" name="savebutton" value="<?php echo $label['ad_save_button']; ?>" onClick="save101.value='1';">
 				<?php } ?>
             </div>
         </div>
@@ -257,16 +256,16 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 	// process search result
 	$q_string  = "";
 	$where_sql = "";
-	if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'search' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'search' ) {
 		$q_string  = generate_q_string( 1 );
 		$where_sql = generate_search_sql( 1 );
 	}
 
-	$order = (isset($_REQUEST['order_by']) && $_REQUEST['order_by']) ? $_REQUEST['order_by'] : '';
+	$order = ( isset( $_REQUEST['order_by'] ) && $_REQUEST['order_by'] ) ? $_REQUEST['order_by'] : '';
 
-	if ( isset($_REQUEST['ord']) && $_REQUEST['ord'] == 'asc' ) {
+	if ( isset( $_REQUEST['ord'] ) && $_REQUEST['ord'] == 'asc' ) {
 		$ord = 'ASC';
-	} else if ( isset($_REQUEST['ord']) && $_REQUEST['ord'] == 'desc' ) {
+	} else if ( isset( $_REQUEST['ord'] ) && $_REQUEST['ord'] == 'desc' ) {
 		$ord = 'DESC';
 	} else {
 		$ord = 'DESC';
@@ -295,7 +294,6 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 	$count = mysqli_num_rows( $result );
 
 	if ( $count > $records_per_page ) {
-
 		mysqli_data_seek( $result, $offset );
 	}
 
@@ -444,7 +442,7 @@ function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '
 function delete_ads_files( $ad_id ) {
 
 	$sql = "SELECT * FROM form_fields WHERE form_id=1 ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error( $sql ) );
 
 	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
@@ -468,13 +466,13 @@ function delete_ad( $ad_id ) {
 	delete_ads_files( $ad_id );
 
 	$sql = "DELETE FROM `ads` WHERE `ad_id`='" . intval( $ad_id ) . "' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error($sql) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mds_sql_error( $sql ) );
 }
 
 function generate_ad_id() {
 
 	$sql = "SELECT max(`ad_id`) FROM `ads`";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	$row = mysqli_fetch_row( $result );
 	$row[0] ++;
 
@@ -495,19 +493,19 @@ function insert_ad_data() {
 	}
 
 	$order_id = ( isset( $_REQUEST['order_id'] ) && ! empty( $_REQUEST['order_id'] ) ) ? $_REQUEST['order_id'] : ( isset( $_SESSION['MDS_order_id'] ) ? $_SESSION['MDS_order_id'] : 0 );
-	$BID = $f2->bid();
+	$BID      = $f2->bid();
 
 	$ad_values = array();
 
 	if ( ! isset( $_REQUEST['aid'] ) || empty( $_REQUEST['aid'] ) ) {
 
 		$ad_id = generate_ad_id();
-		$now       = gmdate( "Y-m-d H:i:s" );
+		$now   = gmdate( "Y-m-d H:i:s" );
 
 		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'insert' );
 		$values    = $ad_id . ", '" . $user_id . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', " . intval( $order_id ) . ", " . intval( $BID ) . $ad_values['extra_values'];
 		$sql       = "REPLACE INTO ads VALUES (" . $values . ");";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	} else {
 
 		$ad_id = intval( $_REQUEST['aid'] );
@@ -522,7 +520,7 @@ function insert_ad_data() {
 			} else {
 				// user is logged in
 				$sql = "SELECT user_id FROM `ads` WHERE ad_id='" . $ad_id . "'";
-				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				$row = @mysqli_fetch_array( $result );
 
 				if ( $_SESSION['MDS_ID'] !== $row['user_id'] ) {
@@ -535,7 +533,7 @@ function insert_ad_data() {
 		$now       = gmdate( "Y-m-d H:i:s" );
 		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'update' );
 		$sql       = "UPDATE ads SET ad_date='$now'" . $ad_values['extra_values'] . " WHERE ad_id='" . $ad_id . "'";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		$f2->write_log( $sql );
 	}
 
@@ -546,18 +544,24 @@ function insert_ad_data() {
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 		$order_row = mysqli_fetch_array( $result );
 
-		$blocks = explode( ',', $order_row['blocks'] );
+		if ( isset( $order_row ) ) {
 
-		foreach ( $blocks as $block ) {
-			$alt_text = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['1'] );
-			$url      = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['2'] );
-			$filename = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['3'] );
+			$blocks = explode( ',', $order_row['blocks'] );
 
-			$block_id  = intval( $block );
-			$banner_id = intval( $order_row['banner_id'] );
+			foreach ( $blocks as $block ) {
+//				$alt_text = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['1'] );
+//				$url      = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['2'] );
 
-			$sql = "UPDATE blocks SET url='{$url}', alt_text='{$alt_text}', file_name='{$filename}' WHERE block_id={$block_id} AND banner_id={$banner_id};";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+				if ( isset( $ad_values['3'] ) && ! empty( $ad_values['3'] ) ) {
+					$filename = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['3'] );
+
+					$block_id  = intval( $block );
+					$banner_id = intval( $order_row['banner_id'] );
+
+					$sql = "UPDATE blocks SET file_name='{$filename}' WHERE block_id={$block_id} AND banner_id={$banner_id};";
+					mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+				}
+			}
 		}
 	}
 
@@ -603,14 +607,14 @@ function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
 		$uploaddir = SERVER_PATH_TO_ADMIN . "temp/";
 
 		$file_parts = pathinfo( $_FILES['pixels']['name'] );
-		$ext   = $f2->filter( strtolower( $file_parts['extension'] ) );
+		$ext        = $f2->filter( strtolower( $file_parts['extension'] ) );
 
 		// CHECK THE EXTENSION TO MAKE SURE IT IS ALLOWED
 		$ALLOWED_EXT = array( 'jpg', 'jpeg', 'gif', 'png' );
 
 		$error = '';
 		if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
-			$error              = "<b>" . $label['advertiser_file_type_not_supp'] . "</b><br>";
+			$error = "<b>" . $label['advertiser_file_type_not_supp'] . "</b><br>";
 		}
 
 		if ( ! empty( $error ) ) {
@@ -734,7 +738,7 @@ function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
 							$cb        = ( ( $map_x ) / $banner_data['BLK_WIDTH'] ) + ( ( $map_y / $banner_data['BLK_HEIGHT'] ) * ( $GRD_WIDTH / $banner_data['BLK_WIDTH'] ) );
 
 							// save to db
-							$sql = "UPDATE blocks SET image_data='" . mysqli_real_escape_string( $GLOBALS['connection'], $image_data ) . "' where block_id=" . intval( $cb ) . " AND banner_id=" . intval( $BID ) . ' AND order_id=' . intval($order_id);
+							$sql = "UPDATE blocks SET image_data='" . mysqli_real_escape_string( $GLOBALS['connection'], $image_data ) . "' where block_id=" . intval( $cb ) . " AND banner_id=" . intval( $BID ) . ' AND order_id=' . intval( $order_id );
 							mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 						}
 					}

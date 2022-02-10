@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -693,9 +693,9 @@ function render_offer( $price, $currency, $max_orders, $days_expire, $package_id
 	?>
     <font size="2">
 		<?php
-		if ( $package_id != 0 ) {
+//		if ( $package_id != 0 ) {
 			//echo "<font color='#CC0033'>#$package_id </font>";
-		}
+//		}
 		?>
         <small>Days:</small> <b><?php if ( $days_expire > 0 ) {
 				echo $days_expire;

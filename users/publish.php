@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -310,9 +310,11 @@ if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 	}
 } # end of ad forms
 
+$offset = isset($_REQUEST['offset']) ? intval($_REQUEST['offset']) : 0;
+
 # List Ads
 ob_start();
-$count    = list_ads( false, 0, 'USER' );
+$count    = list_ads( false, $offset, 'USER' );
 $contents = ob_get_contents();
 ob_end_clean();
 

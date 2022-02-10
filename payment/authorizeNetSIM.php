@@ -122,14 +122,14 @@ class authorizeNet {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
 
 	function get_currency() {
-
 		return AUTHNET_CURRENCY;
 	}
 
@@ -334,7 +334,7 @@ class authorizeNet {
 
 		echo "Note: The Authorize.net module is currently experimentail in this version<br>";
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 
 			$authnet_login_id                   = $_REQUEST['authnet_login_id'];
 			$authnet_currency                   = $_REQUEST['authnet_currency'];
@@ -538,7 +538,7 @@ class authorizeNet {
 		$sql = "SELECT val from config where `key`='AUTHNET_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

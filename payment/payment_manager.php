@@ -124,7 +124,7 @@ function list_avalable_payments() {
 									?></font></td>
                             <td nowrap><font size="2"><?php
 
-									if ( $obj_key == $_REQUEST['pay'] ) {
+									if ( isset($_REQUEST['pay']) && $obj_key == $_REQUEST['pay'] ) {
 										if ( ! $obj->is_installed() ) {
 											echo "<input type='button' style='font-size: 10px;' value='Install' onclick=\"if (!confirmLink(this, 'Install, are you sure?')) return false;\" data-link='" . $_SERVER['PHP_SELF'] . "?pay=" . $obj_key . "&action=install'>";
 										} else {
@@ -168,7 +168,6 @@ function list_avalable_payments() {
 				<?php
 
 				if ( isset($_REQUEST['pay']) && $_REQUEST['pay'] != '' ) {
-
 					if ( $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ]->is_installed() ) {
 						$_PAYMENT_OBJECTS[ $_REQUEST['pay'] ]->config_form();
 					}

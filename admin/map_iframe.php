@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -43,8 +43,53 @@ $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
-?>
+if(WP_ENABLED == 'YES') {
+	$mds_site_url = WP_URL;
+} else {
+	$mds_site_url = BASE_HTTP_PATH;
+}
+
+?><!DOCTYPE html>
+<html lang="">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Million Dollar Script Administration</title>
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/css/admin.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/css/admin.css" ); ?>">
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery-ui.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/selection.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/selection.min.js" ); ?>"></script>
+    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>css/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/css/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.form.min.js" ); ?>"></script>
+
+    <script>
+		window.mds_data = {
+			ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+			mds_site_url: '<?php echo $mds_site_url; ?>',
+			BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>'
+		};
+    </script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/js/admin.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/js/admin.js" ); ?>"></script>
+</head>
+<body>
 <script>
+
+	let debug = false;
+
+	// Initialize
+	let grid;
+	let pointer;
+	let BLK_WIDTH = <?php echo $banner_data['BLK_WIDTH']; ?>;
+	let BLK_HEIGHT = <?php echo $banner_data['BLK_HEIGHT']; ?>;
+	let GRD_WIDTH = <?php echo $banner_data['G_WIDTH']; ?>;
+	let GRD_HEIGHT = <?php echo $banner_data['G_HEIGHT']; ?>;
+
+	let $block_target;
+
+	window.onload = function () {
+		grid = document.getElementById("pixelimg");
+		pointer = document.getElementById('block_pointer');
+		handle_mouse_events();
+	};
 
 	window.winWidth = 0;
 	window.winHeight = 0;
@@ -96,6 +141,7 @@ $banner_data = load_banner_constants( $BID );
 			bm_move_block_state = false;
 			document.button_move_b.src = 'images/move_b.gif';
 			if (bm_move_order_state) {
+				$block_target = undefined;
 				bm_move_order_state = false;
 				document.button_move.src = 'images/move.gif';
 			} else {
@@ -109,6 +155,7 @@ $banner_data = load_banner_constants( $BID );
 			document.button_move.src = 'images/move.gif';
 
 			if (bm_move_block_state) {
+				$block_target = undefined;
 				bm_move_block_state = false;
 				document.button_move_b.src = 'images/move_b.gif';
 			} else {
@@ -119,39 +166,36 @@ $banner_data = load_banner_constants( $BID );
 
 		if ((bm_move_block_state === true) || (bm_move_order_state === true)) {
 			document.body.style.cursor = 'move';
-
 		} else {
 			document.body.style.cursor = 'default';
-
 		}
-
 	}
 
 	var is_moving = false;
 
 	var cb_from;
 
-	function do_block_click(banner_id) {
+	function do_block_click(banner_id, offset) {
 
 		document.body.style.cursor = 'default';
 		is_moving = true;
-		let cb = get_clicked_block();
+		let cb = get_clicked_block(offset);
 
 		if (bm_move_order_state) {
-			document.pointer_img.src = 'get_pointer_image2.php?BID=' + banner_id + '&block_id=' + cb;
+			$(pointer).find('img').attr('src', 'get_pointer_image2.php?BID=' + banner_id + '&block_id=' + cb);
 		} else {
-			document.pointer_img.src = 'get_pointer_image.php?BID=' + banner_id + '&block_id=' + cb;
-
+			$(pointer).find('img').attr('src', 'get_pointer_image.php?BID=' + banner_id + '&block_id=' + cb);
 		}
 		cb_from = cb
 
+		show_pointer(offset);
 	}
 
-	function put_pixels(e) {
+	function put_pixels(offset) {
 
 		is_moving = false;
 
-		document.move_form.cb_to.value = get_clicked_block();
+		document.move_form.cb_to.value = get_clicked_block(offset);
 		document.move_form.cb_from.value = cb_from;
 
 		if (bm_move_order_state) {
@@ -163,54 +207,51 @@ $banner_data = load_banner_constants( $BID );
 
 		document.move_form.submit();
 
-		document.pointer_img.src = 'images/pointer.png';
+		$(pointer).find('img').attr('src', 'images/pointer.png');
 
 	}
 
-	function show_pointer(e) {
+	function get_pointer_size() {
+		let size = {};
 
-		var pixelimg = document.getElementById('pixelimg');
-
-		if (!pos) {
-			var pos = getObjCoords(pixelimg);
-		}
-
-		if (e.offsetX) {
-			var OffsetX = e.offsetX;
-			var OffsetY = e.offsetY;
+		if (bm_move_order_state) {
+			size.width = $block_target.data('order_width');
+			size.height = $block_target.data('order_height');
 		} else {
-			var OffsetX = e.pageX - pos.x;
-			var OffsetY = e.pageY - pos.y;
-
+			size.width = BLK_WIDTH;
+			size.height = BLK_HEIGHT;
 		}
 
-		OffsetX = Math.floor(OffsetX / <?php echo $banner_data['BLK_WIDTH']; ?>) *<?php echo $banner_data['BLK_WIDTH']; ?>;
-		OffsetY = Math.floor(OffsetY / <?php echo $banner_data['BLK_HEIGHT']; ?>) *<?php echo $banner_data['BLK_HEIGHT']; ?>;
-
-		var pointer = document.getElementById('block_pointer');
-
-		if (!is_moving) {
-			//return false;
-			pointer.style.visibility = 'hidden';
-
-		} else {
-			pointer.style.visibility = 'visible';
-
-		}
-
-		if (pos.y + OffsetY) {
-			pointer.style.top = pos.y + OffsetY;
-			pointer.style.left = pos.x + OffsetX;
-
-			pointer.map_x = OffsetX;
-			pointer.map_y = OffsetY;
-		}
-
-		return true;
-
+		return size;
 	}
 
-	var pos;
+	function round_to_block(offset) {
+		// drop 1/10 from the OffsetX and OffsetY, eg 612 becomes 610
+		offset.x = Math.floor(offset.x / BLK_WIDTH) * BLK_WIDTH;
+		offset.y = Math.floor(offset.y / BLK_HEIGHT) * BLK_HEIGHT;
+
+		return offset;
+	}
+
+	function show_pointer(offset) {
+		pointer.style.visibility = 'visible';
+		pointer.style.display = 'block';
+
+		offset = round_to_block(offset);
+
+		let x = offset.x + grid.offsetLeft;
+		let y = offset.y + grid.offsetTop;
+
+		pointer.style.left = x + "px";
+		pointer.style.top = y + "px";
+
+		pointer.map_x = x;
+		pointer.map_y = y;
+
+		let size = get_pointer_size();
+		pointer.style.width = size.width + "px";
+		pointer.style.height = size.height + "px";
+	}
 
 	function getObjCoords(obj) {
 		var pos = {x: 0, y: 0};
@@ -231,28 +272,100 @@ $banner_data = load_banner_constants( $BID );
 		return pos;
 	}
 
-	function get_clicked_block() {
-
-		var pointer = document.getElementById('block_pointer');
-
-		var grid_width =<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'];?>;
-		var grid_height =<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'];?>;
-
-		var blk_width = <?php echo $banner_data['BLK_WIDTH']; ?>;
-		var blk_height = <?php echo $banner_data['BLK_HEIGHT']; ?>;
-
-		var clicked_block = ((pointer.map_x) / blk_width) + ((pointer.map_y / blk_height) * (grid_width / blk_width));
-
-		if (clicked_block === 0) {
-			// convert to string
-			clicked_block = "0";
+	function getOffset(x, y) {
+		if (grid == null) {
+			// grid may not be loaded yet
+			return null;
 		}
 
-		return clicked_block;
+		let pos = getObjCoords(grid);
+
+		let offset = {};
+		let scrollLeft = 0;
+		let scrollTop = 0;
+
+		offset.x = x - pos.x + scrollLeft;
+		offset.y = y - pos.y + scrollTop;
+
+		offset = round_to_block(offset);
+
+		return offset;
+	}
+
+	function get_clicked_block(offset) {
+		let X = (offset.x / BLK_WIDTH);
+		let Y = (offset.y / BLK_HEIGHT) * GRD_WIDTH;
+
+		return Math.round(X + Y);
+	}
+
+	function center_block(coords) {
+		let size = get_pointer_size();
+		coords.x -= (size.width / 2) - (BLK_WIDTH / 2);
+		coords.y -= (size.height / 2) - (BLK_HEIGHT / 2);
+		return coords;
+	}
+
+	function handle_mouse_events() {
+
+		$($(grid).add(pointer)).on('mousemove', function (event) {
+			if ($block_target === undefined || (!bm_move_block_state && !bm_move_order_state)) {
+				return
+			}
+
+			let coords = center_block({
+				x: event.originalEvent.pageX,
+				y: event.originalEvent.pageY
+			});
+			let offset = getOffset(coords.x, coords.y);
+			if (offset == null) {
+				return false;
+			}
+
+			show_pointer(offset);
+		});
+
+		let areas = jQuery('area');
+
+		areas.on('click', function (event) {
+			event.preventDefault();
+
+			$block_target = $(event.currentTarget);
+
+			let offset = getOffset(event.originalEvent.pageX, event.originalEvent.pageY);
+			if (offset == null) {
+				return false;
+			}
+
+			if (bm_move_block_state || bm_move_order_state) {
+				do_block_click(<?php echo $BID; ?>, offset)
+			} else {
+				window.parent.location = '<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/#orders.php?user_id=' + $block_target.data('user_id') + '&BID=<?php echo $BID; ?>&order_id=' + $block_target.data('order_id');
+			}
+
+			return false;
+		});
+
+		$('#block_pointer').on('click', function (event) {
+			event.preventDefault();
+
+			let coords = center_block({
+				x: event.originalEvent.pageX,
+				y: event.originalEvent.pageY
+			});
+			let offset = getOffset(coords.x, coords.y);
+			if (offset == null) {
+				return false;
+			}
+
+			put_pixels(offset);
+
+			return false;
+		});
 	}
 
 </script>
-<span id='block_pointer' onclick="put_pixels(event);" style='cursor: pointer;position:absolute;left:0; top:0;background-color:#FFFFFF; visibility:hidden; '><img name='pointer_img' src='images/pointer.png'></span>
+<span id='block_pointer' style='font-size:1px;line-height:1px;cursor: pointer;position:absolute;left:0; top:0;background-color:#FFFFFF; visibility:hidden; '><img src='images/pointer.png'></span>
 
 <form method='post' name="move_form" action='map_iframe.php'>
     <input name='cb_from' type="hidden" value="">
@@ -285,7 +398,9 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 
 	<?php
 
+    // TODO: optimize this better
 	while ( $row = mysqli_fetch_array( $result ) ) {
+		$size = get_pixel_image_size( $row['order_id'] );
 
 		$sql = "select * from users where ID=" . intval( $row['user_id'] );
 		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
@@ -332,15 +447,20 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 		?>
 
         <area
-                onclick="if (bm_move_block_state || bm_move_order_state) {do_block_click(<?php echo $BID; ?>)} else { window.parent.location='<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/#orders.php?user_id=<?php echo( $row['user_id'] ); ?>&BID=<?php echo $BID; ?>&order_id=<?php echo $row['order_id']; ?>';}return false;"
-                onmousemove="show_pointer(event)"
                 href="<?php echo( $row['url'] ); ?>"
-
-                shape="RECT" coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
-
-                target="_blank">
+                alt=""
+                shape="RECT"
+                coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
+                target="_blank"
+                data-user_id="<?php echo( $row['user_id'] ); ?>"
+                data-order_id="<?php echo $row['order_id']; ?>"
+                data-order_width="<?php echo $size['x']; ?>"
+                data-order_height="<?php echo $size['y']; ?>"
+        >
 	<?php } ?>
 
 </map>
 
-<img border=0 usemap="#main" id="pixelimg" onmousemove="show_pointer(event)" src='show_map.php?BID=<?php echo $BID; ?>&time=<?php echo time(); ?>'>
+<img draggable="false" unselectable="on" usemap="#main" id="pixelimg" src='show_map.php?BID=<?php echo $BID; ?>&time=<?php echo time(); ?>' alt=""/>
+</body>
+</html>

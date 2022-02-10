@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -95,7 +95,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) 
 
 	//$sql = "SELECT *, DATE_FORMAT(MAX(order_date), '%Y-%c-%d') as max_date, sum(quantity) AS pixels FROM orders where status='completed' $bid_sql GROUP BY user_id, banner_id order by pixels desc ";
 
-	$sql = "SELECT *, sum(click_count) AS clicksum, sum(view_count) AS viewsum, count(order_id) AS b FROM blocks WHERE STATUS='sold' AND image_data <> '' $bid_sql GROUP BY order_id ORDER BY clicksum DESC";
+	$sql = "SELECT *, sum(click_count) AS clicksum, sum(view_count) AS viewsum, count(order_id) AS b FROM blocks WHERE STATUS='sold' AND image_data <> '' $bid_sql GROUP BY order_id, block_id, click_count, view_count ORDER BY clicksum DESC";
 
 	//echo $sql;
 

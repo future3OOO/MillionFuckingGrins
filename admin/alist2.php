@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -55,21 +55,21 @@ $mode = isset( $_REQUEST['mode'] ) ? $_REQUEST['mode'] : 'view';
 
 <?php
 $col_row = [];
-if ( $_REQUEST['action'] == 'del' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'del' ) {
 
 	$sql    = "DELETE FROM form_lists WHERE column_id='" . intval( $_REQUEST['column_id'] ) . "' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 }
 
-if ( $_REQUEST['column_id'] != '' ) {
+if ( isset( $_REQUEST['column_id'] ) && $_REQUEST['column_id'] != '' ) {
 	$sql     = "SELECT * FROM form_lists WHERE column_id='" . intval( $_REQUEST['column_id'] ) . "' ";
 	$result  = mysqli_query( $GLOBALS['connection'], $sql );
 	$col_row = mysqli_fetch_array( $result );
 }
 
-if ( $_REQUEST['save_col'] != '' ) {
+if ( isset( $_REQUEST['save_col'] ) && $_REQUEST['save_col'] != '' ) {
 
-    $error = '';
+	$error = '';
 	if ( $_REQUEST['field_id'] == '' ) {
 		$error = "Did not select a field ";
 	}
@@ -150,7 +150,7 @@ if ( $_REQUEST['save_col'] != '' ) {
 
 ?>
 <?php
-if ( $col_row['column_id'] != '' ) {
+if ( isset( $col_row['column_id'] ) && $col_row['column_id'] != '' ) {
 
 	echo '<a href="alist2.php">+ Add new column</a>';
 }
@@ -159,12 +159,12 @@ if ( $col_row['column_id'] != '' ) {
 <form method="POST" action="alist2.php">
 
     <input type="hidden" name="form_id" value="1">
-    <input type="hidden" name="column_id" value="<?php echo $col_row['column_id']; ?>">
+    <input type="hidden" name="column_id" value="<?php echo $col_row['column_id'] ?? ''; ?>">
     <table border=1>
         <tr>
             <td colspan="2">
 				<?php
-				if ( $col_row['column_id'] == '' ) {
+				if ( isset( $col_row['column_id'] ) && $col_row['column_id'] == '' ) {
 					?>
                     <b>Add a new column to the list</b>
 					<?php
@@ -184,7 +184,7 @@ if ( $col_row['column_id'] != '' ) {
 
 					<?php
 
-					field_type_option_list( 1, $col_row['field_id'] );
+					field_type_option_list( 1, $col_row['field_id'] ?? 0 );
 
 					?>
                 </select></td>
@@ -192,7 +192,7 @@ if ( $col_row['column_id'] != '' ) {
 
 		<?php
 
-		if ( $_REQUEST['column_id'] == '' ) { // get the last sort order
+		if ( isset( $_REQUEST['column_id'] ) && $_REQUEST['column_id'] == '' ) { // get the last sort order
 
 			$sql = "SELECT max(sort_order) FROM form_lists WHERE field_id=1 GROUP BY column_id ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
@@ -204,65 +204,65 @@ if ( $col_row['column_id'] != '' ) {
 
         <tr>
             <td>Order</td>
-            <td><input type="text" name="sort_order" size="1" value="<?php echo $col_row['sort_order']; ?>">(1=first, 2=2nd, etc.)</td>
+            <td><input type="text" name="sort_order" size="1" value="<?php echo $col_row['sort_order'] ?? 0; ?>">(1=first, 2=2nd, etc.)</td>
         </tr>
         <tr>
             <td>Linked?</td>
-            <td><input <?php if ( $col_row['linked'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['linked'] ) && $col_row['linked'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="linked" value='N'>No / <input <?php if ( $col_row['linked'] == 'Y' ) {
+				} ?> type="radio" name="linked" value='N'>No / <input <?php if ( ! isset( $col_row['linked'] ) || $col_row['linked'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="linked" value='Y'> Yes - link to view full record
 
         </tr>
         <tr>
             <td>Admin Only?</td>
-            <td><input <?php if ( $col_row['admin'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['admin'] ) && $col_row['admin'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="admin_only" value='N'>No / <input <?php if ( $col_row['admin'] == 'Y' ) {
+				} ?> type="radio" name="admin_only" value='N'>No / <input <?php if ( ! isset( $col_row['admin'] ) || $col_row['admin'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="admin_only" value='Y'> Yes
 
         </tr>
         <tr>
             <td>Clean format?</td>
-            <td><input <?php if ( $col_row['clean_format'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['clean_format'] ) && $col_row['clean_format'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="clean_format" value='N'>No / <input <?php if ( $col_row['clean_format'] == 'Y' ) {
+				} ?> type="radio" name="clean_format" value='N'>No / <input <?php if ( ! isset( $col_row['clean_format'] ) || $col_row['clean_format'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="clean_format" value='Y'> Yes - Clean punctuation. Eg. if someone writes A,B,C the system will change to A, B, C
 
         </tr>
         <tr>
             <td>Is sortable?</td>
-            <td><input <?php if ( $col_row['is_sortable'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['is_sortable'] ) && $col_row['is_sortable'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="is_sortable" value='N'>No / <input <?php if ( $col_row['is_sortable'] == 'Y' ) {
+				} ?> type="radio" name="is_sortable" value='N'>No / <input <?php if ( ! isset( $col_row['is_sortable'] ) || $col_row['is_sortable'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="is_sortable" value='Y'> Yes - users can sort the records by this coulum, when clicked.
 
         </tr>
         <tr>
             <td>Is in Bold?</td>
-            <td><input <?php if ( $col_row['is_bold'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['is_bold'] ) && $col_row['is_bold'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="is_bold" value='N'>No / <input <?php if ( $col_row['is_bold'] == 'Y' ) {
+				} ?> type="radio" name="is_bold" value='N'>No / <input <?php if ( ! isset( $col_row['is_bold'] ) || $col_row['is_bold'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="is_bold" value='Y'> Yes
 
         </tr>
         <tr>
             <td>No Wrap?</td>
-            <td><input <?php if ( $col_row['no_wrap'] != 'Y' ) {
+            <td><input <?php if ( isset( $col_row['no_wrap'] ) && $col_row['no_wrap'] != 'Y' ) {
 					echo ' checked ';
-				} ?> type="radio" name="no_wrap" value='N'>No / <input <?php if ( $col_row['no_wrap'] == 'Y' ) {
+				} ?> type="radio" name="no_wrap" value='N'>No / <input <?php if ( ! isset( $col_row['no_wrap'] ) || $col_row['no_wrap'] == 'Y' ) {
 					echo ' checked ';
 				} ?> type="radio" name="no_wrap" value='Y'> Yes
 
         </tr>
         <tr>
             <td>Truncate (cut) to:</td>
-            <td><input type="text" name="truncate_length" size="2" value='<?php if ( $col_row['truncate_length'] == '' ) {
+            <td><input type="text" name="truncate_length" size="2" value='<?php if ( ! isset( $col_row['truncate_length'] ) || $col_row['truncate_length'] == '' ) {
 					$col_row['truncate_length'] = '0';
 				}
 				echo $col_row['truncate_length']; ?>' size=''> characters. (0 = do not truncate)

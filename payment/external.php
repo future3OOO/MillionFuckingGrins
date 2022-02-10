@@ -123,7 +123,7 @@ class external {
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$external_enabled      = $_REQUEST['external_enabled'];
 			$external_url          = $_REQUEST['external_url'];
 			$external_auto_approve = $_REQUEST['external_auto_approve'];
@@ -246,7 +246,7 @@ class external {
 		$sql = "SELECT val FROM `config` WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

@@ -132,7 +132,9 @@ class VoguePay {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -244,7 +246,7 @@ class VoguePay {
 	}
 
 	function config_form() {
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$voguepay_demo_mode   = filter_var( $_REQUEST['voguepay_demo_mode'], FILTER_SANITIZE_STRING );
 			$voguepay_merchant_id = filter_var( $_REQUEST['voguepay_merchant_id'], FILTER_SANITIZE_STRING );
 			$voguepay_store_id    = filter_var( $_REQUEST['voguepay_store_id'], FILTER_SANITIZE_STRING );
@@ -423,7 +425,7 @@ class VoguePay {
 		$sql = "SELECT val FROM config WHERE `key`='VOGUEPAY_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

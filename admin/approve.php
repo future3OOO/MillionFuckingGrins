@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -71,11 +71,11 @@ global $f2;
 if ( isset( $_REQUEST['BID'] ) ) {
 	$BID = $f2->bid();
 } else {
-    $BID = 'all';
+	$BID = 'all';
 }
 
 $bid_sql = " AND banner_id=$BID ";
-if ( ( $BID == 'all' ) || empty($BID) ) {
+if ( ( $BID == 'all' ) || empty( $BID ) ) {
 	$BID     = '';
 	$bid_sql = "  ";
 }
@@ -176,7 +176,7 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 <?php
 
-if ( $_REQUEST['save_links'] != '' ) {
+if ( isset( $_REQUEST['save_links'] ) && $_REQUEST['save_links'] != '' ) {
 	if ( sizeof( $_REQUEST['urls'] ) > 0 ) {
 		$i = 0;
 
@@ -189,7 +189,7 @@ if ( $_REQUEST['save_links'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['edit_links'] != '' ) {
+if ( isset( $_REQUEST['edit_links'] ) && $_REQUEST['edit_links'] != '' ) {
 
 	?>
     <h3>Edit Links:</h3>
@@ -231,7 +231,7 @@ if ( $_REQUEST['edit_links'] != '' ) {
 }
 
 $bid_sql2 = " AND blocks.banner_id=$BID ";
-if ( ( $BID == 'all' ) || ( empty($BID) ) ) {
+if ( ( $BID == 'all' ) || ( empty( $BID ) ) ) {
 	$BID      = '';
 	$bid_sql2 = "";
 }
@@ -263,13 +263,13 @@ SELECT orders.blocks, orders.order_date, orders.order_id, blocks.approved, block
       AND orders.order_id=blocks.order_id 
       AND blocks.order_id=ads.order_id 
       {$bid_sql2}
-    GROUP BY orders.order_id 
+    GROUP BY orders.order_id, orders.blocks, orders.order_date, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, ads.2, users.FirstName, users.LastName, users.Username, users.Email 
     ORDER BY orders.order_date
 ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 $count = mysqli_num_rows( $result );
 
-$offset = intval( $_REQUEST['offset'] );
+$offset = isset( $_REQUEST['offset'] ) ? intval( $_REQUEST['offset'] ) : 0;
 
 $records_per_page = 20;
 if ( $count > $records_per_page ) {
@@ -284,10 +284,11 @@ if ( $count > $records_per_page ) {
 	// calculate number of pages & current page
 
 	echo "<center>";
+    global $label;
 	$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 	$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 
-	$q_string = $q_string . "&app=" . $_REQUEST['app'];
+	$q_string = "&app=" . $_REQUEST['app'];
 	$nav      = nav_pages_struct( $q_string, $count, $records_per_page );
 	$LINKS    = 40;
 	render_nav_pages( $nav, $LINKS, $q_string );
@@ -295,7 +296,7 @@ if ( $count > $records_per_page ) {
 }
 ?>
 <form name="form1" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-    <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
+    <input type="hidden" name="offset" value="<?php echo $offset; ?>">
     <input type="hidden" name="BID" value="<?php echo $BID; ?>">
     <input type="hidden" name="app" value="<?php echo $_REQUEST['app']; ?>">
     <input type="hidden" name="all_go" value="">
@@ -304,7 +305,7 @@ if ( $count > $records_per_page ) {
             <td colspan="12">
                 With selected: <input type="submit" value='Approve' style="font-size: 9px; background-color: #33FF66 " onclick="if (!confirmLink(this, 'Approve for all selected, are you sure?')) return false" name='mass_approve'>
                 <input type="submit" value='Disapprove' style="font-size: 9px; background-color: #FF6600" onclick="if (!confirmLink(this, 'Disapprove all selected, are you sure?')) return false" name='mass_disapprove'>
-                <input type="checkbox" name="do_it_now" <?php if ( ( $_REQUEST['do_it_now'] == 'true' ) ) {
+                <input type="checkbox" name="do_it_now" <?php if ( ( isset($_REQUEST['do_it_now']) && $_REQUEST['do_it_now'] == 'true' ) ) {
 					echo ' checked ';
 				} ?> value="true"> Process Grid Images immediately after approval / disapproval <br>
             </td>

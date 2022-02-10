@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -62,7 +62,7 @@ echo "Current Language: [" . $_SESSION['MDS_LANG'] . "] Select language:";
 ?>
 
     <form name="lang_form" action="atemplate.php">
-        <input type="hidden" name="field_id" value="<?php echo $field_id; ?>"/>
+        <input type="hidden" name="field_id" value="<?php echo $field_id ?? 0; ?>"/>
         <input type="hidden" name="mode" value="<?php echo $mode; ?>"/>
         <select name='lang' onChange="mds_submit(this)">
 			<?php
@@ -85,10 +85,11 @@ if ( ! is_writable( "../lang/$lang_filename" ) ) {
 	echo "../lang/$lang_filename is not writeable. Please give permission for writing to this file before editing the template.<br>";
 }
 
-if ( ( $_REQUEST['save'] ) ) {
+global $label;
+
+if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] ) {
 
 	// save the file.
-
 	include( "../lang/english_default.php" );
 	$source_label = $label; // default english labels
 	include( "../lang/" . $lang_filename );
@@ -112,14 +113,9 @@ if ( ( $_REQUEST['save'] ) ) {
 	fclose( $handler );
 }
 
-if ( $_REQUEST['mouseover_ad_template'] == '' ) {
-	$_REQUEST['mouseover_ad_template'] = $label['mouseover_ad_template'];
-}
-
 ?>
     <form method="POST" action="atemplate.php">
-
-        <textarea name='mouseover_ad_template' rows=10 cols=50><?php echo escape_html( stripslashes( $_REQUEST['mouseover_ad_template'] ) ); ?></textarea><br>
+        <textarea name='mouseover_ad_template' rows=10 cols=50><?php echo escape_html( stripslashes( $label['mouseover_ad_template'] ) ); ?></textarea><br>
         <input type="submit" name='save' value="Save">
     </form>
 

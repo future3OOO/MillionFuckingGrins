@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,30 +34,32 @@ require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
 ?>
-<p>System info</p>
-You have PHP version: <?php echo phpversion(); ?><br><br>
-<?php
-if ( function_exists( 'gd_info' ) ) {
-	echo 'GD Library version: <pre>' . print_r( gd_info(), true ) . '</pre>';
-	if ( ! function_exists( "imagecreatetruecolor" ) ) {
-		echo "imagecreatetruecolor() is not supported by your version GD. Using imagecreate() instead.";
-	}
-} else {
-	echo "Not installed! MDS cannot function without the php-gd package.";
-}
-?><br>
-<br>
-Your path to your admin directory: <?php echo str_replace( '\\', '/', getcwd() ); ?>/
-<hr>
-<div class="phpinfo-container">
+<div class="system-info">
+    <p>System info</p>
+    You have PHP version: <?php echo phpversion(); ?><br><br>
 	<?php
-	// @link https://www.mainelydesign.com/blog/view/displaying-phpinfo-without-css-styles
-	ob_start();
-	phpinfo();
-	$pinfo = ob_get_contents();
-	ob_end_clean();
+	if ( function_exists( 'gd_info' ) ) {
+		echo 'GD Library version: <pre>' . print_r( gd_info(), true ) . '</pre>';
+		if ( ! function_exists( "imagecreatetruecolor" ) ) {
+			echo "imagecreatetruecolor() is not supported by your version GD. Using imagecreate() instead.";
+		}
+	} else {
+		echo "Not installed! MDS cannot function without the php-gd package.";
+	}
+	?><br>
+    <br>
+    Your path to your admin directory: <?php echo str_replace( '\\', '/', getcwd() ); ?>/
+    <hr>
+    <div class="phpinfo-container">
+		<?php
+		// @link https://www.mainelydesign.com/blog/view/displaying-phpinfo-without-css-styles
+		ob_start();
+		phpinfo();
+		$pinfo = ob_get_contents();
+		ob_end_clean();
 
-	$pinfo = preg_replace( '%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo );
-	echo $pinfo;
-	?>
+		$pinfo = preg_replace( '%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo );
+		echo $pinfo;
+		?>
+    </div>
 </div>

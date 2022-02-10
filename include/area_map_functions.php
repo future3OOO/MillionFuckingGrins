@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -109,8 +109,29 @@ function process_map( $BID, $map_file = '' ) {
 	mysqli_stmt_bind_param( $stmt, "i", $var1 );
 	$var1 = intval( $BID );
 	mysqli_stmt_execute( $stmt ) or die( mds_sql_error( $sql ) );
-	$result = mysqli_stmt_get_result( $stmt );
-	$error  = mysqli_stmt_error( $stmt );
+
+	// TODO: FINISH ADDING MYSQL BACKWARDS COMPATIBILITY
+	if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+		$result = mysqli_stmt_get_result( $stmt );
+	} else {
+		$params = [];
+		$row    = [];
+		$c      = [];
+		$meta   = $stmt->result_metadata();
+		while ( $field = $meta->fetch_field() ) {
+			$params[] = &$row[ $field->name ];
+		}
+
+		call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+		while ( $stmt->fetch() ) {
+			foreach ( $row as $key => $val ) {
+				$c[ $key ] = $val;
+			}
+			$result[] = $c;
+		}
+	}
+	$error = mysqli_stmt_error( $stmt );
 	if ( ! empty( $error ) ) {
 		die ( mds_sql_error( $sql ) );
 	}
@@ -150,7 +171,7 @@ WHERE published = 'Y'
   AND `status` = 'sold'
   AND banner_id = ?
   AND image_data != ''
-GROUP BY order_id";
+GROUP BY order_id, block_id, x, y, url, alt_text, ad_id";
 
 	$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
 	if ( ! mysqli_stmt_prepare( $stmt, $sql ) ) {
@@ -160,7 +181,26 @@ GROUP BY order_id";
 	mysqli_stmt_bind_param( $stmt, "i", $var1 );
 	$var1 = intval( $BID );
 	mysqli_stmt_execute( $stmt );
-	$result = mysqli_stmt_get_result( $stmt );
+	if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+		$result = mysqli_stmt_get_result( $stmt );
+	} else {
+		$params = [];
+		$row    = [];
+		$c      = [];
+		$meta   = $stmt->result_metadata();
+		while ( $field = $meta->fetch_field() ) {
+			$params[] = &$row[ $field->name ];
+		}
+
+		call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+		while ( $stmt->fetch() ) {
+			foreach ( $row as $key => $val ) {
+				$c[ $key ] = $val;
+			}
+			$result[] = $c;
+		}
+	}
 	$error  = mysqli_stmt_error( $stmt );
 	if ( ! empty( $error ) ) {
 		die ( mds_sql_error( $sql ) );
@@ -207,7 +247,26 @@ GROUP BY y";
 			$var1 = intval( $BID );
 			$var2 = intval( $row['order_id'] );
 			mysqli_stmt_execute( $stmt );
-			$res_i = mysqli_stmt_get_result( $stmt );
+			if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+				$res_i = mysqli_stmt_get_result( $stmt );
+			} else {
+				$params = [];
+				$row    = [];
+				$c      = [];
+				$meta   = $stmt->result_metadata();
+				while ( $field = $meta->fetch_field() ) {
+					$params[] = &$row[ $field->name ];
+				}
+
+				call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+				while ( $stmt->fetch() ) {
+					foreach ( $row as $key => $val ) {
+						$c[ $key ] = $val;
+					}
+					$res_i[] = $c;
+				}
+			}
 			$error = mysqli_stmt_error( $stmt );
 			if ( ! empty( $error ) ) {
 				die ( mds_sql_error( $sql_i ) );
@@ -249,7 +308,26 @@ WHERE (published = 'Y')
 					$var2 = intval( $row['order_id'] );
 					$var3 = intval( $row_i['y1'] );
 					mysqli_stmt_execute( $stmt );
-					$res_r = mysqli_stmt_get_result( $stmt );
+					if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+						$res_r = mysqli_stmt_get_result( $stmt );
+					} else {
+						$params = [];
+						$row    = [];
+						$c      = [];
+						$meta   = $stmt->result_metadata();
+						while ( $field = $meta->fetch_field() ) {
+							$params[] = &$row[ $field->name ];
+						}
+
+						call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+						while ( $stmt->fetch() ) {
+							foreach ( $row as $key => $val ) {
+								$c[ $key ] = $val;
+							}
+							$res_r[] = $c;
+						}
+					}
 					$error = mysqli_stmt_error( $stmt );
 					if ( ! empty( $error ) ) {
 						die ( mds_sql_error( $sql_r ) );
@@ -327,7 +405,26 @@ WHERE (banner_id = ?)";
 	mysqli_stmt_bind_param( $stmt, "i", $var1 );
 	$var1 = intval( $BID );
 	mysqli_stmt_execute( $stmt );
-	$result = mysqli_stmt_get_result( $stmt );
+	if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+		$result = mysqli_stmt_get_result( $stmt );
+	} else {
+		$params = [];
+		$row    = [];
+		$c      = [];
+		$meta   = $stmt->result_metadata();
+		while ( $field = $meta->fetch_field() ) {
+			$params[] = &$row[ $field->name ];
+		}
+
+		call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+		while ( $stmt->fetch() ) {
+			foreach ( $row as $key => $val ) {
+				$c[ $key ] = $val;
+			}
+			$result[] = $c;
+		}
+	}
 	$error  = mysqli_stmt_error( $stmt );
 	if ( ! empty( $error ) ) {
 		die ( mds_sql_error( $sql ) );

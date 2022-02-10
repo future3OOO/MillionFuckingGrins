@@ -77,7 +77,9 @@ class check {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -142,7 +144,7 @@ class check {
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 
 			$check_enabled       = $_REQUEST['check_enabled'];
 			$check_currency      = $_REQUEST['check_currency'];
@@ -181,18 +183,7 @@ class check {
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
                             <select name="check_currency"><?php currency_option_list( $check_currency ); ?></select></font></td>
                 </tr>
-                <!--
-<tr>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">Send confirmation email</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-       <input type="radio" name="bank_email_confirm" value="YES"  <?php if ( $bank_email_confirm == 'YES' ) {
-					echo " checked ";
-				} ?> >Yes - Send email with bank details<br>
-	  <input type="radio" name="bank_email_confirm" value="NO"  <?php if ( $bank_email_confirm == 'NO' ) {
-					echo " checked ";
-				} ?> >No<br></font></td>
-    </tr>
-	-->
+
                 <tr>
 
                     <td bgcolor="#e6f2ea" colspan=2><font face="Verdana" size="1"><input type="submit" value="Save"></font>
@@ -231,7 +222,7 @@ class check {
 		$sql = "SELECT val from `config` where `key`='CHECK_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

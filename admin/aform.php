@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -80,13 +80,13 @@ echo '<div style="width:250px;float:left;">Current Language: [' . $_SESSION['MDS
 <div style="clear:both;"></div>
 <?php
 
-if ( ( $_REQUEST['NEW_FIELD'] == 'YES' ) ) {
+if ( isset( $_REQUEST['NEW_FIELD'] ) && $_REQUEST['NEW_FIELD'] == 'YES' ) {
 	$NEW_FIELD = 'YES';
 } else {
 	$NEW_FIELD = 'NO';
 }
 
-$save = $_REQUEST['save'];
+$save = $_REQUEST['save'] ?? '';
 if ( $save != '' ) {
 
 	echo "Saving...";
@@ -103,7 +103,7 @@ if ( $save != '' ) {
 	}
 }
 
-if ( $_REQUEST['delete'] != '' ) {
+if ( isset( $_REQUEST['delete'] ) && $_REQUEST['delete'] != '' ) {
 
 	echo "Deleting...";
 	$sql    = "SELECT * FROM form_fields WHERE form_id=1 and field_id='" . intval( $_REQUEST['field_id'] ) . "'";
@@ -139,24 +139,24 @@ if ( is_table_unsaved( "ads" ) ) {
 			build_sort_fields( 1, 2 );
 			build_sort_fields( 1, 3 );
 
-			if ( $_REQUEST['action'] == 'move_up' ) {
+			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'move_up' ) {
 				move_field_up( 1, $_REQUEST['field_id'] );
 			}
 
-			if ( $_REQUEST['action'] == 'move_down' ) {
+			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'move_down' ) {
 				move_field_down( 1, $_REQUEST['field_id'] );
 			}
 
 			if ( $NEW_FIELD == 'NO' ) {
-				display_ad_form( 1, $_REQUEST['mode'], '' );
+				display_ad_form( 1, $_REQUEST['mode'] ?? '', '' );
 			}
 			?>
 
         </td>
         <td valign="top">
 
-			<?php if ( ( ( $mode == 'edit' ) && ( isset( $_REQUEST['field_id'] ) && $_REQUEST['field_id'] != '' ) ) || ( $NEW_FIELD == 'YES' ) ) {
-				field_form( $NEW_FIELD, $prams, 1 );
+			<?php if ( ( ( $mode == 'edit' ) && ( $_REQUEST['field_id'] ?? '' ) ) || ( $NEW_FIELD == 'YES' ) ) {
+				field_form( $NEW_FIELD, $prams ?? [], 1 );
 			} ?>
 
         </td>
@@ -175,12 +175,12 @@ if ( $mode == 'edit' ) {
 	<?php
 }
 
-if ( $mode != 'edit' ) {
-	//echo "<hr>- Preview of the search form<br><br>";
+//if ( $mode != 'edit' ) {
+//echo "<hr>- Preview of the search form<br><br>";
 
-	//display_dynamic_search_form (1);
+//display_dynamic_search_form (1);
 
-}
+//}
 ?>
 <script>
 	window.setTimeout("window.scrollTo(0,0);", 500);

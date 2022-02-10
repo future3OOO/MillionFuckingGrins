@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -238,9 +238,9 @@ function echo_list_head_data_admin( $form_id ) {
 		?>
         <td class="list_header_cell" nowrap>
 			<?php echo '<small>(' . $row['sort_order'] . ')</small>'; ?>
-            <a href='<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>'><?php echo get_template_field_label( $row['template_tag'], $form_id ); ?></a> <a onClick="return confirmLink(this, 'Delete this column from view, are you sure?') " href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=del&column_id=<?php echo $row['column_id'] ?>"><IMG src='delete.gif' width='16' height='16' border='0' alt='Delete'></a>
+            <a href='<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>'><?php echo get_template_field_label( $row['template_tag'], $form_id ); ?></a> <a onClick="return confirmLink(this, 'Delete this column from view, are you sure?') " href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=del&column_id=<?php echo $row['column_id'] ?>"><IMG src='images/delete.gif' width='16' height='16' border='0' alt='Delete'></a>
             <a href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>">
-                <IMG alt="edit" src="edit.gif" width="16" height="16" border="0" alt="Edit">
+                <IMG alt="edit" src="images/edit.gif" width="16" height="16" border="0" alt="Edit">
         </td>
 		<?php
 	}

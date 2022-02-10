@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -218,12 +218,7 @@ function login_form( $show_signup_link = true, $target_page = 'index.php' ) {
 	<?php
 }
 
-function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Username, $pass, $Email, $Newsletter, $Notification1, $Notification2, $lang ) {
-
-	if ( $lang == '' ) {
-		$lang = "EN"; // default language is english
-
-	}
+function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Username, $pass, $Email ) {
 
 	global $label;
 
@@ -236,7 +231,7 @@ function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Us
 	}
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
 	// everything Ok, create account and send out emails.
-	$sql = "Insert Into users(IP, SignupDate, FirstName, LastName, CompName, Username, Password, Email, Newsletter, Notification1, Notification2, Validated, Aboutme) values('" . mysqli_real_escape_string( $GLOBALS['connection'], $REMOTE_ADDR ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $FirstName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $LastName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $CompName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "', '$Password', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Email ) . "', '" . intval( $Newsletter ) . "', '" . intval( $Notification1 ) . "', '" . intval( $Notification2 ) . "', '$validated', '')";
+	$sql = "Insert Into users(IP, SignupDate, FirstName, LastName, CompName, Username, Password, Email, Newsletter, Notification1, Notification2, Validated, Aboutme) values('" . mysqli_real_escape_string( $GLOBALS['connection'], $REMOTE_ADDR ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $FirstName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $LastName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $CompName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "', '$Password', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Email ) . "', '', '', '', '$validated', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	$res = mysqli_affected_rows( $GLOBALS['connection'] );
 
@@ -305,7 +300,7 @@ function validate_signup_form() {
 
 		//validate email ";
 
-		if ( $row['Email'] != '' ) {
+		if ( isset( $row['Email'] ) && $row['Email'] != '' ) {
 			$error .= " " . $label["advertiser_signup_email_in_use"] . " ";
 		}
 	}
@@ -313,7 +308,7 @@ function validate_signup_form() {
 	return $error;
 }
 
-function display_signup_form( $FirstName, $LastName, $CompName, $Username, $password, $password2, $Email, $Newsletter, $Notification1, $Notification2, $lang ) {
+function display_signup_form( $FirstName, $LastName, $CompName, $Username, $password, $password2, $Email ) {
 
 	global $label, $f2;
 
@@ -381,40 +376,29 @@ function process_signup_form( $target_page = 'index.php' ) {
 
 	global $label;
 
-	$FirstName     = ( $_POST['FirstName'] );
-	$LastName      = ( $_POST['LastName'] );
-	$CompName      = ( $_POST['CompName'] );
-	$Username      = ( $_POST['Username'] );
-	$Password      = md5( $_POST['Password'] );
-	$Password2     = md5( $_POST['Password2'] );
-	$Email         = ( $_POST['Email'] );
-	$Newsletter    = ( $_POST['Newsletter'] );
-	$Notification1 = ( $_POST['Notification1'] );
-	$Notification2 = ( $_POST['Notification2'] );
-	$Aboutme       = ( $_POST['Aboutme'] );
-	$lang          = ( $_POST['lang'] );
-
-	if ( $_REQUEST['lang'] == '' ) {
-		$lang = 'EN';
-	}
+	$FirstName = ( $_POST['FirstName'] );
+	$LastName  = ( $_POST['LastName'] );
+	$CompName  = ( $_POST['CompName'] );
+	$Username  = ( $_POST['Username'] );
+	$Password  = md5( $_POST['Password'] );
+	$Password2 = md5( $_POST['Password2'] );
+	$Email     = ( $_POST['Email'] );
 
 	$error = validate_signup_form();
 
 	if ( $error != '' ) {
+        // error processing signup/
 
 		echo "<span class='error_msg_label'>" . $label["advertiser_signup_error"] . "</span><P>";
 		echo "<span ><b>" . $error . "</b></span>";
 
-		$password  = ( $_REQUEST['password'] );
-		$password2 = ( $_REQUEST['password2'] );
-
-		return false; // error processing signup/
+		return false;
 
 	} else {
 
 		//$target_page="index.php";
 
-		$success = create_new_account( $_SERVER['REMOTE_ADDR'], $FirstName, $LastName, $CompName, $Username, $_REQUEST['Password'], $Email, $Newsletter, $Notification1, $Notification2, $lang );
+		$success = create_new_account( $_SERVER['REMOTE_ADDR'], $FirstName, $LastName, $CompName, $Username, $_REQUEST['Password'], $Email );
 
 		if ( ( EM_NEEDS_ACTIVATION == "AUTO" ) ) {
 
@@ -479,10 +463,6 @@ function do_login() {
 			$_SESSION['MDS_Rank']      = $row['Rank'];
 			//$_SESSION['MDS_order_id'] = '';
 			$_SESSION['MDS_Domain'] = 'ADVERTISER';
-
-			if ( $row['lang'] != '' ) {
-				$_SESSION['MDS_LANG'] = $row['lang'];
-			}
 
 			$now = ( gmdate( "Y-m-d H:i:s" ) );
 			$sql = "UPDATE `users` SET `login_date`='$now', `last_request_time`='$now', `logout_date`='1000-01-01 00:00:00', `login_count`=`login_count`+1 WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['Username'] ) . "' ";
@@ -555,7 +535,7 @@ function do_logout() {
 
 	if ( isset( $_COOKIE['PHPSESSID'] ) ) {
 		unset( $_COOKIE['PHPSESSID'] );
-		setcookie( 'PHPSESSID', null, - 1 );
+		setcookie( 'PHPSESSID', '', - 1 );
 	}
 }
 

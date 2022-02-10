@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -473,14 +473,14 @@ require_once BASE_PATH . "/html/header.php";
 		}
     </script>
     <style>
-        #block_pointer {
-            height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
-            padding: 0;
-            margin: 0;
-            line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-            font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
-        }
+		#block_pointer {
+			height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			width: <?php echo $banner_data['BLK_WIDTH']; ?>px;
+			padding: 0;
+			margin: 0;
+			line-height: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+			font-size: <?php echo $banner_data['BLK_HEIGHT']; ?>px;
+		}
     </style>
 <?php
 
@@ -541,17 +541,17 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 
 			// check the file size for min and max blocks.
 
-            // uploaded image size
-			$size    = getimagesize( $tmp_image_file );
+			// uploaded image size
+			$size = getimagesize( $tmp_image_file );
 
-            // maximum size snapped to block size
+			// maximum size snapped to block size
 			$reqsize = get_required_size( $size[0], $size[1], $banner_data );
 
-            // pixel count
+			// pixel count
 			$pixel_count = $reqsize[0] * $reqsize[1];
 
-            // final size
-			$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+			// final size
+			$block_size = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
 			// if image should be resized automatically make it fit within grid max/min block settings
 			if ( MDS_RESIZE == 'YES' ) {
@@ -584,7 +584,7 @@ if ( isset( $_FILES['graphic'] ) && $_FILES['graphic']['tmp_name'] != '' ) {
 					$pixel_count = $reqsize[0] * $reqsize[1];
 
 					// recount final size
-					$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+					$block_size = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 				}
 			} else {
 

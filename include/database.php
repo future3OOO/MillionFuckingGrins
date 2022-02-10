@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -44,20 +44,28 @@ if ( ! defined( 'MYSQL_SOCKET' ) ) {
 $database_port   = intval( MYSQL_PORT );
 $database_socket = stripslashes( MYSQL_SOCKET );
 
-if ( isset( $dbhost ) && isset( $dbusername ) && isset( $database_name ) && isset( $database_port ) ) {
-	if ( ! empty( $dbhost ) && ! empty( $dbusername ) && ! empty( $database_name ) && ! empty( $database_port ) ) {
-		if ( isset( $database_socket ) && ! empty( $database_socket ) ) {
-			$GLOBALS['connection'] = mysqli_connect( "$dbhost", "$dbusername", "$dbpassword", "$database_name", "$database_port", "$database_socket" );
-		} else {
-			$GLOBALS['connection'] = mysqli_connect( "$dbhost", "$dbusername", "$dbpassword", "$database_name", "$database_port" );
-		}
-		if ( mysqli_connect_errno() ) {
-			echo mysqli_connect_error();
-			exit();
-		}
-		$db = mysqli_select_db( $GLOBALS['connection'], "$database_name" ) or die( mysqli_error( $GLOBALS['connection'] ) );
-		mysqli_set_charset( $GLOBALS['connection'], 'utf8' ) or die( mysqli_error( $GLOBALS['connection'] ) );
+if ( ! empty( $dbhost ) && ! empty( $dbusername ) && ! empty( $database_name ) && ! empty( $database_port ) ) {
+	if ( isset( $database_socket ) && ! empty( $database_socket ) ) {
+		$GLOBALS['connection'] = mysqli_connect( "$dbhost", "$dbusername", "$dbpassword", "$database_name", "$database_port", "$database_socket" );
+	} else {
+		$GLOBALS['connection'] = mysqli_connect( "$dbhost", "$dbusername", "$dbpassword", "$database_name", "$database_port" );
 	}
+	if ( mysqli_connect_errno() ) {
+		echo mysqli_connect_error();
+		exit();
+	}
+	$db = mysqli_select_db( $GLOBALS['connection'], "$database_name" ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	mysqli_set_charset( $GLOBALS['connection'], 'utf8mb4' ) or die( mysqli_error( $GLOBALS['connection'] ) );
+}
+
+// Don't do upgrades on install
+if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
+	return;
+}
+
+// No DB connection yet
+if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] == false ) {
+	return;
 }
 
 /**
@@ -87,9 +95,17 @@ function mds_sql_log_die( $sql, $exit = true ) {
 	}
 }
 
-function mds_sql_installed() {
-	$exists = mysqli_query( $GLOBALS['connection'], 'SELECT 1 FROM `config` LIMIT 1' );
-	if ( $exists === false ) {
+/**
+ * Checks if a database table exists.
+ *
+ * @param $table_name
+ *
+ * @return false
+ */
+function table_exists( $table_name ) {
+	$sql = "SHOW TABLES LIKE '$table_name'";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	if ( mysqli_num_rows( $result ) == 0 ) {
 		return false;
 	}
 
@@ -97,12 +113,21 @@ function mds_sql_installed() {
 }
 
 /**
- * Database Upgrades
+ * Checks if wp_mds_config table exists.
+ *
+ * @return bool
  */
+function mds_sql_installed() {
+	return table_exists( 'config' );
+}
 
-// Don't do upgrades on install
-if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
-	return;
+/**
+ * Checks if config table exists. In version 8 of the database the table prefixes were changed to wp_mds_
+ *
+ * @return bool
+ */
+function mds_sql_pre8_installed() {
+	return table_exists( 'config' );
 }
 
 /**
@@ -111,8 +136,10 @@ if ( isset( $_POST['action'] ) && $_POST['action'] == "install" ) {
  * @return int|void
  */
 function get_dbver() {
-	if ( ! mds_sql_installed() ) {
-		return;
+	$pre8_installed = mds_sql_pre8_installed();
+
+	if ( ! mds_sql_installed() && ! $pre8_installed ) {
+		return 0;
 	}
 	$sql = "SELECT `val` FROM `config` WHERE `key`='dbver';";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
@@ -130,27 +157,61 @@ function get_dbver() {
 }
 
 /**
- * Increment database version by 1
+ * Increment database version by 1 or set to given value.
  */
-function up_dbver() {
-	$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
+function up_dbver( int $version = 0 ) {
+	if ( $version > 0 ) {
+		$sql = "UPDATE `config` SET `val`=" . intval( $version ) . " WHERE `key`='dbver';";
+	} else {
+		$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
+	}
 	mysqli_query( $GLOBALS['connection'], $sql );
+
+	if ( $version > 0 ) {
+		return $version;
+	}
+
+	$sql = "SELECT `val` FROM `config` WHERE `key`='dbver';";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$dbver = mysqli_fetch_array( $result, MYSQLI_ASSOC );
+
+	return intval( $dbver['val'] );
 }
 
-// No DB connection yet
-if ( ! isset( $GLOBALS['connection'] ) || $GLOBALS['connection'] == false ) {
-	return;
+
+/**
+ * Checks if the database requires an upgrade.
+ *
+ * @return bool
+ */
+function requires_upgrade( $version = - 1 ) {
+	if ( $version == - 1 ) {
+		$version = get_dbver();
+	}
+
+	// Check for current database version
+	if ( $version > 0 && $version == MDS_DB_VERSION) {
+		return false;
+	}
+
+	return true;
 }
+
+/**
+ * Database Upgrades
+ */
+const MDS_DB_VERSION = 10;
 
 $version = get_dbver();
 
-if ( $version == 1 ) {
+if ( ! requires_upgrade( $version ) ) {
+	return false;
+}
+
+if ( $version <= 1 ) {
 
 	// add views table
-	$sql    = "SELECT 1 FROM views;";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	if ( mysqli_num_rows( $result ) == 0 ) {
-		$sql = "CREATE TABLE IF NOT EXISTS `views` (
+	$sql = "CREATE TABLE IF NOT EXISTS `views` (
             `banner_id` INT NOT NULL ,
             `block_id` INT NOT NULL ,
             `user_id` INT NOT NULL ,
@@ -158,25 +219,28 @@ if ( $version == 1 ) {
             `views` INT NOT NULL ,
             PRIMARY KEY ( `banner_id` , `block_id` ,  `date` )
         ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
-		mysqli_query( $GLOBALS['connection'], $sql );
-	}
+	mysqli_query( $GLOBALS['connection'], $sql );
 
 	// add view_count column to blocks table
-	$sql    = "SELECT `view_count` FROM `blocks`;";
+	$sql    = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'blocks' AND column_name = 'view_count'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	if ( mysqli_num_rows( $result ) == 0 ) {
 		$sql = "ALTER TABLE `blocks` ADD COLUMN `view_count` INT NOT NULL AFTER `click_count`;";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
-	up_dbver();
-} else if ( $version == 2 ) {
+	$version = up_dbver( 2 );
+}
+
+if ( $version <= 2 ) {
 	// Change block_info column to LONGTEXT
 	$sql = "ALTER TABLE `temp_orders` MODIFY `block_info` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
 	mysqli_query( $GLOBALS['connection'], $sql );
 
-	up_dbver();
-} else if ( $version == 3 ) {
+	$version = up_dbver( 3 );
+}
+
+if ( $version <= 3 ) {
 
 	// Add config variables to config database table
 
@@ -275,32 +339,38 @@ if ( $version == 1 ) {
 				die ( mds_sql_error( $query ) );
 			}
 
-			$var = constant( $key );
-			mysqli_stmt_bind_param( $stmt, $type, $var );
+			if ( defined( $key ) ) {
+				$var = constant( $key );
+				mysqli_stmt_bind_param( $stmt, $type, $var );
 
-			mysqli_stmt_execute( $stmt );
+				mysqli_stmt_execute( $stmt );
 
-			$error = mysqli_stmt_error( $stmt );
-			if ( ! empty( $error ) ) {
-				die ( mds_sql_error( $query ) );
+				$error = mysqli_stmt_error( $stmt );
+				if ( ! empty( $error ) ) {
+					die ( mds_sql_error( $query ) );
+				}
+				mysqli_stmt_close( $stmt );
 			}
-			mysqli_stmt_close( $stmt );
 		}
 	}
 
-	up_dbver();
-} else if ( $version == 4 ) {
+	$version = up_dbver( 4 );
+}
+
+if ( $version <= 4 ) {
 
 	// add missing view_count column to users table
-	$sql    = "SELECT `view_count` FROM `users`;";
+	$sql    = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'users' AND column_name = 'view_count'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	if ( $result && mysqli_num_rows( $result ) == 0 ) {
-		$sql = "ALTER TABLE `users` ADD COLUMN `view_count` INT(11) NOT NULL default '0' AFTER `click_count`;";
+		$sql = "ALTER TABLE `users` ADD COLUMN `view_count` INT NOT NULL default '0' AFTER `click_count`;";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
-	up_dbver();
-} else if ( $version == 5 ) {
+	$version = up_dbver( 5 );
+}
+
+if ( $version <= 5 ) {
 
 	// modify blocks.view_count column to have a default value
 	$sql    = "SELECT `view_count` FROM `blocks`;";
@@ -318,25 +388,30 @@ if ( $version == 1 ) {
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
-	up_dbver();
-} else if ($version == 6) {
-	$query = "INSERT INTO `config` VALUES ('TIME_FORMAT', ?);";
-	$var = 'H:i:s';
-
-	$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
-	if ( ! mysqli_stmt_prepare( $stmt, $query ) ) {
-		die ( mds_sql_error( $query ) );
-	}
-
-	mysqli_stmt_bind_param( $stmt, 's', $var );
-
-	mysqli_stmt_execute( $stmt );
-
-	$error = mysqli_stmt_error( $stmt );
-	if ( ! empty( $error ) ) {
-		die ( mds_sql_error( $query ) );
-	}
-	mysqli_stmt_close( $stmt );
-
-	up_dbver();
+	$version = up_dbver( 6 );
 }
+
+if ( $version == 6 ) {
+	$sql = "INSERT INTO `config` VALUES ('TIME_FORMAT', 'H:i:s');";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	$version = up_dbver( 7 );
+}
+
+if ( $version <= 8 ) {
+	// Adjust currency to 10 decimal places
+	$sql = "ALTER TABLE `currencies` MODIFY COLUMN `rate` DECIMAL(20,10) NOT NULL DEFAULT '1.0000000000';";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	$version = up_dbver( 9 );
+}
+
+if ( $version <= 9 ) {
+	// Update initial version info that shows before config is saved the first time
+	$sql = "UPDATE `config` SET `val`='2.3.0' WHERE `key`='VERSION_INFO'";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	$version = up_dbver( 10 );
+}
+
+// TODO: remember to update MDS_DB_VERSION constant above.

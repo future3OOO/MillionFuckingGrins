@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -64,7 +64,7 @@ function mds_wp_login_check() {
 				// Get the login page option
 				$loginpage = \MillionDollarScript\Classes\Options::get_option( 'login-page' );
 
-				// if doesn't contain the default wp-login.php and is a valid URL
+				// If it doesn't contain the default wp-login.php and is a valid URL
 				if ( strpos( $loginpage, 'wp-login.php' ) === false && wp_http_validate_url( $loginpage ) ) {
 
 					// If not in preview or customizer
@@ -74,9 +74,9 @@ function mds_wp_login_check() {
 						$loginhref = esc_url( $loginpage );
 
 						$woocommerce_enabled = \MillionDollarScript\Classes\Options::get_option( 'woocommerce' );
-						$login_redirect_url  = \MillionDollarScript\Classes\Options::get_option( 'login-redirect' );
 
 						if ( $woocommerce_enabled ) {
+							$login_redirect_url  = \MillionDollarScript\Classes\Options::get_option( 'login-redirect' );
 							$loginhref .= ( strpos( $loginhref, '?' ) !== false ? '&' : '?' ) . 'redirect_to=' . esc_url_raw( $login_redirect_url ) . '&redirect=' . esc_url_raw( $login_redirect_url );
 						}
 
@@ -90,6 +90,7 @@ function mds_wp_login_check() {
 					}
 					</script>
 					';
+						exit;
 					}
 				} else {
 					// if the url isn't valid redirect to the default login

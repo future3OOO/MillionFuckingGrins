@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:52 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -43,7 +43,7 @@ $user_id = $_REQUEST['user_id'];
 
 	<?php
 
-	if ( $_REQUEST['action'] == 'changepass' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'changepass' ) {
 
 		$sql = "select * from users where ID=" . intval( $user_id );
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
@@ -98,7 +98,7 @@ $user_id = $_REQUEST['user_id'];
 <hr>
 <?php
 
-if ( $_REQUEST['action'] == 'update' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'update' ) {
 
 	//print_r ($_REQUEST);
 
@@ -109,7 +109,7 @@ if ( $_REQUEST['action'] == 'update' ) {
 	echo "<h3><font color=green>OK: User's details were updated.</font></h3><br>";
 }
 
-if ( $_REQUEST['action'] == 'rank' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'rank' ) {
 
 	$sql = "UPDATE users set Rank='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['rank'] ) . "' where ID=" . intval( $user_id );
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );

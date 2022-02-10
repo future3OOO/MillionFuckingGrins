@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -139,7 +139,27 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 			mysqli_stmt_bind_param( $stmt, $type, $var );
 
 			mysqli_stmt_execute( $stmt );
-			$res   = mysqli_stmt_get_result( $stmt );
+			if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+				$res = mysqli_stmt_get_result( $stmt );
+			} else {
+				$params = [];
+				$row    = [];
+				$c      = [];
+				$meta   = $stmt->result_metadata();
+				while ( $field = $meta->fetch_field() ) {
+					$params[] = &$row[ $field->name ];
+				}
+
+				call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+				while ( $stmt->fetch() ) {
+					foreach ( $row as $key => $val ) {
+						$c[ $key ] = $val;
+					}
+					$result[] = $c;
+				}
+			}
+
 			$error = mysqli_stmt_error( $stmt );
 			if ( ! empty( $error ) ) {
 				die ( mds_sql_error( $query ) );

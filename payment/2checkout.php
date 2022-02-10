@@ -77,7 +77,6 @@ class _2CO {
 	var $className = "_2CO";
 
 	function __construct() {
-
 		global $label;
 		$this->name        = $label['payment_2co_name'];
 		$this->description = $label['payment_2co_descr'];
@@ -88,16 +87,20 @@ class _2CO {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 
-			define( '_2CO_CURRENCY', 'USD' );
+			define( '_2CO_CURRENCY', $this->get_currency() );
 		}
 	}
 
 	function get_currency() {
-		return 'USD';
+		$sql = "SELECT * from currencies WHERE is_default='Y' ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$row = mysqli_fetch_array( $result );
+		return $row['code'];
 	}
 
 	function install() {
@@ -141,8 +144,6 @@ class _2CO {
 		$sql = "DELETE FROM config where `key`='_2CO_VERIFY_SSL'";
 		mysqli_query( $GLOBALS['connection'], $sql );
 		$sql = "DELETE FROM config where `key`='_2CO_SECRET_WORD'";
-		mysqli_query( $GLOBALS['connection'], $sql );
-		$sql = "DELETE FROM config where `key`='_2CO_PAYMENT_ROUTINE'";
 		mysqli_query( $GLOBALS['connection'], $sql );
 
 		$sql = "DELETE FROM config where `key`='_2CO_X_RECEIPT_LINK_URL'";
@@ -198,11 +199,10 @@ class _2CO {
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$_2co_sid                = $_REQUEST['_2co_sid'];
 			$_2co_private_key        = $_REQUEST['_2co_private_key'];
 			$_2co_publishable_key    = $_REQUEST['_2co_publishable_key'];
-			$_2co_payment_routine    = $_REQUEST['_2co_payment_routine'];
 			$_2co_demo               = $_REQUEST['_2co_demo'];
 			$_2co_verify_ssl         = $_REQUEST['_2co_verify_ssl'];
 			$_2co_secret_word        = $_REQUEST['_2co_secret_word'];
@@ -211,7 +211,6 @@ class _2CO {
 			$_2co_sid                = _2CO_SID;
 			$_2co_private_key        = _2CO_PRIVATE_KEY;
 			$_2co_publishable_key    = _2CO_PUBLISHABLE_KEY;
-			$_2co_payment_routine    = _2CO_PAYMENT_ROUTINE;
 			$_2co_demo               = _2CO_DEMO;
 			$_2co_verify_ssl         = _2CO_VERIFY_SSL;
 			$_2co_secret_word        = _2CO_SECRET_WORD;
@@ -287,59 +286,6 @@ class _2CO {
                             <input type="text" name="_2co_x_receipt_link_url" size="50" value="<?php echo $returnlink; ?>"><br> (Enter the return URL here. The return URL for should be: <b>https://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?></b> <br>This setting overwrites the 'direct return' URL set in the Look and Feel section your 2CO account.)</font></td>
                 </tr>
                 <tr>
-                    <td bgcolor="#e6f2ea"><font face="Verdana" size="1">2Checkout Currency is passed in as USD</font></td>
-                    <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <select disabled name="_2co_currency">
-								<?php /*
-	  2co supported currencies:
-Australian Dollar (AUD) 
-Canadian Dollar (CAD) 
-Swiss Franc (CHF) 
-Danish Krone (DKK) 
-Euro (EUR) 
-British Pound (GBP) 
-Hong Kong Dollar (HKD) 
-Japanese Yen (JPY) 
-Norwegian Krone (NOK) 
-New Zealand Dollar (NZD) 
-Swedish Krona (SEK) 
-U.S. Dollar (USD)
-
-	  */ ?>
-                                <option value="USD" <?php define( '_2CO_CURRENCY', 'USD' );
-								if ( _2CO_CURRENCY == 'USD' ) {
-									echo " selected ";
-								} ?> >USD
-                                </option>
-                                <option value="AUD" <?php if ( _2CO_CURRENCY == 'AUD' ) {
-									echo " selected ";
-								} ?> >AUD
-                                </option>
-                                <option value="EUR" <?php if ( _2CO_CURRENCY == 'EUR' ) {
-									echo " selected ";
-								} ?> >EUR
-                                </option>
-                                <option value="USD" selected <?php if ( _2CO_CURRENCY == 'USD' ) {
-									echo " selected ";
-								} ?> >USD
-                                </option>
-                                <option value="CAD" <?php if ( _2CO_CURRENCY == 'CAD' ) {
-									echo " selected ";
-								} ?> >CAD
-                                </option>
-                                <option value="JPY" <?php if ( _2CO_CURRENCY == 'JPY' ) {
-									echo " selected ";
-								} ?> >JPY
-                                </option>
-                                <option value="GBP" <?php if ( _2CO_CURRENCY == 'GBP' ) {
-									echo " selected ";
-								} ?> >GBP
-                                </option>
-
-                            </select>(Disabled - Users select their preferred currency at checkout)</font></td>
-                </tr>
-                </tr>
-                <tr>
 
                     <td bgcolor="#e6f2ea" colspan=2><font face="Verdana" size="1"><input type="submit" value="Save">
                     </td>
@@ -375,7 +321,7 @@ U.S. Dollar (USD)
 		$sql = "SELECT val from `config` where `key`='_2CO_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;
@@ -476,7 +422,7 @@ U.S. Dollar (USD)
 				}
 			} else {
 
-				$output = "Error processing payment: " . $response['response_code'] . "<br />Message: " . $response['response_message'];
+				$output = "Error processing payment: " . $passback['response_code'] . "<br />Message: " . $passback['response_message'];
 				echo $output;
 				_2co_mail_error( $output );
 			}

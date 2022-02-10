@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -48,12 +48,17 @@ if ( isset( $_REQUEST['block_id'] ) && $_REQUEST['block_id'] != '' ) {
 	$sql = "SELECT * FROM ads WHERE ad_id=" . intval( $_REQUEST['aid'] );
 }
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+if ( ! isset( $sql ) ) {
+	error_log( "No block_id or aid found in request for SQL query!" );
+	exit;
+}
+
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
 
 // load all the blocks wot
 $sql = "SELECT * FROM blocks WHERE order_id=" . intval( $row['order_id'] );
-$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 $blocks = array();
 

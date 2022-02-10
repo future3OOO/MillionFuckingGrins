@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -88,7 +88,7 @@ class Mds_Ajax {
 		if ( ! isset( $GLOBALS['mds_js_loaded'] ) ) {
 			$GLOBALS['mds_js_loaded'] = true;
 
-			global $f2;
+			global $f2, $load_mds_js;
 			$BID         = $f2->bid();
 			$banner_data = load_banner_constants( $BID );
 
@@ -109,13 +109,46 @@ class Mds_Ajax {
 						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
 							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
 								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
-									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.jquery.js', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.js', function () {
 										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js', function () {
 											window.mds_data = {
 												ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
 												wp: '<?php echo $wp_url; ?>',
 												winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
 												winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
+												time: '<?php echo time(); ?>',
+												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
+												REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
+												ENABLE_MOUSEOVER: '<?php echo ENABLE_MOUSEOVER; ?>',
+												BID: parseInt('<?php echo $BID; ?>')
+											};
+											$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+											});
+										});
+									});
+								});
+							});
+						});
+					}
+                </script>
+				<?php
+			} else if ( $load_mds_js != null ) {
+				?>
+                <script>
+					if (window.mds_js_loaded !== true) {
+						window.mds_js_loaded = true;
+						var $ = jQuery.noConflict();
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css'}).appendTo('head');
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>'}).appendTo('head');
+
+						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
+							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
+								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.js', function () {
+										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js', function () {
+											window.mds_data = {
+												ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
 												time: '<?php echo time(); ?>',
 												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
 												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',

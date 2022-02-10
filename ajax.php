@@ -168,7 +168,7 @@ function show_grid() {
 
 	if ( file_exists( $BANNER_PATH . "main" . $BID . ".$ext" ) ) {
 		?>
-        <img id="theimage" src="<?php echo BASE_HTTP_PATH . BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main"/>
+        <img id="theimage" src="<?php echo BASE_HTTP_PATH . BANNER_DIR; ?>main<?php echo $BID; ?>.<?php echo $ext; ?>?v=<?php echo filemtime($BANNER_PATH . "main" . $BID . ".$ext"); ?>" width="<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>" height="<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>" border="0" usemap="#main"/>
 		<?php
 	} else {
 		echo "<b>The file: " . $BANNER_PATH . "main" . $BID . ".$ext" . " doesn't exist.</b><br>";

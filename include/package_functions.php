@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:53 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -31,7 +31,7 @@
  */
 
 # Lists pacakes for advertiser to choose
-function display_package_options_table( $banner_id, $selected = '', $selection_ability ) {
+function display_package_options_table( $banner_id, $selected = '', $selection_ability = false ) {
 	global $label, $f2;
 
 	$banner_id = intval( $banner_id );
@@ -215,5 +215,5 @@ function get_default_package( $banner_id ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$row = mysqli_fetch_array( $result );
 
-	return $row['package_id'];
+	return $row['package_id'] ?? false;
 }
