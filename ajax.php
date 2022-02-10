@@ -1,9 +1,9 @@
 <?php
 /*
  * @package       mds
- * @copyright     (C) Copyright 2021 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2021.01.05 13:41:54 EST
+ * @version       2022-01-30 17:07:25 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -162,9 +162,9 @@ function show_grid() {
 		process_map( $BID, $map_file );
 	}
 
-	include_once( $map_file );
-
 	header( 'Expires: Sat, 28 Sept 2005 00:00:00 GMT' );
+
+	include_once( $map_file );
 
 	if ( file_exists( $BANNER_PATH . "main" . $BID . ".$ext" ) ) {
 		?>
