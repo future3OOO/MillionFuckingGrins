@@ -44,6 +44,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 		// strings
 		's' => [
 			'MDS_LOG_FILE'                => "REPLACE INTO `config` VALUES ('MDS_LOG_FILE', ?);",
+			'BUILD_DATE'                  => "REPLACE INTO `config` VALUES ('BUILD_DATE', ?);",
 			'VERSION_INFO'                => "REPLACE INTO `config` VALUES ('VERSION_INFO', ?);",
 			'BASE_HTTP_PATH'              => "REPLACE INTO `config` VALUES ('BASE_HTTP_PATH', ?);",
 			'BASE_PATH'                   => "REPLACE INTO `config` VALUES ('BASE_PATH', ?);",
@@ -95,6 +96,7 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
 			'REDIRECT_URL'                => "REPLACE INTO `config` VALUES ('REDIRECT_URL', ?);",
 			'MDS_AGRESSIVE_CACHE'         => "REPLACE INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', ?);",
 			'BLOCK_SELECTION_MODE'        => "REPLACE INTO `config` VALUES ('BLOCK_SELECTION_MODE', ?);",
+			'STATS_DISPLAY_MODE'          => "REPLACE INTO `config` VALUES ('STATS_DISPLAY_MODE', ?);",
 			'WP_ENABLED'                  => "REPLACE INTO `config` VALUES ('WP_ENABLED', ?);",
 			'WP_URL'                      => "REPLACE INTO `config` VALUES ('WP_URL', ?);",
 			'WP_PATH'                     => "REPLACE INTO `config` VALUES ('WP_PATH', ?);",

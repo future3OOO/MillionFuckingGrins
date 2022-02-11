@@ -163,7 +163,7 @@ function up_dbver( int $version = 0 ) {
 	if ( $version > 0 ) {
 		$sql = "UPDATE `config` SET `val`=" . intval( $version ) . " WHERE `key`='dbver';";
 	} else {
-		$sql = "UPDATE `config` SET `val`=`val` + 1 WHERE `key`='dbver';";
+		$sql = "UPDATE `config` SET `val`='1' WHERE `key`='dbver';";
 	}
 	mysqli_query( $GLOBALS['connection'], $sql );
 
@@ -178,7 +178,6 @@ function up_dbver( int $version = 0 ) {
 	return intval( $dbver['val'] );
 }
 
-
 /**
  * Checks if the database requires an upgrade.
  *
@@ -190,7 +189,7 @@ function requires_upgrade( $version = - 1 ) {
 	}
 
 	// Check for current database version
-	if ( $version > 0 && $version == MDS_DB_VERSION) {
+	if ( $version > 0 && $version == MDS_DB_VERSION ) {
 		return false;
 	}
 
@@ -200,7 +199,7 @@ function requires_upgrade( $version = - 1 ) {
 /**
  * Database Upgrades
  */
-const MDS_DB_VERSION = 10;
+const MDS_DB_VERSION = 11;
 
 $version = get_dbver();
 
@@ -391,7 +390,7 @@ if ( $version <= 5 ) {
 	$version = up_dbver( 6 );
 }
 
-if ( $version == 6 ) {
+if ( $version <= 6 ) {
 	$sql = "INSERT INTO `config` VALUES ('TIME_FORMAT', 'H:i:s');";
 	mysqli_query( $GLOBALS['connection'], $sql );
 
@@ -414,4 +413,21 @@ if ( $version <= 9 ) {
 	$version = up_dbver( 10 );
 }
 
-// TODO: remember to update MDS_DB_VERSION constant above.
+if ( $version <= 10 ) {
+	// Update initial version info that shows before config is saved the first time
+	$sql = "UPDATE `config` SET `val`='2.3.1' WHERE `key`='VERSION_INFO'";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	// Add BUILD_DATE to config
+	require_once realpath( __DIR__ . '/../include/version.php' );
+	$sql = "INSERT INTO `config` VALUES ('BUILD_DATE', '" . get_mds_build_date() . "');";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	// Add STATS_DISPLAY_MODE option
+	$sql = "INSERT INTO `config` VALUES ('STATS_DISPLAY_MODE', 'PIXELS');";
+	mysqli_query( $GLOBALS['connection'], $sql );
+
+	$version = up_dbver( 11 );
+}
+
+// TODO: remember to update MDS_DB_VERSION constant above and version in version.php.

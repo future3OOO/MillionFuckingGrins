@@ -266,6 +266,8 @@ function multiple_query( $q ) {
 }
 
 function install_db() {
+	require_once __DIR__ . '/../include/version.php';
+
 	$url     = parse_url( "http" . ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] === 'on' ) ? "s" : "" ) . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
 	$baseurl = $url['scheme'] . "://" . $url['host'] . str_replace( '/admin/install.php', '', $url['path'] );
 
@@ -475,11 +477,12 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 5);;;
+        INSERT INTO `config` VALUES ('dbver', 11);;;
 
         INSERT INTO `config` VALUES ('MDS_LOG', false);;;
         INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../.mds.log' ) ) . "');;;
-        INSERT INTO `config` VALUES ('VERSION_INFO', '2.1');;;
+        INSERT INTO `config` VALUES ('BUILD_DATE', '" . get_mds_build_date() . "');;;
+        INSERT INTO `config` VALUES ('VERSION_INFO', '" . get_mds_version() . "');;;
         INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
         INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
@@ -492,6 +495,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('MDS_RESIZE', 'YES');;;
         INSERT INTO `config` VALUES ('ADMIN_PASSWORD', '" . mysqli_real_escape_string( $GLOBALS['connection'], bin2hex( openssl_random_pseudo_bytes( 12 ) ) ) . "');;;
         INSERT INTO `config` VALUES ('DATE_FORMAT', 'Y-M-d');;;
+        INSERT INTO `config` VALUES ('TIME_FORMAT', 'H:i:s');;;
         INSERT INTO `config` VALUES ('GMT_DIF', '" . mysqli_real_escape_string( $GLOBALS['connection'], date_default_timezone_get() ) . "');;;
         INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', 'YMD');;;
         INSERT INTO `config` VALUES ('OUTPUT_JPEG', 'N');;;
@@ -541,6 +545,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('REDIRECT_URL', 'http://www.example.com');;;
         INSERT INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', 'NO');;;
         INSERT INTO `config` VALUES ('BLOCK_SELECTION_MODE', 'YES');;;
+        INSERT INTO `config` VALUES ('STATS_DISPLAY_MODE', 'PIXELS');;;
         INSERT INTO `config` VALUES ('ERROR_REPORTING', 0);;;
         INSERT INTO `config` VALUES ('WP_ENABLED', 'NO');;;
         INSERT INTO `config` VALUES ('WP_URL', '');;;
@@ -919,11 +924,12 @@ function install_db() {
         INSERT INTO `config` VALUES ('EXPIRE_RUNNING', 'NO');;;
         INSERT INTO `config` VALUES ('LAST_EXPIRE_RUN', '1138243912');;;
         INSERT INTO `config` VALUES ('SELECT_RUNNING', 'NO');;;
-        INSERT INTO `config` VALUES ('dbver', 5);;;
+        INSERT INTO `config` VALUES ('dbver', 11);;;
 
         INSERT INTO `config` VALUES ('MDS_LOG', false);;;
         INSERT INTO `config` VALUES ('MDS_LOG_FILE', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../.mds.log' ) ) . "');;;
-        INSERT INTO `config` VALUES ('VERSION_INFO', '2.1');;;
+        INSERT INTO `config` VALUES ('BUILD_DATE', '" . get_mds_build_date() . "');;;
+        INSERT INTO `config` VALUES ('VERSION_INFO', '" . get_mds_version() . "');;;
         INSERT INTO `config` VALUES ('BASE_HTTP_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], $baseurl . '/' ) . "');;;
         INSERT INTO `config` VALUES ('BASE_PATH', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ . '/../' ) . '/' ) . "');;;
         INSERT INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', '" . mysqli_real_escape_string( $GLOBALS['connection'], realpath( __DIR__ ) . '/' ) . "');;;
@@ -936,6 +942,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('MDS_RESIZE', 'YES');;;
         INSERT INTO `config` VALUES ('ADMIN_PASSWORD', '" . mysqli_real_escape_string( $GLOBALS['connection'], bin2hex( openssl_random_pseudo_bytes( 12 ) ) ) . "');;;
         INSERT INTO `config` VALUES ('DATE_FORMAT', 'Y-M-d');;;
+        INSERT INTO `config` VALUES ('TIME_FORMAT', 'H:i:s');;;
         INSERT INTO `config` VALUES ('GMT_DIF', '" . mysqli_real_escape_string( $GLOBALS['connection'], date_default_timezone_get() ) . "');;;
         INSERT INTO `config` VALUES ('DATE_INPUT_SEQ', 'YMD');;;
         INSERT INTO `config` VALUES ('OUTPUT_JPEG', 'N');;;
@@ -985,6 +992,7 @@ function install_db() {
         INSERT INTO `config` VALUES ('REDIRECT_URL', 'http://www.example.com');;;
         INSERT INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', 'NO');;;
         INSERT INTO `config` VALUES ('BLOCK_SELECTION_MODE', 'YES');;;
+        INSERT INTO `config` VALUES ('STATS_DISPLAY_MODE', 'PIXELS');;;
         INSERT INTO `config` VALUES ('ERROR_REPORTING', 0);;;
         INSERT INTO `config` VALUES ('WP_ENABLED', 'NO');;;
         INSERT INTO `config` VALUES ('WP_URL', '');;;

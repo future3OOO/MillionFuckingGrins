@@ -33,6 +33,7 @@
 ?>
 <form method="POST" name="form1" action="index.php?page=edit-main">
     <p><input type="submit" value="Save Configuration" name="save"></p>
+    <input name="build_date" type="hidden" value="<?php echo MDSConfig::get( 'BUILD_DATE', true ); ?>"/>
     <input name="version_info" type="hidden" value="<?php echo MDSConfig::get( 'VERSION_INFO', true ); ?>"/>
 
     <div class="admin-config">
@@ -778,11 +779,24 @@
         </div>
         <div class="admin-config-right">
             <label>
-				<?php
-				$BLOCK_SELECTION_MODE = MDSConfig::get( 'BLOCK_SELECTION_MODE' );
-				?>
+			    <?php
+			    $BLOCK_SELECTION_MODE = MDSConfig::get( 'BLOCK_SELECTION_MODE' );
+			    ?>
                 <input type="radio" name="BLOCK_SELECTION_MODE" value="YES" <?php echo( $BLOCK_SELECTION_MODE == 'YES' ? 'checked' : '' ); ?> /> Yes - When Pixel Selection Method is set to Advanced users will be shown an option to select blocks 1, 4 or 6 at a time.<br/>
                 <input type="radio" name="BLOCK_SELECTION_MODE" value="NO" <?php echo( $BLOCK_SELECTION_MODE == 'NO' ? 'checked' : '' ); ?> /> No - They will only be able to select 1 block at a time. If you want to adjust how large of block they can select you can edit the grid settings under Manage Grids.
+            </label>
+        </div>
+
+        <div class="admin-config-left">
+            Display stats as blocks or pixels
+        </div>
+        <div class="admin-config-right">
+            <label>
+			    <?php
+			    $STATS_DISPLAY_MODE = MDSConfig::get( 'STATS_DISPLAY_MODE' );
+			    ?>
+                <input type="radio" name="STATS_DISPLAY_MODE" value="BLOCKS" <?php echo( $STATS_DISPLAY_MODE == 'BLOCKS' ? 'checked' : '' ); ?> /> Blocks - Stats box will display sold/available blocks.<br/>
+                <input type="radio" name="STATS_DISPLAY_MODE" value="PIXELS" <?php echo( $STATS_DISPLAY_MODE == 'PIXELS' ? 'checked' : '' ); ?> /> Pixels - Stats box will display sold/available pixels.
             </label>
         </div>
     </div>

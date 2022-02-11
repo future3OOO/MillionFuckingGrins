@@ -52,13 +52,15 @@ class MDSConfig {
 		$rootpathinfo = pathinfo( __DIR__ . '/../' );
 		$BASE_PATH    = $rootpathinfo['dirname'];
 
-		require_once __DIR__ . '/../include/version.php';
-		$version = get_mds_version();
+		require_once realpath( __DIR__ . '/../include/version.php' );
+		$build_date = get_mds_build_date();
+		$version    = get_mds_version();
 
 		return array(
 			'DEBUG'                       => false,
 			'MDS_LOG'                     => false,
 			'MDS_LOG_FILE'                => $BASE_PATH . '/.mds.log',
+			'BUILD_DATE'                  => $build_date,
 			'VERSION_INFO'                => $version,
 			'BASE_HTTP_PATH'              => '/',
 			'BASE_PATH'                   => $BASE_PATH . '/',
@@ -175,7 +177,7 @@ class MDSConfig {
 		mysqli_stmt_bind_param( $stmt, "s", $key );
 		mysqli_stmt_execute( $stmt );
 
-		mysqli_stmt_bind_result($stmt, $value);
+		mysqli_stmt_bind_result( $stmt, $value );
 //		$result = mysqli_stmt_get_result( $stmt );
 //		$value  = mysqli_fetch_field( $result );
 
@@ -201,8 +203,8 @@ class MDSConfig {
 	public static function load() {
 		$sql    = "SELECT `key`, `val` FROM `config`";
 		$result = mysqli_query( $GLOBALS['connection'], $sql );
-		$rows = [];
-		while($row = $result->fetch_assoc()) {
+		$rows   = [];
+		while ( $row = $result->fetch_assoc() ) {
 			$rows[] = $row;
 		}
 

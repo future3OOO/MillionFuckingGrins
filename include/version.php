@@ -30,7 +30,7 @@
  *
  */
 
-function get_mds_version() {
+function get_mds_build_date() {
 	$lines = file( __FILE__ );
 
 	$version = '';
@@ -39,6 +39,20 @@ function get_mds_version() {
 			$version = trim( str_replace( '* @version', '', $line ) );
 			break;
 		}
+	}
+
+	return $version;
+}
+
+function get_mds_version() {
+	$sql    = "SELECT `val` FROM `config` WHERE `key`='VERSION_INFO'";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$row    = $result->fetch_assoc();
+
+	if ( $result->num_rows == 0 || empty( $row['val'] ) ) {
+		$version = '2.3.1';
+	} else {
+		$version = $row['val'];
 	}
 
 	return $version;

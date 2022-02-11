@@ -42,14 +42,24 @@ $banner_data = load_banner_constants( $BID );
 $sql = "select count(*) AS COUNT FROM blocks where status='sold' and banner_id='$BID' ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
 $row = mysqli_fetch_array( $result );
-$sold = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+
+if ( defined( 'STATS_DISPLAY_MODE' ) && STATS_DISPLAY_MODE == 'BLOCKS' ) {
+	$sold = $row['COUNT'];
+} else {
+	$sold = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+}
 
 $sql = "select count(*) AS COUNT FROM blocks where status='nfs' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
-$nfs = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
-$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) ) - $nfs ) - $sold;
+if ( defined( 'STATS_DISPLAY_MODE' ) && STATS_DISPLAY_MODE == 'BLOCKS' ) {
+	$nfs = $row['COUNT'];
+	$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] ) - $nfs ) - $sold;
+} else {
+	$nfs = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+	$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) ) - $nfs ) - $sold;
+}
 
 if ( $label['sold_stats'] == '' ) {
 	$label['sold_stats'] = "Sold";
@@ -63,7 +73,7 @@ if ( $label['available_stats'] == '' ) {
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value(BASE_HTTP_PATH); ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
 </head>
 <body class="status_body">
 <div class="status">
