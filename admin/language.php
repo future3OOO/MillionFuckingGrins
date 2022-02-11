@@ -208,9 +208,6 @@ if ( isset( $error ) && $error != '' ) {
 }
 
 function lang_file_options() {
-
-	//print_r($_REQUEST);
-
 	$dh = opendir( "../lang" );
 	while ( ( $file = readdir( $dh ) ) !== false ) {
 		if ( isset( $_REQUEST['lang_filename'] ) && $_REQUEST['lang_filename'] == $file ) {

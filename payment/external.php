@@ -242,7 +242,6 @@ class external {
 
 	// true or false
 	function is_enabled() {
-
 		$sql = "SELECT val FROM `config` WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
@@ -254,7 +253,6 @@ class external {
 	}
 
 	function is_installed() {
-
 		$sql = "SELECT val FROM config WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		//$row = mysqli_fetch_array($result);

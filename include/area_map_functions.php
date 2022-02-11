@@ -236,7 +236,7 @@ WHERE (published = 'Y')
   AND (image_data > '')
   AND (image_data = image_data)
   AND (order_id = ?)
-GROUP BY y";
+GROUP BY y, x, block_id, ad_id, alt_text, image_data";
 
 			$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
 			if ( ! mysqli_stmt_prepare( $stmt, $sql_i ) ) {

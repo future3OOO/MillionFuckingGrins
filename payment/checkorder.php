@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['check'] = new check;
 
-define( 'IPN_LOGGING', 'Y' );
+define( 'CHECK_LOGGING', 'Y' );
 
 function ch_mail_error( $msg ) {
 
