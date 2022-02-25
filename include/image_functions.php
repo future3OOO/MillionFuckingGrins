@@ -65,8 +65,6 @@ function publish_image( $BID ) {
 		//echo "Failed to copy " . htmlentities( $source ) . " to " . htmlentities( $dest );
 	}
 
-	echo "<br />";
-
 	// output the tile image
 	if ( DISPLAY_PIXEL_BACKGROUND == "YES" ) {
 		$b_row = load_banner_row( $BID );
@@ -77,7 +75,7 @@ function publish_image( $BID ) {
 		$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
 		$tile->save( $dest_path . "bg-main$BID.gif" );
 
-		//echo "Saved background image to " . $dest_path . "bg-main$BID.gif";
+		//echo "<br />Saved background image to " . $dest_path . "bg-main$BID.gif";
 	}
 
 	// update the records
