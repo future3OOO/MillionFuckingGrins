@@ -115,10 +115,10 @@ if ( is_writable( "temp/" ) ) {
 	echo "- admin/temp directory is not writable. Give write permissions (777) to admin/temp directory<br>";
 }
 
-if ( is_writable( "../lang/english.php" ) ) {
-	echo "- lang/english.php file is writeable. (OK)<br>";
+if ( is_writable( "../lang/" ) ) {
+	echo "- lang/ folder is writeable. (OK)<br>";
 } else {
-	echo "- lang/english.php file is not writable. Give write permissions (666) to lang/english.php file<br>";
+	echo "- lang/ folder is not writable. Give write permissions (666) to lang/ folder<br>";
 }
 
 if ( is_writable( "../upload_files/docs/" ) ) {
