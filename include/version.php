@@ -45,13 +45,16 @@ function get_mds_build_date() {
 }
 
 function get_mds_version() {
+	$version = '2.3.2';
+
 	$sql    = "SELECT `val` FROM `config` WHERE `key`='VERSION_INFO'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
-	$row    = $result->fetch_assoc();
+	if ( $result === false ) {
+		return $version;
+	}
+	$row = $result->fetch_assoc();
 
-	if ( $result->num_rows == 0 || empty( $row['val'] ) ) {
-		$version = '2.3.1';
-	} else {
+	if ( $result->num_rows > 0 && ! empty( $row['val'] ) ) {
 		$version = $row['val'];
 	}
 
