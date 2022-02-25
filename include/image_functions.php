@@ -36,6 +36,7 @@ function publish_image( $BID ) {
 		return;
 	}
 
+	$imagine = "";
 	if ( class_exists( 'Imagick' ) ) {
 		$imagine = new Imagine\Imagick\Imagine();
 	} else if ( function_exists( 'gd_info' ) ) {
@@ -43,25 +44,41 @@ function publish_image( $BID ) {
 	}
 
 	$file_path = SERVER_PATH_TO_ADMIN;
-	$dest      = get_banner_dir();
+	$dest_path = get_banner_dir() . '/';
 
+	$dest   = "";
+	$source = "";
 	if ( OUTPUT_JPEG == 'Y' ) {
-		copy( $file_path . "temp/temp$BID.jpg", $dest . "main$BID.jpg" );
+		$source = $file_path . "temp/temp$BID.jpg";
+		$dest   = $dest_path . "main$BID.jpg";
 	} else if ( OUTPUT_JPEG == 'N' ) {
-		copy( $file_path . "temp/temp$BID.png", $dest . "main$BID.png" );
+		$source = $file_path . "temp/temp$BID.png";
+		$dest   = $dest_path . "main$BID.png";
 	} else if ( ( OUTPUT_JPEG == 'GIF' ) ) {
-		copy( $file_path . "temp/temp$BID.gif", $dest . "main$BID.gif" );
+		$source = $file_path . "temp/temp$BID.gif";
+		$dest   = $dest_path . "main$BID.gif";
 	}
+
+	if ( copy( $source, $dest ) ) {
+		echo "Copied " . htmlentities( $source ) . " to " . htmlentities( $dest );
+	} else {
+		echo "Failed to copy " . htmlentities( $source ) . " to " . htmlentities( $dest );
+	}
+
+	echo "<br />";
 
 	// output the tile image
+	if ( DISPLAY_PIXEL_BACKGROUND == "YES" ) {
+		$b_row = load_banner_row( $BID );
 
-	$b_row = load_banner_row( $BID );
+		if ( $b_row['tile'] == '' ) {
+			$b_row['tile'] = get_default_image( 'tile' );
+		}
+		$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
+		$tile->save( $dest_path . "bg-main$BID.gif" );
 
-	if ( $b_row['tile'] == '' ) {
-		$b_row['tile'] = get_default_image( 'tile' );
+		echo "Saved background image to " . $dest_path . "bg-main$BID.gif";
 	}
-	$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
-	$tile->save( $dest . "bg-main$BID.gif" );
 
 	// update the records
 	$sql = "SELECT * FROM blocks WHERE approved='Y' AND status='sold' AND image_data <> '' AND banner_id='" . intval( $BID ) . "' ";
