@@ -60,9 +60,9 @@ function publish_image( $BID ) {
 	}
 
 	if ( copy( $source, $dest ) ) {
-		echo "Copied " . htmlentities( $source ) . " to " . htmlentities( $dest );
+		//echo "Copied " . htmlentities( $source ) . " to " . htmlentities( $dest );
 	} else {
-		echo "Failed to copy " . htmlentities( $source ) . " to " . htmlentities( $dest );
+		//echo "Failed to copy " . htmlentities( $source ) . " to " . htmlentities( $dest );
 	}
 
 	echo "<br />";
@@ -77,7 +77,7 @@ function publish_image( $BID ) {
 		$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
 		$tile->save( $dest_path . "bg-main$BID.gif" );
 
-		echo "Saved background image to " . $dest_path . "bg-main$BID.gif";
+		//echo "Saved background image to " . $dest_path . "bg-main$BID.gif";
 	}
 
 	// update the records
