@@ -143,7 +143,7 @@ function show_grid() {
 
 	$banner_data = load_banner_constants( $BID );
 
-	$BANNER_PATH = BASE_PATH . '/' . BANNER_DIR;
+	$BANNER_PATH = BASE_PATH . BANNER_DIR;
 
 	$map_file = get_map_file_name( $BID );
 
