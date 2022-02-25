@@ -1191,7 +1191,8 @@ function install_db() {
 
 function copy_default_language() {
 	$default_lang_file = realpath( __DIR__ . "/../lang/english_default.php" );
-	$lang_file         = realpath( __DIR__ . "/../lang/english.php" );
+	$lang_path         = realpath( __DIR__ . "/../lang/" );
+	$lang_file         = $lang_path . "/english.php";
 	if ( file_exists( $default_lang_file ) ) {
 		if ( ! copy( $default_lang_file, $lang_file ) ) {
 			echo "Unable to copy default language file from " . $default_lang_file . " to " . $lang_file;
