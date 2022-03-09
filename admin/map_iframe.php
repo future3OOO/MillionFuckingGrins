@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -43,7 +43,7 @@ $BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
-if(WP_ENABLED == 'YES') {
+if ( WP_ENABLED == 'YES' ) {
 	$mds_site_url = WP_URL;
 } else {
 	$mds_site_url = BASE_HTTP_PATH;
@@ -55,11 +55,11 @@ if(WP_ENABLED == 'YES') {
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Million Dollar Script Administration</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/css/admin.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/css/admin.css" ); ?>">
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.min.js" ); ?>"></script>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery-ui.min.js" ); ?>"></script>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/selection.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/selection.min.js" ); ?>"></script>
-    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>css/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/css/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.form.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/viselect.cjs.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/viselect.cjs.js" ); ?>"></script>
+    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
 
     <script>
 		window.mds_data = {
@@ -398,7 +398,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 
 	<?php
 
-    // TODO: optimize this better
+	// TODO: optimize this better
 	while ( $row = mysqli_fetch_array( $result ) ) {
 		$size = get_pixel_image_size( $row['order_id'] );
 
@@ -410,7 +410,7 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 		$res = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$order_row = mysqli_fetch_array( $res );
 
-		if ( $order_row['days_expire'] > 0 ) {
+		if ( isset( $order_row['days_expire'] ) && $order_row['days_expire'] > 0 ) {
 
 			if ( $order_row['published'] != 'Y' ) {
 				$time_start = strtotime( gmdate( 'r' ) );
@@ -442,20 +442,20 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 			$days = "Never";
 		}
 
-		$alt_text = "<b>Customer:</b> " . $user_row['FirstName'] . " " . $user_row['LastName'] . " <br><b>Username:</b> " . $user_row['Username'] . "<br><b>Email:</b> " . $user_row['Email'] . "<br><b>Order</b> # : " . $row['order_id'] . " <br> <b>Block Status:</b> " . $row['status'] . "<br><b>Published:</b> " . $order_row['published'] . "<br><b>Approved:</b> " . $order_row['published'] . "<br><b>Expires:</b> " . $days . "<br><b>Click Count:</b> " . $row['click_count'] . "<br><b>Block ID:</b> " . $row['block_id'] . "<br><b>Co-ordinate:</b> x:" . $row['x'] . ", y:" . $row['y'] . "";
+		$alt_text = "<b>Customer:</b> " . ( $user_row['FirstName'] ?? '' ) . " " . ( $user_row['LastName'] ?? '' ) . " <br><b>Username:</b> " . ( $user_row['Username'] ?? '' ) . "<br><b>Email:</b> " . ( $user_row['Email'] ?? '' ) . "<br><b>Order</b> # : " . ( $row['order_id'] ?? '' ) . " <br> <b>Block Status:</b> " . ( $row['status'] ?? '' ) . "<br><b>Published:</b> " . ( $order_row['published'] ?? '' ) . "<br><b>Approved:</b> " . ( $order_row['published'] ?? '' ) . "<br><b>Expires:</b> " . ( $days ?? '' ) . "<br><b>Click Count:</b> " . ( $row['click_count'] ?? '' ) . "<br><b>Block ID:</b> " . ( $row['block_id'] ?? '' ) . "<br><b>Co-ordinate:</b> x:" . ( $row['x'] ?? '' ) . ", y:" . ( $row['y'] ?? '' ) . "";
 
 		?>
 
         <area
-                href="<?php echo( $row['url'] ); ?>"
+                href="<?php echo( $row['url'] ?? '' ); ?>"
                 alt=""
                 shape="RECT"
-                coords="<?php echo $row['x']; ?>,<?php echo $row['y']; ?>,<?php echo $row['x'] + $banner_data['BLK_WIDTH']; ?>,<?php echo $row['y'] + $banner_data['BLK_HEIGHT']; ?>"
+                coords="<?php echo $row['x'] ?? ''; ?>,<?php echo $row['y'] ?? ''; ?>,<?php echo ( $row['x'] ?? 0 ) + $banner_data['BLK_WIDTH']; ?>,<?php echo ( $row['y'] ?? 0 ) + $banner_data['BLK_HEIGHT']; ?>"
                 target="_blank"
-                data-user_id="<?php echo( $row['user_id'] ); ?>"
-                data-order_id="<?php echo $row['order_id']; ?>"
-                data-order_width="<?php echo $size['x']; ?>"
-                data-order_height="<?php echo $size['y']; ?>"
+                data-user_id="<?php echo( $row['user_id'] ?? '' ); ?>"
+                data-order_id="<?php echo $row['order_id'] ?? ''; ?>"
+                data-order_width="<?php echo $size['x'] ?? ''; ?>"
+                data-order_height="<?php echo $size['y'] ?? ''; ?>"
         >
 	<?php } ?>
 

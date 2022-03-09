@@ -29,19 +29,37 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'f409082896544691f5fdb3ede163f137982081b0',
+    'reference' => '282ebcccf9ec39dbc92c138f16dd424e0b53f6b9',
     'name' => 'milliondollarscript/milliondollarscript',
   ),
   'versions' => 
   array (
     'ckeditor/ckeditor' => 
     array (
-      'pretty_version' => '4.17.1',
-      'version' => '4.17.1.0',
+      'pretty_version' => '4.17.2',
+      'version' => '4.17.2.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'b71b8bf724174f2feaf53f64ee424bf1f5ba61fa',
+      'reference' => '0a402ca86b1821418e90cef026910fc723a930a6',
+    ),
+    'components/jquery' => 
+    array (
+      'pretty_version' => '3.6.0',
+      'version' => '3.6.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '6cf38ee1fd04b6adf8e7dda161283aa35be818c3',
+    ),
+    'components/jqueryui' => 
+    array (
+      'pretty_version' => '1.12.1',
+      'version' => '1.12.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '44ecf3794cc56b65954cc19737234a3119d036cc',
     ),
     'ezyang/htmlpurifier' => 
     array (
@@ -61,6 +79,15 @@ private static $installed = array (
       ),
       'reference' => 'd2e18be6e930ca169e4f921ef73ebfc061bf55d8',
     ),
+    'jquery-form/form' => 
+    array (
+      'pretty_version' => 'v4.3.0',
+      'version' => '4.3.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'fcbd5773d19a75d4b2f336df7f49788a42b71fbc',
+    ),
     'milliondollarscript/milliondollarscript' => 
     array (
       'pretty_version' => '2.2.x-dev',
@@ -68,16 +95,16 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'f409082896544691f5fdb3ede163f137982081b0',
+      'reference' => '282ebcccf9ec39dbc92c138f16dd424e0b53f6b9',
     ),
     'phpmailer/phpmailer' => 
     array (
-      'pretty_version' => 'v6.5.3',
-      'version' => '6.5.3.0',
+      'pretty_version' => 'v6.6.0',
+      'version' => '6.6.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'baeb7cde6b60b1286912690ab0693c7789a31e71',
+      'reference' => 'e43bac82edc26ca04b36143a48bde1c051cfd5b1',
     ),
   ),
 );

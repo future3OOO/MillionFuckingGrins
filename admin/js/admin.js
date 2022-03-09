@@ -2,7 +2,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -44,13 +44,20 @@ function scroll_to_top() {
 }
 
 function mds_load_page(page, force) {
+	if (!window.mds_admin_loading) {
+		window.mds_admin_loading = true;
+	} else {
+		return;
+	}
+
 	// remove hashtag from page
 	if (window.location.hash !== "" && (page === undefined || (window.location.hash !== page && force !== true))) {
-		page = window.location.hash.substr(1);
+		page = window.location.hash.substring(1);
 	}
 
 	$(".admin-content").load(page, function () {
 		scroll_to_top();
+		window.mds_admin_loading = false;
 	});
 }
 
@@ -112,6 +119,11 @@ function mds_submit(el) {
 }
 
 $(function () {
+	window.mds_admin_loading = false;
+
+	$(window).on('mds_admin_page_loaded', function() {
+		window.mds_admin_loading = false;
+	});
 
 	let admin_content = $(".admin-content");
 
@@ -140,6 +152,7 @@ $(function () {
 			return false;
 		}
 
+		window.mds_admin_loading = true;
 		if (url.endsWith('.txt')) {
 			admin_content.html('<embed style="width:100%;height:100%;" src="' + url + '" />');
 		} else {
@@ -147,6 +160,7 @@ $(function () {
 				if (status === "success") {
 					scroll_to_top();
 					window.location.hash = '#' + url;
+					$(window).trigger('mds_admin_page_loaded');
 				}
 			});
 		}

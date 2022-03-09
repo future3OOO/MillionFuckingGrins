@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -126,7 +126,7 @@ if ( isset( $_REQUEST['select'] ) && ! empty( $_REQUEST['select'] ) ) {
 	}
 }
 
-$block_str = ( $order_row['blocks'] == "" ) ? "-1" : $order_row['blocks'];
+$block_str = ( ! isset( $order_row['blocks'] ) || $order_row['blocks'] == "" ) ? "-1" : $order_row['blocks'];
 
 // load any existing blocks for this order
 $order_blocks = array();
@@ -311,7 +311,7 @@ if ( ! isset( $_REQUEST['sel_mode'] ) ) {
         <form method="post" action="order.php" id="form1" name="form1">
             <input type="hidden" name="package" value="">
             <input type="hidden" name="selected_pixels" value=''>
-            <input type="hidden" name="order_id" value="<?php echo $order_row['order_id']; ?>">
+            <input type="hidden" name="order_id" value="<?php echo $order_row['order_id'] ?? ''; ?>">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
             <input type="submit" name='submit_button2' id='submit_button2' value='<?php echo htmlspecialchars( $label['advertiser_buy_button'] ); ?>'>
             <hr>

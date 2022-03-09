@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -50,11 +50,11 @@ if ( WP_ENABLED == 'YES' ) {
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Million Dollar Script Administration</title>
     <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/css/admin.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/css/admin.css" ); ?>">
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.min.js" ); ?>"></script>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery-ui.min.js" ); ?>"></script>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/selection.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/selection.min.js" ); ?>"></script>
-    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>css/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/css/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
-    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/jquery.form.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/viselect.cjs.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/viselect.cjs.js" ); ?>"></script>
+    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
 
     <script>
 		window.mds_data = {
@@ -141,6 +141,8 @@ if ( WP_ENABLED == 'YES' ) {
             Copyright <?php echo date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
             <br/>
             MDS Version: <?php echo MDSConfig::get( 'VERSION_INFO' ); ?>
+            <br/>
+            DB Version: <?php echo get_dbver(); ?>
         </small>
     </div>
     <div class="admin-content"></div>

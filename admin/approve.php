@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -143,7 +143,7 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 <form name="bidselect" method="post" action="approve.php">
     <input type="hidden" name="old_order_id" value="<?php //echo $order_id; ?>">
-    <input type="hidden" value="<?php echo $_REQUEST['app']; ?>" name="app">
+    <input type="hidden" value="<?php echo $_REQUEST['app'] ?? ""; ?>" name="app">
     <label>
         Select Grid:
         <select name="BID" onchange="mds_submit(this)">
@@ -284,7 +284,7 @@ if ( $count > $records_per_page ) {
 	// calculate number of pages & current page
 
 	echo "<center>";
-    global $label;
+	global $label;
 	$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 	$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 
@@ -294,18 +294,33 @@ if ( $count > $records_per_page ) {
 	render_nav_pages( $nav, $LINKS, $q_string );
 	echo "</center>";
 }
+
+// Determine if auto publish should be checked
+
+// If all grids are selected (default) then not checked
+$do_it_now_checked = false;
+if ( ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) ) {
+    // If do_it_now was just checked then check it
+	$do_it_now_checked = true;
+} else if ( ! empty( $BID ) ) {
+	// If a specific grid is selected check if auto publish is enabled for that grid
+	$banner_data = load_banner_constants( $BID );
+	if ( $banner_data['AUTO_PUBLISH'] == 'Y' ) {
+		$do_it_now_checked = true;
+	}
+}
 ?>
 <form name="form1" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
     <input type="hidden" name="offset" value="<?php echo $offset; ?>">
     <input type="hidden" name="BID" value="<?php echo $BID; ?>">
-    <input type="hidden" name="app" value="<?php echo $_REQUEST['app']; ?>">
+    <input type="hidden" name="app" value="<?php echo $_REQUEST['app'] ?? ""; ?>">
     <input type="hidden" name="all_go" value="">
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
         <tr>
             <td colspan="12">
                 With selected: <input type="submit" value='Approve' style="font-size: 9px; background-color: #33FF66 " onclick="if (!confirmLink(this, 'Approve for all selected, are you sure?')) return false" name='mass_approve'>
                 <input type="submit" value='Disapprove' style="font-size: 9px; background-color: #FF6600" onclick="if (!confirmLink(this, 'Disapprove all selected, are you sure?')) return false" name='mass_disapprove'>
-                <input type="checkbox" name="do_it_now" <?php if ( ( isset($_REQUEST['do_it_now']) && $_REQUEST['do_it_now'] == 'true' ) ) {
+                <input type="checkbox" name="do_it_now" <?php if ( $do_it_now_checked ) {
 					echo ' checked ';
 				} ?> value="true"> Process Grid Images immediately after approval / disapproval <br>
             </td>

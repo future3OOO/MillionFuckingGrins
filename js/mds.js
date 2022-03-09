@@ -2,7 +2,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -279,8 +279,25 @@ function rescale($el) {
 	});
 }
 
+function mds_loaded_event(el, scalemap, tippy, iframe, isgrid) {
+	if (window.mds_loaded === true) {
+		return;
+	}
+	window.mds_loaded = true;
+
+	$(window).trigger({
+		type: 'mds-loaded',
+		el: el,
+		scalemap: scalemap,
+		tippy: tippy,
+		iframe: iframe,
+		isgrid: isgrid
+	});
+}
+
 function mds_init(el, scalemap, tippy, type, isgrid) {
 	let $el = $(el);
+	window.mds_loaded = false;
 
 	if (isgrid && scalemap) {
 
@@ -401,10 +418,13 @@ function mds_init(el, scalemap, tippy, type, isgrid) {
 		});
 	}
 
+	let tooltips = false;
 	if (tippy && window.tippy_instance == undefined && window.mds_data.ENABLE_MOUSEOVER !== 'NO') {
+		tooltips = true;
 		defer('Popper', () => {
 			defer('tippy', () => {
 				add_tippy();
+				mds_loaded_event($el, scalemap, tippy, type, isgrid);
 			});
 		});
 	}
@@ -418,13 +438,18 @@ function mds_init(el, scalemap, tippy, type, isgrid) {
 	}
 
 	initialized = true;
+
+	if (!tooltips) {
+		mds_loaded_event($el, scalemap, tippy, type, isgrid);
+	}
 }
 
 $(function () {
 	$('.mds_upload_image').on('click', function (e) {
-		$(this).prop('disabled', true);
-		$(this).attr('value', 'Uploading...');
-		$(this).parent('form').submit();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Uploading...');
+		$el.parent('form').submit();
 	});
 
 	$('.mds_pointer_graphic').on('load', function (e) {
@@ -433,8 +458,29 @@ $(function () {
 	});
 
 	$('.mds_save_ad_button').on('click', function () {
-		$(this).prop('disabled', true);
-		$(this).attr('value', 'Saving...');
-		$(this).closest('form').submit();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Saving...');
+		$el.closest('form').submit();
+	});
+
+	$('#mds-complete-button').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Completing...');
+		window.location=window.mds_data.BASE_HTTP_PATH + 'users/publish.php?action=complete&order_id=' + $el.data('order-id') + '&BID=' + $el.data('grid');
+		return false;
+	});
+
+	$('#mds-confirm-button').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Confirming...');
+		window.location=window.mds_data.BASE_HTTP_PATH + 'users/payment.php?action=confirm&order_id=' + $el.data('order-id') + '&BID=' + $el.data('grid');
+		return false;
 	});
 });

@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -40,7 +40,7 @@ $BID = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 
 $sql = "select count(*) AS COUNT FROM blocks where status='sold' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die(mds_sql_error($sql));
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
 
 if ( defined( 'STATS_DISPLAY_MODE' ) && STATS_DISPLAY_MODE == 'BLOCKS' ) {

@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -52,7 +52,7 @@ if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10.0, minimum-scale=0.1, user-scalable=yes"/>
     <link rel="shortcut icon" href="<?php echo BASE_HTTP_PATH; ?>favicon.ico" />
-    <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/jquery.min.js?ver=<?php echo filemtime( BASE_PATH . "/js/third-party/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.min.js"></script>
     <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.min.js"></script>
     <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
@@ -174,18 +174,27 @@ if ( $call_state == 2 || $call_state == 5 ) {
 			}
 
 			$loggedin = '';
-			if ( isset($_SESSION['MDS_ID']) && $_SESSION['MDS_ID'] != '' ) {
-				$loggedin = ' logged-in';
+			if ( isset( $_SESSION['MDS_ID'] ) && $_SESSION['MDS_ID'] != '' ) {
 				global $label;
+
+				// DISPLAY_ORDER_HISTORY
+				$order_history_link = "";
+				if ( DISPLAY_ORDER_HISTORY == "YES" ) {
+					$order_history_link = '<a href="' . BASE_HTTP_PATH . 'users/orders.php">' . $label['advertiser_header_nav4'] . '</a>';
+				}
+
 				?>
                 <div class="users-menu-bar">
                     <a href="<?php echo BASE_HTTP_PATH; ?>users/index.php"><?php echo $label['advertiser_header_nav1']; ?></a>
                     <a href="<?php echo BASE_HTTP_PATH . "users/" . $order_page; ?>"><?php echo $label['advertiser_header_nav2']; ?></a>
                     <a href="<?php echo BASE_HTTP_PATH; ?>users/publish.php"><?php echo $label['advertiser_header_nav3']; ?></a>
-                    <a href="<?php echo BASE_HTTP_PATH; ?>users/orders.php"><?php echo $label['advertiser_header_nav4']; ?></a>
-                    <a href="<?php echo BASE_HTTP_PATH; ?>users/<?php echo ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) ? "wp" : ""; ?>logout.php"><?php echo $label['advertiser_header_nav5']; ?></a>
+					<?php echo $order_history_link; ?>
+                    <a target="_top" href="<?php echo BASE_HTTP_PATH; ?>users/<?php echo ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) ? "wp" : ""; ?>logout.php"><?php echo $label['advertiser_header_nav5']; ?></a>
                 </div>
 
-			<?php } ?>
+				<?php
+			}
 
+			$loggedin = ' logged-in';
+			?>
             <div class="container<?php echo $loggedin; ?>">

@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -318,6 +318,8 @@ function debit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $or
 }
 
 function complete_order( $user_id, $order_id ) {
+	confirm_order( $_SESSION['MDS_ID'], $order_id );
+
 	global $label;
 
 	$sql = "SELECT * from orders where order_id='" . intval( $order_id ) . "' ";
@@ -1161,7 +1163,15 @@ function display_order( $order_id, $BID ) {
         </tr>
         <tr>
             <td><b><?php echo $label['advertiser_ord_quantity']; ?></b></td>
-            <td><?php echo $order_row['quantity']; ?><?php echo $label['advertiser_ord_pix']; ?></td>
+            <td><?php
+				if ( STATS_DISPLAY_MODE == "PIXELS" ) {
+					echo $order_row['quantity'];
+					echo " " . $label['advertiser_ord_pix'];
+				} else {
+					echo $order_row['quantity'] / ( $b_row['block_width'] * $b_row['block_height'] );
+					echo " " . $label['advertiser_ord_blocks'];
+				}
+				?></td>
         </tr>
         <td><b><?php echo $label['advertiser_ord_expired']; ?></b></td>
         <td><?php if ( $order_row['days_expire'] == 0 ) {
@@ -2174,14 +2184,14 @@ function get_required_size( $x, $y, $banner_data ) {
 	$mod = ( $x % $block_width );
 
 	if ( $mod > 0 ) {
-        // width does not fit
+		// width does not fit
 		$size[0] = $x + ( $block_width - $mod );
 	}
 
 	$mod = ( $y % $block_height );
 
 	if ( $mod > 0 ) {
-        // height does not fit
+		// height does not fit
 		$size[1] = $y + ( $block_height - $mod );
 	}
 

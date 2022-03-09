@@ -3,7 +3,7 @@
  * @package       mds
  * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2022-01-30 17:07:25 EST
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -115,7 +115,7 @@ function is_logged_in() {
 		// get user from MDS db
 		$result = mysqli_query( $GLOBALS['connection'], "SELECT * FROM `users` WHERE username='" . mysqli_real_escape_string( $GLOBALS['connection'], $user->user_login ) . "'" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row = mysqli_fetch_array( $result );
-		if ( ! $row['Username'] ) {
+		if ( isset( $row ) && ! $row['Username'] ) {
 			return false;
 		}
 
@@ -226,7 +226,7 @@ function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Us
 
 	$validated = 0;
 
-	if ( ( EM_NEEDS_ACTIVATION == "AUTO" ) ) {
+	if ( EM_NEEDS_ACTIVATION == "AUTO" ) {
 		$validated = 1;
 	}
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
@@ -242,7 +242,9 @@ function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Us
 		$success = false;
 		$error   = $label['advertiser_could_not_signup'];
 	}
-	$advertiser_signup_success = str_replace( "%FirstName%", stripslashes( $FirstName ), $label['advertiser_signup_success'] );
+
+	$advertiser_signup_success = $validated ? $label['advertiser_signup_success_1'] : $label['advertiser_signup_success_2'];
+	$advertiser_signup_success = str_replace( "%FirstName%", stripslashes( $FirstName ), $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%LastName%", stripslashes( $LastName ), $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%SITE_NAME%", SITE_NAME, $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $advertiser_signup_success );
@@ -387,13 +389,12 @@ function process_signup_form( $target_page = 'index.php' ) {
 	$error = validate_signup_form();
 
 	if ( $error != '' ) {
-        // error processing signup/
+		// error processing signup/
 
 		echo "<span class='error_msg_label'>" . $label["advertiser_signup_error"] . "</span><P>";
 		echo "<span ><b>" . $error . "</b></span>";
 
 		return false;
-
 	} else {
 
 		//$target_page="index.php";
