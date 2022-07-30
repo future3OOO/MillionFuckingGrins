@@ -1,87 +1,88 @@
-<?php return array (
-  'root' => 
-  array (
-    'pretty_version' => '2.2.x-dev',
-    'version' => '2.2.9999999.9999999-dev',
-    'aliases' => 
-    array (
+<?php return array(
+    'root' => array(
+        'pretty_version' => '2.2.x-dev',
+        'version' => '2.2.9999999.9999999-dev',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => 'a1850f2a9ecb132086973046f967385b8651c8fd',
+        'name' => 'milliondollarscript/milliondollarscript',
+        'dev' => true,
     ),
-    'reference' => '282ebcccf9ec39dbc92c138f16dd424e0b53f6b9',
-    'name' => 'milliondollarscript/milliondollarscript',
-  ),
-  'versions' => 
-  array (
-    'ckeditor/ckeditor' => 
-    array (
-      'pretty_version' => '4.17.2',
-      'version' => '4.17.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '0a402ca86b1821418e90cef026910fc723a930a6',
+    'versions' => array(
+        'ckeditor/ckeditor' => array(
+            'pretty_version' => '4.19.1',
+            'version' => '4.19.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ckeditor/ckeditor',
+            'aliases' => array(),
+            'reference' => 'f6a3be3da4abf485b7d95d3edd3e9f120a6ed95e',
+            'dev_requirement' => false,
+        ),
+        'components/jquery' => array(
+            'pretty_version' => '3.6.0',
+            'version' => '3.6.0.0',
+            'type' => 'component',
+            'install_path' => __DIR__ . '/../components/jquery',
+            'aliases' => array(),
+            'reference' => '6cf38ee1fd04b6adf8e7dda161283aa35be818c3',
+            'dev_requirement' => false,
+        ),
+        'components/jqueryui' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'type' => 'component',
+            'install_path' => __DIR__ . '/../components/jqueryui',
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
+            'reference' => '44ecf3794cc56b65954cc19737234a3119d036cc',
+            'dev_requirement' => false,
+        ),
+        'ezyang/htmlpurifier' => array(
+            'pretty_version' => 'v4.14.0',
+            'version' => '4.14.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ezyang/htmlpurifier',
+            'aliases' => array(),
+            'reference' => '12ab42bd6e742c70c0a52f7b82477fcd44e64b75',
+            'dev_requirement' => false,
+        ),
+        'imagine/imagine' => array(
+            'pretty_version' => '1.3.2',
+            'version' => '1.3.2.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../imagine/imagine',
+            'aliases' => array(),
+            'reference' => 'ae864f26afbf8859ebd2e2b9df92d77ee175dc13',
+            'dev_requirement' => false,
+        ),
+        'jquery-form/form' => array(
+            'pretty_version' => 'v4.3.0',
+            'version' => '4.3.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../jquery-form/form',
+            'aliases' => array(),
+            'reference' => 'fcbd5773d19a75d4b2f336df7f49788a42b71fbc',
+            'dev_requirement' => false,
+        ),
+        'milliondollarscript/milliondollarscript' => array(
+            'pretty_version' => '2.2.x-dev',
+            'version' => '2.2.9999999.9999999-dev',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => 'a1850f2a9ecb132086973046f967385b8651c8fd',
+            'dev_requirement' => false,
+        ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v6.6.3',
+            'version' => '6.6.3.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'reference' => '9400f305a898f194caff5521f64e5dfa926626f3',
+            'dev_requirement' => false,
+        ),
     ),
-    'components/jquery' => 
-    array (
-      'pretty_version' => '3.6.0',
-      'version' => '3.6.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '6cf38ee1fd04b6adf8e7dda161283aa35be818c3',
-    ),
-    'components/jqueryui' => 
-    array (
-      'pretty_version' => '1.12.1',
-      'version' => '1.12.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '44ecf3794cc56b65954cc19737234a3119d036cc',
-    ),
-    'ezyang/htmlpurifier' => 
-    array (
-      'pretty_version' => 'v4.14.0',
-      'version' => '4.14.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '12ab42bd6e742c70c0a52f7b82477fcd44e64b75',
-    ),
-    'imagine/imagine' => 
-    array (
-      'pretty_version' => '1.2.4',
-      'version' => '1.2.4.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'd2e18be6e930ca169e4f921ef73ebfc061bf55d8',
-    ),
-    'jquery-form/form' => 
-    array (
-      'pretty_version' => 'v4.3.0',
-      'version' => '4.3.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'fcbd5773d19a75d4b2f336df7f49788a42b71fbc',
-    ),
-    'milliondollarscript/milliondollarscript' => 
-    array (
-      'pretty_version' => '2.2.x-dev',
-      'version' => '2.2.9999999.9999999-dev',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '282ebcccf9ec39dbc92c138f16dd424e0b53f6b9',
-    ),
-    'phpmailer/phpmailer' => 
-    array (
-      'pretty_version' => 'v6.6.0',
-      'version' => '6.6.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'e43bac82edc26ca04b36143a48bde1c051cfd5b1',
-    ),
-  ),
 );
