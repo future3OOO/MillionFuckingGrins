@@ -1,768 +1,731 @@
 <?php
-/*
-COPYRIGHT 2008 - see www.milliondollarscript.com for a list of authors
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 18:01:28 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
-This file is part of the Million Dollar Script.
+use Imagine\Filter\Basic\Autorotate;
 
-Million Dollar Script is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+require_once( 'lists.inc.php' );
+require_once( 'dynamic_forms.php' );
 
-Million Dollar Script is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+global $ad_tag_to_field_id, $ad_tag_to_search;
+$ad_tag_to_search   = tag_to_search_init( 1 );
+$ad_tag_to_field_id = ad_tag_to_field_id_init();
 
-You should have received a copy of the GNU General Public License
-along with the Million Dollar Script.  If not, see <http://www.gnu.org/licenses/>.
+function ad_tag_to_field_id_init() {
 
-*/
+	$sql = "SELECT * FROM `form_fields`, form_field_translations WHERE form_fields.field_id = form_field_translations.field_id AND form_field_translations.lang='" . get_lang() . "' AND form_id=1 ORDER BY list_sort_order ";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-require_once ('category.inc.php');
-require_once ('lists.inc.php');
-require_once ('dynamic_forms.php');
-global $ad_tag_to_field_id;
-global $ad_tag_to_search; 
-global $CACHE_ENABLED;
-if ($CACHE_ENABLED=='YES') {
-	$dir = dirname(__FILE__);
-	$dir = preg_split ('%[/\\\]%', $dir);
-	$blank = array_pop($dir);
-	$dir = implode('/', $dir);
-	include ("$dir/cache/form1_cache.inc.php");
-	$ad_tag_to_search = $tag_to_search;
-	$ad_tag_to_field_id = $tag_to_field_id;
-} else {
-	$ad_tag_to_search = tag_to_search_init(1);
-	$ad_tag_to_field_id = ad_tag_to_field_id_init();
-}
+	// do a query for each field
+	while ( $fields = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
-
-
-#####################################
-
-function ad_tag_to_field_id_init () {
-	global $CACHE_ENABLED;
-	if ($CACHE_ENABLED=='YES') {
-
-		global $ad_tag_to_field_id;
-		return $ad_tag_to_field_id;
-
-	}
-	global $label;
-
-	$sql = "SELECT *, t2.field_label AS NAME FROM `form_fields` as t1, form_field_translations as t2 where t1.field_id = t2.field_id AND t2.lang='".$_SESSION['MDS_LANG']."' AND form_id=1 ORDER BY list_sort_order ";
-	$result = mysql_query($sql) or die (mysql_error());
-	# do a query for each field
-	while ($fields = mysql_fetch_array($result, MYSQL_ASSOC)) {
-
-		//$form_data = $row[]
-		$tag_to_field_id[$fields['template_tag']]['field_id'] = $fields['field_id'];
-		$tag_to_field_id[$fields['template_tag']]['field_type'] = $fields['field_type'];
-		$tag_to_field_id[$fields['template_tag']]['field_label'] = $fields['NAME'];
+		$tag_to_field_id[ $fields['template_tag'] ]['field_id']    = $fields['field_id'];
+		$tag_to_field_id[ $fields['template_tag'] ]['field_type']  = $fields['field_type'];
+		$tag_to_field_id[ $fields['template_tag'] ]['field_label'] = $fields['field_label'];
 	}
 
-
-	$tag_to_field_id["ORDER_ID"]['field_id'] = 'order_id';
+	$tag_to_field_id["ORDER_ID"]['field_id']    = 'order_id';
 	$tag_to_field_id["ORDER_ID"]['field_label'] = 'Order ID';
-	//$tag_to_field_id["ORDER_ID"]['field_label'] = $label["employer_resume_list_date"];
 
-	$tag_to_field_id["BID"]['field_id'] = 'banner_id';
+	$tag_to_field_id["BID"]['field_id']    = 'banner_id';
 	$tag_to_field_id["BID"]['field_label'] = 'Grid ID';
 
-	$tag_to_field_id["USER_ID"]['field_id'] = 'user_id';
+	$tag_to_field_id["USER_ID"]['field_id']    = 'user_id';
 	$tag_to_field_id["USER_ID"]['field_label'] = 'User ID';
 
-	$tag_to_field_id["AD_ID"]['field_id'] = 'ad_id';
+	$tag_to_field_id["AD_ID"]['field_id']    = 'ad_id';
 	$tag_to_field_id["AD_ID"]['field_label'] = 'Ad ID';
 
-	$tag_to_field_id["DATE"]['field_id'] = 'ad_date';
+	$tag_to_field_id["DATE"]['field_id']    = 'ad_date';
 	$tag_to_field_id["DATE"]['field_label'] = 'Date';
 
-
-
-
 	return $tag_to_field_id;
-
-
-
 }
 
-######################################################################
+function load_ad_values( $ad_id ) {
 
-function load_ad_values ($ad_id) {
+	global $f2;
 
 	$prams = array();
 
+	$ad_id = intval( $ad_id );
 
 	$sql = "SELECT * FROM `ads` WHERE ad_id='$ad_id'   ";
-	
 
-	$result = mysql_query($sql) or die ($sql. mysql_error());
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 
-	
+	if ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
-	if ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-		
-		$prams['ad_id'] = $ad_id;
-		$prams['user_id'] = $row['user_id'];
-		$prams['order_id'] = $row['order_id'];
+		$prams['ad_id']     = $ad_id;
+		$prams['user_id']   = $row['user_id'];
+		$prams['order_id']  = $row['order_id'];
 		$prams['banner_id'] = $row['banner_id'];
-		
 
 		$sql = "SELECT * FROM form_fields WHERE form_id=1 AND field_type != 'SEPERATOR' AND field_type != 'BLANK' AND field_type != 'NOTE' ";
-		$result = mysql_query($sql) or die(mysql_error());
-		while ($fields = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		while ( $fields = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
-			$prams[$fields['field_id']] =  $row[$fields['field_id']];
+			$prams[ $fields['field_id'] ] = $row[ $fields['field_id'] ];
 
-			if ($fields['field_type']=='DATE')  {
-				$day = $_REQUEST[$row['field_id']."d"];
-				$month = $_REQUEST[$row['field_id']."m"];
-				$year = $_REQUEST[$row['field_id']."y"];
+			if ( $fields['field_type'] == 'DATE' ) {
+				$day   = $_REQUEST[ $row['field_id'] . "d" ];
+				$month = $_REQUEST[ $row['field_id'] . "m" ];
+				$year  = $_REQUEST[ $row['field_id'] . "y" ];
 
-				$prams[$fields['field_id']] = "$year-$month-$day";
-
-			} elseif (($fields['field_type']=='MSELECT') || ($row['field_type']=='CHECK'))  {
-				if (is_array($_REQUEST[$row['field_id']])) {	
-					$prams[$fields['field_id']] = implode (",", $_REQUEST[$fields['field_id']]);
+				$prams[ $fields['field_id'] ] = "$year-$month-$day";
+			} else if ( ( $fields['field_type'] == 'MSELECT' ) || ( $fields['field_type'] == 'CHECK' ) ) {
+				if ( is_array( $_REQUEST[ $row['field_id'] ] ) ) {
+					$prams[ $fields['field_id'] ] = implode( ",", $_REQUEST[ $fields['field_id'] ] );
 				} else {
-					$prams[$fields['field_id']] = $_REQUEST[$fields['field_id']];
+					$prams[ $fields['field_id'] ] = $_REQUEST[ $fields['field_id'] ];
 				}
-				
 			}
-
 		}
+
 		return $prams;
 	} else {
 		return false;
 	}
-
-	
-
-
 }
 
-#########################################################
+function assign_ad_template( $prams ) {
 
-
-function assign_ad_template($prams) {
-
-	global $label;
+	global $label, $prams;
 
 	$str = $label['mouseover_ad_template'];
 
 	$sql = "SELECT * FROM form_fields WHERE form_id='1' AND field_type != 'SEPERATOR' AND field_type != 'BLANK' AND field_type != 'NOTE' ";
-		//echo $sql;
-	$result = mysql_query($sql) or die(mysql_error());
-	while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
-		
-		if ($row['field_type']=='IMAGE') {
-			if ((file_exists(UPLOAD_PATH.'images/'.$prams[$row['field_id']]))&&($prams[$row['field_id']])) {
-				$str = str_replace('%'.$row['template_tag'].'%', '<img alt="" src="'. UPLOAD_HTTP_PATH."images/".$prams[$row['field_id']].'" >', $str);
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+
+	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
+		if ( $row['field_type'] == 'IMAGE' ) {
+			if ( ( file_exists( UPLOAD_PATH . 'images/' . $prams[ $row['field_id'] ] ) ) && ( $prams[ $row['field_id'] ] ) ) {
+				$str = str_replace( '%' . $row['template_tag'] . '%', '<img alt="" src="' . UPLOAD_HTTP_PATH . "images/" . $prams[ $row['field_id'] ] . '" style="max-width:100px;max-height:100px;">', $str );
 			} else {
 				//$str = str_replace('%'.$row['template_tag'].'%',  '<IMG SRC="'.UPLOAD_HTTP_PATH.'images/no-image.gif" WIDTH="150" HEIGHT="150" BORDER="0" ALT="">', $str);
-				$str = str_replace('%'.$row['template_tag'].'%',  '', $str);
+				$str = str_replace( '%' . $row['template_tag'] . '%', '', $str );
 			}
 		} else {
-			$str = str_replace('%'.$row['template_tag'].'%', get_template_value($row['template_tag'],1), $str);
-		} 
- 
-		$str = str_replace('$'.$row['template_tag'].'$', get_template_field_label($row['template_tag'],1), $str);
-		
-		
+			$str = str_replace( '%' . $row['template_tag'] . '%', get_template_value( $row['template_tag'], 1 ), $str );
+		}
+
+		$str = str_replace( '$' . $row['template_tag'] . '$', get_template_field_label( $row['template_tag'], 1 ), $str );
 	}
+
 	return $str;
-
-
-
 }
 
-#########################################################
+function display_ad_form( $form_id, $mode, $prams ) {
 
-function display_ad_form ($form_id, $mode, $prams) {
+	global $f2, $label, $error, $BID;
 
-	global $label;
-	global $error;
-	global $BID;
-
-	if ($prams == '' ) {
-
-		$prams['mode'] = $_REQUEST['mode'];
-		$prams['ad_id']= $_REQUEST['ad_id'];
+	if ( $prams == '' ) {
+		$prams              = array();
+		$prams['mode']      = ( isset( $_REQUEST['mode'] ) ? $_REQUEST['mode'] : "" );
+		$prams['ad_id']     = ( isset( $_REQUEST['ad_id'] ) ? $_REQUEST['ad_id'] : "" );
 		$prams['banner_id'] = $BID;
-		$prams['user_id'] = $_REQUEST['user_id'];
+		$prams['user_id']   = ( isset( $_REQUEST['user_id'] ) ? $_REQUEST['user_id'] : "" );
 
-		$sql = "SELECT * FROM form_fields WHERE form_id='$form_id' AND field_type != 'SEPERATOR' AND field_type != 'BLANK' AND field_type != 'NOTE' ";
-		//echo $sql;
-		$result = mysql_query($sql) or die(mysql_error());
-		while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+		$sql = "SELECT * FROM form_fields WHERE form_id='" . intval( $form_id ) . "' AND field_type != 'SEPERATOR' AND field_type != 'BLANK' AND field_type != 'NOTE' ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
-			//$prams[$row[field_id]] = $_REQUEST[$row[field_id]];
-
-			if ($row['field_type']=='DATE')  {
-				$day = $_REQUEST[$row['field_id']."d"];
-				$month = $_REQUEST[$row['field_id']."m"];
-				$year = $_REQUEST[$row['field_id']."y"];
-				$prams[$row['field_id']] = "$year-$month-$day";
-
-			} elseif (($row['field_type']=='MSELECT') || ($row['field_type']=='CHECK'))  {
-				if (is_array($_REQUEST[$row['field_id']])) {	
-					$prams[$row['field_id']] = implode (",", $_REQUEST[$row['field_id']]);
+			if ( $row['field_type'] == 'DATE' ) {
+				$day                       = $_REQUEST[ $row['field_id'] . "d" ];
+				$month                     = $_REQUEST[ $row['field_id'] . "m" ];
+				$year                      = $_REQUEST[ $row['field_id'] . "y" ];
+				$prams[ $row['field_id'] ] = "$year-$month-$day";
+			} else if ( ( $row['field_type'] == 'MSELECT' ) || ( $row['field_type'] == 'CHECK' ) ) {
+				if ( is_array( $_REQUEST[ $row['field_id'] ] ) ) {
+					$prams[ $row['field_id'] ] = implode( ",", $_REQUEST[ $row['field_id'] ] );
 				} else {
-					$prams[$row['field_id']] = $_REQUEST[$row['field_id']];
+					$prams[ $row['field_id'] ] = $_REQUEST[ $row['field_id'] ];
 				}
-				
 			} else {
-				$prams[$row['field_id']] = stripslashes ($_REQUEST[$row['field_id']]);
+				$prams[ $row['field_id'] ] = stripslashes( isset( $_REQUEST[ $row['field_id'] ] ) ? $_REQUEST[ $row['field_id'] ] : "" );
+			}
+		}
+	}
+
+	$mode      = ( isset( $mode ) && in_array( $mode, array( "edit", "user" ) ) ) ? $mode : "";
+	$ad_id     = isset( $prams['ad_id'] ) ? intval( $prams['ad_id'] ) : "";
+	$user_id   = isset( $prams['user_id'] ) ? intval( $prams['user_id'] ) : "";
+	$order_id  = isset( $prams['order_id'] ) ? intval( $prams['order_id'] ) : "";
+	$banner_id = isset( $prams['banner_id'] ) ? intval( $prams['banner_id'] ) : "";
+	$action    = strpos( $_SERVER['PHP_SELF'], '/admin/' ) !== false ? basename( $_SERVER['PHP_SELF'] ) : $_SERVER['PHP_SELF'];
+	?>
+    <form method="POST" action="<?php echo htmlentities( $action ); ?>" name="form1" enctype="multipart/form-data">
+
+        <input type="hidden" name="mode" value="<?php echo $mode; ?>">
+        <input type="hidden" name="ad_id" value="<?php echo $ad_id; ?>">
+        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+        <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
+        <input type="hidden" name="BID" value="<?php echo $banner_id; ?>">
+
+        <div class="flex-container">
+			<?php if ( ( $error != '' ) && ( $mode != 'edit' ) ) { ?>
+                <div class="error_msg">
+					<?php echo "<span class='error_msg_label'>" . $label['ad_save_error'] . "</span><br> <b>" . $error . "</b>"; ?>
+                </div>
+			<?php } ?>
+			<?php
+			if ( $mode == "edit" ) {
+				echo "[Ad Form]";
 			}
 
-
-		}
- 
-	}
-
-
-
-	if (!defined('SCW_INCLUDE')) {
-		?>
-		<script type='text/JavaScript' src='<?php echo BASE_HTTP_PATH."scw/scw_js.php?lang=".$_SESSION['MDS_LANG']; ?>'></script>
-		<?php
-		define ('SCW_INCLUDE', 'Y');
-	}
-
-	?>
-	<form method="POST"  action="<?php htmlentities($_SERVER['PHP_SELF']); ?>" name="form1" onsubmit=" form1.savebutton.disabled=true;" enctype="multipart/form-data">
-	
-	<input type="hidden" name="mode" size="" value="<?php echo $mode; ?>">
-	<input type="hidden" name="ad_id" size="" value="<?php echo $prams['ad_id']; ?>">
-	<input type="hidden" name="user_id" size="" value="<?php echo $prams['user_id']; ?>">
-	<input type="hidden" name="order_id" size="" value="<?php echo $prams['order_id']; ?>">
-	<input type="hidden" name="banner_id" size="" value="<?php echo $prams['banner_id']; ?>">
-
-	<table cellSpacing="1" cellPadding="5" class="ad_data"  id="ad"   >
-	<?php  if (($error != '' ) && ($mode!='EDIT')) { ?>
-	<tr>
-		<td bgcolor="#F2F2F2" colspan="2"><?php  echo "<span class='error_msg_label'>".$label['ad_save_error']."</span><br> <b>".$error."</b>";  ?></td>
-	</tr>
-	<?php } ?>
-  <tr  bgColor="#ffffff">
-    <td  bgColor="#eaeaea">
-	<?php if ($mode == "EDIT") {
-					echo "[Ad Form]";
-				}
-		 // section 1
-		display_form ($form_id, $mode, $prams, 1);
-	?>
-  
-  </tr>
-	<tr><td colspan="2" bgcolor="#ffffff">
-		<input type="hidden" name="save" id="save101" value="">
-		<?php if ($mode=='edit') { ?>
-		<input class="form_submit_button" TYPE="SUBMIT" class='big_button' name="savebutton" value="<?php echo $label['ad_save_button'];?>" onClick="save101.value='1';">
-		<?php } ?>
-		</td></tr>
-	</table>
-	</form>
+			// section 1
+			display_form( $form_id, $mode, $prams, 1 );
+			?>
+            <div class="flex-row">
+                <input type="hidden" name="save" id="save101" value="">
+				<?php if ( $mode == 'edit' || $mode == 'user' ) { ?>
+                    <input class="form_submit_button big_button" type="submit" name="savebutton" value="<?php echo $label['ad_save_button']; ?>" onClick="save101.value='1';">
+				<?php } ?>
+            </div>
+        </div>
+    </form>
 
 	<?php
-
 }
 
+function list_ads( $admin = false, $offset = 0, $list_mode = 'ALL', $user_id = '' ) {
 
+	global $BID, $f2, $label, $tag_to_field_id, $ad_tag_to_field_id, $action;
 
-###########################################################################
+	$tag_to_field_id  = ad_tag_to_field_id_init();
+	$records_per_page = 40;
 
-function list_ads ($admin=false, $order, $offset, $list_mode='ALL', $user_id='') {
-
-	## Globals
-	global $label;
-	global $tag_to_field_id;
-	$tag_to_field_id = ad_tag_to_field_id_init();
-
-	###########################################
-	# Load in the form data, including column names
-	# (dont forget LANGUAGE TOO)
-
-	global $ad_tag_to_field_id;
-
-    $records_per_page = 40;
-    global $label; // languages array
-
-   
-   $order_str = $order;
-
-   if ($order == '') {
-     $order = " `order_id` ";           
-   } else {
-      $order = " `$order` ";
-   }
-
-   
-	global $action;
-   // process search result
-	if ($_REQUEST['action'] == 'search') {
-		$q_string = generate_q_string(1);  	   
-		$where_sql = generate_search_sql(1);
+	// process search result
+	$q_string  = "";
+	$where_sql = "";
+	if ( $_REQUEST['action'] == 'search' ) {
+		$q_string  = generate_q_string( 1 );
+		$where_sql = generate_search_sql( 1 );
 	}
-	   
-	// DATE_FORMAT(`adate`, '%d-%b-%Y') AS formatted_date
 
 	$order = $_REQUEST['order_by'];
 
-	if ($_REQUEST['ord']=='asc') {
+	if ( $_REQUEST['ord'] == 'asc' ) {
 		$ord = 'ASC';
-	} elseif ($_REQUEST['ord']=='desc') {
+	} else if ( $_REQUEST['ord'] == 'desc' ) {
 		$ord = 'DESC';
 	} else {
-		$ord = 'DESC'; // sort descending by default
+		$ord = 'DESC';
 	}
 
-	if ($order == '') {
-		$order = " `ad_date` ";           
+	if ( $order == null || $order == '' ) {
+		$order = " `ad_date` ";
 	} else {
-		$order = " `$order` ";
+		$order = " `" . mysqli_real_escape_string( $GLOBALS['connection'], $order ) . "` ";
 	}
-	global $BID;
-	if ($list_mode == 'USER' ) {
 
-		if (!is_numeric($user_id)) {
+	if ( $list_mode == 'USER' ) {
+
+		if ( ! is_numeric( $user_id ) ) {
 			$user_id = $_SESSION['MDS_ID'];
-		} 
-		$sql = "Select *  FROM `ads` as t1, `orders` as t2 WHERE t1.ad_id=t2.ad_id AND t1.order_id > 0 AND t1.banner_id='".$BID."' AND t1.user_id='".$user_id."' AND (t2.status = 'completed' OR t2.status = 'expired') $where_sql ORDER BY $order $ord ";
+		}
 
-	} elseif ($list_mode =='TOPLIST') {
-
-	//	$sql = "SELECT *, DATE_FORMAT(MAX(order_date), '%Y-%c-%d') as max_date, sum(quantity) AS pixels FROM orders, ads where ads.order_id=orders.order_id AND status='completed' and orders.banner_id='$BID' GROUP BY orders.user_id, orders.banner_id order by pixels desc ";
-		
+		$sql = "Select *  FROM `ads`, `orders` WHERE ads.ad_id=orders.ad_id AND ads.order_id > 0 AND ads.banner_id='" . intval( $BID ) . "' AND ads.user_id='" . intval( $user_id ) . "' AND (orders.status IN ('pending','completed','confirmed','new','expired','renew_wait','renew_paid')) $where_sql ORDER BY $order $ord ";
 	} else {
-		
-		$sql = "Select *  FROM `ads` as t1, `orders` AS t2 WHERE t1.ad_id=t2.ad_id AND t1.banner_id='$BID' and t1.order_id > 0 $where_sql ORDER BY $order $ord ";
-
+		$sql = "Select *  FROM `ads`, `orders` WHERE ads.ad_id=orders.ad_id AND ads.banner_id='" . intval( $BID ) . "' and ads.order_id > 0 AND orders.status != 'deleted' $where_sql ORDER BY $order $ord ";
 	}
 
-	//echo "[".$sql."]";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-	$result = mysql_query($sql) or die (mysql_error());
-	############
-	# get the count
-	$count = mysql_num_rows($result);
+	// get the count
+	$count = mysqli_num_rows( $result );
 
-	if ($count > $records_per_page) {
+	if ( $count > $records_per_page ) {
 
-		mysql_data_seek($result, $offset);
-
+		mysqli_data_seek( $result, $offset );
 	}
- 
 
-	if ($count > 0 )  {
+	if ( $count > 0 ) {
 
-		if ($pages == 1) {
-		   
-	   } elseif ($list_mode!='USER') {
+		if ( $list_mode != 'USER' ) {
 
-			$pages = ceil($count / $records_per_page);
+			$pages    = ceil( $count / $records_per_page );
 			$cur_page = $_REQUEST['offset'] / $records_per_page;
-			$cur_page++;
+			$cur_page ++;
 
-			echo "<center>";
-			//echo "Page $cur_page of $pages - ";
-			$label["navigation_page"] =  str_replace ("%CUR_PAGE%", $cur_page, $label["navigation_page"]);
-			$label["navigation_page"] =  str_replace ("%PAGES%", $pages, $label["navigation_page"]);
-			echo "<span > ".$label["navigation_page"]."</span> ";
-			$nav = nav_pages_struct($result, $q_string, $count, $records_per_page);
+			$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
+			$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
+			echo "<span > " . $label["navigation_page"] . "</span> ";
+			$nav   = nav_pages_struct( $q_string, $count, $records_per_page );
 			$LINKS = 10;
-			render_nav_pages($nav, $LINKS, $q_string, $show_emp, $cat);
-			echo "</center>";
-
-
-		}
-		$dir = dirname(__FILE__);
-		$dir = preg_split ('%[/\\\]%', $dir);
-		$blank = array_pop($dir);
-		$dir = implode('/', $dir);
-
-		include ($dir.'/mouseover_box.htm'); // edit this file to change the style of the mouseover box!
-		
-		echo '<script language="JAVASCRIPT">';
-		include ('mouseover_js.inc.php');
-		echo '</script>';
-		?>
-		<table border='0' bgcolor='#d9d9d9' cellspacing="1" cellpadding="5" id="adslist" >
-		<tr bgcolor="#EAEAEA">
-		<?php
-		if ($admin == true ) {
-			 echo '<td class="list_header_cell">&nbsp;</td>';
-		}
-
-		if ($list_mode == 'USER' ) {
-			echo '<td class="list_header_cell">&nbsp;</td>';
-		}
-
-		echo_list_head_data(1, $admin);
-
-		if (($list_mode == 'USER' ) || ($admin)) {
-			echo '<td class="list_header_cell">'.$label['ads_inc_pixels_col'].'</td>';
-			echo '<td class="list_header_cell">'.$label['ads_inc_expires_col'].'</td>';
-			echo '<td class="list_header_cell" >'.$label['ad_list_status'].'</td>';
+			render_nav_pages( $nav, $LINKS, $q_string );
 		}
 
 		?>
-		
-		</tr>
+        <table border='0' bgcolor='#d9d9d9' cellspacing="1" cellpadding="5" id="pixels_list">
+            <tr bgcolor="#EAEAEA">
+				<?php
+				if ( $admin == true ) {
+					echo '<td class="list_header_cell">&nbsp;</td>';
+				}
 
+				if ( $list_mode == 'USER' ) {
+					echo '<td class="list_header_cell">&nbsp;</td>';
+				}
+
+				echo_list_head_data( 1, $admin );
+
+				if ( ( $list_mode == 'USER' ) || ( $admin ) ) {
+					echo '<td class="list_header_cell">' . $label['ads_inc_pixels_col'] . '</td>';
+					echo '<td class="list_header_cell">' . $label['ads_inc_expires_col'] . '</td>';
+					echo '<td class="list_header_cell" >' . $label['ad_list_status'] . '</td>';
+				}
+
+				?>
+
+            </tr>
+
+			<?php
+			$i = 0;
+			global $prams;
+			while ( ( $prams = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) && ( $i < $records_per_page ) ) {
+
+				$i ++;
+
+				?>
+                <tr bgcolor="ffffff" onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);">
+
+					<?php
+
+					if ( $admin == true ) {
+						?>
+                        <td class="list_data_cell">
+                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="mds_load_page('<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?action=edit&amp;ad_id=<?php echo $prams['ad_id']; ?>', true)">
+                        </td>
+						<?php
+					}
+
+					if ( $list_mode == 'USER' ) {
+						?>
+                        <td class="list_data_cell">
+                            <input type="button" style="font-size: 8pt" value="<?php echo $label['ads_inc_edit']; ?>" onClick="window.location='<?php echo htmlspecialchars( $_SERVER['PHP_SELF'] ); ?>?ad_id=<?php echo $prams['ad_id']; ?>'">
+                        </td>
+						<?php
+					}
+
+					echo_ad_list_data( $admin );
+
+					if ( ( $list_mode == 'USER' ) || ( $admin ) ) {
+						?>
+                        <td class="list_data_cell"><img src="get_order_image.php?BID=<?php echo $BID; ?>&amp;aid=<?php echo $prams['ad_id']; ?>"></td>
+                        <td>
+							<?php
+							if ( $prams['days_expire'] > 0 ) {
+
+								if ( $prams['published'] != 'Y' ) {
+									$time_start = strtotime( gmdate( 'r' ) );
+								} else {
+									$time_start = strtotime( $prams['date_published'] . " GMT" );
+								}
+
+								$elapsed_time = strtotime( gmdate( 'r' ) ) - $time_start;
+								$elapsed_days = floor( $elapsed_time / 60 / 60 / 24 );
+
+								$exp_time = ( $prams['days_expire'] * 24 * 60 * 60 );
+
+								$exp_time_to_go = $exp_time - $elapsed_time;
+								$exp_days_to_go = floor( $exp_time_to_go / 60 / 60 / 24 );
+
+								$to_go = elapsedtime( $exp_time_to_go );
+
+								$elapsed = elapsedtime( $elapsed_time );
+
+								if ( $prams['status'] == 'expired' ) {
+									$days = "<a href='orders.php'>" . $label['ads_inc_expied_stat'] . "</a>";
+								} else if ( $prams['date_published'] == '' ) {
+									$days = $label['ads_inc_nyp_stat'];
+								} else {
+									$days = str_replace( '%ELAPSED%', $elapsed, $label['ads_inc_elapsed_stat'] );
+									$days = str_replace( '%TO_GO%', $to_go, $days );
+								}
+							} else {
+
+								$days = $label['ads_inc_nev_stat'];
+							}
+							echo $days;
+							?>
+                        </td>
+						<?php
+						if ( $prams['published'] == 'Y' ) {
+							$pub = $label['ads_inc_pub_stat'];
+						} else {
+							$pub = $label['ads_inc_npub_stat'];
+						}
+						if ( $prams['approved'] == 'Y' ) {
+							$app = $label['ads_inc_app_stat'] . ', ';
+						} else {
+							$app = $label['ads_inc_napp_stat'] . ', ';
+						}
+						?>
+                        <td class="list_data_cell"><?php echo $app . $pub; ?></td>
+						<?php
+					}
+
+					?>
+
+                </tr>
+				<?php
+			}
+			?>
+        </table>
 		<?php
-		$i=0; global $prams;
-		while (($prams = mysql_fetch_array($result, MYSQL_ASSOC)) && ($i < $records_per_page)) {
+	} else {
 
-			$i++;
+		echo "<center><font size='2' face='Arial'><b>" . $label["ads_not_found"] . ".</b></font></center>";
+	}
 
-	
-		 ?>
-			  <tr bgcolor="ffffff" onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);">
-	
-			  <?php
-		  
-		 if ($admin == true ) {
-			 echo '<td class="list_data_cell" >';
-
-			 ?>
-			 <!--<input style="font-size: 8pt" type="button" value="Delete" onClick="if (!confirmLink(this, 'Delete, are you sure?')) {return false;} window.location='<?php echo htmlentities($_SERVER['PHP_SELF']);?>?action=delete&ad_id=<?php echo $prams['ad_id']; ?>'"><br>!-->
-				<input type="button" style="font-size: 8pt" value="Edit" onClick="window.location='<?php echo htmlentities($_SERVER['PHP_SELF']);?>?action=edit&ad_id=<?php echo $prams['ad_id']; ?>'">
-
-				<?php
-			 
-			 echo '</td>';
-		 }
-
-		 if ($list_mode == 'USER' ) {
-			 echo '<td class="list_data_cell">';
-
-			 ?>
-			 <!--<input style="font-size: 8pt" type="button" value="Delete" onClick="if (!confirmLink(this, 'Delete, are you sure?')) {return false;} window.location='<?php echo htmlentities($_SERVER['PHP_SELF']);?>?action=delete&ad_id=<?php echo $prams['ad_id']; ?>'"><br>-->
-				<input type="button" style="font-size: 8pt" value="Edit" onClick="window.location='<?php echo htmlentities($_SERVER['PHP_SELF']);?>?ad_id=<?php echo $prams['ad_id']; ?>'">
-
-				<?php
-			 
-			 echo '</td>';
-			 
-		 }
-
-		 echo_ad_list_data($admin);
-
-		 if (($list_mode == 'USER' ) || ($admin)) {
-			 /////////////////
-			echo '<td class="list_data_cell"><img src="get_order_image.php?BID='.$BID.'&aid='.$prams['ad_id'].'"></td>';
-			//////////////////
-			echo '<td>';
-			if ($prams['days_expire'] > 0) {
-
-
-				if ($prams['published']!='Y') {
-					$time_start = strtotime(gmdate('r'));
-				} else {
-					$time_start = strtotime($prams['date_published']." GMT");
-				}
-
-				$elapsed_time = strtotime(gmdate('r')) - $time_start;
-				$elapsed_days = floor ($elapsed_time / 60 / 60 / 24);
-				
-				$exp_time =  ($prams['days_expire']  * 24 * 60 * 60);
-
-				$exp_time_to_go = $exp_time - $elapsed_time;
-				$exp_days_to_go =  floor ($exp_time_to_go / 60 / 60 / 24);
-
-				$to_go = elapsedtime($exp_time_to_go);
-
-				$elapsed = elapsedtime($elapsed_time);
-				
-				
-				if  ($prams['status']=='expired') {
-					$days = "<a href='orders.php'>".$label['ads_inc_expied_stat']."</a>";
-				} elseif ($prams['date_published']=='') {
-					$days = $label['ads_inc_nyp_stat'];
-				} else {
-					$days = str_replace ('%ELAPSED%', $elapsed, $label['ads_inc_elapsed_stat']);
-					$days = str_replace ('%TO_GO%', $to_go, $days);
-					//$days = "$elapsed elapsed<br> $to_go to go ";
-				}
-
-				//$days = $elapsed_time; 
-				//print_r($prams);
-
-			} else {
-
-				$days = $label['ads_inc_nev_stat'];
-
-			}
-			echo $days;
-			echo '</td>';
-			/////////////////
-			if ($prams['published']=='Y') {
-				$pub =$label['ads_inc_pub_stat'];
-			} else {
-				$pub = $label['ads_inc_npub_stat'];
-				
-			}
-			if ($prams['approved']=='Y') {
-				$app = $label['ads_inc_app_stat'].', ';
-			} else {
-				$app = $label['ads_inc_napp_stat'].', ';
-			}
-			//$label['ad_list_st_'.$prams['status']]." 
-			echo '<td class="list_data_cell">'.$app.$pub."</td>";
-		}
-
-		  ?>
-
-
-		</tr>
-		  <?php
-			 //$prams[file_photo] = '';
-			// $new_name='';
-		}
-
-		echo "</table>";
-   
-   } else {
-
-      echo "<center><font size='2' face='Arial'><b>".$label["ads_not_found"].".</b></font></center>";
-
-   }
-
-   return $count;
-
-
+	return $count;
 }
 
-########################################################
-function delete_ads_files ($ad_id) {
+function delete_ads_files( $ad_id ) {
 
-	$sql = "select * from form_fields where form_id=1 ";
-	$result = mysql_query ($sql) or die (mysql_error());
+	$sql = "SELECT * FROM form_fields WHERE form_id=1 ";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-	while ($row=mysql_fetch_array($result, MYSQL_ASSOC)) {
+	while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
 
-		$field_id = $row['field_id'];
+		$field_id   = $row['field_id'];
 		$field_type = $row['field_type'];
 
-		if (($field_type == "FILE")) {
-			
-			deleteFile("ads", "ad_id", $ad_id, $field_id);
-			
+		if ( ( $field_type == "FILE" ) ) {
+
+			deleteFile( "ads", "ad_id", $ad_id, $field_id );
 		}
 
-		if (($field_type == "IMAGE")){
-			
-			deleteImage("ads", "ad_id", $ad_id, $field_id);
-			
-		}
-		
-	}
+		if ( ( $field_type == "IMAGE" ) ) {
 
-
-}
-
-####################
-
-function delete_ad ($ad_id) {
-
-	 delete_ads_files ($ad_id);
-  
-
-   $sql = "delete FROM `ads` WHERE `ad_id`='".$ad_id."' ";
-   $result = mysql_query($sql) or die (mysql_error().$sql);
-
-
-}
-################################
-
-function search_category_tree_for_ads() {
-
-	if (func_num_args() > 0 ) {
-		$cat_id = func_get_arg(0);
-		
-	} else {
-		$cat_id = $_REQUEST[cat];
-	}
-
-	$sql = "select search_set from categories where category_id='$cat_id' ";
-	$result2 = mysql_query ($sql) or die (mysql_error());
-	$row = mysql_fetch_array($result2);
-	$search_set = $row[search_set];
-
-	$sql = "select * from form_fields where field_type='CATEGORY' AND form_id='1'";
-	$result = mysql_query ($sql) or die (mysql_error());
-	$i=0;
-
-	if (mysql_num_rows($result) >0) {
-		while ($row=mysql_fetch_array($result, MYSQL_ASSOC)) {
-
-			if ($i>0) {
-				$where_cat .= " OR ";
-			}
-
-			$where_cat .= " `$row[field_id]` IN ($search_set) ";
-			$i++;
-
+			deleteImage( "ads", "ad_id", $ad_id, $field_id );
 		}
 	}
-
-	if ($where_cat=='') {
-		return " AND 1=2 ";
-	}
-
-	if ($search_set=='') {
-		return "";
-
-	}
-
-	return " AND ($where_cat) ";
-	
-
 }
 
+function delete_ad( $ad_id ) {
 
+	delete_ads_files( $ad_id );
 
-####################
-
-function search_category_for_ads() {
-
-	if (func_num_args() > 0 ) {
-		$cat_id = func_get_arg(0);
-		
-	} else {
-		$cat_id = $_REQUEST[cat];
-	}
-
-	$sql = "select * from form_fields where field_type='CATEGORY' AND form_id='1'";
-	$result = mysql_query ($sql) or die (mysql_error());
-	$i=0;
-
-	if (mysql_num_rows($result) >0) {
-		while ($row=mysql_fetch_array($result, MYSQL_ASSOC)) {
-
-			if ($i>0) {
-				$where_cat .= " OR ";
-			}
-
-			$where_cat .= " `$row[field_id]`='$cat_id' ";
-			$i++;
-		}
-	}
-
-	if ($where_cat=='') {
-		return " AND 1=2 ";
-	}
-
-	return " AND ($where_cat) ";
-	//$sql ="Select * from posts_table where $where_cat ";
-	//echo $sql."<br/>";
-	//$result2 = mysql_query ($sql) or die (mysql_error());
-
-}
-##################
-
-function generate_ad_id () {
-
-   $query ="SELECT max(`ad_id`) FROM `ads`";
-   $result = mysql_query($query) or die(mysql_error());
-   $row = mysql_fetch_row($result);
-   $row[0]++;
-   return $row[0];
-
+	$sql = "DELETE FROM `ads` WHERE `ad_id`='" . intval( $ad_id ) . "' ";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 }
 
-#################
+function generate_ad_id() {
 
-function temp_ad_exists($sid) {
+	$query = "SELECT max(`ad_id`) FROM `ads`";
+	$result = mysqli_query( $GLOBALS['connection'], $query ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$row = mysqli_fetch_row( $result );
+	$row[0] ++;
 
-	$query ="SELECT ad_id FROM `ads` where user_id='$sid' ";
-	$result = mysql_query($query) or die(mysql_error());
-	// $row = mysql_fetch_row($result);
-	return mysql_num_rows($result);
-
-
+	return $row[0];
 }
-
-################################################################
 
 function insert_ad_data() {
+	global $f2;
 
-	if (func_num_args() > 0) {
-		$admin = func_get_arg(0); // admin mode.
-
+	$admin = false;
+	if ( func_num_args() > 0 ) {
+		$admin = func_get_arg( 0 ); // admin mode.
 	}
 
 	$user_id = $_SESSION['MDS_ID'];
-	if ($user_id=='') {
-		$user_id = addslashes(session_id());
+	if ( $user_id == '' ) {
+		$user_id = addslashes( session_id() );
 	}
-	$order_id = $_REQUEST['order_id'];
-	$ad_date = (gmdate("Y-m-d H:i:s")); 
-	$banner_id = $_REQUEST['banner_id'];
-	
-	if ($_REQUEST['ad_id'] == '') {
 
-		$ad_id = generate_ad_id ();
-		$now = (gmdate("Y-m-d H:i:s"));
-		$sql = "REPLACE INTO `ads` (`ad_id`, `order_id`, `user_id`, `ad_date`, `banner_id` ".get_sql_insert_fields(1).") VALUES ('$ad_id',  '$order_id', '$user_id', '$ad_date', '$banner_id' ".get_sql_insert_values(1, "ads", "ad_id", $_REQUEST['ad_id'], $user_id).") ";
+	$order_id = ( isset( $_REQUEST['order_id'] ) && ! empty( $_REQUEST['order_id'] ) ) ? $_REQUEST['order_id'] : ( isset( $_SESSION['MDS_order_id'] ) ? $_SESSION['MDS_order_id'] : 0 );
+	$BID      = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
 
+	$ad_values = array();
+
+	if ( ! isset( $_REQUEST['ad_id'] ) || empty( $_REQUEST['ad_id'] ) ) {
+
+		$ad_id = generate_ad_id();
+		$now   = ( gmdate( "Y-m-d H:i:s" ) );
+
+		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'insert' );
+		$values    = $ad_id . ", '" . $user_id . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', " . intval( $order_id ) . ", " . intval( $BID ) . $ad_values['extra_values'];
+		$sql       = "REPLACE INTO ads VALUES (" . $values . ");";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( "<br />SQL:[$sql]<br />ERROR:[" . mysqli_error( $GLOBALS['connection'] ) . "]<br />" );
 	} else {
-		
-		$ad_id = $_REQUEST['ad_id'];
 
-		if (!$admin) { // make sure that the logged in user is the owner of this ad.
+		$ad_id = intval( $_REQUEST['ad_id'] );
 
-			if (!is_numeric($_REQUEST['user_id'])) { // temp order (user_id = session_id())
-				if ($_REQUEST['user_id']!=session_id()) return false;
-			} else { // user is logged in
-				$sql = "select user_id from `ads` WHERE ad_id='".$_REQUEST['ad_id']."'";
-				$result = mysql_query ($sql) or die(mysql_error());
-				$row = @mysql_fetch_array($result);
-				if ($_SESSION['MDS_ID']!==$row['user_id']) {
-					
-					return false; // not the owner, hacking attempt!
+		if ( ! $admin ) {
+			// make sure that the logged in user is the owner of this ad.
+
+			if ( ! is_numeric( $_REQUEST['user_id'] ) ) {
+				if ( $_REQUEST['user_id'] != session_id() ) {
+					return false;
+				}
+			} else {
+				// user is logged in
+				$sql = "SELECT user_id FROM `ads` WHERE ad_id='" . $ad_id . "'";
+				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+				$row = @mysqli_fetch_array( $result );
+
+				if ( $_SESSION['MDS_ID'] !== $row['user_id'] ) {
+					// not the owner, hacking attempt!
+					return false;
 				}
 			}
 		}
-		
 
-		$now = (gmdate("Y-m-d H:i:s"));
-		$sql = "UPDATE `ads` SET `ad_date`='$now'  ".get_sql_update_values (1, "ads", "ad_id", $_REQUEST['ad_id'], $user_id)." WHERE ad_id='".$ad_id."'";
-		
+		$now       = ( gmdate( "Y-m-d H:i:s" ) );
+		$ad_values = get_sql_values( 1, "ads", "ad_id", $ad_id, $user_id, 'update' );
+		$sql       = "UPDATE ads SET ad_date='$now'" . $ad_values['extra_values'] . " WHERE ad_id='" . $ad_id . "'";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( "<br />SQL:[$sql]<br />ERROR:[" . mysqli_error( $GLOBALS['connection'] ) . "]<br />" );
+		$f2->write_log( $sql );
 	}
-	
-	//echo "<hr><b>Insert:</b> $sql<hr>";
-	
-	//print_r ($_FILES);
-	mysql_query ($sql) or die("[$sql]".mysql_error());
 
-	//build_ad_count(0);
+	if ( ! empty( $order_id ) ) {
 
+		// update blocks with ad data
+		$sql = "SELECT blocks,banner_id FROM orders WHERE order_id=" . intval( $order_id );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$order_row = mysqli_fetch_array( $result );
+
+		$blocks = explode( ',', $order_row['blocks'] );
+
+		foreach ( $blocks as $block ) {
+			$alt_text = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['1'] );
+			$url      = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['2'] );
+			$filename = mysqli_real_escape_string( $GLOBALS['connection'], $ad_values['3'] );
+
+			$block_id  = intval( $block );
+			$banner_id = intval( $order_row['banner_id'] );
+
+			$sql = "UPDATE blocks SET url='{$url}', alt_text='{$alt_text}', file_name='{$filename}' WHERE block_id={$block_id} AND banner_id={$banner_id};";
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		}
+	}
 
 	return $ad_id;
 }
-###############################################################
-function validate_ad_data($form_id) {
 
-	return validate_form_data(1);
-	
-	return $error;
+function validate_ad_data( $form_id ) {
+
+	return validate_form_data( 1 );
 }
 
-################################################################
+function update_blocks_with_ad( $ad_id, $user_id ) {
+	global $prams, $f2;
+	$prams = load_ad_values( $ad_id );
 
-function update_blocks_with_ad($ad_id, $user_id) {
-	global $prams;
-	$prams = load_ad_values($ad_id);
-	
-	if ($prams['order_id']>0) {
-		$sql = "UPDATE blocks SET alt_text='".addslashes(get_template_value('ALT_TEXT', 1))."', url='".addslashes(get_template_value('URL', 1))."'  WHERE order_id='".$prams['order_id']."' AND user_id='".$user_id."' ";
-		mysql_query($sql) or die(mysql_error());
-		mds_log("Updated blocks with ad URL, ALT_TEXT", $sql);
+	if ( $prams['order_id'] > 0 ) {
+		$sql = "UPDATE blocks SET alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], get_template_value( 'ALT_TEXT', 1 ) ) . "', url='" . mysqli_real_escape_string( $GLOBALS['connection'], get_template_value( 'URL', 1 ) ) . "'  WHERE order_id='" . intval( $prams['order_id'] ) . "' AND user_id='" . intval( $user_id ) . "' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$f2->debug( "Updated blocks with ad URL, ALT_TEXT", $sql );
 	}
-
 }
-?>
+
+function disapprove_modified_order( $order_id, $BID ) {
+	$sql = "UPDATE orders SET approved='N' WHERE order_id='" . intval( $order_id ) . "' AND banner_id='" . intval( $BID ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$sql = "UPDATE blocks SET approved='N' WHERE order_id='" . intval( $order_id ) . "' AND banner_id='" . intval( $BID ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+
+	// send pixel change notification
+	if ( EMAIL_ADMIN_PUBLISH_NOTIFY == 'YES' ) {
+		send_published_pixels_notification( $_SESSION['MDS_ID'], $BID );
+	}
+}
+
+function upload_changed_pixels( $order_id, $BID, $size, $banner_data ) {
+	global $f2, $label;
+
+	$imagine = new Imagine\Gd\Imagine();
+
+	if ( ( isset( $_REQUEST['change_pixels'] ) && ! empty( $_REQUEST['change_pixels'] ) ) && isset( $_FILES ) ) {
+		// a new image was uploaded...
+
+		$uploaddir = SERVER_PATH_TO_ADMIN . "temp/";
+
+		$parts = $file_parts = pathinfo( $_FILES['pixels']['name'] );
+		$ext   = $f2->filter( strtolower( $file_parts['extension'] ) );
+
+		// CHECK THE EXTENSION TO MAKE SURE IT IS ALLOWED
+		$ALLOWED_EXT = array( 'jpg', 'jpeg', 'gif', 'png' );
+
+		$error = '';
+		if ( ! in_array( $ext, $ALLOWED_EXT ) ) {
+			$error              = "<b>" . $label['advertiser_file_type_not_supp'] . "</b><br>";
+			$image_changed_flag = false;
+		}
+
+		if ( ! empty( $error ) ) {
+			echo $error;
+		} else {
+
+			// delete temp_* files older than 24 hours
+			$dh = opendir( $uploaddir );
+			while ( ( $file = readdir( $dh ) ) !== false ) {
+
+				// 24 hours
+				$elapsed_time = 60 * 60 * 24;
+
+				// delete old files
+				$stat = stat( $uploaddir . $file );
+				if ( $stat[9] < ( time() - $elapsed_time ) ) {
+					if ( strpos( $file, 'tmp_' . md5( session_id() ) ) !== false ) {
+						unlink( $uploaddir . $file );
+					}
+				}
+			}
+
+			$uploadfile = $uploaddir . "tmp_" . md5( session_id() ) . ".$ext";
+
+			// move the file
+			if ( move_uploaded_file( $_FILES['pixels']['tmp_name'], $uploadfile ) ) {
+				// File is valid, and was successfully uploaded.
+				$tmp_image_file = $uploadfile;
+
+				setMemoryLimit( $uploadfile );
+
+				// check image size
+				$img_size = getimagesize( $tmp_image_file );
+
+				// check the size
+				if ( ( MDS_RESIZE != 'YES' ) && ( ( $img_size[0] > $size['x'] ) || ( $img_size[1] > $size['y'] ) ) ) {
+					$label['adv_pub_sizewrong'] = str_replace( '%SIZE_X%', $size['x'], $label['adv_pub_sizewrong'] );
+					$label['adv_pub_sizewrong'] = str_replace( '%SIZE_Y%', $size['y'], $label['adv_pub_sizewrong'] );
+					$error                      = $label['adv_pub_sizewrong'] . "<br>";
+				}
+
+				if ( ! empty( $error ) ) {
+					echo $error;
+				} else {
+					// size is ok. change the blocks.
+
+					// Imagine some things
+					$image      = $imagine->open( $tmp_image_file );
+					$block_size = new Imagine\Image\Box( $banner_data['BLK_WIDTH'], $banner_data['BLK_HEIGHT'] );
+					$palette    = new Imagine\Image\Palette\RGB();
+					$color      = $palette->color( '#000', 0 );
+
+					// Update blocks
+					$sql = "SELECT * from blocks WHERE order_id=" . intval( $order_id );
+					$blocks_result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+					while ( $block_row = mysqli_fetch_array( $blocks_result ) ) {
+
+						$high_x = ! isset( $high_x ) ? $block_row['x'] : $high_x;
+						$high_y = ! isset( $high_y ) ? $block_row['y'] : $high_y;
+						$low_x  = ! isset( $low_x ) ? $block_row['x'] : $low_x;
+						$low_y  = ! isset( $low_y ) ? $block_row['y'] : $low_y;
+
+						if ( $block_row['x'] > $high_x ) {
+							$high_x = $block_row['x'];
+						}
+
+						if ( ! isset( $high_y ) || $block_row['y'] > $high_y ) {
+							$high_y = $block_row['y'];
+						}
+
+						if ( ! isset( $low_y ) || $block_row['y'] < $low_y ) {
+							$low_y = $block_row['y'];
+						}
+
+						if ( ! isset( $low_x ) || $block_row['x'] < $low_x ) {
+							$low_x = $block_row['x'];
+						}
+					}
+
+					$high_x = ! isset( $high_x ) ? 0 : $high_x;
+					$high_y = ! isset( $high_y ) ? 0 : $high_y;
+					$low_x  = ! isset( $low_x ) ? 0 : $low_x;
+					$low_y  = ! isset( $low_y ) ? 0 : $low_y;
+
+					$_REQUEST['map_x'] = $high_x;
+					$_REQUEST['map_y'] = $high_y;
+
+					// autorotate
+					$imagine->setMetadataReader( new \Imagine\Image\Metadata\ExifMetadataReader() );
+					$filter = new Imagine\Filter\Transformation();
+					$filter->add( new AutoRotate() );
+					$filter->apply( $image );
+
+					// resize uploaded image
+					if ( MDS_RESIZE == 'YES' ) {
+						$resize = new Imagine\Image\Box( $size['x'], $size['y'] );
+						$image->resize( $resize );
+					}
+
+					// Paste image into selected blocks (AJAX mode allows individual block selection)
+					for ( $y = 0; $y < $size['y']; $y += $banner_data['BLK_HEIGHT'] ) {
+						for ( $x = 0; $x < $size['x']; $x += $banner_data['BLK_WIDTH'] ) {
+
+							// create new destination image
+							$dest = $imagine->create( $block_size, $color );
+
+							// crop a part from the tiled image
+							$block = $image->copy();
+							$block->crop( new Imagine\Image\Point( $x, $y ), $block_size );
+
+							// paste the block into the destination image
+							$dest->paste( $block, new Imagine\Image\Point( 0, 0 ) );
+
+							// save the image as a base64 encoded string
+							$image_data = base64_encode( $dest->get( "png", array( 'png_compression_level' => 9 ) ) );
+
+							// some variables
+							$map_x     = $x + $low_x;
+							$map_y     = $y + $low_y;
+							$GRD_WIDTH = $banner_data['BLK_WIDTH'] * $banner_data['G_WIDTH'];
+							$cb        = ( ( $map_x ) / $banner_data['BLK_WIDTH'] ) + ( ( $map_y / $banner_data['BLK_HEIGHT'] ) * ( $GRD_WIDTH / $banner_data['BLK_WIDTH'] ) );
+
+							// save to db
+							$sql = "UPDATE blocks SET image_data='" . mysqli_real_escape_string( $GLOBALS['connection'], $image_data ) . "' where block_id=" . intval( $cb ) . " AND banner_id=" . intval( $BID );
+							mysqli_query( $GLOBALS['connection'], $sql );
+						}
+					}
+				}
+
+				unlink( $tmp_image_file );
+				unset( $tmp_image_file );
+
+				if ( $banner_data['AUTO_APPROVE'] != 'Y' ) { // to be approved by the admin
+					disapprove_modified_order( $order_id, $BID );
+				}
+
+				if ( $banner_data['AUTO_PUBLISH'] == 'Y' ) {
+					process_image( $BID );
+					publish_image( $BID );
+					process_map( $BID );
+				}
+			} else {
+				// Possible file upload attack!
+				echo $label['pixel_upload_failed'];
+			}
+		}
+	}
+}

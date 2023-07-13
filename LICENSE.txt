@@ -1,7 +1,3 @@
-COPYRIGHT 2008 - see www.milliondollarscript.com for a list of authors
-
-
-		    
 		    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

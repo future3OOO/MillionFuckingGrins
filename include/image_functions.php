@@ -1,267 +1,168 @@
 <?php
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.08 17:42:17 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
-##################################################
+function publish_image( $BID ) {
 
-function publish_image ($BID) {
+	if ( ! is_numeric( $BID ) ) {
+		return false;
+	}
 
-	if (!is_numeric($BID)) { return false; }
+	$imagine = new Imagine\Gd\Imagine();
 
 	$BANNER_DIR = get_banner_dir();
 
-
 	$file_path = SERVER_PATH_TO_ADMIN; // eg e:/apache/htdocs/ojo/admin/
 
-	$p = preg_split ('%[/\\\]%', $file_path);
-	 array_pop($p);
-	 array_pop($p);
-	
-	$dest = implode('/', $p);
-	$dest = $dest."/".$BANNER_DIR;
+	$p = preg_split( '%[/\\\]%', $file_path );
+	array_pop( $p );
+	array_pop( $p );
 
-	
-	if (OUTPUT_JPEG=='Y') {
-		copy ($file_path."temp/temp$BID.jpg", $dest."main$BID.jpg");
-		//echo "copy ".$file_path."temp/temp$BID.jpg, ".$dest."main$BID.jpg";
-		//unlink ($file_path."temp/temp.png");
+	$dest = implode( '/', $p );
+	$dest = $dest . "/" . $BANNER_DIR;
 
-	} elseif (OUTPUT_JPEG=='N') {
-	
-		copy ($file_path."temp/temp$BID.png", $dest."main$BID.png");
-		//unlink ($file_path."temp/temp.png");
-	} elseif ((OUTPUT_JPEG=='GIF')) {
-		copy ($file_path."temp/temp$BID.gif", $dest."main$BID.gif");
+	if ( OUTPUT_JPEG == 'Y' ) {
+		copy( $file_path . "temp/temp$BID.jpg", $dest . "main$BID.jpg" );
+	} else if ( OUTPUT_JPEG == 'N' ) {
+		copy( $file_path . "temp/temp$BID.png", $dest . "main$BID.png" );
+	} else if ( ( OUTPUT_JPEG == 'GIF' ) ) {
+		copy( $file_path . "temp/temp$BID.gif", $dest . "main$BID.gif" );
 	}
 
 	// output the tile image
 
-	$b_row = load_banner_row($BID);
+	$b_row = load_banner_row( $BID );
 
-	if ($b_row['tile']=='') {
-		$b_row['tile'] = get_default_image('tile');
+	if ( $b_row['tile'] == '' ) {
+		$b_row['tile'] = get_default_image( 'tile' );
 	}
-	$tile = imagecreatefromstring(base64_decode($b_row['tile']));
-	imagegif($tile, $dest."bg-main$BID.gif");
-	//imagepng($tile, $dest."bg-main$BID.gif");
+	$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
+	$tile->save( $dest . "bg-main$BID.gif" );
 
 	// update the records
+	$sql = "SELECT * FROM blocks WHERE approved='Y' AND status='sold' AND image_data <> '' AND banner_id='" . intval( $BID ) . "' ";
+	$r = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
-	$sql = "SELECT * FROM blocks WHERE approved='Y' and status='sold' AND image_data <> '' AND banner_id='$BID' ";
-	$r = mysql_query ($sql) or die (mysql_error().$sql);
-	
-	while ($row = mysql_fetch_array($r)) {
-
-		
-
+	while ( $row = mysqli_fetch_array( $r ) ) {
 		// set the 'date_published' only if it was not set before, date_published can only be set once.
-		$now = (gmdate("Y-m-d H:i:s"));
-		$sql = "UPDATE orders set `date_published`='$now' where order_id='".$row['order_id']."' AND date_published IS NULL ";
-		$result = mysql_query($sql) or die(mysql_error());
+		$now = ( gmdate( "Y-m-d H:i:s" ) );
+		$sql = "UPDATE orders set `date_published`='$now' where order_id='" . intval( $row['order_id'] ) . "' AND date_published IS NULL ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 		// update the published status, always updated to Y
+		$sql = "UPDATE orders SET `published`='Y' WHERE order_id='" . intval( $row['order_id'] ) . "'  ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		$sql = "UPDATE orders set `published`='Y' where order_id='".$row['order_id']."'  ";
-		$result = mysql_query($sql) or die(mysql_error());
-
-		$sql = "UPDATE blocks set `published`='Y' where block_id='".$row['block_id']."' AND banner_id='$BID'";
-		$result = mysql_query($sql) or die(mysql_error());
-
-
+		$sql = "UPDATE blocks set `published`='Y' where block_id='" . intval( $row['block_id'] ) . "' AND banner_id='" . intval( $BID ) . "'";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
 
 	//Make sure to un-publish any blocks that are not approved...
+	$sql = "SELECT block_id, order_id FROM blocks WHERE approved='N' AND status='sold' AND banner_id='" . intval( $BID ) . "' ";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	while ( $row = mysqli_fetch_array( $result ) ) {
+		$sql = "UPDATE blocks set `published`='N' where block_id='" . intval( $row['block_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-	$sql = "SELECT block_id, order_id FROM blocks WHERE approved='N' AND status='sold' AND banner_id='$BID' ";
-	//echo $sql;
-	$result = mysql_query($sql) or die(mysql_error());
-	while ($row = mysql_fetch_array($result)) {
-		$sql = "UPDATE blocks set `published`='N' where block_id='".$row['block_id']."'  AND banner_id='$BID'  ";
-		mysql_query($sql) or die(mysql_error());
-
-		$sql = "UPDATE orders set `published`='N' where order_id='".$row['order_id']."'  AND banner_id='$BID'  ";
-		mysql_query($sql) or die(mysql_error());
-
+		$sql = "UPDATE orders set `published`='N' where order_id='" . intval( $row['order_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
 
 	// update the time-stamp on the banner
-
-	$sql = "UPDATE banners SET time_stamp='".time()."' WHERE banner_id='".$BID."' ";
-	mysql_query($sql) or die(mysql_error());
-	//echo $sql;
-
+	$sql = "UPDATE banners SET time_stamp='" . time() . "' WHERE banner_id='" . intval( $BID ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 }
 
-###################################################
+function process_image( $BID ) {
 
-function process_image($BID) {
+	require_once( "output_grid.php" );
 
-	if (!is_numeric($BID)) { return false; }
-
-	$BANNER_DIR = get_banner_dir();
-
-	$sql = "select * from banners where banner_id='".$BID."'";
-	$result = mysql_query ($sql) or die (mysql_error().$sql);
-	$b_row = mysql_fetch_array($result);
-
-	// initialize banner values:
-	if (!$b_row['block_width']) { $b_row['block_width'] = 10;}
-	if (!$b_row['block_height']) { $b_row['block_height'] = 10;}
-
-	$BLK_WIDTH = $b_row['block_width'];
-	$BLK_HEIGHT = $b_row['block_height'];
-	$G_WIDTH = $b_row['grid_width'];
-	$G_HEIGHT = $b_row['grid_height'];
-	if (!$b_row['grid_block']) $b_row['grid_block'] = get_default_image('grid_block');
-	if (!$b_row['nfs_block']) $b_row['nfs_block'] = get_default_image('nfs_block');
-
-	$file_path = SERVER_PATH_TO_ADMIN;
-
-	$progress .= 'Please wait.. Processing the Grid image with GD';
-
-	if (function_exists("imagecreatetruecolor")) {
-		$map = imagecreatetruecolor ( $G_WIDTH*$BLK_WIDTH, $G_HEIGHT*$BLK_HEIGHT );
-	} else {
-		$map = imagecreate ( $G_WIDTH*$BLK_WIDTH, $G_HEIGHT*$BLK_HEIGHT );
-	}
-	//$block = imagecreatefrompng ( $file_path."temp/block.png" );
-
-	$block = imagecreatefromstring ( base64_decode($b_row['grid_block']) );
-
-	
-
-	// initialise the map, tile it with blocks
-	$i=0; $j=0; $x_pos=0; $y_pos=0;
-
-	for ($i=0; $i < $G_HEIGHT; $i++) {
-		for ($j=0; $j < $G_WIDTH; $j++) {
-			imagecopy ( $map, $block, $x_pos, $y_pos, 0, 0, $BLK_WIDTH, $BLK_HEIGHT );
-			$x_pos += $BLK_WIDTH; 
-		}
-		$x_pos = 0;
-		$y_pos += $BLK_HEIGHT;
-		
-	}
-
-	# copy the NFS blocks.
-
-	//$nfs_block = imagecreatefrompng ( $file_path."temp/not_for_sale_block.png" );
-	$nfs_block = imagecreatefromstring ( base64_decode($b_row['nfs_block']) );
-	$sql = "select * from blocks where status='nfs' AND banner_id='$BID' ";
-	$result = mysql_query($sql) or die(mysql_error());
-
-	while ($row = mysql_fetch_array($result)) {
-		imagecopy ( $map, $nfs_block, $row['x'], $row['y'], 0, 0, $BLK_WIDTH, $BLK_HEIGHT );
-	}
-
-	imagedestroy($nfs_block);
-
-	# blend in the background
-
-	if (file_exists(SERVER_PATH_TO_ADMIN."temp/background$BID.png") && function_exists("imagealphablending")) {
-		$background = imagecreatefrompng (SERVER_PATH_TO_ADMIN."temp/background$BID.png");
-		imagealphablending($map, true);
-		$MaxW = imagesx($background); //Edit by -J-
-		$MaxH = imagesy($background); //Edit by -J-
-
-		imagecopy($map, $background, 0, 0, 0, 0, $MaxW, $MaxH);
-		imagedestroy ($background);
-	}
-
-	// crate a map form the images in the db
-	
-	$sql = "select * from blocks where approved='Y' and status='sold' AND image_data <> '' AND banner_id='$BID' ";
-	$result = mysql_query($sql) or die(mysql_error());
-	
-	$i=0;
-	while ($row = mysql_fetch_array($result)) {
-
-		$data = $row[image_data];
-		
-		if (strlen($data)!=0) {
-			$block = base64_decode($data);
-			$block = imagecreatefromstring($block);
-		} else {
-			$block = imagecreatefrompng ( $file_path."temp/block.png" );
-
-		}
-		
-		imagecopy ( $map, $block, $row['x'], $row['y'], 0, 0, $BLK_WIDTH, $BLK_HEIGHT );
-		imagedestroy ($block);
-		
-
-	}
-
-	// save
-//imagejpeg($map);
-	if ((OUTPUT_JPEG == 'Y') && (function_exists("imagejpeg"))) {
-		if (INTERLACE_SWITCH=='YES') {
-			imageinterlace($map, 1);
-		}
-		touch($file_path."temp/temp$BID.jpg");
-		imagejpeg($map, $file_path."temp/temp$BID.jpg", JPEG_QUALITY);
-		$progress .= "<br>Saved as ".$file_path."temp/temp$BID.jpg<br>";
-
-	} elseif (OUTPUT_JPEG =='N') {
-
-		if (INTERLACE_SWITCH=='YES') {
-			imageinterlace($map, 1);
-		}
-		touch($file_path."temp/temp$BID.png");
-		imagepng($map, $file_path."temp/temp$BID.png");
-		$progress .= "<br>Saved as ".$file_path."temp/temp$BID.png<br>";
-
-	} elseif (OUTPUT_JPEG =='GIF') {
-
-		if (INTERLACE_SWITCH=='YES') {
-			imageinterlace($map, 1);
-		}
-		//$fh = fopen ($file_path."temp/temp$BID.gif", 'wb');
-	//	echo 'touching '.$file_path."temp/temp$BID.gif<br>";
-		touch($file_path."temp/temp$BID.gif");
-		imagegif($map, $file_path."temp/temp$BID.gif");
-		$progress .= "<br>Saved as ".$file_path."temp/temp$BID.gif<br>";
-		//fclose($fh);
-
-	}
-
-	//imagepng($map, $file_path."temp/temp.png");
-
-	imagedestroy($map);
-
-	
-	return $progress;
-
-
-
+	return output_grid( false, SERVER_PATH_TO_ADMIN . "temp/temp$BID", $BID, array(
+		'background',
+		'orders',
+		'nfs_front',
+		'grid',
+	) );
 }
 
-###################################################
+function get_html_code( $BID ) {
+	$BID = intval( $BID );
 
-function get_html_code($BID) {
+	$sql = "SELECT * FROM banners WHERE banner_id='" . $BID . "'";
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$b_row = mysqli_fetch_array( $result );
 
-	$sql = "select * from banners where banner_id='".$BID."'";
-	$result = mysql_query ($sql) or die (mysql_error().$sql);
-	$b_row = mysql_fetch_array($result);
+	if ( ! $b_row['block_width'] ) {
+		$b_row['block_width'] = 10;
+	}
+	if ( ! $b_row['block_height'] ) {
+		$b_row['block_height'] = 10;
+	}
 
-	if (!$b_row['block_width']) $b_row['block_width'] = 10;
-	if (!$b_row['block_height']) $b_row['block_height'] = 10;
-	return "<iframe width=\"".($b_row['grid_width']*$b_row['block_width'])."\" height=\"".($b_row['grid_height']*$b_row['block_height'])."\" frameborder=0 marginwidth=0 marginheight=0 VSPACE=0 HSPACE=0 SCROLLING=no  src=\"".BASE_HTTP_PATH."display_map.php?BID=$BID\"></iframe>";
+	$width  = $b_row['grid_width'] * $b_row['block_width'];
+	$height = $b_row['grid_height'] * $b_row['block_height'];
 
-
+	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
 }
 
-####################################################
-function get_stats_html_code($BID) {
+function get_stats_html_code( $BID ) {
+	$BID = intval( $BID );
 
-	//$sql = "select * from banners where banner_id=".$BID;
-	//$result = mysql_query ($sql) or die (mysql_error().$sql);
-	//$b_row = mysql_fetch_array($result);
-
-	return "<iframe width=\"150\" height=\"50\" frameborder=0 marginwidth=0 marginheight=0 VSPACE=0 HSPACE=0 SCROLLING=no  src=\"".BASE_HTTP_PATH."display_stats.php?BID=$BID\" allowtransparency=\"true\" ></iframe>";
-
-
+	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '" width="150" height="50"></iframe>';
 }
 
-#########################################################
+/**
+ * Calculates restricted dimensions with a maximum of $goal_width by $goal_height
+ *
+ * @link https://stackoverflow.com/questions/6606445/calculating-width-and-height-to-resize-image/7877615#7877615
+ *
+ * @param $goal_width
+ * @param $goal_height
+ * @param $width
+ * @param $height
+ *
+ * @return array
+ */
+function resize_dimensions( $goal_width, $goal_height, $width, $height ) {
+	$return = array( 'width' => $width, 'height' => $height );
 
+	// If the ratio > goal ratio and the width > goal width resize down to goal width
+	if ( $width / $height > $goal_width / $goal_height && $width > $goal_width ) {
+		$return['width']  = $goal_width;
+		$return['height'] = $goal_width / $width * $height;
+	} // Otherwise, if the height > goal, resize down to goal height
+	else if ( $height > $goal_height ) {
+		$return['width']  = $goal_height / $height * $width;
+		$return['height'] = $goal_height;
+	}
 
-?>
+	return $return;
+}

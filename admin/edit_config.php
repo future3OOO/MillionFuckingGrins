@@ -1,367 +1,238 @@
 <?php
-error_reporting(E_ALL & ~E_NOTICE);
-require ('admin_common.php');
+/**
+ * @package       mds
+ * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @author        Ryan Rhode, ryan@milliondollarscript.com
+ * @version       2020.05.13 12:41:15 EDT
+ * @license       This program is free software; you can redistribute it and/or modify
+ *        it under the terms of the GNU General Public License as published by
+ *        the Free Software Foundation; either version 3 of the License, or
+ *        (at your option) any later version.
+ *
+ *        This program is distributed in the hope that it will be useful,
+ *        but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *        GNU General Public License for more details.
+ *
+ *        You should have received a copy of the GNU General Public License along
+ *        with this program;  If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *        Million Dollar Script
+ *        A pixel script for selling pixels on your website.
+ *
+ *        For instructions see README.txt
+ *
+ *        Visit our website for FAQs, documentation, a list team members,
+ *        to post any bugs or feature requests, and a community forum:
+ *        https://milliondollarscript.com/
+ *
+ */
 
+require( 'admin_common.php' );
 
-/*
-COPYRIGHT 2008 - see www.milliondollarscript.com for a list of authors
+foreach ( $_REQUEST as $key => $val ) {
+	$_REQUEST[ $key ] = $val;
+}
 
-This file is part of the Million Dollar Script.
+$rootpathinfo = pathinfo( '../' );
+$BASE_PATH    = $rootpathinfo['dirname'];
 
-Million Dollar Script is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+require_once __DIR__ . '/../include/version.php';
+$version = get_mds_version();
 
-Million Dollar Script is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+$defaults = array(
+	'DEBUG'                       => false,
+	'MDS_LOG'                     => false,
+	'MDS_LOG_FILE'                => $BASE_PATH . '/.mds.log',
+	'VERSION_INFO'                => $version,
+	'BASE_HTTP_PATH'              => '/',
+	'BASE_PATH'                   => $BASE_PATH . '/',
+	'SERVER_PATH_TO_ADMIN'        => __DIR__,
+	'UPLOAD_PATH'                 => $BASE_PATH . '/upload_files/',
+	'UPLOAD_HTTP_PATH'            => $BASE_PATH . '/upload_files/',
+	'SITE_CONTACT_EMAIL'          => 'test@example.com',
+	'SITE_LOGO_URL'               => 'https://milliondollarscript.com/logo.gif',
+	'SITE_NAME'                   => 'Million Dollar Script ' . $version,
+	'SITE_SLOGAN'                 => 'This is the Million Dollar Script Example. 1 pixel = 1 cent',
+	'MDS_RESIZE'                  => 'YES',
+	'MYSQL_HOST'                  => '',
+	'MYSQL_USER'                  => '',
+	'MYSQL_PASS'                  => '',
+	'MYSQL_DB'                    => '',
+	'MYSQL_PORT'                  => 3306,
+	'MYSQL_SOCKET'                => '',
+	'ADMIN_PASSWORD'              => 'ok',
+	'DATE_FORMAT'                 => 'Y-M-d',
+	'GMT_DIF'                     => date_default_timezone_get(),
+	'DATE_INPUT_SEQ'              => 'YMD',
+	'OUTPUT_JPEG'                 => 'N',
+	'JPEG_QUALITY'                => '75',
+	'INTERLACE_SWITCH'            => 'YES',
+	'USE_LOCK_TABLES'             => 'Y',
+	'BANNER_DIR'                  => 'pixels/',
+	'DISPLAY_PIXEL_BACKGROUND'    => 'NO',
+	'EMAIL_USER_ORDER_CONFIRMED'  => 'YES',
+	'EMAIL_ADMIN_ORDER_CONFIRMED' => 'YES',
+	'EMAIL_USER_ORDER_COMPLETED'  => 'YES',
+	'EMAIL_ADMIN_ORDER_COMPLETED' => 'YES',
+	'EMAIL_USER_ORDER_PENDED'     => 'YES',
+	'EMAIL_ADMIN_ORDER_PENDED'    => 'YES',
+	'EMAIL_USER_ORDER_EXPIRED'    => 'YES',
+	'EMAIL_ADMIN_ORDER_EXPIRED'   => 'YES',
+	'EM_NEEDS_ACTIVATION'         => 'YES',
+	'EMAIL_ADMIN_ACTIVATION'      => 'YES',
+	'EMAIL_ADMIN_PUBLISH_NOTIFY'  => 'YES',
+	'USE_PAYPAL_SUBSCR'           => 'NO',
+	'EMAIL_USER_EXPIRE_WARNING'   => '',
+	'EMAILS_DAYS_KEEP'            => '30',
+	'DAYS_RENEW'                  => '7',
+	'DAYS_CONFIRMED'              => '7',
+	'HOURS_UNCONFIRMED'           => '1',
+	'DAYS_CANCEL'                 => '3',
+	'ENABLE_MOUSEOVER'            => 'POPUP',
+	'ENABLE_CLOAKING'             => 'YES',
+	'VALIDATE_LINK'               => 'NO',
+	'ADVANCED_CLICK_COUNT'        => 'YES',
+	'USE_SMTP'                    => '',
+	'EMAIL_SMTP_SERVER'           => '',
+	'EMAIL_SMTP_USER'             => '',
+	'EMAIL_SMTP_PASS'             => '',
+	'EMAIL_SMTP_AUTH_HOST'        => '',
+	'SMTP_PORT'                   => '465',
+	'POP3_PORT'                   => '995',
+	'EMAIL_TLS'                   => '1',
+	'EMAIL_POP_SERVER'            => '',
+	'EMAIL_POP_BEFORE_SMTP'       => 'NO',
+	'EMAIL_DEBUG'                 => 'NO',
+	'EMAILS_PER_BATCH'            => '12',
+	'EMAILS_MAX_RETRY'            => '15',
+	'EMAILS_ERROR_WAIT'           => '20',
+	'USE_AJAX'                    => 'SIMPLE',
+	'ANIMATION_SPEED'             => '50',
+	'MAX_BLOCKS'                  => '',
+	'MEMORY_LIMIT'                => '128M',
+	'REDIRECT_SWITCH'             => 'NO',
+	'REDIRECT_URL'                => 'http://www.example.com',
+	'HIDE_TIMEOUT'                => '500',
+	'MDS_AGRESSIVE_CACHE'         => 'NO',
+	'ERROR_REPORTING'             => 0,
+	'WP_ENABLED'                  => 'NO',
+	'WP_URL'                      => '',
+);
 
-You should have received a copy of the GNU General Public License
-along with the Million Dollar Script.  If not, see <http://www.gnu.org/licenses/>.
+$values = array_replace( $defaults, $_REQUEST );
 
-*/
-error_reporting(E_ALL & ~E_NOTICE);
-
-$footer = $_REQUEST['footer'];
-$header = $_REQUEST['header'];
-if ($_REQUEST['save'] != '') {
-   if (get_magic_quotes_gpc()==0) { // magic is OFF?
-	   // need to add slashes here..
-	   $_REQUEST['site_name'] = addslashes($_REQUEST['site_name']);
-	   $_REQUEST['site_heading'] = addslashes($_REQUEST['site_heading']);
-	   $_REQUEST['site_description'] = addslashes($_REQUEST['site_description']);
-	   $_REQUEST['site_keywords'] = addslashes($_REQUEST['site_keywords']);
-
-   } else {
-	   // Magic Quotes is on, need to get rid of slashes here
-	   $header = stripslashes($_REQUEST['header']);
-	   $footer = stripslashes($_REQUEST['footer']);
-
-   }
-echo "updating config....";
-
-define('BASE_HTTP_PATH', $_REQUEST['base_http_path']);
-define('SERVER_PATH_TO_ADMIN', $_REQUEST['server_path_to_admin']);
-define('UPLOAD_PATH', $_REQUEST['upload_path']);
-define('UPLOAD_HTTP_PATH', $_REQUEST['upload_http_path']);
-define('SITE_CONTACT_EMAIL', $_REQUEST['site_contact_email']);
-define('SITE_LOGO_URL', $_REQUEST['site_logo_url']);
-define('SITE_NAME', $_REQUEST['site_name']);
-define('MDS_RESIZE', $_REQUEST['mds_resize']);
-
-define('MYSQL_HOST', $_REQUEST['mysql_host']);
-define('MYSQL_USER', $_REQUEST['mysql_user']);
-define('MYSQL_PASS', $_REQUEST['mysql_pass']);
-define('MYSQL_DB', $_REQUEST['mysql_db']);
-
-define('ADMIN_PASSWORD', $_REQUEST['admin_password']);
-
-define('DATE_FORMAT', $_REQUEST['date_format']);
-define('GMT_DIF', $_REQUEST['gmt_dif']);
-define('DATE_INPUT_SEQ', $_REQUEST['date_input_seq']);
-
-define('OUTPUT_JPEG', $_REQUEST['output_jpeg']);
-define('JPEG_QUALITY', $_REQUEST['jpeg_quality']);
-define('INTERLACE_SWITCH', $_REQUEST['interlace_switch']);
-define('USE_LOCK_TABLES', $_REQUEST['use_lock_tables']);
-define('BANNER_DIR', $_REQUEST['banner_dir']);
-define('DISPLAY_PIXEL_BACKGROUND', $_REQUEST['display_pixel_background']);
-
-define('EMAIL_USER_ORDER_CONFIRMED', $_REQUEST['email_user_order_confirmed']);
-define('EMAIL_ADMIN_ORDER_CONFIRMED', $_REQUEST['email_admin_order_confirmed']);
-define('EMAIL_USER_ORDER_COMPLETED', $_REQUEST['email_user_order_completed']);
-define('EMAIL_ADMIN_ORDER_COMPLETED', $_REQUEST['email_admin_order_completed']);
-define('EMAIL_USER_ORDER_PENDED', $_REQUEST['email_user_order_pended']);
-define('EMAIL_ADMIN_ORDER_PENDED', $_REQUEST['email_admin_order_pended']);
-define('EMAIL_USER_ORDER_EXPIRED', $_REQUEST['email_user_order_expired']);
-define('EMAIL_ADMIN_ORDER_EXPIRED', $_REQUEST['email_admin_order_expired']);
-define('EM_NEEDS_ACTIVATION', $_REQUEST['em_needs_activation']);
-define('EMAIL_USER_EXPIRE_WARNING', $_REQUEST['email_user_expire_warning']);
-define('EMAIL_ADMIN_ACTIVATION', $_REQUEST['email_admin_activation']);
-define('EMAIL_ADMIN_PUBLISH_NOTIFY', $_REQUEST['email_admin_publish_notify']);
-define('EMAILS_DAYS_KEEP', $_REQUEST['emails_days_keep']);
-
-define('DAYS_RENEW', $_REQUEST['days_renew']);
-define('DAYS_CONFIRMED', $_REQUEST['days_confirmed']);
-define('HOURS_UNCONFIRMED', $_REQUEST['hours_unconfirmed']);
-define('DAYS_CANCEL', $_REQUEST['days_cancel']);
-define('ENABLE_MOUSEOVER', $_REQUEST['enable_mouseover']);
-define('ENABLE_CLOAKING', $_REQUEST['enable_cloaking']);
-define('VALIDATE_LINK', $_REQUEST['validate_link']);
-define('ADVANCED_CLICK_COUNT', $_REQUEST['advanced_click_count']);
-define('USE_SMTP', $_REQUEST['use_smtp']);
-define('EMAIL_HOSTNAME', $_REQUEST['email_hostname']);
-define('EMAIL_SMTP_SERVER', $_REQUEST['email_smtp_server']);
-define('EMAIL_POP_SERVER', $_REQUEST['email_pop_server']);
-define('EMAIL_SMTP_USER', $_REQUEST['email_smtp_user']);
-define('EMAIL_SMTP_PASS', $_REQUEST['email_smtp_pass']);
-define('EMAIL_SMTP_AUTH_HOST', $_REQUEST['email_smtp_auth_host']);
-define('POP3_PORT', $_REQUEST['pop3_port']);
-define('EMAIL_POP_BEFORE_SMTP', $_REQUEST['email_pop_before_smtp']);
-
-define('EMAILS_PER_BATCH', $_REQUEST['emails_per_batch']);
-define('EMAILS_MAX_RETRY', $_REQUEST['emails_max_retry']);
-define('EMAILS_ERROR_WAIT', $_REQUEST['emails_error_wait']);
-
-define('USE_AJAX', $_REQUEST['use_ajax']);
-define('ANIMATION_SPEED', $_REQUEST['animation_speed']);
-define('MAX_BLOCKS', $_REQUEST['max_blocks']);
-
-define('MEMORY_LIMIT', $_REQUEST['memory_limit']);
-
-define('REDIRECT_SWITCH', $_REQUEST['redirect_switch']);
-define('REDIRECT_URL', $_REQUEST['redirect_url']);
-
-define('ADVANCED_CLICK_COUNT', $_REQUEST['advanced_click_count']);
-
-define('ADVANCED_CLICK_COUNT', $_REQUEST['advanced_click_count']);
-define('TRANSITION_EFFECT', $_REQUEST['transition_effect']);
-define('ENABLE_TRANSITIONS', $_REQUEST['enable_transitions']);
-define('TRANSITION_DURATION', $_REQUEST['transition_duration']);
-define('HIDE_TIMEOUT', $_REQUEST['hide_timeout']);
-define('MDS_AGRESSIVE_CACHE', $_REQUEST['mds_agressive_cache']);
-
-   $config_str = "<?php
-error_reporting(E_ALL & ~E_NOTICE);
+if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
+	echo "Updating config....";
+	$config_str = "<?php
 
 #########################################################################
 # CONFIGURATION
 # Note: Please do not edit this file. Edit the config from the admin section.
 #########################################################################
 
-define('BASE_HTTP_PATH', '".BASE_HTTP_PATH."'); 
-define('SERVER_PATH_TO_ADMIN', '".SERVER_PATH_TO_ADMIN."');
-define('UPLOAD_PATH', '".UPLOAD_PATH."');
-define('UPLOAD_HTTP_PATH', '".UPLOAD_HTTP_PATH."');
-define('MYSQL_HOST', '".MYSQL_HOST."'); # mysql database host
-define('MYSQL_USER', '".MYSQL_USER."'); #mysql user name
-define('MYSQL_PASS', '".MYSQL_PASS."'); # mysql password
-define('MYSQL_DB', '".MYSQL_DB."'); # mysql database name
+error_reporting( " . $values['ERROR_REPORTING'] . " );
+define( 'DEBUG', " . ( $values['DEBUG'] ? 'true' : 'false' ) . " );
+define( 'MDS_LOG', " . ( $values['MDS_LOG'] ? 'true' : 'false' ) . " );
+define( 'MDS_LOG_FILE', '" . $values['MDS_LOG_FILE'] . "' );
+define( 'VERSION_INFO', '" . $values['VERSION_INFO'] . "' );
+define( 'BASE_HTTP_PATH', '" . $values['BASE_HTTP_PATH'] . "' );
+define( 'BASE_PATH', '" . $values['BASE_PATH'] . "' );
+define( 'SERVER_PATH_TO_ADMIN', '" . $values['SERVER_PATH_TO_ADMIN'] . "' );
+define( 'UPLOAD_PATH', '" . $values['UPLOAD_PATH'] . "' );
+define( 'UPLOAD_HTTP_PATH', '" . $values['UPLOAD_HTTP_PATH'] . "' );
+define( 'SITE_CONTACT_EMAIL', '" . $values['SITE_CONTACT_EMAIL'] . "' );
+define( 'SITE_LOGO_URL', '" . $values['SITE_LOGO_URL'] . "' );
+define( 'SITE_NAME', '" . $values['SITE_NAME'] . "' );
+define( 'SITE_SLOGAN', '" . $values['SITE_SLOGAN'] . "' );
+define( 'MDS_RESIZE', '" . $values['MDS_RESIZE'] . "' );
+define( 'MYSQL_HOST', '" . $values['MYSQL_HOST'] . "' );
+define( 'MYSQL_USER', '" . $values['MYSQL_USER'] . "' );
+define( 'MYSQL_PASS', '" . $values['MYSQL_PASS'] . "' );
+define( 'MYSQL_DB', '" . $values['MYSQL_DB'] . "' );
+define( 'MYSQL_PORT', " . $values['MYSQL_PORT'] . " );
+define( 'MYSQL_SOCKET', '" . $values['MYSQL_SOCKET'] . "' );
+define( 'ADMIN_PASSWORD', '" . $values['ADMIN_PASSWORD'] . "' );
+define( 'DATE_FORMAT', '" . $values['DATE_FORMAT'] . "' );
+define( 'GMT_DIF', '" . $values['GMT_DIF'] . "' );
+define( 'DATE_INPUT_SEQ', '" . $values['DATE_INPUT_SEQ'] . "' );
+define( 'OUTPUT_JPEG', '" . $values['OUTPUT_JPEG'] . "' );
+define( 'JPEG_QUALITY', '" . $values['JPEG_QUALITY'] . "' );
+define( 'INTERLACE_SWITCH', '" . $values['INTERLACE_SWITCH'] . "' );
+define( 'BANNER_DIR', '" . $values['BANNER_DIR'] . "' );
+define( 'DISPLAY_PIXEL_BACKGROUND', '" . $values['DISPLAY_PIXEL_BACKGROUND'] . "' );
+define( 'EMAIL_USER_ORDER_CONFIRMED', '" . $values['EMAIL_USER_ORDER_CONFIRMED'] . "' );
+define( 'EMAIL_ADMIN_ORDER_CONFIRMED', '" . $values['EMAIL_ADMIN_ORDER_CONFIRMED'] . "' );
+define( 'EMAIL_USER_ORDER_COMPLETED', '" . $values['EMAIL_USER_ORDER_COMPLETED'] . "' );
+define( 'EMAIL_ADMIN_ORDER_COMPLETED', '" . $values['EMAIL_ADMIN_ORDER_COMPLETED'] . "' );
+define( 'EMAIL_USER_ORDER_PENDED', '" . $values['EMAIL_USER_ORDER_PENDED'] . "' );
+define( 'EMAIL_ADMIN_ORDER_PENDED', '" . $values['EMAIL_ADMIN_ORDER_PENDED'] . "' );
+define( 'EMAIL_USER_ORDER_EXPIRED', '" . $values['EMAIL_USER_ORDER_EXPIRED'] . "' );
+define( 'EMAIL_ADMIN_ORDER_EXPIRED', '" . $values['EMAIL_ADMIN_ORDER_EXPIRED'] . "' );
+define( 'EM_NEEDS_ACTIVATION', '" . $values['EM_NEEDS_ACTIVATION'] . "' );
+define( 'EMAIL_ADMIN_ACTIVATION', '" . $values['EMAIL_ADMIN_ACTIVATION'] . "' );
+define( 'EMAIL_ADMIN_PUBLISH_NOTIFY', '" . $values['EMAIL_ADMIN_PUBLISH_NOTIFY'] . "' );
+define( 'USE_PAYPAL_SUBSCR', '" . $values['USE_PAYPAL_SUBSCR'] . "' );
+define( 'EMAIL_USER_EXPIRE_WARNING', '" . $values['EMAIL_USER_EXPIRE_WARNING'] . "' );
+define( 'EMAILS_DAYS_KEEP', '" . $values['EMAILS_DAYS_KEEP'] . "' );
+define( 'DAYS_RENEW', '" . $values['DAYS_RENEW'] . "' );
+define( 'DAYS_CONFIRMED', '" . $values['DAYS_CONFIRMED'] . "' );
+define( 'HOURS_UNCONFIRMED', '" . $values['HOURS_UNCONFIRMED'] . "' );
+define( 'DAYS_CANCEL', '" . $values['DAYS_CANCEL'] . "' );
+define( 'ENABLE_MOUSEOVER', '" . $values['ENABLE_MOUSEOVER'] . "' );
+define( 'ENABLE_CLOAKING', '" . $values['ENABLE_CLOAKING'] . "' );
+define( 'VALIDATE_LINK', '" . $values['VALIDATE_LINK'] . "' );
+define( 'ADVANCED_CLICK_COUNT', '" . $values['ADVANCED_CLICK_COUNT'] . "' );
+define( 'USE_SMTP', '" . $values['USE_SMTP'] . "' );
+define( 'EMAIL_SMTP_SERVER', '" . $values['EMAIL_SMTP_SERVER'] . "' );
+define( 'EMAIL_SMTP_USER', '" . $values['EMAIL_SMTP_USER'] . "' );
+define( 'EMAIL_SMTP_PASS', '" . $values['EMAIL_SMTP_PASS'] . "' );
+define( 'EMAIL_SMTP_AUTH_HOST', '" . $values['EMAIL_SMTP_AUTH_HOST'] . "' );
+define( 'SMTP_PORT', '" . $values['SMTP_PORT'] . "' );
+define( 'POP3_PORT', '" . $values['POP3_PORT'] . "' );
+define( 'EMAIL_TLS', '" . $values['EMAIL_TLS'] . "' );
+define( 'EMAIL_POP_SERVER', '" . $values['EMAIL_POP_SERVER'] . "' );
+define( 'EMAIL_POP_BEFORE_SMTP', '" . $values['EMAIL_POP_BEFORE_SMTP'] . "' );
+define( 'EMAIL_DEBUG', '" . $values['EMAIL_DEBUG'] . "' );
+define( 'EMAILS_PER_BATCH', '" . $values['EMAILS_PER_BATCH'] . "' );
+define( 'EMAILS_MAX_RETRY', '" . $values['EMAILS_MAX_RETRY'] . "' );
+define( 'EMAILS_ERROR_WAIT', '" . $values['EMAILS_ERROR_WAIT'] . "' );
+define( 'USE_AJAX', '" . $values['USE_AJAX'] . "' );
+define( 'ANIMATION_SPEED', '" . $values['ANIMATION_SPEED'] . "' );
+define( 'MAX_BLOCKS', '" . $values['MAX_BLOCKS'] . "' );
+define( 'MEMORY_LIMIT', '" . $values['MEMORY_LIMIT'] . "' );
+define( 'REDIRECT_SWITCH', '" . $values['REDIRECT_SWITCH'] . "' );
+define( 'REDIRECT_URL', '" . $values['REDIRECT_URL'] . "' );
+define( 'HIDE_TIMEOUT', '" . $values['HIDE_TIMEOUT'] . "' );
+define( 'MDS_AGRESSIVE_CACHE', '" . $values['MDS_AGRESSIVE_CACHE'] . "' );
+define( 'ERROR_REPORTING', " . $values['ERROR_REPORTING'] . " );
+define( 'WP_ENABLED', '" . $values['WP_ENABLED'] . "' );
+define( 'WP_URL', '" . $values['WP_URL'] . "' );
+";
+	// write out the config..
 
-define('MDS_RESIZE', '".MDS_RESIZE."');
-
-# SITE_CONTACT_EMAIL
-
-define('SITE_CONTACT_EMAIL', stripslashes('".SITE_CONTACT_EMAIL."'));
-
-# SITE_LOGO_URL
-
-define('SITE_LOGO_URL', stripslashes('".SITE_LOGO_URL."'));
-
-# SITE_NAME
-# change to your website name
-define('SITE_NAME', stripslashes('".SITE_NAME."')); 
-
-# ADMIN_PASSWORD
-
-define('ADMIN_PASSWORD',  '".ADMIN_PASSWORD."');
-
-# date formats
-define('DATE_FORMAT', '".DATE_FORMAT."');
-define('GMT_DIF', '".GMT_DIF."');
-define('DATE_INPUT_SEQ', '".DATE_INPUT_SEQ."');
-
-# Output the image in JPEG? Y or N. 
-
-define ('OUTPUT_JPEG', '".OUTPUT_JPEG."'); # Y or N
-define ('JPEG_QUALITY', '".JPEG_QUALITY."'); # a number from 0 to 100
-define('INTERLACE_SWITCH','".INTERLACE_SWITCH."');
-# Note: Please do not edit this file. Edit from the admin section.
-
-# USE_LOCK_TABLES
-# The script can lock/unlock tables when a user is selecting pixels
-define ('USE_LOCK_TABLES', '".USE_LOCK_TABLES."');
-
-define('BANNER_DIR', '".BANNER_DIR."');
-
-# IM_CONVERT_PATH
-
-define('IM_CONVERT_PATH', '".IM_CONVERT_PATH."');
-
-# Note: Please do not edit this file. Edit from the admin section.
-define('EMAIL_USER_ORDER_CONFIRMED', '".EMAIL_USER_ORDER_CONFIRMED."');
-define('EMAIL_ADMIN_ORDER_CONFIRMED', '".EMAIL_ADMIN_ORDER_CONFIRMED."');
-define('EMAIL_USER_ORDER_COMPLETED', '".EMAIL_USER_ORDER_COMPLETED."');
-define('EMAIL_ADMIN_ORDER_COMPLETED', '".EMAIL_ADMIN_ORDER_COMPLETED."');
-define('EMAIL_USER_ORDER_PENDED', '".EMAIL_USER_ORDER_PENDED."');
-define('EMAIL_ADMIN_ORDER_PENDED', '".EMAIL_ADMIN_ORDER_PENDED."');
-define('EMAIL_USER_ORDER_EXPIRED', '".EMAIL_USER_ORDER_EXPIRED."');
-define('EMAIL_ADMIN_ORDER_EXPIRED', '".EMAIL_ADMIN_ORDER_EXPIRED."');
-
-define('EM_NEEDS_ACTIVATION', '".EM_NEEDS_ACTIVATION."');
-define('EMAIL_ADMIN_ACTIVATION', '".EMAIL_ADMIN_ACTIVATION."');
-define('EMAIL_ADMIN_PUBLISH_NOTIFY', '".EMAIL_ADMIN_PUBLISH_NOTIFY."');
-define('USE_PAYPAL_SUBSCR', '".USE_PAYPAL_SUBSCR."');
-define('EMAIL_USER_EXPIRE_WARNING', '".EMAIL_USER_EXPIRE_WARNING."');
-define('DAYS_RENEW', '".DAYS_RENEW."');
-define('DAYS_CONFIRMED', '".DAYS_CONFIRMED."');
-define('HOURS_UNCONFIRMED', '".HOURS_UNCONFIRMED."');
-define('DAYS_CANCEL', '".DAYS_CANCEL."');
-define('ENABLE_MOUSEOVER', '".ENABLE_MOUSEOVER."');
-define('ENABLE_CLOAKING', '".ENABLE_CLOAKING."');
-define('VALIDATE_LINK', '".VALIDATE_LINK."');
-define('DISPLAY_PIXEL_BACKGROUND', '".DISPLAY_PIXEL_BACKGROUND."');
-define('USE_SMTP', '".$_REQUEST[use_smtp]."');
-define('EMAIL_HOSTNAME', '".$_REQUEST[email_hostname]."');
-define('EMAIL_SMTP_SERVER', '".$_REQUEST[email_smtp_server]."');
-define('EMAIL_SMTP_USER', '".$_REQUEST[email_smtp_user]."');
-define('EMAIL_SMTP_PASS', '".$_REQUEST[email_smtp_pass]."');
-define('EMAIL_SMTP_AUTH_HOST', '".$_REQUEST[email_smtp_auth_host]."');
-define('POP3_PORT', '".$_REQUEST[pop3_port]."');
-define('EMAIL_POP_SERVER', '".$_REQUEST[email_pop_server]."');
-define('EMAIL_POP_BEFORE_SMTP', '".$_REQUEST[email_pop_before_smtp]."');
-
-define('EMAILS_PER_BATCH', '".$_REQUEST[emails_per_batch]."');
-define('EMAILS_MAX_RETRY', '".$_REQUEST[emails_max_retry]."');
-define('EMAILS_ERROR_WAIT', '".$_REQUEST[emails_error_wait]."');
-define('EMAILS_DAYS_KEEP', '".$_REQUEST[emails_days_keep]."');
-define('USE_AJAX', '".$_REQUEST[use_ajax]."');
-define('ANIMATION_SPEED', '".$_REQUEST[animation_speed]."');
-define('MAX_BLOCKS', '".$_REQUEST[max_blocks]."');
-define('MEMORY_LIMIT', '".$_REQUEST[memory_limit]."');
-
-define('REDIRECT_SWITCH', '".$_REQUEST[redirect_switch]."');
-define('REDIRECT_URL', '".$_REQUEST[redirect_url]."');
-define('ADVANCED_CLICK_COUNT', '".$_REQUEST[advanced_click_count]."');
-
-define('TRANSITION_EFFECT', '".$_REQUEST[transition_effect]."');
-define('ENABLE_TRANSITIONS', '".$_REQUEST[enable_transitions]."');
-define('TRANSITION_DURATION', '".$_REQUEST[transition_duration]."');
-define('HIDE_TIMEOUT', '".$_REQUEST[hide_timeout]."');
-define('MDS_AGRESSIVE_CACHE', '".$_REQUEST[mds_agressive_cache]."');
-
-if (defined('MEMORY_LIMIT')) {
-	ini_set('memory_limit', MEMORY_LIMIT);
-} else {
-	ini_set('memory_limit', '12M');
+	$file = fopen( "../config.php", "w" );
+	fwrite( $file, $config_str );
 }
 
-\$dbhost = MYSQL_HOST;
-\$dbusername = MYSQL_USER;
-\$dbpassword = MYSQL_PASS;
-\$database_name = MYSQL_DB;
-
-\$connection = @mysql_connect(\"\$dbhost\",\"\$dbusername\", \"\$dbpassword\")
-	or \$DB_ERROR = \"Couldn't connect to server.\";
-	
-\$db = @mysql_select_db(\"\$database_name\", \$connection)
-	or \$DB_ERROR = \"Couldn't select database.\";
-
-if (\$DB_ERROR=='') {
-
-	include dirname(__FILE__).'/lang/lang.php';
-	require_once (dirname(__FILE__).'/mail/email_message.php');
-	require_once (dirname(__FILE__).'/mail/smtp_message.php');
-	require_once (dirname(__FILE__).'/mail/smtp.php');
-	require_once dirname(__FILE__).'/include/mail_manager.php';
-	require_once dirname(__FILE__).'/include/currency_functions.php';
-	require_once dirname(__FILE__).'/include/price_functions.php';
-	require_once dirname(__FILE__).'/include/functions.php';
-	require_once dirname(__FILE__).'/include/image_functions.php';
-	if (!get_magic_quotes_gpc()) unfck_gpc();
-	//escape_gpc();
-}
-
-function get_banner_dir() {
-	if (BANNER_DIR=='BANNER_DIR') {	
-
-		\$file_path = SERVER_PATH_TO_ADMIN; // eg e:/apache/htdocs/ojo/admin/
-
-		\$p = preg_split ('%[/\\\]%', \$file_path);
-
-		
-		array_pop(\$p);
-		array_pop(\$p);
-	
-		\$dest = implode('/', \$p);
-		\$dest = \$dest.'/banners/';
-
-		if (file_exists(\$dest)) {
-			\$BANNER_DIR = 'banners/';
-		} else {
-			\$BANNER_DIR = 'pixels/';
-		}
-	} else {
-		\$BANNER_DIR = BANNER_DIR;
-	}
-	return \$BANNER_DIR;
- 
-}
-
-?>";
-
-  // echo "<pre>[$config_str]</pre>";
-
-   /// write out the config..
-
-    $file =fopen ("../config.php", "w");
-    fwrite($file, $config_str);
-
-  
-   
-
-} else {
-
-// load in the headers and footers..
-
-
-
-}
-require "../config.php";
+require_once __DIR__ . "/../include/init.php";
 
 ?>
-<head>
 
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<style>
-body {
-	font-family: 'Arial', sans-serif; 
-	font-size:10pt;
-
-}
-</style>
-<script language="javascript">
-
-	function test_email_window () {
-
-		prams = 
-			'host='+document.form1.email_hostname.value+
-			'&email_pop_server='+document.form1.email_pop_server.value+
-			'&user='+document.form1.email_smtp_user.value+
-			'&pass='+document.form1.email_smtp_pass.value+
-			'&auth_host='+document.form1.email_smtp_auth_host.value+
-			'&php3_port='+document.form1.pop3_port.value;
-
-		window.open('test_email.php?'+prams, '', 'toolbar=no, scrollbars=yes, location=no, statusbar=no, menubar=no, resizable=1, width=800, height=500, left = 50, top = 50');
-
-	}
-
-	</script>
-</head>
-<body>
-
-<h3>
-Main Configuration</h3>
-Options on this page affect the running of the pixel advertising system.<p>
-Note: <i>Make sure that config.php has write permissions <b>turned on</b> when editing this form. You should turn off write permission after editing this form.</i><br>
+<h3>Main Configuration</h3>
+<p>Options on this page affect the running of the pixel advertising system.</p>
+<p>Note: <i>Make sure that config.php has write permissions <b>turned on</b> when editing this form. You should turn off write permission after editing this form.</i></p>
+<p><b>Tip:</b> Looking for where to settings for the grid? It is set in 'Pixel Inventory' -> <a href="inventory.php">Manage Grids</a>. Click on Edit to edit the grid parameters.</p>
 <p>
-<b>Tip:</b> Looking for where to settings for the grid? It is set in 'Pixel Inventory' -> <a href="inventory.php">Manage Grids</a>. Click on Edit to edit the grid parameters.
+	<?php
+	if ( is_writable( "../config.php" ) ) {
+		echo "- config.php is writeable.";
+	} else {
+		echo "- <font color='red'> Note: config.php is not writable. Give write permissions to config.php if you want to save the changes</font>";
+	}
+
+	require( __DIR__ . '/config_form.php' );
+	?>
 </p>
-
-<?php
-echo "<p>";
-if (is_writable("../config.php")) {
-	echo "- config.php is writeable.<br>";
-} else {
-	echo "- <font color='red'> Note: config.php is not writable. Give write permissions to config.php if you want to save the changes</font><br>";
-}
-
-require ('config_form.php');
-
-?>
-
-
-<p>&nbsp;</p>
-</body>
