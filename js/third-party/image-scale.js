@@ -8,35 +8,32 @@
 // ==========================================================================
 
 // Uses CommonJS, AMD or browser globals to create a jQuery plugin.
-(function(factory) {
+(function (factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
 		define(['jquery'], factory);
-	}
-	else if (typeof module === 'object' && module.exports) {
+	} else if (typeof module === 'object' && module.exports) {
 		// Node/CommonJS
-		module.exports = function( root, jQuery ) {
-			if ( jQuery === undefined ) {
+		module.exports = function (root, jQuery) {
+			if (jQuery === undefined) {
 				// require('jQuery') returns a factory that requires window to
 				// build a jQuery instance, we normalize how we use modules
 				// that require this pattern but the window provided is a noop
 				// if it's defined (how jquery works)
 				if (typeof window !== 'undefined') {
 					jQuery = require('jquery');
-				}
-				else {
+				} else {
 					jQuery = require('jquery')(root);
 				}
 			}
 			factory(jQuery);
 			return jQuery;
 		};
-	}
-	else {
+	} else {
 		// Browser globals
 		factory(jQuery);
 	}
-}(function($) {
+}(function ($) {
 
 	"use strict";
 
@@ -44,9 +41,9 @@
 	// IMAGE SCALE PLUGIN DEFINITION
 	//
 
-	$.fn.imageScale = function( options ) {
+	$.fn.imageScale = function (options) {
 
-		return this.each(function() {
+		return this.each(function () {
 			var that = this,
 				$this = $(this),
 				data = $this.data('imageScale'),
@@ -56,7 +53,7 @@
 				var didLoad = $img[0].complete,
 					formattedOpt = $.extend({}, $.fn.imageScale.defaults, typeof options == 'object' && options),
 
-					loadFunc = function() {
+					loadFunc = function () {
 						$this.data('imageScale', (data = new ImageScale(that, formattedOpt)));
 
 						data.scale(true, formattedOpt);
@@ -64,18 +61,15 @@
 
 				if (didLoad) {
 					loadFunc.apply($this[0]);
-				}
-				else {
+				} else {
 					$img.on("load", loadFunc).attr("src", $img.attr("src"));
 				}
-			}
-			else {
+			} else {
 				if (typeof options == 'string') data[options]();
 				else if (typeof options == 'object') {
 					var method = options.method || 'scale';
 					data[method](false, options);
-				}
-				else data.scale();
+				} else data.scale();
 			}
 		})
 	}
@@ -178,7 +172,8 @@
       @param options {Object} the options passed to the scale method.
       @since Version 2.0
 		 */
-		didScale: function(firstTime, options) {},
+		didScale: function (firstTime, options) {
+		},
 
 		/**
       A number indicating the log level :
@@ -199,7 +194,7 @@
 	// IMAGE SCALE PUBLIC CLASS DEFINITION
 	//
 
-	var ImageScale = function(element, options) {
+	var ImageScale = function (element, options) {
 		var that = this;
 		that.options = options;
 		that.element = element;
@@ -213,7 +208,7 @@
 		that.imgWidth = img.naturalWidth || img.width;
 		that.imgHeight = img.naturalHeight || img.height;
 
-		var $parent = that.$parent = options.parent?options.parent:$($element.parent()[0]);
+		var $parent = that.$parent = options.parent ? options.parent : $($element.parent()[0]);
 		that.parent = $parent[0];
 
 		// Fixes: https://github.com/gestixi/image-scale/issues/1
@@ -222,7 +217,9 @@
 		}
 
 		if (options.rescaleOnResize) {
-			$(window).resize(function(e) { that.scheduleScale(); });
+			$(window).resize(function (e) {
+				that.scheduleScale();
+			});
 		}
 	}
 
@@ -276,7 +273,7 @@
 
       @param {Boolean} firstTime
 		 */
-		scale: function(firstTime, opt) {
+		scale: function (firstTime, opt) {
 			if (this._isDestroyed || this._canScale === false) return;
 
 			var that = this,
@@ -289,10 +286,9 @@
 
 			if (firstTime) {
 				if (options.hideParentOverflow) {
-					$parent.css({ overflow: 'hidden' });
+					$parent.css({overflow: 'hidden'});
 				}
-			}
-			else {
+			} else {
 				// If the source of the image has changed
 				if (this.src !== $img.attr('src')) {
 					this.destroy();
@@ -312,9 +308,9 @@
 			var transition = opt.transition;
 			if (transition) {
 				this._canScale = false;
-				$element.css('transition', 'all '+transition+'ms');
+				$element.css('transition', 'all ' + transition + 'ms');
 
-				setTimeout(function() {
+				setTimeout(function () {
 					that._canScale = null;
 					$element.css('transition', 'null');
 				}, transition);
@@ -332,8 +328,8 @@
 				scaleData = $element.attr('data-scale'),
 				alignData = $element.attr('data-align'),
 
-				scale = scaleData?scaleData:options.scale,
-				align = alignData?alignData:options.align,
+				scale = scaleData ? scaleData : options.scale,
+				align = alignData ? alignData : options.align,
 
 				fadeInDuration = options.fadeInDuration;
 
@@ -346,7 +342,7 @@
 
 			if (this._cacheDestWidth === destWidth && this._cacheDestHeight === destHeight) {
 				if (options.logLevel > 2) {
-					console.log("imageScale - DEBUG NOTICE: The parent size hasn't changed: dest width: '"+destWidth+"' - dest height: '"+destHeight+"'.", element);
+					console.log("imageScale - DEBUG NOTICE: The parent size hasn't changed: dest width: '" + destWidth + "' - dest height: '" + destHeight + "'.", element);
 				}
 			}
 
@@ -355,7 +351,7 @@
 
 			if (!(destWidth && destHeight && sourceWidth && sourceHeight)) {
 				if (options.logLevel > 0) {
-					console.error("imageScale - DEBUG ERROR: The dimensions are incorrect: source width: '"+sourceWidth+"' - source height: '"+sourceHeight+"' - dest width: '"+destWidth+"' - dest height: '"+destHeight+"'.", element);
+					console.error("imageScale - DEBUG ERROR: The dimensions are incorrect: source width: '" + sourceWidth + "' - source height: '" + sourceHeight + "' - dest width: '" + destWidth + "' - dest height: '" + destHeight + "'.", element);
 				}
 				return;
 			}
@@ -365,13 +361,13 @@
 
 			var layout = this._innerFrameForSize(scale, align, sourceWidth, sourceHeight, destWidth, destHeight);
 
-			if (widthOffset) layout.x -= widthOffset/2;
-			if (heightOffset) layout.y -= heightOffset/2;
+			if (widthOffset) layout.x -= widthOffset / 2;
+			if (heightOffset) layout.y -= heightOffset / 2;
 
-			$element.css({ position: 'absolute', top: layout.y+'px', left: layout.x+'px', width: layout.width+'px', height: layout.height+'px', 'max-width': 'none' });
+			$element.css({position: 'absolute', top: Math.ceil(layout.y) + 'px', left: Math.ceil(layout.x) + 'px', width: layout.width + 'px', height: layout.height + 'px', 'max-width': 'none'});
 
 			if (firstTime && fadeInDuration) {
-				$element.css({ display: 'none' });
+				$element.css({display: 'none'});
 				$element.fadeIn(fadeInDuration);
 			}
 
@@ -386,7 +382,7 @@
           $image.imageScale('destroy');
 
 		 */
-		destroy: function() {
+		destroy: function () {
 			this._isDestroyed = true;
 			this.$element.removeData('imageScale');
 		},
@@ -405,13 +401,13 @@
       @param {Number} destHeight
       @returns {Object} the inner frame with properties: { x: value, y: value, width: value, height: value }
 		 */
-		_innerFrameForSize: function(scale, align, sourceWidth, sourceHeight, destWidth, destHeight) {
+		_innerFrameForSize: function (scale, align, sourceWidth, sourceHeight, destWidth, destHeight) {
 			var scaleX,
 				scaleY,
 				result;
 
 			// Fast path
-			result = { x: 0, y: 0, width: destWidth, height: destHeight };
+			result = {x: 0, y: 0, width: destWidth, height: destHeight};
 			if (scale === this.FILL) return result;
 
 			// Determine the appropriate scale
@@ -421,7 +417,7 @@
 			switch (scale) {
 				case this.BEST_FIT_DOWN_ONLY:
 					if (scale !== this.BEST_FIT_DOWN_ONLY && this.options.logLevel > 1) {
-						console.warn("imageScale - DEBUG WARNING: The scale '"+scale+"' was not understood.");
+						console.warn("imageScale - DEBUG WARNING: The scale '" + scale + "' was not understood.");
 					}
 
 					if ((sourceWidth > destWidth) || (sourceHeight > destHeight)) {
@@ -483,7 +479,7 @@
 					break;
 				default: // this.ALIGN_CENTER
 					if (align !== this.ALIGN_CENTER && this.options.logLevel > 1) {
-						console.warn("imageScale - DEBUG WARNING: The align '"+align+"' was not understood.");
+						console.warn("imageScale - DEBUG WARNING: The align '" + align + "' was not understood.");
 					}
 					result.x = (destWidth / 2) - (sourceWidth / 2);
 					result.y = (destHeight / 2) - (sourceHeight / 2);
@@ -499,7 +495,7 @@
 
       @returns {Boolean}
 		 */
-		_needUpdate: function(parent) {
+		_needUpdate: function (parent) {
 			var size = parent.clientHeight + ' ' + parent.clientWidth;
 
 			if (this._lastParentSize !== size) {
@@ -514,16 +510,19 @@
 
       Schedule a scale update.
 		 */
-		scheduleScale: function() {
+		scheduleScale: function () {
 			if (this._didScheduleScale) return;
 
 			if (window.requestAnimationFrame) {
 				var that = this;
 				this._didScheduleScale = true;
 				// setTimeout important when resizing down if the scrollbar were visible
-				requestAnimationFrame(function() { setTimeout(function() { that.scale(); }, 0); });
-			}
-			else {
+				requestAnimationFrame(function () {
+					setTimeout(function () {
+						that.scale();
+					}, 0);
+				});
+			} else {
 				this.scale();
 			}
 		}

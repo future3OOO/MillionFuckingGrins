@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -37,13 +37,16 @@ header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
 require_once __DIR__ . "/../include/init.php";
 
-$sql = "SELECT * FROM blocks where block_id='" . intval( $_REQUEST['block_id'] ) . "' and banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "' ";
+global $f2;
+$BID = $f2->bid();
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$sql = "SELECT * FROM blocks where block_id=" . intval( $_REQUEST['block_id'] ) . " and banner_id=" . $BID;
+
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 $row = mysqli_fetch_array( $result );
 
-if ( $row['image_data'] == '' ) {
-	$banner_data       = load_banner_constants( $f2->bid( $_REQUEST['BID'] ) );
+if ( isset($row['image_data']) && $row['image_data'] == '' ) {
+	$banner_data       = load_banner_constants( $BID );
 	$row['image_data'] = base64_encode( $banner_data['GRID_BLOCK'] );
 	//$row['image_data'] =  "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAABGdBTUEAALGPC/xhBQAAABZJREFUKFNj/N/gwIAHAKXxIIYRKg0AB3qe55E8bNQAAAAASUVORK5CYII=";
 }

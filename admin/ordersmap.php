@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,16 +34,10 @@ ini_set( 'max_execution_time', 10000 );
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
-$banner_data = load_banner_constants( $BID );
+global $f2;
+$BID = $f2->bid();
 
-//$sql = "select * from banners where banner_id=$BID";
-//$result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
-//$b_row = mysqli_fetch_array($result);
+$banner_data = load_banner_constants( $BID );
 
 ?>
     The following screen shows a map of all the orders made on a grid. Move your mouse over the blocks to find who owns the order. Click on the block to manage the order.<br>
@@ -52,7 +46,7 @@ $banner_data = load_banner_constants( $BID );
 <?php
 
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 ?>
 
     <form name="bidselect" method="post" action="ordersmap.php">

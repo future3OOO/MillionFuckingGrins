@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -45,35 +45,38 @@ while ( ( $file = readdir( $dh ) ) !== false ) {
 
 closedir( $dh );
 
-if ( $_REQUEST['action'] == 'save' ) {
-	$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
-	$obj->save_config();
-}
+if ( isset($_REQUEST['pay']) && isset( $_REQUEST['action'] ) ) {
 
-if ( $_REQUEST['action'] == 'install' ) {
+	if ( $_REQUEST['action'] == 'save' ) {
+		$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
+		$obj->save_config();
+	}
 
-	$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
-	$obj->install();
-	// reload object
-	$_PAYMENT_OBJECTS[ $_REQUEST['pay'] ] = new $_REQUEST['pay'];
-}
+	if ( $_REQUEST['action'] == 'install' ) {
 
-if ( $_REQUEST['action'] == 'uninstall' ) {
+		$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
+		$obj->install();
+		// reload object
+		$_PAYMENT_OBJECTS[ $_REQUEST['pay'] ] = new $_REQUEST['pay'];
+	}
 
-	$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
-	$obj->uninstall();
-}
+	if ( $_REQUEST['action'] == 'uninstall' ) {
 
-if ( $_REQUEST['action'] == 'enable' ) {
+		$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
+		$obj->uninstall();
+	}
 
-	$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
-	$obj->enable();
-}
+	if ( $_REQUEST['action'] == 'enable' ) {
 
-if ( $_REQUEST['action'] == 'disable' ) {
+		$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
+		$obj->enable();
+	}
 
-	$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
-	$obj->disable();
+	if ( $_REQUEST['action'] == 'disable' ) {
+
+		$obj = $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ];
+		$obj->disable();
+	}
 }
 
 function list_avalable_payments() {
@@ -98,7 +101,7 @@ function list_avalable_payments() {
 
 						?>
 
-                        <tr <?php if ( $obj_key == $_REQUEST['pay'] ) {
+                        <tr <?php if ( isset($_REQUEST['pay']) && $obj_key == $_REQUEST['pay'] ) {
 							echo ' bgColor="#FFFF99" ';
 						} else {
 							echo ' bgColor="#ffffff" ';
@@ -121,7 +124,7 @@ function list_avalable_payments() {
 									?></font></td>
                             <td nowrap><font size="2"><?php
 
-									if ( $obj_key == $_REQUEST['pay'] ) {
+									if ( isset($_REQUEST['pay']) && $obj_key == $_REQUEST['pay'] ) {
 										if ( ! $obj->is_installed() ) {
 											echo "<input type='button' style='font-size: 10px;' value='Install' onclick=\"if (!confirmLink(this, 'Install, are you sure?')) return false;\" data-link='" . $_SERVER['PHP_SELF'] . "?pay=" . $obj_key . "&action=install'>";
 										} else {
@@ -137,9 +140,9 @@ function list_avalable_payments() {
 											echo " &nbsp; <input style='font-size: 10px;' type='button' value='Uninstall' onclick=\" if (!confirmLink(this, 'Uninstall, are you sure?')) return false;\" data-link='" . $_SERVER['PHP_SELF'] . "?pay=" . $obj_key . "&action=uninstall'>";
 										}
 
-										if ( $obj->is_installed() ) {
+//										if ( $obj->is_installed() ) {
 											//	$obj->config_form();
-										}
+//										}
 									} else {
 
 										if ( $obj->is_installed() ) {
@@ -164,8 +167,7 @@ function list_avalable_payments() {
             <td valign="top">
 				<?php
 
-				if ( $_REQUEST['pay'] != '' ) {
-
+				if ( isset($_REQUEST['pay']) && $_REQUEST['pay'] != '' ) {
 					if ( $_PAYMENT_OBJECTS[ $_REQUEST['pay'] ]->is_installed() ) {
 						$_PAYMENT_OBJECTS[ $_REQUEST['pay'] ]->config_form();
 					}

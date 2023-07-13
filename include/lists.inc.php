@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -40,7 +40,7 @@ function echo_list_head_data( $form_id, $admin ) {
 
 	global $q_string, $column_list, $column_info;
 
-	$ord = $_REQUEST['ord'];
+	$ord = isset($_REQUEST['ord']) ? $_REQUEST['ord'] : 'asc';
 	if ( $ord == 'asc' ) {
 		$ord = 'desc';
 	} else if ( $ord == 'desc' ) {
@@ -93,11 +93,11 @@ function echo_list_head_data( $form_id, $admin ) {
 
 function echo_ad_list_data( $admin ) {
 
-	global $f2, $column_list, $column_info, $label, $cur_offset, $order_str, $q_offset, $show_emp, $cat, $list_mode;
+	global $column_list, $column_info, $label, $cur_offset, $order_str;
 
-	if ( $_REQUEST['order_by'] != '' ) {
+	if ( isset($_REQUEST['order_by']) && $_REQUEST['order_by'] != '' ) {
 
-		$ord = $_REQUEST['ord'];
+		$ord = isset($_REQUEST['ord']) ? $_REQUEST['ord'] : 'asc';
 		if ( $ord == 'asc' ) {
 			$ord = 'desc';
 		} else if ( $ord == 'desc' ) {
@@ -124,8 +124,12 @@ function echo_ad_list_data( $admin ) {
 		// process the value depending on what kind of template tag it was given.
 		if ( $template_tag == 'DATE' ) {
 
-			$init_date = strtotime( trim_date( $val ) . " GMT" ); // the last date modified
-			$dst_date  = strtotime( trim_date( ( gmdate( "r" ) ) ) . " GMT" ); // now
+			// the last date modified
+			$init_date = strtotime( trim_date( $val ) . " GMT" );
+
+			// now
+			$dst_date = strtotime( gmdate( "Y-m-d" ) . " GMT" );
+
 			if ( ! $init_date ) {
 				$days = "x";
 			} else {
@@ -133,7 +137,7 @@ function echo_ad_list_data( $admin ) {
 				$days = floor( $diff / 60 / 60 / 24 );
 			}
 			//echo $days;
-			$FORMATTED_DATE = get_formatted_date( get_local_time( $val ) );
+			$FORMATTED_DATE = get_formatted_date( get_local_datetime( $val ) );
 			$val            = $FORMATTED_DATE . "<br>";
 
 			if ( $days == 0 ) {
@@ -161,7 +165,7 @@ function echo_ad_list_data( $admin ) {
 
 		if ( $column_info[ $template_tag ]['link'] == 'Y' ) { // Render as a Link to the record?
 			$AD_ID = get_template_value( 'AD_ID', 1, $admin );
-			$val   = '<a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?ad_id=' . $AD_ID . '&amp;offset=' . $cur_offset . $order_str . '">' . get_template_value( $template_tag, 1, $admin ) . "</a>";
+			$val   = '<a href="' . htmlentities( $_SERVER['PHP_SELF'] ) . '?aid=' . $AD_ID . '&amp;offset=' . $cur_offset . $order_str . '">' . get_template_value( $template_tag, 1, $admin ) . "</a>";
 		}
 		?>
         <td class="list_data_cell" <?php if ( $column_info[ $template_tag ]['no_wrap'] == 'Y' ) {
@@ -234,9 +238,9 @@ function echo_list_head_data_admin( $form_id ) {
 		?>
         <td class="list_header_cell" nowrap>
 			<?php echo '<small>(' . $row['sort_order'] . ')</small>'; ?>
-            <a href='<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>'><?php echo get_template_field_label( $row['template_tag'], $form_id ); ?></a> <a onClick="return confirmLink(this, 'Delete this column from view, are you sure?') " href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=del&column_id=<?php echo $row['column_id'] ?>"><IMG src='delete.gif' width='16' height='16' border='0' alt='Delete'></a>
+            <a href='<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>'><?php echo get_template_field_label( $row['template_tag'], $form_id ); ?></a> <a onClick="return confirmLink(this, 'Delete this column from view, are you sure?') " href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=del&column_id=<?php echo $row['column_id'] ?>"><IMG src='images/delete.gif' width='16' height='16' border='0' alt='Delete'></a>
             <a href="<?php echo htmlentities( $_SERVER['PHP_SELF'] ); ?>?action=edit&column_id=<?php echo $row['column_id']; ?>">
-                <IMG alt="edit" src="edit.gif" width="16" height="16" border="0" alt="Edit">
+                <IMG alt="edit" src="images/edit.gif" width="16" height="16" border="0" alt="Edit">
         </td>
 		<?php
 	}

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['check'] = new check;
 
-define( 'IPN_LOGGING', 'Y' );
+define( 'CHECK_LOGGING', 'Y' );
 
 function ch_mail_error( $msg ) {
 
@@ -46,12 +46,12 @@ function ch_mail_error( $msg ) {
 	$headers .= "Date: $date" . "\r\n";
 	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit check payment mod. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script check payment mod. ", $msg, $headers );
 }
 
 function ch_log_entry( $entry_line ) {
 
-	if ( IPN_LOGGING == 'Y' ) {
+	if ( CHECK_LOGGING == 'Y' ) {
 
 		$entry_line = "Check:$entry_line\r\n ";
 		$log_fp     = fopen( "logs.txt", "a" );
@@ -77,7 +77,9 @@ class check {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -142,7 +144,7 @@ class check {
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 
 			$check_enabled       = $_REQUEST['check_enabled'];
 			$check_currency      = $_REQUEST['check_currency'];
@@ -179,20 +181,9 @@ class check {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Check Currency</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <select name="check_currency"><?php echo currency_option_list( $check_currency ); ?></select></font></td>
+                            <select name="check_currency"><?php currency_option_list( $check_currency ); ?></select></font></td>
                 </tr>
-                <!--
-<tr>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">Send confirmation email</font></td>
-      <td  bgcolor="#e6f2ea"><font face="Verdana" size="1">
-       <input type="radio" name="bank_email_confirm" value="YES"  <?php if ( $bank_email_confirm == 'YES' ) {
-					echo " checked ";
-				} ?> >Yes - Send email with bank details<br>
-	  <input type="radio" name="bank_email_confirm" value="NO"  <?php if ( $bank_email_confirm == 'NO' ) {
-					echo " checked ";
-				} ?> >No<br></font></td>
-    </tr>
-	-->
+
                 <tr>
 
                     <td bgcolor="#e6f2ea" colspan=2><font face="Verdana" size="1"><input type="submit" value="Save"></font>
@@ -231,7 +222,7 @@ class check {
 		$sql = "SELECT val from `config` where `key`='CHECK_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;
@@ -295,7 +286,7 @@ class check {
 						//$label['payment_check_note'] = str_replace ("%INVOICE_CODE%", $_REQUEST['order_id'], $label['payment_check_note']);
 
 						if ( get_default_currency() != CHECK_CURRENCY ) {
-							echo convert_to_default_currency_formatted( $order_row[ currency ], $order_row['price'] ) . " = " . $check_amount;
+							echo convert_to_default_currency_formatted( $order_row[ 'currency' ], $order_row['price'] ) . " = " . $check_amount;
 							echo "<br>";
 						} ?>
 

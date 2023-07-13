@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,12 +30,15 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
 
 require_once BASE_PATH . "/include/ads.inc.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+global $f2, $label;
+
+$BID = $f2->bid();
 
 $sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 $order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
@@ -58,37 +61,38 @@ if ( mysqli_num_rows( $order_result ) == 0 ) {
 	die();
 }
 
-require_once BASE_PATH . "/html/header.php";
 $row = mysqli_fetch_array( $order_result );
 
 update_temp_order_timestamp();
 
 $has_packages = banner_get_packages( $BID );
 
-?>
+function display_ad_intro() {
+	global $label;
+	?>
     <p>
 		<?php
 		show_nav_status( 2 );
 		?>
     </p>
     <h3><?php echo $label['write_ad_instructions']; ?></h3>
-<?php
-if ( session_valid_id( session_id() ) ) {
-	$_REQUEST['user_id'] = $user_id = session_id();
-} else {
-	echo "Sorry there was an error with your session.";
-	die;
+	<?php
+	if ( session_valid_id( session_id() ) ) {
+		$_REQUEST['user_id'] = $user_id = session_id();
+	} else {
+		echo "Sorry there was an error with your session.";
+		die;
+	}
 }
-
-// TODO: fixing save / edit form
 
 // saving
 if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 
 	$error = validate_ad_data( 1 );
 	if ( $error != '' ) { // we have an error
+		require_once BASE_PATH . "/html/header.php";
 		$mode = "user";
-		//display_ad_intro();
+		display_ad_intro();
 		display_ad_form( 1, $mode, '' );
 	} else {
 		$ad_id = intval( insert_ad_data() );
@@ -98,17 +102,12 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 		$sql = "UPDATE temp_orders SET ad_id='$ad_id' where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
-		$prams = load_ad_values( $ad_id );
-
-		?>
-        <center>
-            <div class='ok_msg_label'><input type="button" class='big_button' value="<?php echo $label['write_ad_saved'] . " " . $label['write_ad_continue_button']; ?>" onclick="window.location='confirm_order.php'"></div>
-        </center>
-        <p>&nbsp;</p>
-		<?php
-		display_ad_form( 1, "user", $prams );
+		header( "Location: " . BASE_HTTP_PATH . "users/confirm_order.php" );
+		exit;
 	}
 } else {
+	require_once BASE_PATH . "/html/header.php";
+	display_ad_intro();
 
 	// get the ad_id form the temp_orders table..
 
@@ -116,10 +115,10 @@ if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != "" ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row   = mysqli_fetch_array( $result );
 	$ad_id = $row['ad_id'];
-	//echo "adid is: ".$ad_id;
-	$prams = load_ad_values( $ad_id ); // user is not logged in
 
-	//print_r($prams);
+	// user is not logged in
+	$prams = load_ad_values( $ad_id );
+
 	display_ad_form( 1, 'user', $prams );
 }
 

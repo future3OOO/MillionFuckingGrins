@@ -1,8 +1,8 @@
 /*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -43,7 +43,7 @@ body.mds-container {
 }
 
 body.mds-container.wp {
-	overflow: hidden;
+	overflow: auto;
 }
 
 .mds-container .outer {
@@ -56,6 +56,13 @@ body.mds-container.wp {
 .mds-container .inner {
 	margin: 0 auto;
 	width: auto;
+}
+
+.mds-container .container::before,
+.mds-container .container::after {
+	content: "";
+	clear: both;
+	display: table;
 }
 
 .mds-container .container {
@@ -100,24 +107,24 @@ Heading bar
 /*
 controls the look and feel of the 'pixels-sold/available' box:
 */
-.mds-container iframe[class^='statsframe'] {
+iframe[class^='statsframe'] {
 	overflow: hidden;
 	border: none;
 	padding: 0;
 	margin: 0;
 }
 
-.mds-container .status_outer {
+.stats-container {
 	width: 149px;
 }
 
-.mds-container .status_body {
+.stats-container .status_body {
 	margin: 0;
 	background-color: transparent;
 	overflow: hidden;
 }
 
-.mds-container .status {
+.stats-container .status {
 	border: 1px solid #efefef;
 	background-color: #fff;
 	border-radius: 6px;
@@ -129,7 +136,7 @@ controls the look and feel of the 'pixels-sold/available' box:
 	line-height: 16px;
 }
 
-.mds-container .status_text {
+.stats-container .status_text {
 	font-weight: bold;
 	color: #000;
 }
@@ -176,8 +183,6 @@ Grid iframe
 .mds-container .grid-container .grid-inner {
 	overflow: hidden;
 	border: none;
-	border-bottom: 1px solid #D4D6D4;
-	border-right: 1px solid #D4D6D4;
 	padding: 0;
 	margin: 0 auto;
 	display: block;
@@ -211,6 +216,7 @@ Ads list page
 .mds-container .table-row {
 	display: table;
 	width: 100%;
+	table-layout: fixed;
 }
 
 .mds-container .list-cell,
@@ -574,7 +580,9 @@ The value of the field (on the right from the field label)
 }
 
 .ajax-loader {
-	width:100%;
-	min-height:16px;
+	width:32px;
+	min-height:32px;
+	position:absolute;
 	background:url(../images/ajax-loader.gif) no-repeat center center;
+	z-index:9999;
 }

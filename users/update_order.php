@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,7 +30,8 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 define( 'NO_HOUSE_KEEP', 'YES' );
 
 header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
@@ -45,7 +46,9 @@ if ( isset( $_REQUEST['block_id'] ) ) {
 	$block_id = - 1;
 }
 
-$BID           = $f2->bid( $_REQUEST['BID'] );
+global $f2, $banner_data;
+
+$BID           = $f2->bid();
 $output_result = "";
 
 if ( $_SESSION['MDS_ID'] == '' ) {
@@ -59,7 +62,7 @@ if ( ! is_numeric( $BID ) ) {
 	die();
 }
 
-if ( $_REQUEST['user_id'] != '' ) {
+if ( isset($_REQUEST['user_id']) && !empty($_REQUEST['user_id']) ) {
 	$user_id = intval( $_REQUEST['user_id'] );
 	if ( ! is_numeric( $_REQUEST['user_id'] ) ) {
 		die();
@@ -77,11 +80,11 @@ if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'] ) ) {
 // reset blocks
 if ( isset( $_REQUEST['reset'] ) && $_REQUEST['reset'] == "true" ) {
 	$sql = "delete from blocks where user_id='" . intval( $_SESSION['MDS_ID'] ) . "' AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	if ( isset( $_SESSION['MDS_order_id'] ) ) {
 		$sql = "UPDATE orders SET blocks = '' WHERE order_id=" . intval( $_SESSION['MDS_order_id'] );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	}
 
 	echo "removed";

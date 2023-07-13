@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -71,24 +71,29 @@ if ( isset( $_POST['txn_id'] ) && $_POST['txn_id'] != '' ) {
 	} else if ( COINPAYMENTS_IPN_MODE == "HMAC" ) {
 
 		if ( ! isset( $_SERVER['HTTP_HMAC'] ) || empty( $_SERVER['HTTP_HMAC'] ) ) {
+			error_log( 'MDS CoinPayments IPN: No HMAC signature sent' );
 			die( "No HMAC signature sent" );
 		}
 
 		$request = file_get_contents( 'php://input' );
 		if ( $request === false || empty( $request ) ) {
+			error_log( 'MDS CoinPayments IPN: Error reading POST data' );
 			die( "Error reading POST data" );
 		}
 
 		$merchant = isset( $_POST['merchant'] ) ? $_POST['merchant'] : '';
 		if ( empty( $merchant ) ) {
+			error_log( 'MDS CoinPayments IPN: No Merchant ID passed' );
 			die( "No Merchant ID passed" );
 		}
 		if ( $merchant != COINPAYMENTS_MERCHANT_ID ) {
+			error_log( 'MDS CoinPayments IPN: Invalid Merchant ID' );
 			die( "Invalid Merchant ID" );
 		}
 
 		$hmac = hash_hmac( "sha512", $request, COINPAYMENTS_IPN_SECRET );
 		if ( $hmac != $_SERVER['HTTP_HMAC'] ) {
+			error_log( 'MDS CoinPayments IPN: HMAC signature does not match' );
 			die( "HMAC signature does not match" );
 		}
 
@@ -199,7 +204,9 @@ class CoinPayments {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -306,7 +313,7 @@ class CoinPayments {
 	}
 
 	function config_form() {
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$coinpayments_test_mode   = filter_var( $_REQUEST['coinpayments_test_mode'], FILTER_SANITIZE_STRING );
 			$coinpayments_public_key  = filter_var( $_REQUEST['coinpayments_public_key'], FILTER_SANITIZE_STRING );
 			$coinpayments_private_key = filter_var( $_REQUEST['coinpayments_private_key'], FILTER_SANITIZE_STRING );
@@ -485,7 +492,7 @@ class CoinPayments {
 		$sql = "SELECT val FROM config WHERE `key`='COINPAYMENTS_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

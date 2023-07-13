@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,11 +33,8 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+global $f2;
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
 
@@ -49,41 +46,45 @@ if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
 $sql = "Select * from banners ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 ?>
-<form name="bidselect" method="post" action="list.php">
-    <input type="hidden" name="old_order_id" value="<?php echo $order_id; ?>">
-    Select grid: <select name="BID" onchange="mds_submit(this)">
+    <form name="bidselect" method="post" action="list.php">
+        <label>
+            Select grid: <select name="BID" onchange="mds_submit(this)">
 
-		<?php
-		while ( $row = mysqli_fetch_array( $res ) ) {
+				<?php
+				while ( $row = mysqli_fetch_array( $res ) ) {
 
-			if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
-				$sel = 'selected';
-			} else {
-				$sel = '';
-			}
-			echo '<option ' . $sel . ' value=' . $row['banner_id'] . '>' . $row['name'] . '</option>';
-		}
-		?>
-    </select>
-</form>
-<hr>
-<p>
-    Here is the list of your top advertisers for the selected grid. <b>To have this list on your own page, copy and paste the following HTML code.</b>
-
-</p>
+					if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
+						$sel = 'selected';
+					} else {
+						$sel = '';
+					}
+					echo '<option ' . $sel . ' value=' . $row['banner_id'] . '>' . $row['name'] . '</option>';
+				}
+				?>
+            </select>
+        </label>
+    </form>
+    <br/>
+    <p>Here is the list of your top advertisers for the selected grid. <b>To have this list on your own page, copy and paste the following HTML/JavaScript code.</b></p>
 <?php
-
+require_once realpath( __DIR__ . "/../include/mds_ajax.php" );
+global $load_mds_js;
+$load_mds_js = true;
+$mds_ajax = new Mds_Ajax();
 ob_start();
-include( BASE_PATH . '/html/mouseover_box.htm' ); // edit this file to change the style of the mouseover box!
-$box = ob_get_contents();
-ob_end_flush();
+$mds_ajax->show( 'list', $BID, 'list' );
+$output = ob_get_contents();
 ?>
+    <textarea style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities( $output ); ?></textarea>
 
+    <p>You can also use PHP:</p>
+    <textarea style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities( '<?php
+require_once( BASE_PATH . "/include/mds_ajax.php" );
+$mds_ajax = new Mds_Ajax();
+$mds_ajax->show( \'list\', $BID, \'list\' );
+' ); ?></textarea>
+
+    <p>Results:</p>
 <?php
 
-?>
-<TEXTAREA style='font-size: 10px;' rows='10' onfocus="this.select()" cols="90%"><?php echo htmlentities( $box . '<script src="' . BASE_HTTP_PATH . 'top_ads_js.php?BID=' . $BID . '"></script>' ); ?></TEXTAREA>
-
-<hr>
-
-<?php include( BASE_PATH . "/include/top_ads_js.php" ); ?>
+echo $output;

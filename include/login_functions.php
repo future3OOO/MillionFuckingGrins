@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -44,8 +44,16 @@ function process_login() {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 
 	if ( ! is_logged_in() || ( $_SESSION['MDS_Domain'] != "ADVERTISER" ) ) {
+		if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+			mds_wp_login_check();
+		}
 
 		require_once BASE_PATH . "/html/header.php";
+
+		if ( isset( $_REQUEST['forgot'] ) ) {
+			$str = str_replace( "%BASE_HTTP_PATH%", BASE_HTTP_PATH, $label["advertiser_forgot_success1"] );
+			echo "<p style='text-align:center;'>" . $str . "</p>";
+		}
 		?>
         <table cellpadding=5 border=1 style="width: 100%;border-collapse: collapse; border-style:solid; border-color:#E8E8E8">
 
@@ -92,6 +100,40 @@ function process_login() {
 
 function is_logged_in() {
 	global $_SESSION;
+
+	if ( WP_ENABLED == 'YES' && WP_USERS_ENABLED == 'YES' ) {
+
+		require_once WP_PATH . '/wp-load.php';
+		require_once WP_PATH . '/wp-includes/pluggable.php';
+
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		$user = wp_get_current_user();
+
+		// get user from MDS db
+		$result = mysqli_query( $GLOBALS['connection'], "SELECT * FROM `users` WHERE username='" . mysqli_real_escape_string( $GLOBALS['connection'], $user->user_login ) . "'" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$row = mysqli_fetch_array( $result );
+		if ( isset( $row ) && ! $row['Username'] ) {
+			return false;
+		}
+
+		$_SESSION['MDS_ID']        = $row['ID'];
+		$_SESSION['MDS_FirstName'] = $row['FirstName'];
+		$_SESSION['MDS_LastName']  = $row['LastName'];
+		$_SESSION['MDS_Username']  = $row['Username'];
+		$_SESSION['MDS_Rank']      = $row['Rank'];
+		//$_SESSION['MDS_order_id'] = '';
+		$_SESSION['MDS_Domain'] = 'ADVERTISER';
+
+		// TODO: why is this even here? should per-user lang be a thing?
+//		if ( $row['lang'] != '' ) {
+//			$_SESSION['MDS_LANG'] = $row['lang'];
+//		}
+
+		return true;
+	}
 
 	if ( ! isset( $_SESSION['MDS_ID'] ) ) {
 		$_SESSION['MDS_ID'] = '';
@@ -176,12 +218,7 @@ function login_form( $show_signup_link = true, $target_page = 'index.php' ) {
 	<?php
 }
 
-function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Username, $pass, $Email, $Newsletter, $Notification1, $Notification2, $lang ) {
-
-	if ( $lang == '' ) {
-		$lang = "EN"; // default language is english
-
-	}
+function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Username, $pass, $Email ) {
 
 	global $label;
 
@@ -189,12 +226,12 @@ function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Us
 
 	$validated = 0;
 
-	if ( ( EM_NEEDS_ACTIVATION == "AUTO" ) ) {
+	if ( EM_NEEDS_ACTIVATION == "AUTO" ) {
 		$validated = 1;
 	}
 	$now = ( gmdate( "Y-m-d H:i:s" ) );
 	// everything Ok, create account and send out emails.
-	$sql = "Insert Into users(IP, SignupDate, FirstName, LastName, CompName, Username, Password, Email, Newsletter, Notification1, Notification2, Validated, Aboutme) values('" . mysqli_real_escape_string( $GLOBALS['connection'], $REMOTE_ADDR ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $FirstName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $LastName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $CompName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "', '$Password', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Email ) . "', '" . intval( $Newsletter ) . "', '" . intval( $Notification1 ) . "', '" . intval( $Notification2 ) . "', '$validated', '')";
+	$sql = "Insert Into users(IP, SignupDate, FirstName, LastName, CompName, Username, Password, Email, Newsletter, Notification1, Notification2, Validated, Aboutme) values('" . mysqli_real_escape_string( $GLOBALS['connection'], $REMOTE_ADDR ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $now ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $FirstName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $LastName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $CompName ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "', '$Password', '" . mysqli_real_escape_string( $GLOBALS['connection'], $Email ) . "', 0, 0, 0, '$validated', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
 	$res = mysqli_affected_rows( $GLOBALS['connection'] );
 
@@ -205,7 +242,9 @@ function create_new_account( $REMOTE_ADDR, $FirstName, $LastName, $CompName, $Us
 		$success = false;
 		$error   = $label['advertiser_could_not_signup'];
 	}
-	$advertiser_signup_success = str_replace( "%FirstName%", stripslashes( $FirstName ), $label['advertiser_signup_success'] );
+
+	$advertiser_signup_success = $validated ? $label['advertiser_signup_success_1'] : $label['advertiser_signup_success_2'];
+	$advertiser_signup_success = str_replace( "%FirstName%", stripslashes( $FirstName ), $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%LastName%", stripslashes( $LastName ), $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%SITE_NAME%", SITE_NAME, $advertiser_signup_success );
 	$advertiser_signup_success = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $advertiser_signup_success );
@@ -263,7 +302,7 @@ function validate_signup_form() {
 
 		//validate email ";
 
-		if ( $row['Email'] != '' ) {
+		if ( isset( $row['Email'] ) && $row['Email'] != '' ) {
 			$error .= " " . $label["advertiser_signup_email_in_use"] . " ";
 		}
 	}
@@ -271,7 +310,7 @@ function validate_signup_form() {
 	return $error;
 }
 
-function display_signup_form( $FirstName, $LastName, $CompName, $Username, $password, $password2, $Email, $Newsletter, $Notification1, $Notification2, $lang ) {
+function display_signup_form( $FirstName, $LastName, $CompName, $Username, $password, $password2, $Email ) {
 
 	global $label, $f2;
 
@@ -339,40 +378,28 @@ function process_signup_form( $target_page = 'index.php' ) {
 
 	global $label;
 
-	$FirstName     = ( $_POST['FirstName'] );
-	$LastName      = ( $_POST['LastName'] );
-	$CompName      = ( $_POST['CompName'] );
-	$Username      = ( $_POST['Username'] );
-	$Password      = md5( $_POST['Password'] );
-	$Password2     = md5( $_POST['Password2'] );
-	$Email         = ( $_POST['Email'] );
-	$Newsletter    = ( $_POST['Newsletter'] );
-	$Notification1 = ( $_POST['Notification1'] );
-	$Notification2 = ( $_POST['Notification2'] );
-	$Aboutme       = ( $_POST['Aboutme'] );
-	$lang          = ( $_POST['lang'] );
-
-	if ( $_REQUEST['lang'] == '' ) {
-		$lang = 'EN';
-	}
+	$FirstName = ( $_POST['FirstName'] );
+	$LastName  = ( $_POST['LastName'] );
+	$CompName  = ( $_POST['CompName'] );
+	$Username  = ( $_POST['Username'] );
+	$Password  = md5( $_POST['Password'] );
+	$Password2 = md5( $_POST['Password2'] );
+	$Email     = ( $_POST['Email'] );
 
 	$error = validate_signup_form();
 
 	if ( $error != '' ) {
+		// error processing signup/
 
 		echo "<span class='error_msg_label'>" . $label["advertiser_signup_error"] . "</span><P>";
 		echo "<span ><b>" . $error . "</b></span>";
 
-		$password  = ( $_REQUEST['password'] );
-		$password2 = ( $_REQUEST['password2'] );
-
-		return false; // error processing signup/
-
+		return false;
 	} else {
 
 		//$target_page="index.php";
 
-		$success = create_new_account( $_SERVER['REMOTE_ADDR'], $FirstName, $LastName, $CompName, $Username, $_REQUEST['Password'], $Email, $Newsletter, $Notification1, $Notification2, $lang );
+		$success = create_new_account( $_SERVER['REMOTE_ADDR'], $FirstName, $LastName, $CompName, $Username, $_REQUEST['Password'], $Email );
 
 		if ( ( EM_NEEDS_ACTIVATION == "AUTO" ) ) {
 
@@ -438,10 +465,6 @@ function do_login() {
 			//$_SESSION['MDS_order_id'] = '';
 			$_SESSION['MDS_Domain'] = 'ADVERTISER';
 
-			if ( $row['lang'] != '' ) {
-				$_SESSION['MDS_LANG'] = $row['lang'];
-			}
-
 			$now = ( gmdate( "Y-m-d H:i:s" ) );
 			$sql = "UPDATE `users` SET `login_date`='$now', `last_request_time`='$now', `logout_date`='1000-01-01 00:00:00', `login_count`=`login_count`+1 WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['Username'] ) . "' ";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
@@ -455,18 +478,87 @@ function do_login() {
 	}
 }
 
-function do_logout() {
-	$now = ( gmdate( "Y-m-d H:i:s" ) );
-	$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
-	mysqli_query( $GLOBALS['connection'], $sql );
+function do_wp_login(): bool {
+	if ( empty( WP_PATH ) ) {
+		return false;
+	}
 
-	unset( $_SESSION['MDS_ID'] );
+	if ( ! isset( $_POST ) || ! isset( $_POST['ID'] ) || ! isset( $_POST['Username'] ) || ! isset( $_POST['Password'] ) ) {
+		return false;
+	}
+
+	$ID       = $_POST['ID'];
+	$Username = $_POST['Username'];
+	$Password = $_POST['Password'];
+
+	// get user from MDS db
+	$result = mysqli_query( $GLOBALS['connection'], "SELECT * FROM `users` WHERE username='" . mysqli_real_escape_string( $GLOBALS['connection'], $Username ) . "'" ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$row = mysqli_fetch_array( $result );
+	if ( ! $row['Username'] ) {
+		return false;
+	}
+
+	// use WP to check password for user
+	mds_load_wp();
+	$user = get_userdata( $ID );
+	if ( ! wp_check_password( $Password, $row['Password'], $user->ID ) ) {
+		return false;
+	}
+
+	// update login dates and count
+	$now = ( gmdate( "Y-m-d H:i:s" ) );
+	$sql = "UPDATE `users` SET `login_date`='$now', `last_request_time`='$now', `logout_date`='1000-01-01 00:00:00', `login_count`=`login_count`+1 WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['Username'] ) . "' ";
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+
+	return true;
+}
+
+function do_logout() {
+	// check for $_SESSION before trying to use it
+	if ( isset( $_SESSION ) ) {
+		if ( isset( $_SESSION['MDS_Username'] ) ) {
+			$now = ( gmdate( "Y-m-d H:i:s" ) );
+			$sql = "UPDATE `users` SET `logout_date`='$now' WHERE `Username`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_SESSION['MDS_Username'] ) . "'";
+			mysqli_query( $GLOBALS['connection'], $sql );
+		}
+
+		if ( isset( $_SESSION['MDS_ID'] ) ) {
+			unset( $_SESSION['MDS_ID'] );
+		}
+	}
+
 	$_SESSION['MDS_ID']     = '';
 	$_SESSION['MDS_Domain'] = '';
-	session_destroy();
+
+	if ( session_status() === PHP_SESSION_ACTIVE ) {
+		session_destroy();
+	}
 
 	if ( isset( $_COOKIE['PHPSESSID'] ) ) {
 		unset( $_COOKIE['PHPSESSID'] );
-		setcookie( 'PHPSESSID', null, - 1 );
+		setcookie( 'PHPSESSID', '', - 1 );
+	}
+}
+
+/**
+ * Start a session with a 1 hour limit.
+ *
+ * @link https://stackoverflow.com/a/8311400/311458
+ */
+function mds_start_session( $options = [] ) {
+	if ( session_status() == PHP_SESSION_NONE ) {
+
+		ini_set( 'session.gc_maxlifetime', 3600 );
+		session_set_cookie_params( 3600 );
+		session_start( $options );
+
+		$now = time();
+		if ( isset( $_SESSION['discard_after'] ) && $now > $_SESSION['discard_after'] ) {
+			session_unset();
+			session_destroy();
+			session_start( $options );
+		}
+
+		$_SESSION['discard_after'] = $now + 3600;
 	}
 }

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,14 +30,19 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
 
-require_once BASE_PATH . "/include/login_functions.php";
+if ( DISPLAY_ORDER_HISTORY !== "YES" ) {
+	exit;
+}
 
 process_login();
 
 require_once BASE_PATH . "/html/header.php";
+
+global $label;
 
 if ( isset( $_REQUEST['cancel'] ) && $_REQUEST['cancel'] == 'yes' && isset( $_REQUEST['order_id'] ) ) {
 	if ( $_REQUEST['order_id'] == "temp" ) {
@@ -154,14 +159,14 @@ usort( $orders, "date_sort" );
 			foreach($orders as $order) {
 	?>
 <tr onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);" bgColor="#ffffff">
-			<td><font face="Arial" size="2"><?php echo get_local_time($order['order_date']);?></font></td>
+			<td><font face="Arial" size="2"><?php echo get_local_datetime($order['order_date'], true);?></font></td>
 			<td><font face="Arial" size="2"><?php echo isset($order['FirstName']) ? $order['FirstName']." ".$order['LastName'] : "";?></font></td>
-			<td><font face="Arial" size="2"><?php echo isset($order['Username']) ? $order['Username'] : "";?> (#<?php echo $order['ID'];?>)</font></td>
+			<td><font face="Arial" size="2"><?php echo isset($order['Username']) ? $order['Username'] : "";?> <?php echo (isset($order['ID']) ? '(#' . $order['ID'] . ')' : '');?></font></td>
 			<td><font face="Arial" size="2">#<?php echo isset($order['order_id']) ? $order['order_id'] : "";?></font></td>
 			<td><font face="Arial" size="2"><?php echo $order['quantity'];?></font></td>
 	<td><font face="Arial" size="2"><?php 
 
-					$sql = "select * from banners where banner_id=".intval($order['banner_id']);
+			$sql = "select * from banners where banner_id=".intval($order['banner_id']);
 			$b_result = mysqli_query($GLOBALS['connection'], $sql) or die (mysqli_error($GLOBALS['connection']).$sql);
 			$b_row = mysqli_fetch_array($b_result);
 		
@@ -202,12 +207,12 @@ usort( $orders, "date_sort" );
 				}
 
 				$elapsed_time = strtotime(gmdate('r')) - $time_start;
-				$elapsed_days = floor ($elapsed_time / 60 / 60 / 24);
-				
-				$exp_time =  ($order['days_expire']  * 24 * 60 * 60);
+                $elapsed_days = floor( $elapsed_time / 60 / 60 );
+
+                $exp_time = ( $order['days_expire'] * 60 * 60 );
 
 				$exp_time_to_go = $exp_time - $elapsed_time;
-				$exp_days_to_go =  floor ($exp_time_to_go / 60 / 60 / 24);
+                $exp_days_to_go = floor( $exp_time_to_go / 60 / 60 );
 
 				$to_go = elapsedtime($exp_time_to_go);
 

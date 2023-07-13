@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,7 +34,8 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+global $f2;
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
 
@@ -44,19 +45,19 @@ if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
 }
 
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
+
 ?>
 <form name="bidselect" method="post" action="top.php">
-    <input type="hidden" name="old_order_id" value="<?php echo $order_id; ?>">
     Select grid: <select name="BID" onchange="mds_submit(this)">
-        <option value='all' <?php if ( $f2->bid( $_REQUEST['BID'] ) == 'all' ) {
+        <option value='all' <?php if ( $BID == 'all' ) {
 			echo 'selected';
 		} ?>>Show All
         </option>
 		<?php
 		while ( $row = mysqli_fetch_array( $res ) ) {
 
-			if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+			if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 				$sel = 'selected';
 			} else {
 				$sel = '';
@@ -83,6 +84,9 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
         <td>
             <font face="arial" size="2"><b>Clicks</b></font>
         </td>
+        <td>
+            <font face="arial" size="2"><b>Views</b></font>
+        </td>
     </tr>
 
 	<?php
@@ -91,11 +95,11 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 
 	//$sql = "SELECT *, DATE_FORMAT(MAX(order_date), '%Y-%c-%d') as max_date, sum(quantity) AS pixels FROM orders where status='completed' $bid_sql GROUP BY user_id, banner_id order by pixels desc ";
 
-	$sql = "SELECT *, sum(click_count) as clicksum, count(order_id) as b from blocks WHERE status='sold' AND image_data <> '' $bid_sql group by url order by clicksum desc ";
+	$sql = "SELECT *, sum(click_count) AS clicksum, sum(view_count) AS viewsum, count(order_id) AS b FROM blocks WHERE STATUS='sold' AND image_data <> '' $bid_sql GROUP BY order_id, block_id, click_count, view_count ORDER BY clicksum DESC";
 
 	//echo $sql;
 
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 	while ( $row = mysqli_fetch_array( $result ) ) {
 
@@ -106,26 +110,6 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 
 					echo "<a href='" . $row['url'] . "' target='_blank' >" . $row['alt_text'] . "</a>";
 
-					/*
-
-				$sql = "SELECT alt_text, url, count(alt_text) AS COUNT FROM blocks WHERE user_id=".$row[user_id]." and banner_id=".$row[banner_id]." group by url ";
-
-						$m_result = mysqli_query($GLOBALS['connection'], $sql);
-						while ($m_row=mysqli_fetch_array($m_result)) {
-							if ($m_row[url] !='') {
-								echo "<a href='".$m_row[url]."' target='_blank' >".$m_row[alt_text]."</a> <br>";
-							} else {
-
-
-							}
-						}
-						if (mysqli_num_rows($m_result)==0) {
-							echo "[not yet]";
-
-						}
-
-						*/
-
 					?></font>
             </td>
             <td>
@@ -134,6 +118,9 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 
             <td>
                 <font face="arial" size="2"><?php echo $row['clicksum']; ?></font>
+            </td>
+            <td>
+                <font face="arial" size="2"><?php echo $row['viewsum']; ?></font>
             </td>
         </tr>
 		<?php

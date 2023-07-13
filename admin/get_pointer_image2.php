@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,11 +34,8 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/../include/init.php";
 
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+global $f2;
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -46,17 +43,22 @@ $imagine = new Imagine\Gd\Imagine();
 
 // get the order id
 if ( isset( $_REQUEST['block_id'] ) && $_REQUEST['block_id'] != '' ) {
-	$sql = "SELECT * FROM blocks WHERE block_id='" . intval( $_REQUEST['block_id'] ) . "' AND banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "' ";
+	$sql = "SELECT * FROM blocks WHERE block_id=" . intval( $_REQUEST['block_id'] ) . " AND banner_id=" . $BID;
 } else if ( isset( $_REQUEST['aid'] ) && $_REQUEST['aid'] != '' ) {
-	$sql = "SELECT * FROM ads WHERE ad_id='" . intval( $_REQUEST['aid'] ) . "' ";
+	$sql = "SELECT * FROM ads WHERE ad_id=" . intval( $_REQUEST['aid'] );
 }
 
-$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+if ( ! isset( $sql ) ) {
+	error_log( "No block_id or aid found in request for SQL query!" );
+	exit;
+}
+
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
 
 // load all the blocks wot
-$sql = "SELECT * FROM blocks WHERE order_id='" . intval( $row['order_id'] ) . "' ";
-$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+$sql = "SELECT * FROM blocks WHERE order_id=" . intval( $row['order_id'] );
+$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 $blocks = array();
 

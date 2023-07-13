@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -32,18 +32,20 @@
 
 try {
 
-	session_start();
+	require_once __DIR__ . "/../include/login_functions.php";
+	mds_start_session();
 	define( 'NO_HOUSE_KEEP', 'YES' );
 
 	require_once __DIR__ . "/../include/init.php";
 
-	$imagine = new Imagine\Gd\Imagine();
-
-	if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID = $f2->bid( $_REQUEST['BID'] );
-	} else {
-		$BID = 1;
+	if ( class_exists( 'Imagick' ) ) {
+		$imagine = new Imagine\Imagick\Imagine();
+	} else if ( function_exists( 'gd_info' ) ) {
+		$imagine = new Imagine\Gd\Imagine();
 	}
+
+	global $f2;
+	$BID = $f2->bid();
 
 	$banner_data = load_banner_constants( $BID );
 
@@ -65,15 +67,28 @@ try {
 
 	// image size
 	$box = $image->getSize();
+	$new_size = get_required_size( $box->getWidth(), $box->getHeight(), $banner_data );
+	$pixel_count = $new_size[0] * $new_size[1];
+	$block_size  = $pixel_count / ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
 	// make it smaller
 	if ( MDS_RESIZE == 'YES' ) {
-		$new_size = get_required_size( $box->getWidth(), $box->getHeight(), $banner_data );
+		$rescale = [];
+		if ( ( $block_size > $banner_data['G_MAX_BLOCKS'] ) && ( $banner_data['G_MAX_BLOCKS'] > 0 ) ) {
+			$rescale['x'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $new_size[0]);
+			$rescale['y'] = min($banner_data['G_MAX_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $new_size[0]);
+		} else if ( ( $block_size < $banner_data['G_MIN_BLOCKS'] ) && ( $banner_data['G_MIN_BLOCKS'] > 0 ) ) {
+			$rescale['x'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_WIDTH'], $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH'], $new_size[0]);
+			$rescale['y'] = min($banner_data['G_MIN_BLOCKS'] * $banner_data['BLK_HEIGHT'], $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT'], $new_size[0]);
+		}
 
-		// only resize if the dimensions are different
-		if ( $new_size[0] != $box->getWidth() && $new_size[1] != $box->getHeight() ) {
-			$resize = new Imagine\Image\Box( $new_size[0], $new_size[1] );
-			$image->resize( $resize );
+		if ( isset( $rescale['x'] ) ) {
+
+			// only resize if the dimensions are different
+			if ( $rescale['x'] != $box->getWidth() || $rescale['y'] != $box->getHeight() ) {
+				$resize = new Imagine\Image\Box( $rescale['x'], $rescale['y'] );
+				$image->resize( $resize );
+			}
 		}
 	}
 

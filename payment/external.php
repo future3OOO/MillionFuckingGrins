@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,29 +33,6 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['external'] = new external;
 
-function external_mail_error( $msg ) {
-
-	$date = date( "D, j M Y H:i:s O" );
-
-	$headers = "From: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "Reply-To: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "Return-Path: " . SITE_CONTACT_EMAIL . "\r\n";
-	$headers .= "X-Mailer: PHP" . "\r\n";
-	$headers .= "Date: $date" . "\r\n";
-	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
-
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " external payment module. ", $msg, $headers );
-}
-
-function external_log_entry( $entry_line ) {
-	$entry_line = "External:$entry_line\r\n ";
-	$log_fp     = fopen( "logs.txt", "a" );
-	fputs( $log_fp, $entry_line );
-	fclose( $log_fp );
-}
-
-// Payment Object
-
 class external {
 
 	var $name = "Payment";
@@ -72,7 +49,8 @@ class external {
                            `key`='EXTERNAL_URL' OR 
                            `key`='EXTERNAL_AUTO_APPROVE' OR 
                            `key`='EXTERNAL_BUTTON_TEXT' OR
-                           `key`='EXTERNAL_BUTTON_IMAGE'
+                           `key`='EXTERNAL_BUTTON_IMAGE' OR
+                           `key`='EXTERNAL_REDIRECT'
                            ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
@@ -100,6 +78,9 @@ class external {
 
 		$sql = "REPLACE INTO config (`key`, val) VALUES ('EXTERNAL_BUTTON_IMAGE', '')";
 		mysqli_query( $GLOBALS['connection'], $sql );
+
+		$sql = "REPLACE INTO config (`key`, val) VALUES ('EXTERNAL_REDIRECT', '')";
+		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
 	function uninstall() {
@@ -117,38 +98,45 @@ class external {
 
 		$sql = "DELETE FROM config WHERE `key`='EXTERNAL_BUTTON_IMAGE'";
 		mysqli_query( $GLOBALS['connection'], $sql );
+
+		$sql = "DELETE FROM config WHERE `key`='EXTERNAL_REDIRECT'";
+		mysqli_query( $GLOBALS['connection'], $sql );
 	}
 
 	function payment_button( $order_id ) {
-	    // TODO: add option to redirect instantly instead of clicking a button
-		global $label;
+		if ( EXTERNAL_REDIRECT == "yes" ) {
+			self::process_payment_return();
+		} else {
 
-		$sql = "SELECT * FROM orders WHERE order_id=" . intval( $order_id );
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
-		$order_row = mysqli_fetch_array( $result );
+			$sql = "SELECT * FROM orders WHERE order_id=" . intval( $order_id );
+			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			$order_row = mysqli_fetch_array( $result );
 
-		?>
-        <div style="text-align: center;">
-            <input type="image" src="<?php echo htmlspecialchars( EXTERNAL_BUTTON_IMAGE, ENT_QUOTES ); ?>" alt="<?php echo htmlspecialchars( EXTERNAL_BUTTON_TEXT, ENT_QUOTES ); ?>" value="<?php echo htmlspecialchars( EXTERNAL_BUTTON_TEXT, ENT_QUOTES ); ?>" onclick="window.location='<?php echo htmlspecialchars( BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className . "&order_id=" . $order_row['order_id'], ENT_QUOTES ); ?>'">
-        </div>
+			?>
+            <div style="text-align: center;">
+                <input type="image" src="<?php echo htmlspecialchars( EXTERNAL_BUTTON_IMAGE, ENT_QUOTES ); ?>" alt="<?php echo htmlspecialchars( EXTERNAL_BUTTON_TEXT, ENT_QUOTES ); ?>" value="<?php echo htmlspecialchars( EXTERNAL_BUTTON_TEXT, ENT_QUOTES ); ?>" onclick="window.location='<?php echo htmlspecialchars( BASE_HTTP_PATH . "users/thanks.php?m=" . $this->className . "&order_id=" . $order_row['order_id'], ENT_QUOTES ); ?>'">
+            </div>
 
-		<?php
+			<?php
+		}
 	}
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$external_enabled      = $_REQUEST['external_enabled'];
 			$external_url          = $_REQUEST['external_url'];
 			$external_auto_approve = $_REQUEST['external_auto_approve'];
 			$external_button_text  = $_REQUEST['external_button_text'];
 			$external_button_image = $_REQUEST['external_button_image'];
+			$external_redirect     = $_REQUEST['external_redirect'];
 		} else {
 			$external_enabled      = EXTERNAL_ENABLED;
 			$external_url          = EXTERNAL_URL;
 			$external_auto_approve = EXTERNAL_AUTO_APPROVE;
 			$external_button_text  = EXTERNAL_BUTTON_TEXT;
 			$external_button_image = EXTERNAL_BUTTON_IMAGE;
+			$external_redirect     = EXTERNAL_REDIRECT;
 		}
 
 		?>
@@ -203,6 +191,23 @@ class external {
                     </td>
                 </tr>
                 <tr>
+                    <td bgcolor="#e6f2ea">
+                        <span style="font-family: Verdana,serif; font-size: xx-small; ">Auto-redirect?</span></td>
+                    <td bgcolor="#e6f2ea">
+                        <span style="font-family: Verdana,serif; font-size: xx-small; ">
+                            <select name="external_redirect">
+                                <option value="yes"<?php if ( $external_redirect == "yes" ) {
+	                                echo 'selected="selected"';
+                                } ?>>Yes</option>
+                                <option value="no"<?php if ( $external_redirect == "no" ) {
+	                                echo 'selected="selected"';
+                                } ?>>No</option>
+                            </select>
+                        </span>
+                        <div>Setting to Yes will cause users to automatically redirect to the URL entered above instead of having to click the button.</div>
+                    </td>
+                </tr>
+                <tr>
 
                     <td bgcolor="#e6f2ea" colspan=2>
                         <span style="font-family: Verdana,serif; font-size: xx-small; "><input type="submit" value="Save"></span>
@@ -230,15 +235,17 @@ class external {
 
 		$sql = "REPLACE INTO config (`key`, val) VALUES ('EXTERNAL_BUTTON_IMAGE', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['external_button_image'] ) . "')";
 		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+
+		$sql = "REPLACE INTO config (`key`, val) VALUES ('EXTERNAL_REDIRECT', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['external_redirect'] ) . "')";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	}
 
 	// true or false
 	function is_enabled() {
-
 		$sql = "SELECT val FROM `config` WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;
@@ -246,7 +253,6 @@ class external {
 	}
 
 	function is_installed() {
-
 		$sql = "SELECT val FROM config WHERE `key`='EXTERNAL_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		//$row = mysqli_fetch_array($result);
@@ -272,7 +278,7 @@ class external {
 
 	function process_payment_return() {
 		global $f2;
-//		if ( ( $_REQUEST['order_id'] != '' ) && ( $_REQUEST['nhezk5'] != '' ) ) {
+
 		if ( ( $_REQUEST['order_id'] != '' ) ) {
 
 			if ( $_SESSION['MDS_ID'] == '' ) {
@@ -287,7 +293,7 @@ class external {
 
 				$url = $f2->filter( EXTERNAL_URL );
 
-				$sql = "SELECT * FROM orders WHERE order_id=" . intval($order_id);
+				$sql = "SELECT * FROM orders WHERE order_id=" . intval( $order_id );
 				$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 				$row = mysqli_fetch_array( $result );
 
@@ -302,12 +308,17 @@ class external {
 				$dest = str_replace( '%AMOUNT%', urlencode( $row['price'] ), $url );
 				$dest = str_replace( '%CURRENCY%', urlencode( $row['currency'] ), $dest );
 				$dest = str_replace( '%QUANTITY%', urlencode( $quantity ), $dest );
-				$dest = $dest . '&mdsid=' . $order_id;
+				if(strpos($dest, '?') !== false) {
+					$dest = $dest . '&mdsid=' . $order_id;
+				} else {
+					$dest = $dest . '?mdsid=' . $order_id;
+				}
 
-				//header( "Location: " .  $dest );
-                // TODO: add message while redirecting, if necessary
-				echo "<script>top.window.location = '$dest'</script>";
-				exit;
+				if ( EXTERNAL_REDIRECT == "yes" ) {
+					echo "<span style='color:#000'>Please wait, redirecting...</span>";
+					echo "<script>top.window.location = '$dest'</script>";
+					exit;
+				}
 			}
 		}
 	}
@@ -318,16 +329,16 @@ class external {
 		$url = $f2->filter( EXTERNAL_URL );
 
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 		$row = mysqli_fetch_array( $result );
 
 		complete_order( $row['user_id'], $order_id );
-		debit_transaction( $order_id, $row['price'], $row['currency'], 'External', $url, 'External' );
+		debit_transaction( $order_id, $row['price'], $row['currency'], 'External', substr($url, 0, 64), 'External' );
 	}
 
 	function get_quantity( $order_id ) {
 		$sql = "SELECT * FROM orders WHERE order_id='" . intval( $order_id ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or payment_mail_error( mysqli_error( $GLOBALS['connection'] ) . $sql, 'external' );
 		$row = mysqli_fetch_array( $result );
 
 		return $row['quantity'];

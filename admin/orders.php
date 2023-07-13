@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -35,12 +35,12 @@ require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
 $oid = 0;
-if ( $_REQUEST['mass_complete'] != '' ) {
+if ( isset( $_REQUEST['mass_complete'] ) && $_REQUEST['mass_complete'] != '' ) {
 
 	foreach ( $_REQUEST['orders'] as $oid ) {
 
 		$sql = "SELECT * from orders where order_id=" . intval( $oid );
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		$order_row = mysqli_fetch_array( $result );
 
 		if ( $order_row['status'] != 'completed' ) {
@@ -50,10 +50,10 @@ if ( $_REQUEST['mass_complete'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'complete' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'complete' ) {
 
 	$sql = "SELECT * from orders where order_id=" . intval( $_REQUEST['order_id'] );
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	$order_row = mysqli_fetch_array( $result );
 
 	complete_order( $_REQUEST['user_id'], $_REQUEST['order_id'] );
@@ -61,12 +61,12 @@ if ( $_REQUEST['action'] == 'complete' ) {
 	echo "Order completed.";
 }
 
-if ( $_REQUEST['action'] == 'cancel' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'cancel' ) {
 	cancel_order( $_REQUEST['order_id'] );
 	echo "Order cancelled.";
 }
 
-if ( $_REQUEST['mass_cancel'] != '' ) {
+if ( isset( $_REQUEST['mass_cancel'] ) && $_REQUEST['mass_cancel'] != '' ) {
 
 	echo "cancelling...";
 
@@ -77,35 +77,37 @@ if ( $_REQUEST['mass_cancel'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'delete' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete' ) {
 
 	delete_order( $_REQUEST['order_id'] );
 
 	echo "Order deleted.";
 }
 
-if ( $_REQUEST['mass_delete'] != '' ) {
+if ( isset( $_REQUEST['mass_delete'] ) && $_REQUEST['mass_delete'] != '' ) {
 
 	foreach ( $_REQUEST['orders'] as $oid ) {
 		delete_order( $oid );
 	}
 }
 
-$q_aday     = $_REQUEST['q_aday'];
-$q_amon     = $_REQUEST['q_amon'];
-$q_ayear    = $_REQUEST['q_ayear'];
-$q_name     = $_REQUEST['q_name'];
-$q_username = $_REQUEST['q_username'];
-$q_resumes  = $_REQUEST['q_resumes'];
-$q_news     = $_REQUEST['q_news'];
-$q_email    = $_REQUEST['q_email'];
-$q_company  = $_REQUEST['q_company'];
-$search     = $_REQUEST['search'];
-$q_string   = urlencode( "&q_name=$q_name&q_username=$q_username&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&search=$search" );
+$q_aday     = $_REQUEST['q_aday'] ?? '';
+$q_amon     = $_REQUEST['q_amon'] ?? '';
+$q_ayear    = $_REQUEST['q_ayear'] ?? '';
+$q_name     = $_REQUEST['q_name'] ?? '';
+$q_username = $_REQUEST['q_username'] ?? '';
+$q_resumes  = $_REQUEST['q_resumes'] ?? '';
+$q_news     = $_REQUEST['q_news'] ?? '';
+$q_email    = $_REQUEST['q_email'] ?? '';
+$q_company  = $_REQUEST['q_company'] ?? '';
+$search     = $_REQUEST['search'] ?? '';
+$show       = $_REQUEST['show'] ?? '';
+
+$q_string = urlencode( "&q_name=$q_name&q_username=$q_username&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&search=$search" );
 ?>
 
 <form style="margin: 0" action="orders.php?search=search" method="post">
-    <input type="hidden" value="<?php echo $_REQUEST['show']; ?>" name="show">
+    <input type="hidden" value="<?php echo $show; ?>" name="show">
     <table border="0" cellpadding="2" cellspacing="0" style="border-collapse: collapse" id="AutoNumber2" width="100%">
         <tr>
             <td width="63" bgcolor="#EDF8FC" valign="top">
@@ -307,30 +309,32 @@ $q_string   = urlencode( "&q_name=$q_name&q_username=$q_username&q_email=$q_emai
         </tr>
         <tr>
             <td width="731" bgcolor="#EDF8FC" colspan="4">
-                <b><input type="submit" value="Find" name="B1" style="float: left"><?php if ( $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b><b>[<a href="<?php echo $_SERVER['PHP_SELF'] ?>?show=<?php echo $_REQUEST['show']; ?>">Start a New Search</a>]</b><?php } ?>
+                <b><input type="submit" value="Find" name="B1" style="float: left"><?php if ( $search == 'search' ) { ?>&nbsp; </b><b>[<a href="<?php echo $_SERVER['PHP_SELF'] ?>?show=<?php echo $show; ?>">Start a New Search</a>]</b><?php } ?>
             </td>
         </tr>
     </table>
 </form>
 
 <?php
-if ( $_REQUEST['show'] == 'WA' ) {
+$where_sql = "";
+$date_link = "";
+if ( $show == 'WA' ) {
 	$where_sql = " AND (status ='confirmed' OR status='pending') ";
 	$date_link = "&show=WA";
-} else if ( $_REQUEST['show'] == 'CA' ) {
+} else if ( $show == 'CA' ) {
 	$where_sql = " AND (status ='cancelled') ";
 	$date_link = "&show=CA";
-} else if ( $_REQUEST['show'] == 'EX' ) {
+} else if ( $show == 'EX' ) {
 	$where_sql = " AND (status ='expired') ";
 	$date_link = "&show=EX";
-} else if ( $_REQUEST['show'] == 'DE' ) {
+} else if ( $show == 'DE' ) {
 	$where_sql = " AND (status ='deleted') ";
 	$date_link = "&show=DE";
-} else if ( $_REQUEST['show'] == 'CO' ) {
+} else if ( $show == 'CO' ) {
 	$where_sql = " AND status ='completed' ";
 }
 
-switch ( $_REQUEST['show'] ) {
+switch ( $show ) {
 	case 'WA':
 		echo '<p>Showing new orders waiting</p>';
 		break;
@@ -347,14 +351,6 @@ switch ( $_REQUEST['show'] ) {
 		echo '<p>Showing deleted orders.</p>';
 		break;
 }
-
-$q_aday     = $_REQUEST['q_aday'];
-$q_amon     = $_REQUEST['q_amon'];
-$q_ayear    = $_REQUEST['q_ayear'];
-$q_name     = $_REQUEST['q_name'];
-$q_username = $_REQUEST['q_username'];
-
-$q_email = $_REQUEST['q_email'];
 
 if ( $q_name != '' ) {
 	$list = preg_split( "/[\s,]+/", $q_name );
@@ -374,13 +370,12 @@ if ( $q_username != '' ) {
 	$where_sql .= " AND ((`Username` like '%" . mysqli_real_escape_string( $GLOBALS['connection'], $list[0] ) . "%') $or)";
 }
 
-if ( $_REQUEST['user_id'] != '' ) {
+if ( isset( $_REQUEST['user_id'] ) && $_REQUEST['user_id'] != '' ) {
 
 	$where_sql .= " AND t1.user_id=" . intval( $_REQUEST['user_id'] );
 }
 
-if ( $_REQUEST['order_id'] != '' ) {
-
+if ( isset( $_REQUEST['order_id'] ) && $_REQUEST['order_id'] != '' ) {
 	echo '<h3>*** Highlighting order #' . $_REQUEST['order_id'] . '.</h3> ';
 }
 
@@ -393,25 +388,28 @@ $count = mysqli_num_rows( $result );
 
 $records_per_page = 40;
 
-if ( $count > $records_per_page ) {
+$offset = isset( $_REQUEST['offset'] ) ? intval( $_REQUEST['offset'] ) : 0;
 
-	mysqli_data_seek( $result, $_REQUEST['offset'] );
+if ( $count > $records_per_page ) {
+	mysqli_data_seek( $result, $offset );
 }
 
 $pages    = ceil( $count / $records_per_page );
 $cur_page = $offset / $records_per_page;
 $cur_page ++;
 
+global $label;
+
 ?>
 
-<form style="margin: 0;" method="post" action="orders.php?offset=<?php echo intval( $_REQUEST['offset'] ) . $q_string; ?>" name="form1">
-    <input type="hidden" name="show" value="<?php echo $_REQUEST['show']; ?>">
-    <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
+<form style="margin: 0;" method="post" action="orders.php?offset=<?php echo $offset . $q_string; ?>" name="form1">
+    <input type="hidden" name="show" value="<?php echo $show; ?>">
+    <input type="hidden" name="offset" value="<?php echo $offset; ?>">
     <div style="text-align: center;"><b><?php echo mysqli_num_rows( $result ); ?> Orders Returned (<?php echo $pages; ?> pages) </b></div>
 	<?php
 	if ( $count > $records_per_page ) {
 		// calculate number of pages & current page
-		$q_string .= "&show=" . urlencode( $_REQUEST['show'] );
+		$q_string .= "&show=" . urlencode( $show );
 
 		$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 		$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
@@ -423,16 +421,16 @@ $cur_page ++;
 	?>
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
         <tr>
-            <td colspan="12"> <?php if ( $_REQUEST['show'] != 'DE' ) { ?>
+            <td colspan="12"> <?php if ( $show != 'DE' ) { ?>
                     With selected:
                     <input type="submit" value='Complete' onclick="if (!confirmLink(this, 'Complete for all selected, are you sure?')) return false" name='mass_complete'>
 					<?php
-					if ( $_REQUEST['show'] != 'CA' ) {
+					if ( $show != 'CA' ) {
 						?>
                         | <input type="submit" value='Cancel' name='mass_cancel' onclick="if (!confirmLink(this, 'Cancel for all selected, are you sure?')) return false">
 						<?php
 					}
-					if ( $_REQUEST['show'] == 'CA' ) {
+					if ( $show == 'CA' ) {
 						?>
                         | <input type="submit" value='Delete' name='mass_delete' onclick="if (!confirmLink(this, 'Delete for all selected, are you sure?')) return false">
 						<?php
@@ -457,17 +455,17 @@ $cur_page ++;
 			$i ++;
 
 			?>
-            <tr onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);" bgColor="<?php if ( $_REQUEST['order_id'] == $row['order_id'] ) {
+            <tr onmouseover="old_bg=this.getAttribute('bgcolor');this.setAttribute('bgcolor', '#FBFDDB', 0);" onmouseout="this.setAttribute('bgcolor', old_bg, 0);" bgColor="<?php if ( ( $_REQUEST['order_id'] ?? '' ) == $row['order_id'] ) {
 				echo '#FFFF99';
 			} else {
 				echo '#ffffff';
 			} ?>">
                 <td><input type="checkbox" name="orders[]" value="<?php echo $row['order_id']; ?>"></td>
-                <td><?php echo get_local_time( $row['order_date'] ); ?></td>
+                <td><?php echo get_local_datetime( $row['order_date'], true ); ?></td>
                 <td><?php echo escape_html( $row['FirstName'] . " " . $row['LastName'] ); ?></td>
                 <td><?php echo $row['Username']; ?> (<a href='edit.php?user_id=<?php echo $row['ID']; ?>'>#<?php echo $row['ID']; ?></a>)</td>
                 <td>#<?php echo $row['order_id']; ?></td>
-                <td><a href='ads.php?ad_id=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></td>
+                <td><a href='alist.php?aid=<?php echo $row['ad_id']; ?>&order_id=<?php echo $row['order_id']; ?>&BID=<?php echo $row['banner_id']; ?>'>#<?php echo $row['ad_id']; ?></a></td>
                 <td><?php
 
 					$sql = "select * from banners where banner_id=" . $row['banner_id'];
@@ -481,27 +479,24 @@ $cur_page ++;
                 <td><?php echo convert_to_default_currency_formatted( $row['currency'], $row['price'] ) ?></td>
                 <td><?php echo $row['status']; ?><br>
 					<?php
+                    $refunded = false;
 					if ( $row['status'] == 'cancelled' ) {
 						$sql = "select * from transactions where type='CREDIT' and order_id=" . intval( $row['order_id'] );
 						$r1 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 						if ( mysqli_num_rows( $r1 ) > 0 ) {
 							$refunded = true;
 							echo "(Refunded)";
-						} else {
-
-							$refunded = false;
 						}
 					}
-					?>
-					<?php if ( ( $row['status'] != 'completed' ) && ( $row['status'] != 'deleted' ) && ! $refunded ) { ?>
-                        <input type="button" style="font-size: 9px;" value="Complete" onclick="if (!confirmLink(this, 'Payment from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?> to be completed. Order for <?php echo $row['price']; ?> will be credited to their account.\n ** Are you sure? **')) return false;" data-link="orders.php?action=complete&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>"> / <?php }
+					if ( ( $row['status'] != 'completed' ) && ( $row['status'] != 'deleted' ) && ! $refunded ) { ?>
+                        <input type="button" style="font-size: 9px;" value="Complete" onclick="if (!confirmLink(this, 'Payment from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?> to be completed. Order for <?php echo $row['price']; ?> will be credited to their account.\n ** Are you sure? **')) return false;" data-link="orders.php?action=complete&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $show; ?>"> / <?php }
 					if ( $row['status'] == 'cancelled' ) { ?>
-                        <input type="button" style="font-size: 9px;" value="Delete" onclick="if (!confirmLink(this, 'Delete the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=delete&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
+                        <input type="button" style="font-size: 9px;" value="Delete" onclick="if (!confirmLink(this, 'Delete the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=delete&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $show; ?>">
 						<?php
 					} else if ( $row['status'] == 'deleted' ) {
 
 					} else { ?>
-                        <input type="button" style="font-size: 9px;" value="Cancel" onclick="if (!confirmLink(this, 'Cancel the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=cancel&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $_REQUEST['show']; ?>">
+                        <input type="button" style="font-size: 9px;" value="Cancel" onclick="if (!confirmLink(this, 'Cancel the order from <?php echo str_replace( "'", "\\'", escape_html( $row['LastName'] ) ) . ", " . str_replace( "'", "\\'", escape_html( $row['FirstName'] ) ); ?>, are you sure?')) return false;" data-link="orders.php?action=cancel&user_id=<?php echo $row['ID'] ?>&order_id=<?php echo $row['order_id'] . $date_link . $q_string . "&show=" . $show; ?>">
 					<?php } ?>
                 </td>
             </tr>

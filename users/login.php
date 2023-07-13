@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,13 +30,13 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-require_once( __DIR__ . '/../include/login_functions.php' );
 
 if ( ! is_logged_in() ) {
 	do_logout();
-	session_start();
+	mds_start_session();
 }
 
 require_once BASE_PATH . "/html/header.php";
@@ -49,39 +49,42 @@ if ( $target_page == '' ) {
 	$target_page = "index.php";
 }
 
-?>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td width="35" height="26">&nbsp;</td>
-        <td height="26" valign="bottom">
-            <center><img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
-                <h3><?php
-					$label["advertiser_logging_in"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logging_in"] );
-					echo $label["advertiser_logging_in"]; ?> </h3></center>
-        </td>
-    </tr>
-    <tr>
-        <td width="35">&nbsp;</td>
-        <td><span>
+if ( WP_ENABLED == 'NO' || ( WP_ENABLED == 'YES' && WP_USERS_ENABLED == 'NO' ) ) {
+
+	?>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="35" height="26">&nbsp;</td>
+            <td height="26" valign="bottom">
+                <center><img alt="" src="<?php echo htmlentities( stripslashes( SITE_LOGO_URL ) ); ?>"/> <br/>
+                    <h3><?php
+						$label["advertiser_logging_in"] = str_replace( "%SITE_NAME%", SITE_NAME, $label["advertiser_logging_in"] );
+						echo $label["advertiser_logging_in"]; ?> </h3></center>
+            </td>
+        </tr>
+        <tr>
+            <td width="35">&nbsp;</td>
+            <td><span>
 			<?php
 			if ( do_login() ) {
+				echo "<script>window.location = '$target_page'</script>";
 				$ok = str_replace( "%username%", $_SESSION['MDS_Username'], $label['advertiser_login_success2'] );
 				$ok = str_replace( "%firstname%", $_SESSION['MDS_FirstName'], $ok );
 				$ok = str_replace( "%lastname%", $_SESSION['MDS_LastName'], $ok );
 				$ok = str_replace( "%target_page%", $target_page, $ok );
 				echo "<div align='center' >" . $ok . "</div>";
-			} else {
-				//echo "<div align='center' >".$label["advertiser_login_error"]."</div>";
-
 			}
 			?>
 		</span></td>
-        <td width="35">&nbsp;</td>
-    </tr>
-    <tr>
-        <td width="35" height="26">&nbsp;</td>
-        <td height="26"></td>
-        <td width="35" height="26">&nbsp;</td>
-    </tr>
-</table>
-<?php require_once BASE_PATH . "/html/footer.php"; ?>
+            <td width="35">&nbsp;</td>
+        </tr>
+        <tr>
+            <td width="35" height="26">&nbsp;</td>
+            <td height="26"></td>
+            <td width="35" height="26">&nbsp;</td>
+        </tr>
+    </table>
+	<?php
+}
+
+require_once BASE_PATH . "/html/footer.php";

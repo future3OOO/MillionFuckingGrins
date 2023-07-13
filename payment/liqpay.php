@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -198,7 +198,9 @@ class LiqPay {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -274,7 +276,7 @@ class LiqPay {
 	}
 
 	function config_form() {
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$liqpay_test_mode   = filter_var( $_REQUEST['liqpay_test_mode'], FILTER_SANITIZE_STRING );
 			$liqpay_public_key  = filter_var( $_REQUEST['liqpay_public_key'], FILTER_SANITIZE_STRING );
 			$liqpay_private_key = filter_var( $_REQUEST['liqpay_private_key'], FILTER_SANITIZE_STRING );
@@ -366,7 +368,7 @@ class LiqPay {
 		$sql = "SELECT val FROM config WHERE `key`='LIQPAY_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

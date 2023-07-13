@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:12:31 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,14 +30,13 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
 
 require_once( "../include/ads.inc.php" );
 
-$BID = $f2->bid( isset( $_REQUEST['BID'] ) ? $_REQUEST['BID'] : 1 );
-
-global $order_page;
+global $order_page, $label;
 if ( USE_AJAX == 'SIMPLE' ) {
 	$order_page = 'order_pixels.php';
 } else {
@@ -77,9 +76,11 @@ $BID = $order_row['banner_id'];
 $banner_data = load_banner_constants( $BID );
 
 /* Login -> Select pixels -> Write ad -> Confirm order */
-require_once BASE_PATH . "/include/login_functions.php";
-
 if ( $_SESSION['MDS_ID'] == '' ) {
+	if ( WP_ENABLED == "YES" && WP_USERS_ENABLED == "YES" ) {
+        mds_wp_login_check();
+    }
+
 	// not logged in..
 	require_once BASE_PATH . "/html/header.php";
 
@@ -106,7 +107,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
                     <h3><?php echo $label['confirm_instructions']; ?></h3>
 					<?php
 
-					display_signup_form( $_REQUEST['FirstName'], $_REQUEST['LastName'], $_REQUEST['CompName'], $_REQUEST['Username'], $_REQUEST['Password'], $_REQUEST['Password2'], $_REQUEST['Email'], $_REQUEST['Newsletter'], $_REQUEST['Notification1'], $_REQUEST['Notification2'], $_REQUEST['lang'] );
+					display_signup_form( $_REQUEST['FirstName'], $_REQUEST['LastName'], $_REQUEST['CompName'], $_REQUEST['Username'], $_REQUEST['Password'], $_REQUEST['Password2'], $_REQUEST['Email'] );
 				}
 				?>
             </td>
@@ -176,7 +177,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
         <form name="confirm-order" method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
             <input type="hidden" name="selected_pixels" value="<?php echo htmlspecialchars($_REQUEST['selected_pixels']); ?>">
             <input type="hidden" name="order_id" value="<?php echo intval($_REQUEST['order_id']); ?>">
-            <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+            <input type="hidden" name="BID" value="<?php echo $BID; ?>">
             <?php
             display_package_options_table( $BID, $_REQUEST['pack'], true );
             ?>
@@ -196,6 +197,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 			echo "<p>" . $label['pack_cannot_select'] . "</p>";
 		}
 	} else {
+
 		display_order( get_current_order_id(), $BID );
 
 		$sql = "select * from users where ID='" . intval( $_SESSION['MDS_ID'] ) . "'";
@@ -217,6 +219,7 @@ if ( $_SESSION['MDS_ID'] == '' ) {
 			echo "<p>" . $label['advertiser_max_order'] . "</p>";
 		} else {
 
+		    // TODO: Add option to auto forward to next page
 			if ( ( $order_row['price'] == 0 ) || ( $u_row['Rank'] == 2 ) ) { // go straight to publish...
 				?>
                 <input type='button' class='big_button' value="<?php echo htmlspecialchars( $label['advertiser_o_completebutton'] ); ?>" onclick="window.location='publish.php?action=complete&BID=<?php echo $BID; ?>&order_id=temp'">

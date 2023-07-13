@@ -1,8 +1,8 @@
 /*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -37,13 +37,27 @@ const submit_options = {
 	success: mds_form_submit_success,
 };
 
+function scroll_to_top() {
+	$("#mds-top")[0].scrollIntoView();
+	document.body.scrollLeft -= 20;
+	document.body.scrollTop -= 20;
+}
+
 function mds_load_page(page, force) {
+	if (!window.mds_admin_loading) {
+		window.mds_admin_loading = true;
+	} else {
+		return;
+	}
+
 	// remove hashtag from page
 	if (window.location.hash !== "" && (page === undefined || (window.location.hash !== page && force !== true))) {
-		page = window.location.hash.substr(1);
+		page = window.location.hash.substring(1);
 	}
 
 	$(".admin-content").load(page, function () {
+		scroll_to_top();
+		window.mds_admin_loading = false;
 	});
 }
 
@@ -53,15 +67,14 @@ function mds_form_submit(formData, $form, options) {
 }
 
 function mds_form_submit_success(responseText, statusText, xhr, $form) {
-	let url = $form.attr('action');
-
-	if (url === "") {
-		url = window.location.hash.substr(1);
-	}
-
 	$(document).scrollTop(0);
 
-	window.location.hash = '#' + url;
+	// let url = $form.attr('action');
+	//
+	// if (url === "") {
+	// 	url = window.location.hash.substr(1);
+	// }
+	//window.location.hash = '#' + url;
 
 	$form.find('input').attr('disabled', false);
 
@@ -106,6 +119,11 @@ function mds_submit(el) {
 }
 
 $(function () {
+	window.mds_admin_loading = false;
+
+	$(window).on('mds_admin_page_loaded', function() {
+		window.mds_admin_loading = false;
+	});
 
 	let admin_content = $(".admin-content");
 
@@ -134,17 +152,18 @@ $(function () {
 			return false;
 		}
 
-		admin_content.load(url, function (response, status) {
-			if (status === "success") {
-				if (url.endsWith('LICENSE.txt')) {
-					admin_content.html(response.replace(/\r\n|\r|\n/g, '<br />'));
+		window.mds_admin_loading = true;
+		if (url.endsWith('.txt')) {
+			admin_content.html('<embed style="width:100%;height:100%;" src="' + url + '" />');
+		} else {
+			admin_content.load(url, function (response, status) {
+				if (status === "success") {
+					scroll_to_top();
+					window.location.hash = '#' + url;
+					$(window).trigger('mds_admin_page_loaded');
 				}
-			}
-		});
-
-		$(document).scrollTop(0);
-
-		window.location.hash = '#' + url;
+			});
+		}
 
 		return false;
 	});

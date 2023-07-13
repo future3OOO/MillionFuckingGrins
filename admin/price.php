@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -32,7 +32,9 @@
 
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
-$BID = $f2->bid( $_REQUEST['BID'] );
+
+global $f2;
+$BID = $f2->bid();
 ?>
 
 <p>
@@ -40,7 +42,7 @@ $BID = $f2->bid( $_REQUEST['BID'] );
 <hr>
 <?php
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 ?>
 <form name="bidselect" method="post" action="price.php">
     <label>
@@ -50,7 +52,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 			<?php
 			while ( $row = mysqli_fetch_array( $res ) ) {
 
-				if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+				if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';
@@ -125,7 +127,7 @@ if ( $BID != '' ) {
 						}
 
 						$sql = "SELECT * FROM prices where row_from <= " . intval( $_REQUEST['row_to'] ) . " AND row_to >=" . intval( $_REQUEST['row_from'] ) . " AND col_from <= " . intval( $_REQUEST['col_to'] ) . " AND col_to >=" . intval( $_REQUEST['col_from'] ) . " $and_price AND banner_id=" . intval( $BID );
-						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 						if ( mysqli_num_rows( $result ) > 0 ) {
 							$error .= "<b> - Cannot create: Price zones cannot overlap other price zones!</b><br>";
@@ -152,12 +154,12 @@ if ( $BID != '' ) {
 		return $error;
 	}
 
-	if ( $_REQUEST['action'] == 'delete' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete' ) {
 		$sql = "DELETE FROM prices WHERE price_id='" . intval( $_REQUEST['price_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	}
 
-	if ( $_REQUEST['submit'] != '' ) {
+	if ( isset( $_REQUEST['submit'] ) && $_REQUEST['submit'] != '' ) {
 		$error = validate_input();
 
 		if ( $error != '' ) {
@@ -171,14 +173,15 @@ if ( $BID != '' ) {
 			$_REQUEST['block_id_to']   = ( ( ( $_REQUEST['row_to'] ) * $banner_data['G_WIDTH'] ) - 1 );
 
 			$sql = "REPLACE INTO prices(price_id, banner_id, row_from, row_to, col_from, col_to, block_id_from, block_id_to, price, currency, color) VALUES ('" . intval( $_REQUEST['price_id'] ) . "', '" . intval( $BID ) . "', '" . intval( $_REQUEST['row_from'] ) . "', '" . intval( $_REQUEST['row_to'] ) . "', '" . intval( $_REQUEST['col_from'] ) . "', '" . intval( $_REQUEST['col_to'] ) . "', '" . intval( $_REQUEST['block_id_from'] ) . "', '" . intval( $_REQUEST['block_id_to'] ) . "', '" . floatval( $_REQUEST['price'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['currency'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['color'] ) . "') ";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			$_REQUEST['new']    = '';
 			$_REQUEST['action'] = '';
 		}
 	}
 
-	$result = mysqli_query( $GLOBALS['connection'], "select * FROM prices  where banner_id=" . intval( $BID ) ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	$sql = "select * FROM prices  where banner_id=" . intval( $BID );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
 		?>
 
@@ -230,18 +233,18 @@ if ( $BID != '' ) {
 		echo "There are no custom price zones for this grid.<br>";
 	}
 
-	if ( $_REQUEST['new'] == '1' ) {
+	if ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] == '1' ) {
 		echo "<h4>Add Price Zone:</h4>";
 	}
 
-	if ( $_REQUEST['action'] == 'edit' ) {
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) {
 		echo "<h4>Edit Price Zone:</h4>";
 
 		$sql = "SELECT * FROM prices WHERE `price_id`='" . intval( $_REQUEST['price_id'] ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row = mysqli_fetch_array( $result );
 
-		if ( isset( $error ) && $error == '' ) {
+		if ( ! isset( $error ) || $error == '' ) {
 			$_REQUEST['color']    = $row['color'];
 			$_REQUEST['price_id'] = $row['price_id'];
 			$_REQUEST['row_from'] = $row['row_from'];
@@ -253,19 +256,19 @@ if ( $BID != '' ) {
 		}
 	}
 
-	if ( ( $_REQUEST['new'] != '' ) || ( $_REQUEST['action'] == 'edit' ) ) {
-		if ( $_REQUEST['col_from'] == '' ) {
+	if ( ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] != '' ) || ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) ) {
+		if ( isset( $_REQUEST['col_from'] ) && $_REQUEST['col_from'] == '' ) {
 			$_REQUEST['col_from'] = 1;
 		}
 
-		if ( $_REQUEST['col_to'] == '' ) {
+		if ( isset( $_REQUEST['col_to'] ) && $_REQUEST['col_to'] == '' ) {
 			$_REQUEST['col_to'] = $banner_data['G_HEIGHT'];
 		}
 		?>
         <form action='price.php' method="post">
-            <input type="hidden" value="<?php echo intval( $row['price_id'] ); ?>" name="price_id">
-            <input type="hidden" value="<?php echo intval( $_REQUEST['new'] ); ?>" name="new">
-            <input type="hidden" value="<?php echo $f2->filter( $_REQUEST['action'] ); ?>" name="action">
+            <input type="hidden" value="<?php echo intval( $row['price_id'] ?? '' ); ?>" name="price_id">
+            <input type="hidden" value="<?php echo intval( $_REQUEST['new'] ?? '' ); ?>" name="new">
+            <input type="hidden" value="<?php echo $f2->filter( $_REQUEST['action'] ?? '' ); ?>" name="action">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
             <table border="0" cellSpacing="1" cellPadding="3" bgColor="#d9d9d9">
                 <tr bgcolor="#ffffff">
@@ -273,21 +276,21 @@ if ( $BID != '' ) {
                     <td>
                         <select name="color">
                             <option value="">[Select]</option>
-                            <option value="yellow" <?php if ( $_REQUEST['color'] == 'yellow' ) {
+                            <option value="yellow" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'yellow' ) {
 								echo ' selected ';
 							} ?> style="background-color: #FFFF00">Yellow
                             </option>
-                            <option value="cyan" <?php if ( $_REQUEST['color'] == 'cyan' ) {
+                            <option value="cyan" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'cyan' ) {
 								echo ' selected ';
 							} ?> style="background-color: #00FFFF">Cyan
                             </option>
-                            <option value="magenta" <?php if ( $_REQUEST['color'] == 'magenta' ) {
+                            <option value="magenta" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'magenta' ) {
 								echo ' selected ';
 							} ?> style="background-color: #FF00FF">Magenta
                             </option>
-                            <option value="white" <?php if ( $_REQUEST['color'] == 'white' ) {
+                            <option value="white" <?php if ( isset( $_REQUEST['color'] ) && $_REQUEST['color'] == 'white' ) {
 								echo ' selected ';
-							} ?> style="background-color: #FFffFF">White
+							} ?> style="background-color: #ffffff">White
                             </option>
                         </select>
 
@@ -295,27 +298,27 @@ if ( $BID != '' ) {
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Start from Row :</font></td>
-                    <td><input size="2" type="text" name="row_from" value="<?php echo intval( $_REQUEST['row_from'] ); ?>"> eg. 1</td>
+                    <td><input size="2" type="text" name="row_from" value="<?php echo intval( $_REQUEST['row_from'] ?? 0 ); ?>"> eg. 1</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">End at Row:</font></td>
-                    <td><input size="2" type="text" name="row_to" value="<?php echo intval( $_REQUEST['row_to'] ); ?>"> eg. 25</td>
+                    <td><input size="2" type="text" name="row_to" value="<?php echo intval( $_REQUEST['row_to'] ?? 0 ); ?>"> eg. 25</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Start from Column :</font></td>
-                    <td><input size="2" type="text" name="col_from" value="<?php echo intval( $_REQUEST['col_from'] ); ?>"> eg. 1</td>
+                    <td><input size="2" type="text" name="col_from" value="<?php echo intval( $_REQUEST['col_from'] ?? 0 ); ?>"> eg. 1</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">End at Column:</font></td>
-                    <td><input size="2" type="text" name="col_to" value="<?php echo intval( $_REQUEST['col_to'] ); ?>"> eg. 25</td>
+                    <td><input size="2" type="text" name="col_to" value="<?php echo intval( $_REQUEST['col_to'] ?? 0 ); ?>"> eg. 25</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Price Per Block:</font></td>
-                    <td><input size="5" type="text" name="price" value="<?php echo floatval( $_REQUEST['price'] ); ?>">Price per block (<?php echo $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT']; ?> pixels). Enter a decimal</td>
+                    <td><input size="5" type="text" name="price" value="<?php echo floatval( $_REQUEST['price'] ?? 0 ); ?>">Price per block (<?php echo $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT']; ?> pixels). Enter a decimal</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Currency:</font></td>
-                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ); ?>The price's currency</td>
+                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ?? '' ); ?>The price's currency</td>
                 </tr>
 
             </table>

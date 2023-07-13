@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -127,25 +127,30 @@ function process_mail_queue( $send_count = 1 ) {
 					echo "Sending mail: " . print_r( $row, true ) . "<br>";
 				}
 
-				if ( USE_SMTP == 'YES' ) {
-					$error = send_smtp_email( $row );
+				if ( WP_ENABLED == 'YES' && WP_USE_MAIL == 'YES' ) {
+					mds_load_wp();
+					wp_mail( $row['to_address'], $row['subject'], $row['message'] );
 				} else {
+					if ( USE_SMTP == 'YES' ) {
+						$error = send_smtp_email( $row );
+					} else {
 
-					$sql    = "SELECT * FROM mail_queue WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
-					$result = mysqli_query( $GLOBALS['connection'], $sql );
-					$row    = mysqli_fetch_array( $result );
+						$sql    = "SELECT * FROM mail_queue WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
+						$result = mysqli_query( $GLOBALS['connection'], $sql );
+						$row    = mysqli_fetch_array( $result );
 
-					send_phpmail( array(
-						'from_address' => $row['from_address'],
-						'from_name'    => $row['from_name'],
-						'to_address'   => $row['to_address'],
-						'to_name'      => $row['to_name'],
-						'subject'      => $row['subject'],
-						'html_message' => $row['html_message'],
-						'message'      => $row['message'],
-						'mail_id'      => intval( $_REQUEST['mail_id'] ),
+						send_phpmail( array(
+							'from_address' => $row['from_address'],
+							'from_name'    => $row['from_name'],
+							'to_address'   => $row['to_address'],
+							'to_name'      => $row['to_name'],
+							'subject'      => $row['subject'],
+							'html_message' => $row['html_message'],
+							'message'      => $row['message'],
+							'mail_id'      => intval( $_REQUEST['mail_id'] ),
 
-					) );
+						) );
+					}
 				}
 			}
 		}
@@ -197,7 +202,7 @@ function send_smtp_email( $mail_row ) {
 	}
 
 	if ( EMAIL_POP_BEFORE_SMTP == 'YES' ) {
-		$pop = POP3::popBeforeSmtp( EMAIL_POP_SERVER, POP3_PORT, 30, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, $debug_level );
+		$pop = PHPMailer\PHPMailer\POP3::popBeforeSmtp( EMAIL_POP_SERVER, POP3_PORT, 30, EMAIL_SMTP_USER, EMAIL_SMTP_PASS, $debug_level );
 	}
 
 	$mail = new PHPMailer\PHPMailer\PHPMailer;
@@ -279,6 +284,11 @@ function send_smtp_email( $mail_row ) {
 }
 
 function send_phpmail( $mail_row ) {
+	if ( WP_ENABLED == 'YES' && WP_USE_MAIL == 'YES' ) {
+		mds_load_wp();
+		add_filter( 'wp_mail_content_type', function() { return 'text/html'; } );
+		return wp_mail( $mail_row['to_address'], $mail_row['subject'], $mail_row['html_message'] );
+	}
 
 	$debug_level = 0;
 	if ( defined( "EMAIL_DEBUG" ) && EMAIL_DEBUG == 'YES' ) {

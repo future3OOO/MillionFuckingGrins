@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,15 +30,16 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 define( 'NO_HOUSE_KEEP', 'YES' );
-// check the image selection.
 require_once __DIR__ . "/../include/init.php";
 
 header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
 header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" ); // Date in the past
 
-$BID         = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : 1;
+global $f2, $banner_data;
+$BID         = $f2->bid();
 $banner_data = load_banner_constants( $BID );
 
 // normalize...
@@ -76,9 +77,15 @@ function place_temp_order( $in_str ) {
 	// preserve ad_id & block info...
 	$sql = "SELECT ad_id, block_info FROM temp_orders WHERE session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-	$row        = mysqli_fetch_array( $result );
-	$ad_id      = intval( $row['ad_id'] );
-	$block_info = mysqli_real_escape_string( $GLOBALS['connection'], $row['block_info'] );
+
+	if ( mysqli_num_rows( $result ) > 0 ) {
+		$row        = mysqli_fetch_array( $result );
+		$ad_id      = intval( $row['ad_id'] );
+		$block_info = mysqli_real_escape_string( $GLOBALS['connection'], $row['block_info'] );
+	} else {
+		$ad_id      = 0;
+		$block_info = '';
+	}
 
 	// DAYS_EXPIRE comes form load_banner_constants()
 	$sql = "REPLACE INTO `temp_orders` ( `session_id` , `blocks` , `order_date` , `price` , `quantity` ,  `days_expire`, `banner_id` , `currency` ,  `date_stamp` , `ad_id`, `block_info` )  VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "', '" . $in_str . "', '" . $now . "', '0', '" . intval( $quantity ) . "', '" . intval( $banner_data['DAYS_EXPIRE'] ) . "', '" . $BID . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "',  '$now', '$ad_id', '$block_info' )";
@@ -86,6 +93,8 @@ function place_temp_order( $in_str ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 	$_SESSION['MDS_order_id'] = session_id();
+
+	return true;
 }
 
 // reserves the pixels for the temp order..
@@ -98,14 +107,12 @@ function reserve_temp_order_pixels( $block_info, $in_str ) {
 
 	// cannot reserve pixels if there is no session
 	if ( session_id() == '' ) {
+		$f2->write_log( 'Cannot reserve pixels if there is no session!' );
+
 		return false;
 	}
 
-	if ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) {
-		$BID = $f2->bid( $_REQUEST['BID'] );
-	} else {
-		$BID = 1;
-	}
+	$BID = $f2->bid();
 
 	$total = 0;
 	foreach ( $block_info as $key => $block ) {
@@ -117,13 +124,14 @@ function reserve_temp_order_pixels( $block_info, $in_str ) {
 		// enhance block info...
 		$block_info[ $key ]['currency']  = $currency;
 		$block_info[ $key ]['price']     = $price;
-		$block_info[ $key ]['banner_id'] = $f2->bid( $_REQUEST['BID'] );
+		$block_info[ $key ]['banner_id'] = $BID;
 
 		$total += $price;
 	}
 
 	$sql = "UPDATE temp_orders set price='" . floatval( $total ) . "', block_info='" . serialize( $block_info ) . "' where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "'  ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	mysqli_query( $GLOBALS['connection'], $sql ) or mds_sql_log_die( $sql );
+	$f2->write_log( 'Reserved Temp order. ' . $sql );
 
 	return true;
 }
@@ -192,8 +200,13 @@ function check_selection_main() {
 
 	$in_str = implode( ',', $cb_array );
 
+	if ( ! check_pixels( $in_str ) ) {
+		return;
+	}
+
 	// create a temporary order and place the blocks on a temp order
 	place_temp_order( $in_str );
-	$f2->write_log( "in_str is:" . $in_str );
+//	$f2->write_log( "in_str is:" . $in_str );
+//	$f2->write_log( '$block_info: '. print_r($block_info, true) );
 	reserve_temp_order_pixels( $block_info, $in_str );
 }

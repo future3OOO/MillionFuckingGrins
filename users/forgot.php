@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -29,9 +29,10 @@
  *        https://milliondollarscript.com/
  *
  */
-session_start();
+
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-require_once BASE_PATH . "/include/login_functions.php";
 
 $submit = $_REQUEST['submit'];
 $email  = $_REQUEST['email'];
@@ -65,7 +66,7 @@ function make_password() {
 if ( $email != '' ) {
 
 	$sql    = "select * from users where `Email`='" . mysqli_real_escape_string( $GLOBALS['connection'], $email ) . "'";
-	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 	$row    = mysqli_fetch_array( $result );
 
 	if ( $row['Email'] != '' ) {
@@ -77,7 +78,7 @@ if ( $email != '' ) {
 			$pass    = make_password();
 			$md5pass = md5( $pass );
 			$sql     = "update `users` SET `Password`='$md5pass' where `ID`='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['ID'] ) . "'";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error($sql) );
 
 			$to        = trim( $row['Email'] );
 			$from      = trim( SITE_CONTACT_EMAIL );
@@ -90,19 +91,27 @@ if ( $email != '' ) {
 			$message = $label["forget_pass_email_template"];
 			$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 			$message = str_replace( "%LNAME%", $row['LastName'], $message );
+			$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 			$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
 			$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
-			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
-			$message = str_replace( "%MEMBERID%", $row['Username'], $message );
+			if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+				$message = str_replace( "%SITE_URL%", WP_URL, $message );
+			} else {
+				$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+			}
 			$message = str_replace( "%PASSWORD%", $pass, $message );
 
 			$html_msg = $label["forget_pass_email_template_html"];
 			$html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
 			$html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
+			$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
 			$html_msg = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_msg );
 			$html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
-			$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
-			$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
+			if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+				$html_msg = str_replace( "%SITE_URL%", WP_URL, $html_msg );
+			} else {
+				$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
+			}
 			$html_msg = str_replace( "%PASSWORD%", $pass, $html_msg );
 
 			if ( USE_SMTP == 'YES' ) {

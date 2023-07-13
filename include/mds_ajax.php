@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -73,6 +73,9 @@ class Mds_Ajax {
 			case "stats":
 				$this->stats( $BID );
 				break;
+			case "list":
+				$this->list( $BID );
+				break;
 			default:
 				break;
 		}
@@ -85,8 +88,8 @@ class Mds_Ajax {
 		if ( ! isset( $GLOBALS['mds_js_loaded'] ) ) {
 			$GLOBALS['mds_js_loaded'] = true;
 
-			global $f2;
-			$BID         = $f2->bid( $_REQUEST['BID'] );
+			global $f2, $load_mds_js;
+			$BID         = $f2->bid();
 			$banner_data = load_banner_constants( $BID );
 
 			$wp_url = '';
@@ -94,41 +97,76 @@ class Mds_Ajax {
 				$wp_url = WP_URL;
 			}
 
-			// Note: Loading with CDN caused them to load out of order randomly
-			?>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css">
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js"></script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>">
-            <script>
-				var $ = jQuery.noConflict();
-				window.mds_data = {
-					ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
-					wp: '<?php echo $wp_url; ?>',
-					winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
-					winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
-					time: '<?php echo time(); ?>',
-					BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
-					moveBox: function () {
-						<?php if (ENABLE_MOUSEOVER == 'POPUP') { ?>
-						moveBox2();
-						<?php } else { ?>
-						moveBox();
-						<?php } ?>
-					},
-					HIDE_TIMEOUT: <?php echo HIDE_TIMEOUT; ?>,
-					REDIRECT_SWITCH: function () {
-						<?php if (REDIRECT_SWITCH == 'YES') { ?>
-						p = parent.window;
-						<?php } ?>
-					},
-					BID: parseInt('<?php echo $BID; ?>')
-				};
-            </script>
-            <script src="<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>"></script>
-			<?php
+			if ( WP_ENABLED == "YES" ) {
+				?>
+                <script>
+					if (window.mds_js_loaded !== true) {
+						window.mds_js_loaded = true;
+						var $ = jQuery.noConflict();
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css'}).appendTo('head');
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>'}).appendTo('head');
+
+						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
+							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
+								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.js', function () {
+										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js', function () {
+											window.mds_data = {
+												ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+												wp: '<?php echo $wp_url; ?>',
+												winWidth: parseInt('<?php echo $banner_data['G_WIDTH'] * $banner_data['BLK_WIDTH']; ?>'),
+												winHeight: parseInt('<?php echo $banner_data['G_HEIGHT'] * $banner_data['BLK_HEIGHT']; ?>'),
+												time: '<?php echo time(); ?>',
+												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
+												REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
+												ENABLE_MOUSEOVER: '<?php echo ENABLE_MOUSEOVER; ?>',
+												BID: parseInt('<?php echo $BID; ?>')
+											};
+											$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+											});
+										});
+									});
+								});
+							});
+						});
+					}
+                </script>
+				<?php
+			} else if ( $load_mds_js != null ) {
+				?>
+                <script>
+					if (window.mds_js_loaded !== true) {
+						window.mds_js_loaded = true;
+						var $ = jQuery.noConflict();
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/tippy/light.css'}).appendTo('head');
+						$('<link/>', {rel: 'stylesheet', href: '<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . "/css/main.css" ); ?>'}).appendTo('head');
+
+						$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/popper.js', function () {
+							$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/tippy-bundle.umd.js', function () {
+								$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-scale.min.js', function () {
+									$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/image-map.js', function () {
+										$.getScript('<?php echo BASE_HTTP_PATH; ?>js/third-party/hammer.min.js', function () {
+											window.mds_data = {
+												ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+												time: '<?php echo time(); ?>',
+												BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>',
+												REDIRECT_SWITCH: '<?php echo REDIRECT_SWITCH; ?>',
+												REDIRECT_URL: '<?php echo REDIRECT_URL; ?>',
+												ENABLE_MOUSEOVER: '<?php echo ENABLE_MOUSEOVER; ?>',
+												BID: parseInt('<?php echo $BID; ?>')
+											};
+											$.getScript('<?php echo BASE_HTTP_PATH; ?>js/mds.js?ver=<?php echo filemtime( BASE_PATH . '/js/mds.js' ); ?>', function () {
+											});
+										});
+									});
+								});
+							});
+						});
+					}
+                </script>
+				<?php
+			}
 		}
 	}
 
@@ -142,9 +180,14 @@ class Mds_Ajax {
 
 		if ( $this->add_container !== false ) {
 			$container = $this->add_container . $BID;
+
+			$bgstyle = "";
+			if ( ! empty( $this->banner_data['G_BGCOLOR'] ) ) {
+				$bgstyle = ' style="background-color:' . $this->banner_data['G_BGCOLOR'] . ';"';
+			}
 			?>
             <div class="mds-container">
-                <div class="grid-container <?php echo $container; ?>"></div>
+                <div class="grid-container <?php echo $container; ?>"<?php echo $bgstyle ?>></div>
             </div>
 			<?php
 		}
@@ -179,7 +222,7 @@ class Mds_Ajax {
 		if ( $this->add_container !== false ) {
 			$container = $this->add_container . $BID;
 			?>
-            <div class="stats-container <?php echo $container; ?>"></div>
+            <div class="mds-container stats-container <?php echo $container; ?>"></div>
 			<?php
 		}
 
@@ -199,6 +242,40 @@ class Mds_Ajax {
 					window.mds_ajax_request.done(mds_stats_call);
 				} else {
 					mds_stats_call();
+				}
+			});
+        </script>
+		<?php
+	}
+
+	private function list( int $BID ) {
+		$this->mds_js_loaded();
+
+		$container = 'list' . $BID;
+
+		if ( $this->add_container !== false ) {
+			$container = $this->add_container . $BID;
+			?>
+            <div class="mds-container list-container <?php echo $container; ?>"></div>
+			<?php
+		}
+
+		?>
+        <script>
+			$(function () {
+				let mds_list_call = function () {
+					var load_wait = setInterval(function () {
+						if (typeof mds_list == 'function') {
+							mds_list('<?php echo $container; ?>', <?php echo $BID; ?>);
+							clearInterval(load_wait);
+						}
+					}, 100);
+				}
+
+				if (window.mds_ajax_request != null) {
+					window.mds_ajax_request.done(mds_list_call);
+				} else {
+					mds_list_call();
 				}
 			});
         </script>

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -35,76 +35,78 @@ require( 'admin_common.php' );
 
 ini_set( 'max_execution_time', 500 );
 
-if ( $_REQUEST['action'] == 'delall' ) {
+if ( isset( $_REQUEST['action'] ) ) {
+	if ( $_REQUEST['action'] == 'delall' ) {
 
-	$sql = "SELECT * FROM mail_queue ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-	while ( $row = mysqli_fetch_array( $result ) ) {
+		$sql = "SELECT * FROM mail_queue ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+		while ( $row = mysqli_fetch_array( $result ) ) {
 
-		if ( $row['att1_name'] != '' ) {
-			unlink( $row['att1_name'] );
+			if ( $row['att1_name'] != '' ) {
+				unlink( $row['att1_name'] );
+			}
+
+			if ( $row['att2_name'] != '' ) {
+				unlink( $row['att2_name'] );
+			}
+
+			if ( $row['att3_name'] != '' ) {
+				unlink( $row['att3_name'] );
+			}
+
+			$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
-
-		if ( $row['att2_name'] != '' ) {
-			unlink( $row['att2_name'] );
-		}
-
-		if ( $row['att3_name'] != '' ) {
-			unlink( $row['att3_name'] );
-		}
-
-		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
-}
-if ( $_REQUEST['action'] == 'delsent' ) {
-	$sql = "SELECT * from mail_queue where `status`='sent' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-	while ( $row = mysqli_fetch_array( $result ) ) {
+	if ( $_REQUEST['action'] == 'delsent' ) {
+		$sql = "SELECT * from mail_queue where `status`='sent' ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+		while ( $row = mysqli_fetch_array( $result ) ) {
 
-		if ( $row['att1_name'] != '' ) {
-			unlink( $row['att1_name'] );
+			if ( $row['att1_name'] != '' ) {
+				unlink( $row['att1_name'] );
+			}
+
+			if ( $row['att2_name'] != '' ) {
+				unlink( $row['att2_name'] );
+			}
+
+			if ( $row['att3_name'] != '' ) {
+				unlink( $row['att3_name'] );
+			}
+
+			$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
-
-		if ( $row['att2_name'] != '' ) {
-			unlink( $row['att2_name'] );
-		}
-
-		if ( $row['att3_name'] != '' ) {
-			unlink( $row['att3_name'] );
-		}
-
-		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
-}
-if ( $_REQUEST['action'] == 'delerror' ) {
-	$sql = "SELECT * from mail_queue where `status`='error' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
-	while ( $row = mysqli_fetch_array( $result ) ) {
+	if ( $_REQUEST['action'] == 'delerror' ) {
+		$sql = "SELECT * from mail_queue where `status`='error' ";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+		while ( $row = mysqli_fetch_array( $result ) ) {
 
-		if ( $row['att1_name'] != '' ) {
-			unlink( $row['att1_name'] );
+			if ( $row['att1_name'] != '' ) {
+				unlink( $row['att1_name'] );
+			}
+
+			if ( $row['att2_name'] != '' ) {
+				unlink( $row['att2_name'] );
+			}
+
+			if ( $row['att3_name'] != '' ) {
+				unlink( $row['att3_name'] );
+			}
+
+			$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
-
-		if ( $row['att2_name'] != '' ) {
-			unlink( $row['att2_name'] );
-		}
-
-		if ( $row['att3_name'] != '' ) {
-			unlink( $row['att3_name'] );
-		}
-
-		$sql = "DELETE FROM mail_queue where mail_id='" . intval( $row['mail_id'] ) . "' ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	}
-}
-if ( $_REQUEST['action'] == 'resend' ) {
+	if ( $_REQUEST['action'] == 'resend' ) {
 
-	$sql = "UPDATE mail_queue SET status='queued' WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
-	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$sql = "UPDATE mail_queue SET status='queued' WHERE mail_id=" . intval( $_REQUEST['mail_id'] );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
-	process_mail_queue( 1, $_REQUEST['mail_id'] );
+		process_mail_queue( 1, $_REQUEST['mail_id'] );
+	}
 }
 
 $EMAILS_PER_BATCH = EMAILS_PER_BATCH;
@@ -112,29 +114,26 @@ if ( $EMAILS_PER_BATCH == '' ) {
 	$EMAILS_PER_BATCH = 10;
 }
 
-if ( $_REQUEST['action'] == 'send' ) {
-	//$sql = "DELETE FROM mail_queue where `status`='sent' ";
-	//mysqli_query($GLOBALS['connection'], $sql) or die(mysqli_error($GLOBALS['connection']));
-
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'send' ) {
 	process_mail_queue( $EMAILS_PER_BATCH );
 }
 
-$q_to_add  = $_REQUEST['q_to_add'];
-$q_to_name = $_REQUEST['q_to_name'];
-$q_subj    = $_REQUEST['q_subj'];
-$q_msg     = $_REQUEST['q_msg'];
-$q_status  = $_REQUEST['q_status'];
-$q_type    = $_REQUEST['q_type'];
-$search    = $_REQUEST['search'];
+$q_to_add  = $_REQUEST['q_to_add'] ?? '';
+$q_to_name = $_REQUEST['q_to_name'] ?? '';
+$q_subj    = $_REQUEST['q_subj'] ?? '';
+$q_msg     = $_REQUEST['q_msg'] ?? '';
+$q_status  = $_REQUEST['q_status'] ?? '';
+$q_type    = $_REQUEST['q_type'] ?? '';
+$search    = $_REQUEST['search'] ?? '';
 $q_string  = "&q_to_add=$q_to_add&q_subj=$q_subj&q_to_name=$q_to_name&q_msg=$q_msg&q_status=$q_status&q_type=$q_type&search=$search";
 
-$sql    = "select count(*) as c from mail_queue  ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
-$row    = mysqli_fetch_array( $result );
-$total  = $row['c'];
+$sql = "select count(*) as c from mail_queue  ";
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+$row   = mysqli_fetch_array( $result );
+$total = $row['c'];
 
-$sql    = "select count(*) as c from mail_queue where status='queued'  ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$sql = "select count(*) as c from mail_queue where status='queued'  ";
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row    = mysqli_fetch_array( $result );
 $queued = $row['c'];
 
@@ -169,11 +168,11 @@ $error  = $row['c'];
 	-->
 <?php
 
-if ( USE_SMTP != 'YES' ) {
+//if ( USE_SMTP != 'YES' ) {
 
-	//echo "<font color='black'><b>Note: You do not have SMTP enabled, so emails will not be sent via the queue. They will be processed by PHP's mail() function. Therefore there will be no outgoing emails listed below. (This is not an error)</b></font>";
+//echo "<font color='black'><b>Note: You do not have SMTP enabled, so emails will not be sent via the queue. They will be processed by PHP's mail() function. Therefore there will be no outgoing emails listed below. (This is not an error)</b></font>";
 
-}
+//}
 
 ?>
     <hr>
@@ -212,18 +211,18 @@ if ( USE_SMTP != 'YES' ) {
             <td width="286" bgcolor="#EDF8FC" valign="top">
                 <font face="Arial">
                     <select name="q_status">
-                        <option value='' <?php if ( $_REQUEST['q_status'] == '' ) {
+                        <option value='' <?php if ( $q_status == '' ) {
 							echo ' selected ';
 						} ?>></option>
-                        <option value='queued' <?php if ( $_REQUEST['q_status'] == 'queued' ) {
+                        <option value='queued' <?php if ( $q_status == 'queued' ) {
 							echo ' selected ';
 						} ?>>queued
                         </option>
-                        <option value='error' <?php if ( $_REQUEST['q_status'] == 'error' ) {
+                        <option value='error' <?php if ( $q_status == 'error' ) {
 							echo ' selected ';
 						} ?>>error
                         </option>
-                        <option value='sent' <?php if ( $_REQUEST['q_status'] == 'sent' ) {
+                        <option value='sent' <?php if ( $q_status == 'sent' ) {
 							echo ' selected ';
 						} ?>>sent
                         </option>
@@ -233,38 +232,38 @@ if ( USE_SMTP != 'YES' ) {
                 <p align="right"><b><font face="Arial" size="2">Type</font></b></td>
             <td width="299" bgcolor="#EDF8FC" valign="top">
                 <select name="q_type">
-                    <option value='' <?php if ( $_REQUEST['q_type'] == '' ) {
+                    <option value='' <?php if ( $q_type == '' ) {
 						echo ' selected ';
 					} ?>></option>
-                    <option value='1' <?php if ( $_REQUEST['q_type'] == '1' ) {
+                    <option value='1' <?php if ( $q_type == '1' ) {
 						echo ' selected ';
 					} ?>>1 - Complete Order
                     </option>
-                    <option value='2' <?php if ( $_REQUEST['q_type'] == '2' ) {
+                    <option value='2' <?php if ( $q_type == '2' ) {
 						echo ' selected ';
 					} ?>>2 - Confirm Order
                     </option>
-                    <option value='3' <?php if ( $_REQUEST['q_type'] == '3' ) {
+                    <option value='3' <?php if ( $q_type == '3' ) {
 						echo ' selected ';
 					} ?>>3 - Pend Order
                     </option>
-                    <option value='4' <?php if ( $_REQUEST['q_type'] == '4' ) {
+                    <option value='4' <?php if ( $q_type == '4' ) {
 						echo ' selected ';
 					} ?>>4 - Expire Order
                     </option>
-                    <option value='5' <?php if ( $_REQUEST['q_type'] == '5' ) {
+                    <option value='5' <?php if ( $q_type == '5' ) {
 						echo ' selected ';
 					} ?>>5 - Account Confirmation
                     </option>
-                    <option value='6' <?php if ( $_REQUEST['q_type'] == '6' ) {
+                    <option value='6' <?php if ( $q_type == '6' ) {
 						echo ' selected ';
 					} ?>>6 - Forgot Pass
                     </option>
-                    <option value='7' <?php if ( $_REQUEST['q_type'] == '7' ) {
+                    <option value='7' <?php if ( $q_type == '7' ) {
 						echo ' selected ';
 					} ?>>7 - Pixels Published
                     </option>
-                    <option value='8' <?php if ( $_REQUEST['q_type'] == '8' ) {
+                    <option value='8' <?php if ( $q_type == '8' ) {
 						echo ' selected ';
 					} ?>>8 - Order Renewed
                     </option>
@@ -279,7 +278,7 @@ if ( USE_SMTP != 'YES' ) {
         </tr>
     </table>
 <?php
-
+$where_sql = "";
 if ( $q_to_add != '' ) {
 	$where_sql .= " AND `to_address` like '%" . mysqli_real_escape_string( $GLOBALS['connection'], $q_to_add ) . "%' ";
 }
@@ -309,9 +308,10 @@ $sql = "SELECT * FROM mail_queue where 1=1 $where_sql order by mail_date DESC";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 $count            = mysqli_num_rows( $result );
 $records_per_page = 40;
+$offset = isset( $_REQUEST['offset'] ) ? intval( $_REQUEST['offset'] ) : 0;
 if ( $count > $records_per_page ) {
 
-	mysqli_data_seek( $result, $_REQUEST['offset'] );
+	mysqli_data_seek( $result, $offset );
 }
 if ( $count > $records_per_page ) {
 	$pages    = ceil( $count / $records_per_page );
@@ -359,7 +359,7 @@ if ( $count > $records_per_page ) {
 			?>
 
             <tr bgColor="#ffffff">
-                <td><font size="1"><?php echo get_local_time( $row['mail_date'] ); ?></font></td>
+                <td><font size="1"><?php echo get_local_datetime( $row['mail_date'], true ); ?></font></td>
                 <td><font size="1"><?php echo $row['template_id']; ?></font></td>
                 <td><font size="1"><?php echo $row['to_address']; ?></font></td>
                 <td><font size="1"><?php echo $row['to_name']; ?></font></td>

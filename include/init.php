@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,28 +30,36 @@
  *
  */
 
-require_once __DIR__ . "/../config.php";
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../include/database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../include/MDSConfig.php';
 
-if ( defined( 'MEMORY_LIMIT' ) ) {
-	ini_set( 'memory_limit', MEMORY_LIMIT );
-} else {
-	ini_set( 'memory_limit', '128M' );
+$MDSCONFIG = MDSConfig::load();
+foreach ( $MDSCONFIG as $key => $value ) {
+	if ( ! defined( $key ) ) {
+		define( $key, stripslashes( $value ) );
+	}
 }
 
-require_once( BASE_PATH . '/include/database.php' );
-require_once BASE_PATH . '/vendor/autoload.php';
+@ini_set( 'memory_limit', $MDSCONFIG['MEMORY_LIMIT'] );
+
+if ( $MDSCONFIG['WP_ENABLED'] == 'YES' ) {
+	require_once $MDSCONFIG['BASE_PATH'] . '/include/wp_functions.php';
+	mds_load_wp();
+}
 
 global $purifier;
 $purifier = new HTMLPurifier();
 
-require_once BASE_PATH . '/include/functions2.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/functions2.php';
 global $f2;
 $f2 = new functions2();
 
 global $label;
-require_once BASE_PATH . '/lang/lang.php';
-require_once BASE_PATH . '/include/mail_manager.php';
-require_once BASE_PATH . '/include/currency_functions.php';
-require_once BASE_PATH . '/include/price_functions.php';
-require_once BASE_PATH . '/include/functions.php';
-require_once BASE_PATH . '/include/image_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/lang/lang.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/mail_manager.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/currency_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/price_functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/functions.php';
+require_once $MDSCONFIG['BASE_PATH'] . '/include/image_functions.php';

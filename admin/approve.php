@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,17 +34,48 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-// edit this file to change the style of the mouseover box!
-require( BASE_PATH . '/html/mouseover_box.htm' );
+echo '<style type="text/css">
+    #bubble {
+        position: absolute;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+        background-color: #FFFFFF;
+        border-color: #33CCFF;
+        border-style: solid;
+        border-width: 1px;
+        padding: 5px;
+        margin: 0;
+        width: 200px;
+        filter: revealtrans();
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+    }
 
+    #content {
+        padding: 0;
+        margin: 0
+    }
+</style>
+<div onmouseout="hideBubble()" id="bubble">
+<span id="content">
+</span>
+</div>
+';
 echo '<script>';
 require( BASE_PATH . '/include/mouseover_js.inc.php' );
 echo '</script>';
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+global $f2;
+
+if ( isset( $_REQUEST['BID'] ) ) {
+	$BID = $f2->bid();
+} else {
+	$BID = 'all';
+}
 
 $bid_sql = " AND banner_id=$BID ";
-if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
+if ( ( $BID == 'all' ) || empty( $BID ) ) {
 	$BID     = '';
 	$bid_sql = "  ";
 }
@@ -112,12 +143,12 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 <form name="bidselect" method="post" action="approve.php">
     <input type="hidden" name="old_order_id" value="<?php //echo $order_id; ?>">
-    <input type="hidden" value="<?php echo $_REQUEST['app']; ?>" name="app">
+    <input type="hidden" value="<?php echo $_REQUEST['app'] ?? ""; ?>" name="app">
     <label>
         Select Grid:
         <select name="BID" onchange="mds_submit(this)">
             <option value='all'
-				<?php if ( $f2->bid( $_REQUEST['BID'] ) == 'all' ) {
+				<?php if ( $BID == 'all' ) {
 					echo 'selected';
 				} ?>>Show All
             </option>
@@ -128,7 +159,7 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 			while ( $row = mysqli_fetch_array( $res ) ) {
 
-				if ( ( $row['banner_id'] == $BID ) && ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+				if ( ( $row['banner_id'] == $BID ) && ( isset( $_REQUEST['BID'] ) && $BID != 'all' ) ) {
 					$sel = 'selected';
 				} else {
 					$sel = '';
@@ -145,12 +176,12 @@ if ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) {
 
 <?php
 
-if ( $_REQUEST['save_links'] != '' ) {
+if ( isset( $_REQUEST['save_links'] ) && $_REQUEST['save_links'] != '' ) {
 	if ( sizeof( $_REQUEST['urls'] ) > 0 ) {
 		$i = 0;
 
 		foreach ( $_REQUEST['urls'] as $url ) {
-			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $f2->bid( $_REQUEST['BID'] ) . "'  ";
+			$sql = "UPDATE blocks SET url='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_urls'][ $i ] ) . "', alt_text='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['new_alts'][ $i ] ) . "' WHERE user_id='" . intval( $_REQUEST['user_id'] ) . "' and url='" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' and banner_id='" . $BID . "'  ";
 			//echo $sql."<br>";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$i ++;
@@ -158,13 +189,13 @@ if ( $_REQUEST['save_links'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['edit_links'] != '' ) {
+if ( isset( $_REQUEST['edit_links'] ) && $_REQUEST['edit_links'] != '' ) {
 
 	?>
     <h3>Edit Links:</h3>
     <form method="post" action="approve.php">
         <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-        <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
+        <input type="hidden" name="BID" value="<?php echo $BID; ?>">
         <input type="hidden" name="user_id" value="<?php echo $_REQUEST['user_id']; ?>">
         <input type="hidden" value="<?php echo $_REQUEST['app']; ?>" name="app">
         <table>
@@ -200,7 +231,7 @@ if ( $_REQUEST['edit_links'] != '' ) {
 }
 
 $bid_sql2 = " AND blocks.banner_id=$BID ";
-if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
+if ( ( $BID == 'all' ) || ( empty( $BID ) ) ) {
 	$BID      = '';
 	$bid_sql2 = "";
 }
@@ -213,6 +244,17 @@ if ( isset( $_REQUEST['app'] ) ) {
 	}
 }
 
+/*$sql = "
+SELECT Distinct orders.blocks, orders.order_date, orders.order_id, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, users.FirstName, users.LastName, users.Username, users.Email
+    FROM ads, blocks, orders, users
+    WHERE orders.approved='" . $Y_or_N . "'
+      AND orders.user_id=users.ID
+      AND orders.order_id=blocks.order_id
+      AND blocks.order_id=ads.order_id
+      {$bid_sql2}
+
+    ORDER BY orders.order_date
+";*/
 $sql = "
 SELECT orders.blocks, orders.order_date, orders.order_id, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, ads.2, users.FirstName, users.LastName, users.Username, users.Email 
     FROM ads, blocks, orders, users 
@@ -221,13 +263,13 @@ SELECT orders.blocks, orders.order_date, orders.order_id, blocks.approved, block
       AND orders.order_id=blocks.order_id 
       AND blocks.order_id=ads.order_id 
       {$bid_sql2}
-    GROUP BY orders.order_id 
+    GROUP BY orders.order_id, orders.blocks, orders.order_date, blocks.approved, blocks.status, blocks.user_id, blocks.banner_id, blocks.ad_id, ads.1, ads.2, users.FirstName, users.LastName, users.Username, users.Email 
     ORDER BY orders.order_date
 ";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 $count = mysqli_num_rows( $result );
 
-$offset = intval( $_REQUEST['offset'] );
+$offset = isset( $_REQUEST['offset'] ) ? intval( $_REQUEST['offset'] ) : 0;
 
 $records_per_page = 20;
 if ( $count > $records_per_page ) {
@@ -242,27 +284,43 @@ if ( $count > $records_per_page ) {
 	// calculate number of pages & current page
 
 	echo "<center>";
+	global $label;
 	$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 	$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 
-	$q_string = $q_string . "&app=" . $_REQUEST['app'];
+	$q_string = "&app=" . $_REQUEST['app'];
 	$nav      = nav_pages_struct( $q_string, $count, $records_per_page );
 	$LINKS    = 40;
 	render_nav_pages( $nav, $LINKS, $q_string );
 	echo "</center>";
 }
+
+// Determine if auto publish should be checked
+
+// If all grids are selected (default) then not checked
+$do_it_now_checked = false;
+if ( ( isset( $_REQUEST['do_it_now'] ) && $_REQUEST['do_it_now'] == 'true' ) ) {
+    // If do_it_now was just checked then check it
+	$do_it_now_checked = true;
+} else if ( ! empty( $BID ) ) {
+	// If a specific grid is selected check if auto publish is enabled for that grid
+	$banner_data = load_banner_constants( $BID );
+	if ( $banner_data['AUTO_PUBLISH'] == 'Y' ) {
+		$do_it_now_checked = true;
+	}
+}
 ?>
 <form name="form1" method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
-    <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
-    <input type="hidden" name="BID" value="<?php echo $f2->bid( $_REQUEST['BID'] ); ?>">
-    <input type="hidden" name="app" value="<?php echo $_REQUEST['app']; ?>">
+    <input type="hidden" name="offset" value="<?php echo $offset; ?>">
+    <input type="hidden" name="BID" value="<?php echo $BID; ?>">
+    <input type="hidden" name="app" value="<?php echo $_REQUEST['app'] ?? ""; ?>">
     <input type="hidden" name="all_go" value="">
     <table width="100%" cellSpacing="1" cellPadding="3" align="center" bgColor="#d9d9d9" border="0">
         <tr>
             <td colspan="12">
                 With selected: <input type="submit" value='Approve' style="font-size: 9px; background-color: #33FF66 " onclick="if (!confirmLink(this, 'Approve for all selected, are you sure?')) return false" name='mass_approve'>
                 <input type="submit" value='Disapprove' style="font-size: 9px; background-color: #FF6600" onclick="if (!confirmLink(this, 'Disapprove all selected, are you sure?')) return false" name='mass_disapprove'>
-                <input type="checkbox" name="do_it_now" <?php if ( ( $_REQUEST['do_it_now'] == 'true' ) ) {
+                <input type="checkbox" name="do_it_now" <?php if ( $do_it_now_checked ) {
 					echo ' checked ';
 				} ?> value="true"> Process Grid Images immediately after approval / disapproval <br>
             </td>

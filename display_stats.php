@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,21 +34,32 @@ define( 'NO_HOUSE_KEEP', 'YES' );
 
 require_once __DIR__ . "/include/init.php";
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+global $f2, $label;
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
 $sql = "select count(*) AS COUNT FROM blocks where status='sold' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
-$sold = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+
+if ( defined( 'STATS_DISPLAY_MODE' ) && STATS_DISPLAY_MODE == 'BLOCKS' ) {
+	$sold = $row['COUNT'];
+} else {
+	$sold = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+}
 
 $sql = "select count(*) AS COUNT FROM blocks where status='nfs' and banner_id='$BID' ";
-$result = mysqli_query( $GLOBALS['connection'], $sql );
+$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 $row = mysqli_fetch_array( $result );
-$nfs = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
 
-$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) ) - $nfs ) - $sold;
+if ( defined( 'STATS_DISPLAY_MODE' ) && STATS_DISPLAY_MODE == 'BLOCKS' ) {
+	$nfs = $row['COUNT'];
+	$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] ) - $nfs ) - $sold;
+} else {
+	$nfs = $row['COUNT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] );
+	$available = ( ( $banner_data['G_WIDTH'] * $banner_data['G_HEIGHT'] * ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) ) - $nfs ) - $sold;
+}
 
 if ( $label['sold_stats'] == '' ) {
 	$label['sold_stats'] = "Sold";
@@ -62,7 +73,7 @@ if ( $label['available_stats'] == '' ) {
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>css/main.css?ver=<?php echo filemtime( BASE_PATH . '/css/main.css' ); ?>">
 </head>
 <body class="status_body">
 <div class="status">

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -41,7 +41,7 @@ function validate_advertiser( $user_id ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 }
 
-if ( $_REQUEST['action'] == 'validate' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'validate' ) {
 	validate_advertiser( $_REQUEST['user_id'] );
 }
 
@@ -58,11 +58,11 @@ function delete_advertiser( $user_id ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'delete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
 	delete_advertiser( $_REQUEST['user_id'] );
 }
 
-if ( $_REQUEST['delete_anyway'] != '' ) {
+if ( isset($_REQUEST['delete_anyway']) && $_REQUEST['delete_anyway'] != '' ) {
 
 	$sql = "DELETE FROM orders where user_id=" . intval( $_REQUEST['user_id'] );
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
@@ -86,7 +86,7 @@ if ( $_REQUEST['delete_anyway'] != '' ) {
 	echo "<p>User deleted. Please remember to process the image if the user had some pixels. </p>";
 }
 
-if ( $_REQUEST['mass_del'] != '' ) {
+if ( isset($_REQUEST['mass_del']) && $_REQUEST['mass_del'] != '' ) {
 	if ( sizeof( $_REQUEST['users'] ) > 0 ) {
 		foreach ( $_REQUEST['users'] as $user_id ) {
 			delete_advertiser( $user_id );
@@ -94,7 +94,7 @@ if ( $_REQUEST['mass_del'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['mass_val'] != '' ) {
+if ( isset($_REQUEST['mass_del']) && $_REQUEST['mass_val'] != '' ) {
 	if ( sizeof( $_REQUEST['users'] ) > 0 ) {
 		foreach ( $_REQUEST['users'] as $user_id ) {
 			validate_advertiser( $user_id );
@@ -102,16 +102,19 @@ if ( $_REQUEST['mass_val'] != '' ) {
 	}
 }
 
-$q_aday     = $_REQUEST['q_aday'];
-$q_amon     = $_REQUEST['q_amon'];
-$q_ayear    = $_REQUEST['q_ayear'];
-$q_name     = $_REQUEST['q_name'];
-$q_username = $_REQUEST['q_username'];
-$q_resumes  = $_REQUEST['q_resumes'];
-$q_news     = $_REQUEST['q_news'];
-$q_email    = $_REQUEST['q_email'];
-$q_company  = $_REQUEST['q_company'];
-$search     = $_REQUEST['search'];
+$offset = isset($_REQUEST['offset']) ? intval($_REQUEST['offset']) : 0;
+
+$q_aday     = isset($_REQUEST['q_aday']) ? $_REQUEST['q_aday'] : '';
+$q_amon     = isset($_REQUEST['q_amon']) ? $_REQUEST['q_amon'] : '';
+$q_ayear     = isset($_REQUEST['q_ayear']) ? $_REQUEST['q_ayear'] : '';
+$q_name     = isset($_REQUEST['q_name']) ? $_REQUEST['q_name'] : '';
+$q_username     = isset($_REQUEST['q_username']) ? $_REQUEST['q_username'] : '';
+$q_resumes     = isset($_REQUEST['q_resumes']) ? $_REQUEST['q_resumes'] : '';
+$q_news     = isset($_REQUEST['q_news']) ? $_REQUEST['q_news'] : '';
+$q_email     = isset($_REQUEST['q_email']) ? $_REQUEST['q_email'] : '';
+$q_company     = isset($_REQUEST['q_company']) ? $_REQUEST['q_company'] : '';
+$search     = isset($_REQUEST['search']) ? $_REQUEST['search'] : '';
+
 $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_name&q_username=$q_username&q_news=$q_news&q_resumes=$q_resumes&q_email=$q_email&q_aday=$q_aday&q_amon=$q_amon&q_ayear=$q_ayear&q_company=$q_company&search=$search" );
 ?>
     <p>
@@ -142,11 +145,9 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 			<?php
 
 			if ( $q_aday == '' ) {
-
-				// $q_aday = date("d");
-				//   $q_amon = date("m");
-				//   $q_ayear = date("Y");
-
+				$q_aday = date("d");
+				$q_amon = date("m");
+				$q_ayear = date("Y");
 			}
 
 			?>
@@ -341,7 +342,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
     <tr>
         <td width="731" bgcolor="#EDF8FC" colspan="4">
       <span style="font-family: Arial; "><b>
-      <input type="submit" value="Find" name="B1" style="float: left"><?php if ( $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></span><b>[<span style="font-family: Arial; "><a href="<?php echo $_SERVER['PHP_SELF'] ?>">Start a New Search</a></span>]</b><?php } ?></td>
+      <input type="submit" value="Find" name="B1" style="float: left"><?php if ( isset($_REQUEST['search']) && $_REQUEST['search'] == 'search' ) { ?>&nbsp; </b></span><b>[<span style="font-family: Arial; "><a href="<?php echo $_SERVER['PHP_SELF'] ?>">Start a New Search</a></span>]</b><?php } ?></td>
     </tr>
     </table>
 
@@ -352,14 +353,16 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
     <p>Listing advertisers. Click on a username to edit details / change password / change status<p>
 
 	<?php
-	$q_aday     = intval( $_REQUEST['q_aday'] );
-	$q_amon     = intval( $_REQUEST['q_amon'] );
-	$q_ayear    = intval( $_REQUEST['q_ayear'] );
-	$q_name     = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_name'] );
-	$q_username = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_username'] );
-	$q_resumes  = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_resumes'] );
-	$q_news     = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_news'] );
-	$q_email    = mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['q_email'] );
+	$q_aday     = intval( $q_aday );
+	$q_amon     = intval( $q_amon );
+	$q_ayear    = intval( $q_ayear );
+	$q_name     = mysqli_real_escape_string( $GLOBALS['connection'], $q_name );
+	$q_username = mysqli_real_escape_string( $GLOBALS['connection'], $q_username );
+	$q_resumes  = mysqli_real_escape_string( $GLOBALS['connection'], $q_resumes );
+	$q_news     = mysqli_real_escape_string( $GLOBALS['connection'], $q_news );
+	$q_email    = mysqli_real_escape_string( $GLOBALS['connection'], $q_email );
+
+    $where_sql = '';
 
 	if ( $q_name != '' ) {
 		$list = preg_split( "/[\s,]+/", $q_name );
@@ -393,7 +396,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 	if ( ( $q_aday != '' ) && ( $q_amon != '' ) && ( $q_ayear != '' ) ) {
 		$q_ayear   = trim( $q_ayear );
 		$q_date    = "$q_ayear-$q_amon-$q_aday";
-		$where_sql .= " AND  '$q_date' <= `SignupDate` ";
+		$where_sql .= " AND  STR_TO_DATE('$q_date', '%Y-%m-%d') <= `SignupDate` ";
 	}
 
 	if ( $q_news != '' ) {
@@ -417,14 +420,15 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
 
 	?>
     <form style="margin: 0px;" method="post" action="<?php echo $_SERVER['PHP_SELF'];
-	echo "?offset=" . $_REQUEST['offset'] . $q_string; ?>" name="form1">
-        <input type="hidden" name="offset" value="<?php echo $_REQUEST['offset']; ?>">
+	echo "?offset=" . $offset . $q_string; ?>" name="form1">
+        <input type="hidden" name="offset" value="<?php echo $offset; ?>">
         <center><b><?php echo mysqli_num_rows( $result ); ?> Advertiser's Accounts Returned (<?php echo $pages; ?> pages) </b></center>
 		<?php
 		if ( $count > $records_per_page ) {
 			// calculate number of pages & current page
 
 			echo "<center>";
+			global $label;
 			$label["navigation_page"] = str_replace( "%CUR_PAGE%", $cur_page, $label["navigation_page"] );
 			$label["navigation_page"] = str_replace( "%PAGES%", $pages, $label["navigation_page"] );
 			//	echo "<span > ".$label["navigation_page"]."</span> ";
@@ -451,6 +455,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Orders</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Pixels</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Clicks</span></b></td>
+                <td><b><span style="font-family: Arial; font-size: x-small; ">Views</span></b></td>
                 <td><b><span style="font-family: Arial; font-size: x-small; ">Action</span></b></td>
             </tr>
 			<?php
@@ -474,7 +479,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                     <td><span style="font-family: Arial; font-size: x-small; "><a href="edit.php?user_id=<?php echo $row['ID']; ?>" name="Edit"><?php echo $row['Username']; ?></a></span></td>
                     <td><span style="font-family: Arial; font-size: x-small; "><?php echo $row['Email']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['CompName']; ?></span></td>
-                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo get_local_time( $row['SignupDate'] ); ?></span></td>
+                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo get_local_datetime( $row['SignupDate'], true ); ?></span></td>
                     <td><span style="font-family: Arial; font-size: x-small; "><?php if ( $row['Validated'] == 1 ) {
 								echo "Yes";
 							} else {
@@ -486,6 +491,7 @@ $q_string   = mysqli_real_escape_string( $GLOBALS['connection'], "&q_name=$q_nam
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo mysqli_num_rows( $result3 ); ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $order_row['Pixels']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['click_count']; ?></span></td>
+                    <td><span style="font-family: Arial; font-size: xx-small; "><?php echo $row['view_count']; ?></span></td>
                     <td><span style="font-family: Arial; font-size: xx-small; ">
 	<?php if ( $row['Validated'] == 0 ) { ?>
         <input style="font-size: 9px;" type="button" value="Validate" onclick="if ( !confirmLink(this, 'Validate account?')) return false;" data-link="customers.php?action=validate&user_id=<?php echo $row['ID'] . $q_string; ?>"><?php } ?> <input style="font-size: 9px;" type="button" value="Delete" onclick="if ( !confirmLink(this, 'Delete account?')) return false;" data-link="customers.php?action=delete&user_id=<?php echo $row['ID'] . $q_string; ?>"></span>

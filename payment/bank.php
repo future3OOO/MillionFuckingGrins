@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -32,7 +32,7 @@
 require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['bank'] = new bank;
-define( IPN_LOGGING, 'Y' );
+define( 'BANK_LOGGING', 'Y' );
 
 function b_mail_error( $msg ) {
 
@@ -45,12 +45,12 @@ function b_mail_error( $msg ) {
 	$headers .= "Date: $date" . "\r\n";
 	$headers .= "X-Sender-IP: " . $_SERVER['REMOTE_ADDR'] . "\r\n";
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit bank payment mod. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script bank payment mod. ", $msg, $headers );
 }
 
 function b_log_entry( $entry_line ) {
 
-	if ( IPN_LOGGING == 'Y' ) {
+	if ( BANK_LOGGING == 'Y' ) {
 
 		$entry_line = "BANK:$entry_line\r\n ";
 		$log_fp     = fopen( "logs.txt", "a" );
@@ -80,7 +80,9 @@ class bank {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -165,7 +167,7 @@ class bank {
 
 	function config_form() {
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 
 			$bank_name           = $_REQUEST['bank_name'];
 			$bank_address        = $_REQUEST['bank_address'];
@@ -229,7 +231,7 @@ class bank {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Bank Account Currency</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <select name="bank_currency"><?php echo currency_option_list( $bank_currency ); ?></select></font></td>
+                            <select name="bank_currency"><?php currency_option_list( $bank_currency ); ?></select></font></td>
                 </tr>
                 <!--
 <tr>
@@ -285,7 +287,7 @@ class bank {
 		$sql = "SELECT val from `config` where `key`='BANK_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset( $row['val'] ) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;
@@ -323,7 +325,7 @@ class bank {
 
 		if ( ( $_REQUEST['order_id'] != '' ) && ( $_REQUEST['nhezk5'] != '' ) ) {
 
-			//session_start();
+			//mds_start_session();
 
 			//print_r($_SESSION);
 
@@ -336,53 +338,53 @@ class bank {
 
                 <div style='background-color: #ffffff; border-color:#C0C0C0; border-style:solid;padding:10px'>
                     <p align="center">
-                    <center>
-						<?php
+                        <center>
+							<?php
 
-						$sql = "SELECT * from orders where order_id='" . intval( $_REQUEST['order_id'] ) . "' and user_id='" . intval( $_SESSION['MDS_ID'] ) . "'";
-						$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
-						$order_row = mysqli_fetch_array( $result );
+							$sql = "SELECT * from orders where order_id='" . intval( $_REQUEST['order_id'] ) . "' and user_id='" . intval( $_SESSION['MDS_ID'] ) . "'";
+							$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+							$order_row = mysqli_fetch_array( $result );
 
-						$bank_amount = convert_to_currency( $order_row['price'], $order_row['currency'], BANK_CURRENCY );
-						$bank_amount = format_currency( $bank_amount, BANK_CURRENCY, true );
+							$bank_amount = convert_to_currency( $order_row['price'], $order_row['currency'], BANK_CURRENCY );
+							$bank_amount = format_currency( $bank_amount, BANK_CURRENCY, true );
 
-						$label['payment_bank_heading'] = str_replace( "%INVOICE_AMOUNT%", $bank_amount, $label['payment_bank_heading'] );
-						$label['payment_bank_note']    = str_replace( "%CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $label['payment_bank_note'] );
-						$label['payment_bank_note']    = str_replace( "%INVOICE_CODE%", $_REQUEST['order_id'], $label['payment_bank_note'] );
+							$label['payment_bank_heading'] = str_replace( "%INVOICE_AMOUNT%", $bank_amount, $label['payment_bank_heading'] );
+							$label['payment_bank_note']    = str_replace( "%CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $label['payment_bank_note'] );
+							$label['payment_bank_note']    = str_replace( "%INVOICE_CODE%", $_REQUEST['order_id'], $label['payment_bank_note'] );
 
-						if ( get_default_currency() != BANK_CURRENCY ) {
-							echo convert_to_default_currency_formatted( $order_row[ currency ], $order_row['price'] ) . " = " . $bank_amount;
-							echo "<br>";
-						} ?>
+							if ( get_default_currency() != BANK_CURRENCY ) {
+								echo convert_to_default_currency_formatted( $order_row['currency'], $order_row['price'] ) . " = " . $bank_amount;
+								echo "<br>";
+							} ?>
 
-                        <table width="70%">
-                            <tr>
-                                <td>
-                                    <b><?php echo $label['payment_bank_heading']; ?></b><br>
-									<?php if ( BANK_NAME != '' ) { ?>
-                                        <b><?php echo $label['payment_bank_name']; ?>:</b> <?php echo BANK_NAME; ?><br>
-									<?php } ?>
-									<?php if ( BANK_ADDRESS != '' ) { ?>
-                                        <b><?php echo $label['payment_bank_addr']; ?></b> <?php echo BANK_ADDRESS; ?><br>
-									<?php } ?>
-									<?php if ( BANK_ACCOUNT_NAME != '' ) { ?>
-                                        <b><?php echo $label['payment_bank_ac_name']; ?></b> <?php echo BANK_ACCOUNT_NAME; ?><br>
-									<?php } ?>
-									<?php if ( BANK_ACCOUNT_NUMBER != '' ) { ?>
-                                        <b><?php echo $label['payment_bank_ac_number']; ?></b> <?php echo BANK_ACCOUNT_NUMBER; ?><br>
-									<?php } ?>
-									<?php if ( BANK_BRANCH_NUMBER != '' ) { ?>
-                                        <b><?php echo $label['payment_bank_branch_number']; ?></b> <?php echo BANK_BRANCH_NUMBER; ?><br>
-									<?php } ?>
-									<?php if ( BANK_SWIFT != '' ) { ?>
+                    <table width="70%">
+                        <tr>
+                            <td>
+                                <b><?php echo $label['payment_bank_heading']; ?></b><br>
+								<?php if ( BANK_NAME != '' ) { ?>
+                                    <b><?php echo $label['payment_bank_name']; ?>:</b> <?php echo BANK_NAME; ?><br>
+								<?php } ?>
+								<?php if ( BANK_ADDRESS != '' ) { ?>
+                                    <b><?php echo $label['payment_bank_addr']; ?></b> <?php echo BANK_ADDRESS; ?><br>
+								<?php } ?>
+								<?php if ( BANK_ACCOUNT_NAME != '' ) { ?>
+                                    <b><?php echo $label['payment_bank_ac_name']; ?></b> <?php echo BANK_ACCOUNT_NAME; ?><br>
+								<?php } ?>
+								<?php if ( BANK_ACCOUNT_NUMBER != '' ) { ?>
+                                    <b><?php echo $label['payment_bank_ac_number']; ?></b> <?php echo BANK_ACCOUNT_NUMBER; ?><br>
+								<?php } ?>
+								<?php if ( BANK_BRANCH_NUMBER != '' ) { ?>
+                                    <b><?php echo $label['payment_bank_branch_number']; ?></b> <?php echo BANK_BRANCH_NUMBER; ?><br>
+								<?php } ?>
+								<?php if ( BANK_SWIFT != '' ) { ?>
 
-                                        <b><?php echo $label['payment_bank_swift']; ?></b> <?php echo BANK_SWIFT; ?><br>
+                                    <b><?php echo $label['payment_bank_swift']; ?></b> <?php echo BANK_SWIFT; ?><br>
 
-									<?php } ?>
-									<?php echo $label['payment_bank_note']; ?>
-                                </td>
-                            </tr>
-                        </table>
+								<?php } ?>
+								<?php echo $label['payment_bank_note']; ?>
+                            </td>
+                        </tr>
+                    </table>
 
                     </p>
                     </center>

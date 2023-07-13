@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -132,7 +132,9 @@ class VoguePay {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
@@ -244,7 +246,7 @@ class VoguePay {
 	}
 
 	function config_form() {
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 			$voguepay_demo_mode   = filter_var( $_REQUEST['voguepay_demo_mode'], FILTER_SANITIZE_STRING );
 			$voguepay_merchant_id = filter_var( $_REQUEST['voguepay_merchant_id'], FILTER_SANITIZE_STRING );
 			$voguepay_store_id    = filter_var( $_REQUEST['voguepay_store_id'], FILTER_SANITIZE_STRING );
@@ -300,7 +302,7 @@ class VoguePay {
                         <strong>failed@ivoryserver.com</strong> or <strong>failed@trashmail.com</strong>.<br><br>
                         To simulate a successful transaction, use any email and any password to pay for the transaction. You may use your real email since a notification will be sent to the email address you use for the transaction.<br><br>
                         The transaction ID will be sent to the notify_url parameter submitted by your form e.g:
-                        <br><span class="red"><strong>&lt;input type="hidden" name="notify_url" value="http://www.mydomain.com/notification.php" /&gt;</strong></span><br>
+                        <br><span class="red"><strong>&lt;input type="hidden" name="notify_url" value="https://www.mydomain.com/notification.php" /&gt;</strong></span><br>
                         You may then call the notification/order processing API from there.<br>
                         For demo transactions, use add demo=true to the notification API as shown below:<br>
                         <b>https://voguepay.com/?v_transaction_id=11111&amp;type=xml&amp;demo=true</b>
@@ -423,7 +425,7 @@ class VoguePay {
 		$sql = "SELECT val FROM config WHERE `key`='VOGUEPAY_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

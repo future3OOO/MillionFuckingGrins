@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,19 +30,14 @@
  *
  */
 
-// check if a config.php exists, if not then rename the default one and redirect to install
+// check if a config.php exists, if not then redirect to install
 if ( ! file_exists( __DIR__ . "/config.php" ) ) {
-	if ( file_exists( __DIR__ . "/config-default.php" ) ) {
-		if ( rename( __DIR__ . "/config-default.php", __DIR__ . "/config.php" ) ) {
-			$host     = $_SERVER['HTTP_HOST'];
-			$uri      = rtrim( dirname( $_SERVER['PHP_SELF'] ), '/\\' );
-			$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
-			$loc      = $protocol . $host . $uri . "/admin/install.php";
-			header( "Location: $loc" );
-			header( "X-Frame-Options: allow-from " . $protocol . $host . $uri . "/" );
-		}
-	}
-	echo "The file config.php was not found and I was unable to automatically rename it. You may have to manually rename config-default.php to config.php and then visit $loc to install the script.";
+	$host     = $_SERVER['HTTP_HOST'];
+	$uri      = rtrim( dirname( $_SERVER['PHP_SELF'] ), '/\\' );
+	$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
+	$loc      = $protocol . $host . $uri . "/admin/install.php";
+	header( "Location: $loc" );
+	header( "X-Frame-Options: allow-from " . $protocol . $host . $uri . "/" );
 	exit;
 }
 
@@ -50,7 +45,7 @@ if ( ! file_exists( __DIR__ . "/config.php" ) ) {
 require_once __DIR__ . "/include/init.php";
 
 global $f2;
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 // include the header
 require_once( __DIR__ . "/html/header.php" );

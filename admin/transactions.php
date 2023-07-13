@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:16 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -34,7 +34,7 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-$BID = $f2->bid( $_REQUEST['BID'] );
+$BID = $f2->bid();
 
 $bid_sql = " AND banner_id=$BID ";
 
@@ -43,7 +43,7 @@ if ( ( $BID == 'all' ) || ( $BID == '' ) ) {
 	$bid_sql = "  ";
 }
 
-if ( $_REQUEST['action'] == 'refund' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'refund' ) {
 
 	$t_id = $_REQUEST['transaction_id'];
 
@@ -54,7 +54,7 @@ if ( $_REQUEST['action'] == 'refund' ) {
 
 	if ( $row['status'] != 'completed' ) {
 		// check that there's no other refund...
-		$sql = "SELECT * FROM transactions where txn_id='" . intval( $row['txn_id'] ) . "' AND type='CREDIT' ";
+		$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string( $GLOBALS['connection'], $row['txn_id'] ) . "' AND type='CREDIT' ";
 		$r = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 		if ( mysqli_num_rows( $r ) == 0 ) {
 			// do the refund
@@ -101,24 +101,23 @@ $bal = $debits - $credits;
 $local_date = ( gmdate( "Y-m-d H:i:s" ) );
 $local_time = strtotime( $local_date );
 
-if ( $_REQUEST['from_day'] == '' ) {
+if ( ! isset( $_REQUEST['from_day'] ) || $_REQUEST['from_day'] == '' ) {
 	$_REQUEST['from_day'] = "1";
 }
-if ( $_REQUEST['from_month'] == '' ) {
+if ( ! isset( $_REQUEST['from_month'] ) || $_REQUEST['from_month'] == '' ) {
 	$_REQUEST['from_month'] = date( "m", $local_time );
 }
-if ( $_REQUEST['from_year'] == '' ) {
+if ( ! isset( $_REQUEST['from_year'] ) || $_REQUEST['from_year'] == '' ) {
 	$_REQUEST['from_year'] = date( 'Y', $local_time );
 }
 
-if ( $_REQUEST['to_day'] == '' ) {
+if ( ! isset( $_REQUEST['to_day'] ) || $_REQUEST['to_day'] == '' ) {
 	$_REQUEST['to_day'] = date( 'd', $local_time );
 }
-if ( $_REQUEST['to_month'] == '' ) {
+if ( ! isset( $_REQUEST['to_month'] ) || $_REQUEST['to_month'] == '' ) {
 	$_REQUEST['to_month'] = date( 'm', $local_time );
 }
-if ( $_REQUEST['to_year'] == '' ) {
-
+if ( ! isset( $_REQUEST['to_year'] ) || $_REQUEST['to_year'] == '' ) {
 	$_REQUEST['to_year'] = date( 'Y', $local_time );
 }
 ?>
@@ -131,7 +130,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 2005; $i <= date( "Y" ); $i ++ ) {
-			if ( $_REQUEST['from_year'] == $i ) {
+			if ( isset( $_REQUEST['from_year'] ) && $_REQUEST['from_year'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -145,7 +144,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 1; $i <= 12; $i ++ ) {
-			if ( $_REQUEST['from_month'] == $i ) {
+			if ( isset( $_REQUEST['from_month'] ) && $_REQUEST['from_month'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -159,7 +158,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 1; $i <= 31; $i ++ ) {
-			if ( $_REQUEST['from_day'] == $i ) {
+			if ( isset( $_REQUEST['from_day'] ) && $_REQUEST['from_day'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -175,7 +174,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 2005; $i <= date( "Y" ); $i ++ ) {
-			if ( $_REQUEST['to_year'] == $i ) {
+			if ( isset( $_REQUEST['to_year'] ) && $_REQUEST['to_year'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -183,11 +182,13 @@ if ( $_REQUEST['to_year'] == '' ) {
 			echo "<option value='$i' $sel>$i</option>";
 		}
 
-		if ( $_REQUEST['select_date'] != '' ) {
+		if ( isset( $_REQUEST['select_date'] ) && $_REQUEST['select_date'] != '' ) {
+
+            $status = $_REQUEST['status'] ?? '';
 
 			$date_link =
 
-				"&from_day=" . $_REQUEST['from_day'] . "&from_month=" . $_REQUEST['from_month'] . "&from_year=" . $_REQUEST['from_year'] . "&to_day=" . $_REQUEST['to_day'] . "&to_month=" . $_REQUEST['to_month'] . "&to_year=" . $_REQUEST['to_year'] . "&status=" . $_REQUEST['status'] . "&select_date=1";
+				"&from_day=" . $_REQUEST['from_day'] . "&from_month=" . $_REQUEST['from_month'] . "&from_year=" . $_REQUEST['from_year'] . "&to_day=" . $_REQUEST['to_day'] . "&to_month=" . $_REQUEST['to_month'] . "&to_year=" . $_REQUEST['to_year'] . "&status=" . $status . "&select_date=1";
 		}
 		?>
     </select>
@@ -196,7 +197,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 1; $i <= 12; $i ++ ) {
-			if ( $_REQUEST['to_month'] == $i ) {
+			if ( isset( $_REQUEST['to_month'] ) && $_REQUEST['to_month'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -210,7 +211,7 @@ if ( $_REQUEST['to_year'] == '' ) {
         <option value=''></option>
 		<?php
 		for ( $i = 1; $i <= 31; $i ++ ) {
-			if ( $_REQUEST['to_day'] == $i ) {
+			if ( isset( $_REQUEST['to_day'] ) && $_REQUEST['to_day'] == $i ) {
 				$sel = " selected ";
 			} else {
 				$sel = " ";
@@ -263,7 +264,7 @@ if ( $_REQUEST['to_year'] == '' ) {
 	$from_date = intval( $_REQUEST['from_year'] ) . "-" . intval( $_REQUEST['from_month'] ) . "-" . intval( $_REQUEST['from_day'] ) . " 00:00:00";
 	$to_date   = intval( $_REQUEST['to_year'] ) . "-" . intval( $_REQUEST['to_month'] ) . "-" . intval( $_REQUEST['to_day'] ) . " 23:59:59";
 
-	$where_date = " (`date` >= '$from_date' AND `date` <= '$to_date' ) ";
+	$where_date = " (`date` >= STR_TO_DATE('$from_date', '%Y-%m-%d') AND `date` <= STR_TO_DATE('$to_date', '%Y-%m-%d') ) ";
 
 	$sql = "SELECT * from transactions, orders, users where $where_date AND transactions.order_id=orders.order_id AND orders.user_id=users.ID order by transactions.date desc ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );

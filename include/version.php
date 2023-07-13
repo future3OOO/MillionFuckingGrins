@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:16 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,7 +30,7 @@
  *
  */
 
-function get_mds_version() {
+function get_mds_build_date() {
 	$lines = file( __FILE__ );
 
 	$version = '';
@@ -39,6 +39,23 @@ function get_mds_version() {
 			$version = trim( str_replace( '* @version', '', $line ) );
 			break;
 		}
+	}
+
+	return $version;
+}
+
+function get_mds_version() {
+	$version = '2.3.3';
+
+	$sql    = "SELECT `val` FROM `config` WHERE `key`='VERSION_INFO'";
+	$result = mysqli_query( $GLOBALS['connection'], $sql );
+	if ( $result === false ) {
+		return $version;
+	}
+	$row = $result->fetch_assoc();
+
+	if ( $result->num_rows > 0 && ! empty( $row['val'] ) ) {
+		$version = $row['val'];
 	}
 
 	return $version;

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,15 +30,16 @@
  *
  */
 
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-require_once BASE_PATH . "/include/login_functions.php";
 
 process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
-$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+global $f2, $label;
+$BID = $f2->bid();
 $sql = "SELECT grid_width,grid_height, block_width, block_height, bgcolor, time_stamp FROM banners WHERE (banner_id = '$BID')";
 $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 $b_row = mysqli_fetch_array( $result );
@@ -70,9 +71,11 @@ $user_row = mysqli_fetch_array( $result );
     <p>
 		<?php
 		$label['advertiser_home_blkyouown'] = str_replace( "%PIXEL_COUNT%", $pixels, $label['advertiser_home_blkyouown'] );
+		$label['advertiser_home_blkyouown'] = str_replace( "%BLOCK_COUNT%", ($pixels / ($b_row['block_width'] * $b_row['block_height'])), $label['advertiser_home_blkyouown'] );
 		echo $label['advertiser_home_blkyouown'] . "<br>";
 
 		$label['advertiser_home_blkonorder'] = str_replace( "%PIXEL_ORD_COUNT%", $ordered, $label['advertiser_home_blkonorder'] );
+		$label['advertiser_home_blkonorder'] = str_replace( "%BLOCK_ORD_COUNT%", ( $ordered / ( $b_row['block_width'] * $b_row['block_height'] ) ), $label['advertiser_home_blkonorder'] );
 
 		if ( USE_AJAX == 'SIMPLE' ) {
 			$label['advertiser_home_blkonorder'] = str_replace( 'select.php', 'order_pixels.php', $label['advertiser_home_blkonorder'] );
@@ -81,6 +84,9 @@ $user_row = mysqli_fetch_array( $result );
 
 		$label['advertiser_home_click_count'] = str_replace( "%CLICK_COUNT%", number_format( $user_row['click_count'] ), $label['advertiser_home_click_count'] );
 		echo $label['advertiser_home_click_count'] . "<br>";
+
+		$label['advertiser_home_view_count'] = str_replace( "%VIEW_COUNT%", number_format( $user_row['view_count'] ), $label['advertiser_home_view_count'] );
+		echo $label['advertiser_home_view_count'] . "<br>";
 		?>
     </p>
 
@@ -98,6 +104,6 @@ $user_row = mysqli_fetch_array( $result );
 		<?php echo $label['advertiser_home_editlink']; ?><br>
     </p>
     <p>
-		<?php echo $label['advertiser_home_quest']; ?><?php echo SITE_CONTACT_EMAIL; ?>
+		<?php echo $label['advertiser_home_quest']; ?>
     </p>
 <?php require_once BASE_PATH . "/html/footer.php"; ?>

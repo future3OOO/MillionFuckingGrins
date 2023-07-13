@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -32,31 +32,69 @@
 
 class functions2 {
 
-	function get_doc() {
-		$doc = '<!DOCTYPE html>
+	function get_doc(): string {
+		return '<!DOCTYPE html>
 <html>
 <head>
 	<title> ' . SITE_NAME . '</title>
 	<meta name="Description" content="' . SITE_SLOGAN . '">
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>';
-
-		return $doc;
 	}
 
 	/**
-	 * check that banner id is numeric and if so return it
-	 * otherwise return 1 (1 = default banner id)
+	 * Get the banner id value.
+	 *
+	 * @param int $var
+	 *
+	 * @return int|string
 	 */
-	function bid( $var ) {
-		if ( isset( $var ) ) {
+	function bid( $var = 0 ) {
+		$ret = 1;
+
+		if ( $var == 0 ) {
+
+			global $BID;
+			if ( ! empty( $BID ) ) {
+				// global
+				$ret = $BID;
+			} else if ( isset( $_REQUEST['BID'] ) && ! empty( $_REQUEST['BID'] ) ) {
+				// $_REQUEST['BID']
+				$ret = $_REQUEST['BID'];
+			} else if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
+				// $_REQUEST['aid']
+				$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['aid'] ) . "'";
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+				if ( mysqli_num_rows( $res ) > 0 ) {
+					$row = mysqli_fetch_array( $res );
+					$ret = $row['banner_id'];
+				}
+			} else if ( isset( $_SESSION['MDS_ID'] ) && ! empty( $_SESSION['MDS_ID'] ) ) {
+				// $_SESSION['MDS_ID']
+				$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id, orders.order_id order by orders.banner_id ";
+				$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+				if ( $res !== false && mysqli_num_rows( $res ) > 0 ) {
+					$row = mysqli_fetch_array( $res );
+					$ret = $row['BID'];
+				}
+			} else {
+				// temp_orders
+				$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
+				$order_result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+				if ( mysqli_num_rows( $order_result ) > 0 ) {
+					$order_row = mysqli_fetch_array( $order_result );
+
+					$ret = $order_row['banner_id'];
+				}
+			}
+		} else {
 			if ( is_numeric( $var ) && $var > 0 ) {
-				return $var;
+				$ret = $var;
 			} else if ( $var == 'all' ) {
-				return 'all';
+				$ret = 'all';
 			}
 		}
 
-		return "1";
+		return $ret;
 	}
 
 	/**
@@ -75,7 +113,7 @@ class functions2 {
 	 *
 	 * more info: http://www.php.net/manual/en/filter.filters.php
 	 */
-	function filter( $var, $filter = FILTER_SANITIZE_STRING ) {
+	function filter( $var, $filter = null ) {
 
 		// check for BID filter
 		if ( $filter == "BID" ) {
@@ -108,7 +146,7 @@ class functions2 {
 		//echo $var . "<br />" . $filter . "<br />";
 
 		// filter
-		$var = filter_var( $var, $filter );
+		$var = htmlspecialchars( $var );
 
 		// if filter_var returns false error out
 		if ( $var === false ) {
@@ -124,22 +162,33 @@ class functions2 {
 	 *
 	 * @param $value
 	 * @param bool $stripslashes
+	 * @param int $quotes
+	 * @param string $encoding
 	 *
 	 * @return string
 	 */
-	function value( $value, $stripslashes = false ) {
-		$value = htmlspecialchars( $value, ENT_COMPAT, 'UTF-8' );
-
+	function value( $value, $stripslashes = true, $quotes = ENT_QUOTES, $encoding = 'UTF-8' ): string {
 		if ( $stripslashes ) {
 			$value = stripslashes( $value );
 		}
 
-		return $value;
+		return htmlspecialchars( $value, $quotes, $encoding );
+	}
+
+	/**
+	 * Adds slashes to a string.
+	 *
+	 * @param string $str
+	 *
+	 * @return string
+	 */
+	function slashes( string $str ): string {
+		return addcslashes( $str, "\\'" );
 	}
 
 	function write_log( $text ) {
-		if ( DEBUG === true ) {
-			$output_file = fopen( MDS_LOG_FILE, 'a' );
+		if ( MDSConfig::get( 'DEBUG' ) === true ) {
+			$output_file = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), 'a' );
 			fwrite( $output_file, $text . "\n" );
 			fclose( $output_file );
 		}
@@ -149,9 +198,9 @@ class functions2 {
 	function debug( $line = "null", $label = "debug" ) {
 
 		// log file
-		if ( MDS_LOG === true && file_exists( MDS_LOG_FILE ) ) {
+		if ( MDSConfig::get( 'MDS_LOG' ) === true && file_exists( MDSConfig::get( 'MDS_LOG_FILE' ) ) ) {
 			$entry_line = "[" . date( 'r' ) . "]	" . $line . "\r\n";
-			$log_fp     = fopen( MDS_LOG_FILE, "a" );
+			$log_fp     = fopen( MDSConfig::get( 'MDS_LOG_FILE' ), "a" );
 			fputs( $log_fp, $entry_line );
 			fclose( $log_fp );
 		}
@@ -176,25 +225,11 @@ class functions2 {
 }
 
 function get_banner_dir() {
-	if ( BANNER_DIR == 'BANNER_DIR' ) {
+	$dest = realpath( BASE_PATH . '/' . MDSConfig::get( 'BANNER_DIR' ) );
 
-		$base = BASE_PATH;
-		if ( empty( BASE_PATH ) || $base == 'BASE_PATH' ) {
-			$base = __DIR__;
-		}
-		$dest = $base . '/banners/';
-
-		if ( file_exists( $dest ) ) {
-			$BANNER_DIR = 'banners/';
-		} else {
-			$BANNER_DIR = 'pixels/';
-		}
-	} else {
-		$BANNER_DIR = BANNER_DIR;
+	if ( file_exists( $dest ) ) {
+		return $dest;
 	}
 
-	return $BANNER_DIR;
-}
-
-class MDSException extends Exception {
+	return realpath( __DIR__ . '/../pixels' );
 }

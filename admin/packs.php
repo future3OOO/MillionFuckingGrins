@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,7 +33,8 @@
 require_once __DIR__ . "/../include/init.php";
 require( 'admin_common.php' );
 
-$BID = $f2->bid( ( isset( $_REQUEST['BID'] ) ? $_REQUEST['BID'] : 1 ) );
+global $f2;
+$BID = $f2->bid();
 ?>
 
     <p>
@@ -42,7 +43,7 @@ $BID = $f2->bid( ( isset( $_REQUEST['BID'] ) ? $_REQUEST['BID'] : 1 ) );
     <hr>
 <?php
 $sql = "Select * from banners ";
-$res = mysqli_query( $GLOBALS['connection'], $sql );
+$res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 ?>
 
     <form name="bidselect" method="post" action="packs.php">
@@ -113,14 +114,14 @@ if ( $BID != '' ) {
 
 	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete' ) {
 
-		$sql    = "SELECT * FROM orders where package_id='" . intval( $_REQUEST['package_id'] ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$sql = "SELECT * FROM orders where package_id='" . intval( $_REQUEST['package_id'] ) . "'";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		if ( ( mysqli_num_rows( $result ) > 0 ) && ( $_REQUEST['really'] == '' ) ) {
 			echo "<font color='red'>Cannot delete package: This package is a part of another order</font> (<a href='packs.php?BID=$BID&package_id=" . $_REQUEST['package_id'] . "&action=delete&really=yes'>Click here to delete anyway</a>)";
 		} else {
 
 			$sql = "DELETE FROM packages WHERE package_id='" . intval( $_REQUEST['package_id'] ) . "' ";
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
 	}
 
@@ -129,15 +130,15 @@ if ( $BID != '' ) {
 		global $BID;
 
 		$sql = "SELECT * FROM packages where is_default='Y' and banner_id=" . intval( $BID );
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		$row         = mysqli_fetch_array( $result );
-		$old_default = $row['package_id'];
+		$old_default = $row['package_id'] ?? '';
 
 		$sql = "UPDATE packages SET is_default='N' WHERE banner_id=" . intval( $BID );
 
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		$sql = "UPDATE packages SET is_default='Y' WHERE package_id='" . intval( $package_id ) . "' AND banner_id=" . intval( $BID );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		if ( $old_default == '' ) {
 
@@ -145,7 +146,7 @@ if ( $BID != '' ) {
 			// in the 1.7.0 database, all orders must have packages
 
 			$sql = "UPDATE orders SET package_id=" . intval( $package_id ) . " WHERE package_id=0 AND banner_id=" . intval( $BID );
-			mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
 	}
 
@@ -167,24 +168,26 @@ if ( $BID != '' ) {
 
 			// calculate block id..
 
-			$_REQUEST['block_id_from'] = ( $_REQUEST['row_from'] - 1 ) * $banner_data['G_WIDTH'];
-			$_REQUEST['block_id_to']   = ( ( ( $_REQUEST['row_to'] ) * $banner_data['G_HEIGHT'] ) - 1 );
+			$_REQUEST['block_id_from'] = ( ( $_REQUEST['row_from'] ?? 0 ) - 1 ) * $banner_data['G_WIDTH'];
+			$_REQUEST['block_id_to']   = ( ( ( $_REQUEST['row_to'] ?? 0 ) * $banner_data['G_HEIGHT'] ) - 1 );
 
 			$sql = "REPLACE INTO packages(package_id, banner_id, price, currency, days_expire,  max_orders, description, is_default) VALUES ('" . intval( $_REQUEST['package_id'] ) . "', '" . intval( $BID ) . "', '" . floatval( $_REQUEST['price'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['currency'] ) . "', '" . intval( $_REQUEST['days_expire'] ) . "',  '" . intval( $_REQUEST['max_orders'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['description'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['is_default'] ) . "')";
 
 			//echo $sql;
 
-			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+			$id = mysqli_insert_id( $GLOBALS['connection'] );
 
-			$_REQUEST['new']    = '';
-			$_REQUEST['action'] = '';
 			//print_r ($_REQUEST);
 
 			// if no default package exists, set the last inserted banner to default
 
-			if ( ! get_default_package( $BID ) ) {
-				set_to_default( mysqli_insert_id( $GLOBALS['connection'] ) );
+			if ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] == '1' && ! get_default_package( $BID ) ) {
+				set_to_default( $id );
 			}
+
+			$_REQUEST['new']    = '';
+			$_REQUEST['action'] = '';
 		}
 	}
 
@@ -259,13 +262,12 @@ if ( $BID != '' ) {
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 		$row = mysqli_fetch_array( $result );
 
-		if ( $error == '' ) {
+		if ( ! isset( $error ) || $error == '' ) {
 			$_REQUEST['BID']         = $row['banner_id'];
 			$_REQUEST['package_id']  = $row['package_id'];
 			$_REQUEST['days_expire'] = $row['days_expire'];
 			$_REQUEST['price']       = $row['price'];
 			$_REQUEST['currency']    = $row['currency'];
-			$_REQUEST['price_id']    = $row['price_id'];
 			$_REQUEST['description'] = $row['description'];
 			$_REQUEST['max_orders']  = $row['max_orders'];
 			$_REQUEST['is_default']  = $row['is_default'];
@@ -276,32 +278,32 @@ if ( $BID != '' ) {
 
 		?>
         <form action='packs.php' method="post">
-            <input type="hidden" value="<?php echo $row['package_id'] ?>" name="package_id">
-            <input type="hidden" value="<?php echo $_REQUEST['new'] ?>" name="new">
-            <input type="hidden" value="<?php echo $_REQUEST['action'] ?>" name="action">
-            <input type="hidden" value="<?php echo $_REQUEST['is_default'] ?>" name="is_default">
+            <input type="hidden" value="<?php echo $row['package_id'] ?? ''; ?>" name="package_id">
+            <input type="hidden" value="<?php echo $_REQUEST['new'] ?? ''; ?>" name="new">
+            <input type="hidden" value="<?php echo $_REQUEST['action'] ?? ''; ?>" name="action">
+            <input type="hidden" value="<?php echo $_REQUEST['is_default'] ?? ''; ?>" name="is_default">
             <input type="hidden" value="<?php echo $BID; ?>" name="BID">
             <table border="0" cellSpacing="1" cellPadding="3" bgColor="#d9d9d9">
 
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Name:</font></td>
-                    <td><input size="15" type="text" name="description" value="<?php echo $_REQUEST['description']; ?>">Enter a descriptive name for the package. Eg, "$30 for 100 days."</td>
+                    <td><input size="15" type="text" name="description" value="<?php echo $_REQUEST['description'] ?? ''; ?>">Enter a descriptive name for the package. Eg, "$30 for 100 days."</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Price Per Block:</font></td>
-                    <td><input size="5" type="text" name="price" value="<?php echo $_REQUEST['price']; ?>">Price per block (<?php echo( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ); ?> pixels). Enter a decimal</td>
+                    <td><input size="5" type="text" name="price" value="<?php echo $_REQUEST['price'] ?? ''; ?>">Price per block (<?php echo( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ); ?> pixels). Enter a decimal</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Currency:</font></td>
-                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ); ?>The price's currency</td>
+                    <td><select size="1" name="currency"><?php currency_option_list( $_REQUEST['currency'] ?? '' ); ?>The price's currency</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Days to expire:</font></td>
-                    <td><input size="5" type="text" name="days_expire" value="<?php echo $_REQUEST['days_expire']; ?>">How many days? (Enter 0 to use the grid's default)</td>
+                    <td><input size="5" type="text" name="days_expire" value="<?php echo $_REQUEST['days_expire'] ?? ''; ?>">How many days? (Enter 0 to use the grid's default)</td>
                 </tr>
                 <tr bgcolor="#ffffff">
                     <td><font size="2">Maximum orders:</font></td>
-                    <td><input size="5" type="text" name="max_orders" value="<?php echo $_REQUEST['max_orders']; ?>">How many times can this pacakge be ordered? (Enter 0 for unlimited)</td>
+                    <td><input size="5" type="text" name="max_orders" value="<?php echo $_REQUEST['max_orders'] ?? ''; ?>">How many times can this pacakge be ordered? (Enter 0 for unlimited)</td>
                 </tr>
 
             </table>

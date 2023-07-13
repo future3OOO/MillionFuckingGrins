@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,31 +30,49 @@
  *
  */
 
-define( 'MAIN_PHP', '1' );
+const MAIN_PHP = '1';
 
 require_once __DIR__ . "/../include/init.php";
-require_once 'admin_common.php';
+require_once __DIR__ . '/admin_common.php';
+require_once __DIR__ . '/router.php';
+
+global $f2;
+
+if ( WP_ENABLED == 'YES' ) {
+	$mds_site_url = WP_URL;
+} else {
+	$mds_site_url = BASE_HTTP_PATH;
+}
 
 ?><!DOCTYPE html>
 <html lang="">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Million Dollar Script Administration</title>
-    <link rel="stylesheet" type="text/css" href="<?php echo BASE_HTTP_PATH; ?>admin/css/admin.css?ver=<?php echo filemtime( BASE_PATH . "/admin/css/admin.css" ); ?>">
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
-    <link rel="stylesheet" href="<?php echo BASE_HTTP_PATH; ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( BASE_PATH . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
-    <script src="<?php echo BASE_HTTP_PATH; ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( BASE_PATH . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
-    <script src="<?php echo BASE_HTTP_PATH; ?>admin/js/admin.js?ver=<?php echo filemtime( BASE_PATH . "/admin/js/admin.js" ); ?>"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/css/admin.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/css/admin.css" ); ?>">
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jquery/jquery.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jquery/jquery.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/jquery-ui.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/jquery-ui.min.js" ); ?>"></script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>js/third-party/viselect.cjs.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/js/third-party/viselect.cjs.js" ); ?>"></script>
+    <link rel="stylesheet" href="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/components/jqueryui/themes/smoothness/jquery-ui.min.css" ); ?>" type="text/css"/>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>vendor/jquery-form/form/dist/jquery.form.min.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/vendor/jquery-form/form/dist/jquery.form.min.js" ); ?>"></script>
 
+    <script>
+		window.mds_data = {
+			ajax: '<?php echo BASE_HTTP_PATH; ?>ajax.php',
+			mds_site_url: '<?php echo $mds_site_url; ?>',
+			BASE_HTTP_PATH: '<?php echo BASE_HTTP_PATH;?>'
+		};
+    </script>
+    <script src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>admin/js/admin.js?ver=<?php echo filemtime( $f2->value( BASE_PATH ) . "/admin/js/admin.js" ); ?>"></script>
 </head>
 <body>
+<div id="mds-top"></div>
 <div class="admin-container">
     <div class="admin-menu">
-        <img src="https://milliondollarscript.com/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
+        <img src="<?php echo $f2->value( BASE_HTTP_PATH ); ?>images/logo.gif" alt="Million Dollar Script logo" style="max-width:100%;"/>
         <br>
         <a href="main.php">Main Summary</a><br/>
-        <a href="<?php echo BASE_HTTP_PATH; ?>" target="_blank">View Site</a><br/>
+        <a href="<?php echo $f2->value( $mds_site_url ); ?>" target="_blank">View Site</a><br/>
         <hr>
         <b>Pixel Inventory</b><br/>
         + <a href="inventory.php">Manage Grids</a><br/>
@@ -85,7 +103,7 @@ require_once 'admin_common.php';
         - <a href="process.php">Process Pixels</a><br/>
         <hr>
         <b>Report</b><br/>
-        - <a href="ads.php">Ad List</a><br/>
+        - <a href="alist.php">Ad List</a><br/>
         - <a href="list.php">Top Advertisers</a><br/>
         - <a href="email_queue.php">Outgoing Email</a><br/>
         <!--
@@ -96,23 +114,36 @@ require_once 'admin_common.php';
         - <a href="clicks.php">Click Reports</a><br/>
         <hr>
         <b>Configuration</b><br/>
-        - <a href="edit_config.php">Main Config</a><br/>
+        - <a href="index.php?page=edit-main">Main Config</a><br/>
         - <a href="language.php">Language</a><br/>
         - <a href="currency.php">Currencies</a><br/>
         - <a href="payment.php">Payment Modules</a><br/>
-        - <a href="adform.php">Ad Form</a><br/>
+        - <a href="aform.php">Ad Form</a><br/>
         <hr>
-        <b>Logout</b><br/>
-        - <a href="logout.php">Logout</a><br/>
+        <b>Other</b><br/>
+        - <a href="clear_orders.php">Clear Orders</a><br/>
+		<?php
+		if ( WP_ENABLED == 'NO' || WP_ADMIN_ENABLED == 'NO' ) {
+			?>
+            <hr>
+            <b>Logout</b><br/>
+            - <a href="logout.php">Logout</a><br/>
+			<?php
+		}
+		?>
         <hr>
         <b>Info</b><br/>
         - <a href="info.php">System Info</a><br/>
-        - <a href="https://milliondollarscript.com">Script Home</a><br/>
+        - <a href="https://milliondollarscript.com" target="_blank">Script Home</a><br/>
 
         <br/>
-        <small>Copyright <?php date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
+        <small>
+            Copyright <?php echo date( 'Y' ); ?>, see <a href="../LICENSE.txt">LICENSE.txt</a> for license information.<br/>
             <br/>
-            MDS Build Date:<br/><?php echo VERSION_INFO; ?></small>
+            MDS Version: <?php echo MDSConfig::get( 'VERSION_INFO' ); ?>
+            <br/>
+            DB Version: <?php echo get_dbver(); ?>
+        </small>
     </div>
     <div class="admin-content"></div>
 </div>

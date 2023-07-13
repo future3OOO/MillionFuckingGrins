@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -38,10 +38,9 @@ $block_id = $_REQUEST['block_id'];
 if ( $block_id == '' ) {
 	die();
 }
-$BID = $f2->bid( $_REQUEST['BID'] );
-if ( $BID == '' ) {
-	$BID = 1;
-}
+
+global $f2;
+$BID = $f2->bid();
 
 $block_id = intval( $block_id );
 
@@ -71,8 +70,6 @@ if ( ADVANCED_CLICK_COUNT == 'YES' ) {
 		$result = @mysqli_query( $GLOBALS['connection'], $sql );
 	}
 }
-
-// 
 
 $sql = "UPDATE blocks SET click_count = click_count + 1 where block_id='" . $block_id . "' AND banner_id='$BID' ";
 //echo $sql;

@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -37,60 +37,61 @@ require_once( '../include/code_functions.php' );
 
 function validate_input() {
 	$error = '';
-	if ( $_REQUEST['lang_code'] == '' ) {
-
+	if ( ! isset( $_REQUEST['lang_code'] ) || $_REQUEST['lang_code'] == '' ) {
 		$error .= "- Language Code is blank <br>";
 	}
-	if ( $_REQUEST['lang_filename'] == '' ) {
-
+	if ( ! isset( $_REQUEST['lang_filename'] ) || $_REQUEST['lang_filename'] == '' ) {
 		$error .= "- No language file selected <br>";
 	}
-	if ( ( $_FILES['lang_image']['name'] == '' ) && ( $_REQUEST['action'] != 'edit' ) ) {
+	if ( ( ! isset( $_FILES['lang_image']['name'] ) || $_FILES['lang_image']['name'] == '' ) && ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] != 'edit' ) ) {
 		$error .= "- No image uploaded <br>";
 	}
-	if ( $_REQUEST['name'] == '' ) {
-
+	if ( ! isset( $_REQUEST['name'] ) || $_REQUEST['name'] == '' ) {
 		$error .= "- Language name is blank<br>";
 	}
 
 	return $error;
 }
 
-if ( $_REQUEST['action'] == 'activate' ) {
+if ( isset( $_REQUEST['action'] ) ) {
+	if ( $_REQUEST['action'] == 'activate' ) {
 
-	$sql = "UPDATE lang set is_active='Y' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+		$sql = "UPDATE lang set is_active='Y' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	}
+
+	if ( $_REQUEST['action'] == 'deactivate' ) {
+
+		$sql = "UPDATE lang set is_active='N' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	}
+
+	if ( $_REQUEST['action'] == 'default' ) {
+
+		$sql = "UPDATE lang set is_default='N' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+
+		$sql = "UPDATE lang set is_default='Y' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	}
+
+	if ( $_REQUEST['action'] == 'delete' ) {
+
+		$sql = "DELETE FROM lang WHERE lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
+		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
+	}
 }
 
-if ( $_REQUEST['action'] == 'deactivate' ) {
-
-	$sql = "UPDATE lang set is_active='N' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-}
-
-if ( $_REQUEST['action'] == 'default' ) {
-
-	$sql = "UPDATE lang set is_default='N' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-
-	$sql = "UPDATE lang set is_default='Y' where lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-}
-
-if ( $_REQUEST['action'] == 'delete' ) {
-
-	$sql = "DELETE FROM lang WHERE lang_code='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-}
-
-if ( $_REQUEST['submit'] != '' ) {
+if ( isset( $_REQUEST['submit'] ) && $_REQUEST['submit'] != '' ) {
 
 	$error = validate_input();
 
 	if ( $error == '' ) {
-		//print_r ($_REQUEST);
-
-		if ( $_FILES['lang_image']['tmp_name'] != '' ) {
+		$image_sql  = '';
+		$data       = '';
+		$image_file = '';
+		$mime_type  = '';
+		if ( isset( $_FILES['lang_image']['tmp_name'] ) && $_FILES['lang_image']['tmp_name'] != '' ) {
 			$data       = base64_encode( fread( fopen( $_FILES['lang_image']['tmp_name'], "r" ), $_FILES['lang_image']['size'] ) );
 			$image_file = $_FILES['lang_image']['name'];
 			$mime_type  = $_FILES['lang_image']['type'];
@@ -98,17 +99,21 @@ if ( $_REQUEST['submit'] != '' ) {
 			$image_sql = "image_data='$data', mime_type='$mime_type', lang_image='$image_file',";
 		}
 
-		if ( $_REQUEST['action'] == 'edit' ) {
-
-			$sql = "UPDATE `lang` SET name='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['name'] ) . "', " . mysqli_real_escape_string( $GLOBALS['connection'], $image_sql ) . " charset='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['charset'] ) . "', lang_filename='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_filename'] ) . "' WHERE `lang_code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_code'] ) . "' ";
+		// Check image file for length
+		if ( strlen( $image_file ) > 32 ) {
+			echo '<strong>Sorry, that image is too large! You have to use a tiny image.</strong><br /><br />';
 		} else {
 
-			$sql = "INSERT INTO `lang` ( `lang_code` , `lang_filename` , `lang_image` , `is_active` , `name` , `image_data`, `mime_type`, `is_default`, `charset` ) VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_code'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_filename'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $image_file ) . "', 'Y', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $data ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $mime_type ) . "', 'N', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['charset'] ) . "')";
-		}
-		//echo "Temp file is: ".$_FILES['lang_image']['tmp_name']."<br>";
-		//echo "$sql";
+			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) {
+				$sql = "UPDATE `lang` SET name='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['name'] ) . "', " . mysqli_real_escape_string( $GLOBALS['connection'], $image_sql ) . " lang_filename='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_filename'] ) . "' WHERE `lang_code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_code'] ) . "' ";
+			} else {
+				$sql = "INSERT INTO `lang` ( `lang_code` , `lang_filename` , `lang_image` , `is_active` , `name` , `image_data`, `mime_type`, `is_default`, `charset` ) VALUES ('" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_code'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['lang_filename'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $image_file ) . "', 'Y', '" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $data ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $mime_type ) . "', 'N', '')";
+			}
+			//echo "Temp file is: ".$_FILES['lang_image']['tmp_name']."<br>";
+			//echo "$sql";
 
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		}
 
 		$_REQUEST['new']  = '';
 		$_REQUEST['edit'] = '';
@@ -134,7 +139,7 @@ if ( $_REQUEST['submit'] != '' ) {
 		$sql = "SELECT * FROM form_fields WHERE `field_type`='RADIO' or `field_type`='CHECK' or `field_type`='MSELECT' or `field_type`='SELECT'  ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		while ( $row = mysqli_fetch_array( $result, MYSQLI_ASSOC ) ) {
-			format_codes_translation_table( $row[ field_id ] );
+			format_codes_translation_table( $row['field_id'] );
 		}
 
 		// update forms
@@ -190,6 +195,7 @@ if ( $_REQUEST['submit'] != '' ) {
     <input type="button" value="New Language..." onclick="mds_load_page('language.php?new=1', true)">
     <p>
         Note: Before adding a new language, please copy english_default.php and name this file to the language of your choice. Eg copy english_default.php to spanish.php.
+        <br />These files are located in the lang folder.
     </p>
     <p>
         Please modify the langauge files from the web using the editing tool above.
@@ -197,18 +203,15 @@ if ( $_REQUEST['submit'] != '' ) {
     <hr>
 <?php
 
-if ( $error != '' ) {
+if ( isset( $error ) && $error != '' ) {
 	echo "<b><font color='red'>ERROR:</font></b> Cannot save langauge into database.<br>";
 	echo $error;
 }
 
 function lang_file_options() {
-
-	//print_r($_REQUEST);
-
 	$dh = opendir( "../lang" );
 	while ( ( $file = readdir( $dh ) ) !== false ) {
-		if ( $_REQUEST['lang_filename'] == $file ) {
+		if ( isset( $_REQUEST['lang_filename'] ) && $_REQUEST['lang_filename'] == $file ) {
 			$sel = " selected ";
 		} else {
 			$sel = "";
@@ -220,14 +223,12 @@ function lang_file_options() {
 	closedir( $dh );
 }
 
-if ( $_REQUEST['charset'] == '' ) {
-	//$_REQUEST['charset'] = "windows-1252";
+$disabled = "";
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) {
 
-}
+	$code = $_REQUEST['code'] ?? ( $_REQUEST['lang_code'] ?? '' );
 
-if ( $_REQUEST['action'] == 'edit' ) {
-
-	$sql = "SELECT * FROM lang WHERE `lang_code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $_REQUEST['code'] ) . "' ";
+	$sql = "SELECT * FROM lang WHERE `lang_code`='" . mysqli_real_escape_string( $GLOBALS['connection'], $code ) . "' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 
@@ -235,7 +236,7 @@ if ( $_REQUEST['action'] == 'edit' ) {
 	$_REQUEST['lang_code']     = $row['lang_code'];
 	$_REQUEST['lang_filename'] = $row["lang_filename"];
 	//$_REQUEST['lang_image'] = "lang_image";
-	$_REQUEST['charset'] = $row["charset"];
+	//$_REQUEST['charset'] = $row["charset"];
 
 	$disabled = " disabled ";
 }
@@ -245,27 +246,30 @@ if ( $_REQUEST['action'] == 'edit' ) {
     <form enctype="multipart/form-data" method="post" action="language.php">
 <?php
 
-if ( $_REQUEST['new'] == '1' ) {
+if ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] == '1' ) {
 	echo "<h4>New Language:</h4>";
 	//echo "<p>Note: Make sure that you create a file for your new language in the /lang directory.</p>";
 }
-if ( $_REQUEST['action'] == 'edit' ) {
+if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) {
 	echo "<h4>Edit Language:</h4>";
 }
 
-if ( ( $_REQUEST['new'] != '' ) || ( $_REQUEST['action'] == 'edit' ) ) {
+if ( ( isset( $_REQUEST['new'] ) && $_REQUEST['new'] != '' ) || ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'edit' ) ) {
 
+	$action    = $_REQUEST['action'] ?? '';
+	$lang_code = $_REQUEST['lang_code'] ?? '';
+	$name      = $_REQUEST['name'] ?? '';
 	?>
-    <input type="hidden" value="<?php echo $_REQUEST['action'] ?>" name="action">
-    <input type="hidden" value="<?php echo $_REQUEST['lang_code'] ?>" name="lang_code">
+    <input type="hidden" value="<?php echo htmlspecialchars( $action ); ?>" name="action">
+    <input type="hidden" value="<?php echo htmlspecialchars( $lang_code ); ?>" name="lang_code">
     <table border="0" cellSpacing="1" cellPadding="3" bgColor="#d9d9d9">
         <tr bgcolor="#ffffff">
             <td><font size="2">Language Name:</font></td>
-            <td><input size="30" type="text" name="name" value="<?php echo $_REQUEST['name']; ?>"/> eg. English</td>
+            <td><input size="30" type="text" name="name" value="<?php echo htmlspecialchars( $name ); ?>"/> eg. English</td>
         </tr>
         <tr bgcolor="#ffffff">
             <td><font size="2">Language Code:</font></td>
-            <td><input <?php echo $disabled; ?> size="2" type="text" name="lang_code" value="<?php echo $_REQUEST['lang_code']; ?>"/> eg. EN</td>
+            <td><input <?php echo $disabled; ?> size="2" type="text" name="lang_code" value="<?php echo htmlspecialchars( $lang_code ); ?>"/> eg. EN</td>
         </tr>
         <tr bgcolor="#ffffff">
             <td><font size="2">Language File:</font></td>
@@ -276,9 +280,11 @@ if ( ( $_REQUEST['new'] != '' ) || ( $_REQUEST['action'] == 'edit' ) ) {
             <td><font size="2">Image:</font></td>
             <td><input size="15" type="file" name="lang_image" value=""></td>
         </tr>
-        <!--
+		<?php
+		/*
 <tr bgcolor="#ffffff" ><td><font size="2">Parameter for setlocale() function:</font></td><td><input size="15" type="text" name="charset" value="<?php echo $_REQUEST['charset']; ?>"><font size="2">(List of valid locale strings for windows can be found at: <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vclib/html/_crt_language_strings.asp" target="new_">http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vclib/html/_crt_language_strings.asp</a>. Documentation of setlocale function available at: <a href="http://php.net/setlocale">http://php.net/setlocale</a> Leave this field blank if unsure.)</a></td></tr>
--->
+		*/
+		?>
     </table>
     <input type="submit" name="submit" value="Submit">
     </form>

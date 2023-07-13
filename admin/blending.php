@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -36,15 +36,12 @@ require_once __DIR__ . "/../include/init.php";
 
 require( 'admin_common.php' );
 
-if ( $_REQUEST['BID'] != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else {
-	$BID = 1;
-}
+global $f2;
+$BID = $f2->bid();
 
 function nice_format( $val ) {
 	$val  = trim( $val );
-	$last = strtolower( $val{strlen( $val ) - 1} );
+	$last = strtolower( $val[ strlen( $val ) - 1 ] );
 	switch ( $last ) {
 		// The 'G' modifier is available since PHP 5.1.0
 		case 'g':
@@ -69,7 +66,7 @@ function nice_format( $val ) {
 	return $val;
 }
 
-if ( $_FILES['blend_image']['tmp_name'] != '' ) {
+if ( isset($_FILES['blend_image']) && isset($_FILES['blend_image']['tmp_name']) && $_FILES['blend_image']['tmp_name'] != '' ) {
 
 	$temp = explode( ".", $_FILES['blend_image']['name'] );
 	if ( array_pop( $temp ) != 'png' ) {
@@ -82,7 +79,7 @@ if ( $_FILES['blend_image']['tmp_name'] != '' ) {
 	}
 }
 
-if ( $_REQUEST['action'] == 'delete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete' ) {
 
 	if ( file_exists( SERVER_PATH_TO_ADMIN . "temp/background$BID.png" ) ) {
 		unlink( SERVER_PATH_TO_ADMIN . "temp/background$BID.png" );
@@ -111,7 +108,7 @@ $res = mysqli_query( $GLOBALS['connection'], $sql );
 		<?php
 		while ( $row = mysqli_fetch_array( $res ) ) {
 
-			if ( ( $row['banner_id'] == $BID ) && ( $f2->bid( $_REQUEST['BID'] ) != 'all' ) ) {
+			if ( ( $row['banner_id'] == $BID ) && ( $BID != 'all' ) ) {
 				$sel = 'selected';
 			} else {
 				$sel = '';

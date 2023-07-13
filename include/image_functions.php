@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,72 +33,83 @@
 function publish_image( $BID ) {
 
 	if ( ! is_numeric( $BID ) ) {
-		return false;
+		return;
 	}
 
-	$imagine = new Imagine\Gd\Imagine();
+	$imagine = "";
+	if ( class_exists( 'Imagick' ) ) {
+		$imagine = new Imagine\Imagick\Imagine();
+	} else if ( function_exists( 'gd_info' ) ) {
+		$imagine = new Imagine\Gd\Imagine();
+	}
 
-	$BANNER_DIR = get_banner_dir();
+	$file_path = SERVER_PATH_TO_ADMIN;
+	$dest_path = get_banner_dir() . '/';
 
-	$file_path = SERVER_PATH_TO_ADMIN; // eg e:/apache/htdocs/ojo/admin/
-
-	$p = preg_split( '%[/\\\]%', $file_path );
-	array_pop( $p );
-	array_pop( $p );
-
-	$dest = implode( '/', $p );
-	$dest = $dest . "/" . $BANNER_DIR;
-
+	$dest   = "";
+	$source = "";
 	if ( OUTPUT_JPEG == 'Y' ) {
-		copy( $file_path . "temp/temp$BID.jpg", $dest . "main$BID.jpg" );
+		$source = $file_path . "temp/temp$BID.jpg";
+		$dest   = $dest_path . "main$BID.jpg";
 	} else if ( OUTPUT_JPEG == 'N' ) {
-		copy( $file_path . "temp/temp$BID.png", $dest . "main$BID.png" );
+		$source = $file_path . "temp/temp$BID.png";
+		$dest   = $dest_path . "main$BID.png";
 	} else if ( ( OUTPUT_JPEG == 'GIF' ) ) {
-		copy( $file_path . "temp/temp$BID.gif", $dest . "main$BID.gif" );
+		$source = $file_path . "temp/temp$BID.gif";
+		$dest   = $dest_path . "main$BID.gif";
+	}
+
+	if ( copy( $source, $dest ) ) {
+		//echo "Copied " . htmlentities( $source ) . " to " . htmlentities( $dest );
+	} else {
+		//echo "Failed to copy " . htmlentities( $source ) . " to " . htmlentities( $dest );
 	}
 
 	// output the tile image
+	if ( DISPLAY_PIXEL_BACKGROUND == "YES" ) {
+		$b_row = load_banner_row( $BID );
 
-	$b_row = load_banner_row( $BID );
+		if ( $b_row['tile'] == '' ) {
+			$b_row['tile'] = get_default_image( 'tile' );
+		}
+		$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
+		$tile->save( $dest_path . "bg-main$BID.gif" );
 
-	if ( $b_row['tile'] == '' ) {
-		$b_row['tile'] = get_default_image( 'tile' );
+		//echo "<br />Saved background image to " . $dest_path . "bg-main$BID.gif";
 	}
-	$tile = $imagine->load( base64_decode( $b_row['tile'] ) );
-	$tile->save( $dest . "bg-main$BID.gif" );
 
 	// update the records
 	$sql = "SELECT * FROM blocks WHERE approved='Y' AND status='sold' AND image_data <> '' AND banner_id='" . intval( $BID ) . "' ";
-	$r = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+	$r = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 	while ( $row = mysqli_fetch_array( $r ) ) {
 		// set the 'date_published' only if it was not set before, date_published can only be set once.
 		$now = ( gmdate( "Y-m-d H:i:s" ) );
 		$sql = "UPDATE orders set `date_published`='$now' where order_id='" . intval( $row['order_id'] ) . "' AND date_published IS NULL ";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		// update the published status, always updated to Y
 		$sql = "UPDATE orders SET `published`='Y' WHERE order_id='" . intval( $row['order_id'] ) . "'  ";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		$sql = "UPDATE blocks set `published`='Y' where block_id='" . intval( $row['block_id'] ) . "' AND banner_id='" . intval( $BID ) . "'";
-		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	}
 
 	//Make sure to un-publish any blocks that are not approved...
 	$sql = "SELECT block_id, order_id FROM blocks WHERE approved='N' AND status='sold' AND banner_id='" . intval( $BID ) . "' ";
-	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	while ( $row = mysqli_fetch_array( $result ) ) {
 		$sql = "UPDATE blocks set `published`='N' where block_id='" . intval( $row['block_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		$sql = "UPDATE orders set `published`='N' where order_id='" . intval( $row['order_id'] ) . "'  AND banner_id='" . intval( $BID ) . "'  ";
-		mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+		mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	}
 
 	// update the time-stamp on the banner
 	$sql = "UPDATE banners SET time_stamp='" . time() . "' WHERE banner_id='" . intval( $BID ) . "' ";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+	mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 }
 
 function process_image( $BID ) {
@@ -130,13 +141,13 @@ function get_html_code( $BID ) {
 	$width  = $b_row['grid_width'] * $b_row['block_width'];
 	$height = $b_row['grid_height'] * $b_row['block_height'];
 
-	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
+	return '<iframe class="gridframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_map.php?BID=' . $BID . '&iframe_call=true" style="width:' . $width . 'px;height:' . $height . 'px;" width="' . $width . '" height="' . $height . '"></iframe>';
 }
 
 function get_stats_html_code( $BID ) {
 	$BID = intval( $BID );
 
-	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '" width="150" height="50"></iframe>';
+	return '<iframe class="statsframe' . $BID . '" src="' . BASE_HTTP_PATH . 'display_stats.php?BID=' . $BID . '&iframe_call=true" width="150" height="50"></iframe>';
 }
 
 /**

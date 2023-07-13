@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 17:42:17 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -33,7 +33,7 @@ require_once __DIR__ . "/../include/init.php";
 
 $_PAYMENT_OBJECTS['authorizeNet'] = new authorizeNet;
 
-define( 'IPN_LOGGING', 'Y' );
+define( 'AUTHNET_LOGGING', 'Y' );
 
 function authnet_mail_error( $msg ) {
 
@@ -51,12 +51,12 @@ function authnet_mail_error( $msg ) {
 	@fputs( $log_fp, $entry_line );
 	@fclose( $log_fp );
 
-	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Jamit authnet script. ", $msg, $headers );
+	@mail( SITE_CONTACT_EMAIL, "Error message from " . SITE_NAME . " Million Dollar Script authnet script. ", $msg, $headers );
 }
 
 function authnet_log_entry( $entry_line ) {
 
-	if ( IPN_LOGGING == 'Y' ) {
+	if ( AUTHNET_LOGGING == 'Y' ) {
 
 		$entry_line = "$entry_line\r\n ";
 		$log_fp     = @fopen( "logs.txt", "a" );
@@ -122,14 +122,14 @@ class authorizeNet {
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			while ( $row = mysqli_fetch_array( $result ) ) {
-
-				define( $row['key'], $row['val'] );
+				if ( ! defined( $row['key'] ) ) {
+					define( $row['key'], $row['val'] );
+				}
 			}
 		}
 	}
 
 	function get_currency() {
-
 		return AUTHNET_CURRENCY;
 	}
 
@@ -334,7 +334,7 @@ class authorizeNet {
 
 		echo "Note: The Authorize.net module is currently experimentail in this version<br>";
 
-		if ( $_REQUEST['action'] == 'save' ) {
+		if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'save' ) {
 
 			$authnet_login_id                   = $_REQUEST['authnet_login_id'];
 			$authnet_currency                   = $_REQUEST['authnet_currency'];
@@ -414,7 +414,7 @@ class authorizeNet {
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Authorize.Net
                             Relay Response URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_relay_url" size="50" value="<?php echo $authnet_x_relay_url; ?>"><br>(Recommended: <b>http://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?> </b> )</font></td>
+                            <input type="text" name="authnet_x_relay_url" size="50" value="<?php echo $authnet_x_relay_url; ?>"><br>(Recommended: <b>https://<?php echo $host . $http_url . "/users/thanks.php?m=" . $this->className; ?> </b> )</font></td>
                 </tr>
 
                 <tr>
@@ -434,7 +434,7 @@ class authorizeNet {
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Authorize.Net
                             Receipt link URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_receipt_link_url" size="50" value="<?php echo $authnet_x_receipt_link_url; ?>"><br>(eg. http://<?php echo $host . $http_url . "/users/index.php"; ?> - where customers return back to the MDS)</font></td>
+                            <input type="text" name="authnet_x_receipt_link_url" size="50" value="<?php echo $authnet_x_receipt_link_url; ?>"><br>(eg. https://<?php echo $host . $http_url . "/users/index.php"; ?> - where customers return back to the MDS)</font></td>
                 </tr>
 
                 <tr>
@@ -453,7 +453,7 @@ class authorizeNet {
                 <tr>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">Logo URL</font></td>
                     <td bgcolor="#e6f2ea"><font face="Verdana" size="1">
-                            <input type="text" name="authnet_x_logo_url" size="50" value="<?php echo $authnet_x_logo_url; ?>"><br>(Logo on the Payment form & Receipt Page, eg http://www.example.com/test.gif)</font></td>
+                            <input type="text" name="authnet_x_logo_url" size="50" value="<?php echo $authnet_x_logo_url; ?>"><br>(Logo on the Payment form & Receipt Page, eg https://www.example.com/test.gif)</font></td>
                 </tr>
 
                 <tr>
@@ -538,7 +538,7 @@ class authorizeNet {
 		$sql = "SELECT val from config where `key`='AUTHNET_ENABLED' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 		$row = mysqli_fetch_array( $result );
-		if ( $row['val'] == 'Y' ) {
+		if ( isset($row['val']) && $row['val'] == 'Y' ) {
 			return true;
 		} else {
 			return false;

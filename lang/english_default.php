@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -158,7 +158,7 @@ $label['select6']                            = '6 blocks at a time (3x2 rectangl
 $label['advertiser_sel_nfs_error']           = 'Sorry, cannot select this block of pixels because it is not for sale!';
 $label['advertiser_sel_sold_error']          = 'Sorry, cannot select block %BLOCK_ID% because it is on order / sold!';
 $label['advertiser_max_order']               = 'Cannot place pixels on order. You have reached the order limit for this grid. Please review your Order History.';
-$label['advertiser_max_order_html']          = '<b><span color="red">Cannot place pixels on order.</span> You have reached the order limit for this grid. Please review your <a href="orders.php">Order History.</a></b>';
+$label['advertiser_max_order_html']          = '<b><span style="color:red">Cannot place pixels on order.</span> You have reached the order limit for this grid. Please review your <a href="orders.php">Order History.</a></b>';
 $label['advertiser_sel_trail']               = '1. <b>Select Your Pixels</b> -> 2. Confirm Order -> 3. Payment -> 4. Image Upload & Publish your pixels';
 $label['advertiser_nav_status1']             = 'Upload Your pixels';
 $label['advertiser_nav_status2']             = 'Write Your Ad';
@@ -254,6 +254,7 @@ $label['advertiser_ord_order_id']            = 'Order ID:';
 $label['advertiser_ord_date']                = 'Date:';
 $label['advertiser_ord_name']                = 'Grid Name:';
 $label['advertiser_ord_pix']                 = 'pixels';
+$label['advertiser_ord_blocks']              = 'blocks';
 $label['advertiser_ord_expired']             = 'Expires:';
 $label['advertiser_ord_never']               = 'Never';
 $label['advertiser_ord_days_exp']            = 'In %DAYS_EXPIRE% days from date of publishment';
@@ -262,8 +263,9 @@ $label['advertiser_ord_status']              = 'Status:';
 $label['advertiser_home_welcome']            = 'Welcome to your account';
 $label['advertiser_home_line2']              = 'Here you can manage your pixels.';
 $label['advertiser_home_blkyouown']          = 'You own %PIXEL_COUNT% blocks. <a href=\'publish.php\'>Manage my Pixels</a>';
-$label['advertiser_home_blkonorder']         = 'You have %PIXEL_ORD_COUNT% pixels on order. <a href=\'select.php\'>Order Pixels</a> / <a href=\'orders.php\'>View Order History</a>';
+$label['advertiser_home_blkonorder']         = 'You have %PIXEL_ORD_COUNT% pixels on order (%BLOCK_ORD_COUNT% blocks). <a href=\'select.php\'>Order Pixels</a> / <a href=\'orders.php\'>View Order History</a>';
 $label['advertiser_home_click_count']        = 'Your pixels were clicked %CLICK_COUNT% times.';
+$label['advertiser_home_view_count']         = 'Your pixels were viewed %VIEW_COUNT% times.';
 $label['advertiser_home_sub_head']           = 'Here is what you can do:';
 $label['advertiser_home_selectlink']         = '- <a href=\'select.php\'>Order</a>: Choose and order new pixels.';
 $label['advertiser_home_managelink']         = '- <a href=\'publish.php\'>Manage</a>: Manage pixels owned by you.';
@@ -312,7 +314,7 @@ $label['pack_head_price']                    = 'Price';
 $label['pack_head_exp']                      = 'Expires';
 $label['pack_head_mo']                       = 'Max Orders';
 $label['pack_price_per100']                  = '/ 100 pixels';
-$label['pack_cannot_select']                 = '<span color=\'red\'>Error: Cannot place order. This price option is limited to %MAX_ORDERS% per customer.</span><br>Please select another option, or check your <a href=\'orders.php\'>Order History.</a>';
+$label['pack_cannot_select']                 = '<span style=\'color:red\'>Error: Cannot place order. This price option is limited to %MAX_ORDERS% per customer.</span><br>Please select another option, or check your <a href=\'orders.php\'>Order History.</a>';
 $label['payment_paypal_name']                = 'PayPal';
 $label['payment_paypal_descr']               = 'PayPal Secure Credit Card Payment';
 $label['payment_paypal_head']                = 'Pay with PayPal (Secure credit card payment)';
@@ -826,5 +828,5 @@ $label['list_pixels']                                 = 'Pixels';
 $label['reserving_pixels']                            = 'Please Wait! Reserving Pixels...';
 $label['not_adjacent']                                = 'You must select a block adjacent to another one.';
 $label['no_blocks_selected']                          = 'You have no blocks selected.';
-
-$label['advertiser_reset_button'] = "Reset";
+$label['advertiser_reset_button']                     = "Reset";
+$label['ads_not_found']                               = 'No ads were found';

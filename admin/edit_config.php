@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,191 +30,177 @@
  *
  */
 
-require( 'admin_common.php' );
-
-foreach ( $_REQUEST as $key => $val ) {
-	$_REQUEST[ $key ] = $val;
-}
-
-$rootpathinfo = pathinfo( '../' );
-$BASE_PATH    = $rootpathinfo['dirname'];
-
-require_once __DIR__ . '/../include/version.php';
-$version = get_mds_version();
-
-$defaults = array(
-	'DEBUG'                       => false,
-	'MDS_LOG'                     => false,
-	'MDS_LOG_FILE'                => $BASE_PATH . '/.mds.log',
-	'VERSION_INFO'                => $version,
-	'BASE_HTTP_PATH'              => '/',
-	'BASE_PATH'                   => $BASE_PATH . '/',
-	'SERVER_PATH_TO_ADMIN'        => __DIR__,
-	'UPLOAD_PATH'                 => $BASE_PATH . '/upload_files/',
-	'UPLOAD_HTTP_PATH'            => $BASE_PATH . '/upload_files/',
-	'SITE_CONTACT_EMAIL'          => 'test@example.com',
-	'SITE_LOGO_URL'               => 'https://milliondollarscript.com/logo.gif',
-	'SITE_NAME'                   => 'Million Dollar Script ' . $version,
-	'SITE_SLOGAN'                 => 'This is the Million Dollar Script Example. 1 pixel = 1 cent',
-	'MDS_RESIZE'                  => 'YES',
-	'MYSQL_HOST'                  => '',
-	'MYSQL_USER'                  => '',
-	'MYSQL_PASS'                  => '',
-	'MYSQL_DB'                    => '',
-	'MYSQL_PORT'                  => 3306,
-	'MYSQL_SOCKET'                => '',
-	'ADMIN_PASSWORD'              => 'ok',
-	'DATE_FORMAT'                 => 'Y-M-d',
-	'GMT_DIF'                     => date_default_timezone_get(),
-	'DATE_INPUT_SEQ'              => 'YMD',
-	'OUTPUT_JPEG'                 => 'N',
-	'JPEG_QUALITY'                => '75',
-	'INTERLACE_SWITCH'            => 'YES',
-	'USE_LOCK_TABLES'             => 'Y',
-	'BANNER_DIR'                  => 'pixels/',
-	'DISPLAY_PIXEL_BACKGROUND'    => 'NO',
-	'EMAIL_USER_ORDER_CONFIRMED'  => 'YES',
-	'EMAIL_ADMIN_ORDER_CONFIRMED' => 'YES',
-	'EMAIL_USER_ORDER_COMPLETED'  => 'YES',
-	'EMAIL_ADMIN_ORDER_COMPLETED' => 'YES',
-	'EMAIL_USER_ORDER_PENDED'     => 'YES',
-	'EMAIL_ADMIN_ORDER_PENDED'    => 'YES',
-	'EMAIL_USER_ORDER_EXPIRED'    => 'YES',
-	'EMAIL_ADMIN_ORDER_EXPIRED'   => 'YES',
-	'EM_NEEDS_ACTIVATION'         => 'YES',
-	'EMAIL_ADMIN_ACTIVATION'      => 'YES',
-	'EMAIL_ADMIN_PUBLISH_NOTIFY'  => 'YES',
-	'USE_PAYPAL_SUBSCR'           => 'NO',
-	'EMAIL_USER_EXPIRE_WARNING'   => '',
-	'EMAILS_DAYS_KEEP'            => '30',
-	'DAYS_RENEW'                  => '7',
-	'DAYS_CONFIRMED'              => '7',
-	'HOURS_UNCONFIRMED'           => '1',
-	'DAYS_CANCEL'                 => '3',
-	'ENABLE_MOUSEOVER'            => 'POPUP',
-	'ENABLE_CLOAKING'             => 'YES',
-	'VALIDATE_LINK'               => 'NO',
-	'ADVANCED_CLICK_COUNT'        => 'YES',
-	'USE_SMTP'                    => '',
-	'EMAIL_SMTP_SERVER'           => '',
-	'EMAIL_SMTP_USER'             => '',
-	'EMAIL_SMTP_PASS'             => '',
-	'EMAIL_SMTP_AUTH_HOST'        => '',
-	'SMTP_PORT'                   => '465',
-	'POP3_PORT'                   => '995',
-	'EMAIL_TLS'                   => '1',
-	'EMAIL_POP_SERVER'            => '',
-	'EMAIL_POP_BEFORE_SMTP'       => 'NO',
-	'EMAIL_DEBUG'                 => 'NO',
-	'EMAILS_PER_BATCH'            => '12',
-	'EMAILS_MAX_RETRY'            => '15',
-	'EMAILS_ERROR_WAIT'           => '20',
-	'USE_AJAX'                    => 'SIMPLE',
-	'ANIMATION_SPEED'             => '50',
-	'MAX_BLOCKS'                  => '',
-	'MEMORY_LIMIT'                => '128M',
-	'REDIRECT_SWITCH'             => 'NO',
-	'REDIRECT_URL'                => 'http://www.example.com',
-	'HIDE_TIMEOUT'                => '500',
-	'MDS_AGRESSIVE_CACHE'         => 'NO',
-	'ERROR_REPORTING'             => 0,
-	'WP_ENABLED'                  => 'NO',
-	'WP_URL'                      => '',
-);
-
-$values = array_replace( $defaults, $_REQUEST );
+require_once __DIR__ . '/admin_common.php';
 
 if ( isset( $_REQUEST['save'] ) && $_REQUEST['save'] != '' ) {
+
+	global $f2;
+
 	echo "Updating config....";
+
+	// Arrays of queries sorted by variable types for preparing for database.
+	$types = [
+
+		// strings
+		's' => [
+			'MDS_LOG_FILE'                => "REPLACE INTO `config` VALUES ('MDS_LOG_FILE', ?);",
+			'BUILD_DATE'                  => "REPLACE INTO `config` VALUES ('BUILD_DATE', ?);",
+			'VERSION_INFO'                => "REPLACE INTO `config` VALUES ('VERSION_INFO', ?);",
+			'BASE_HTTP_PATH'              => "REPLACE INTO `config` VALUES ('BASE_HTTP_PATH', ?);",
+			'BASE_PATH'                   => "REPLACE INTO `config` VALUES ('BASE_PATH', ?);",
+			'SERVER_PATH_TO_ADMIN'        => "REPLACE INTO `config` VALUES ('SERVER_PATH_TO_ADMIN', ?);",
+			'UPLOAD_PATH'                 => "REPLACE INTO `config` VALUES ('UPLOAD_PATH', ?);",
+			'UPLOAD_HTTP_PATH'            => "REPLACE INTO `config` VALUES ('UPLOAD_HTTP_PATH', ?);",
+			'SITE_CONTACT_EMAIL'          => "REPLACE INTO `config` VALUES ('SITE_CONTACT_EMAIL', ?);",
+			'SITE_LOGO_URL'               => "REPLACE INTO `config` VALUES ('SITE_LOGO_URL', ?);",
+			'SITE_NAME'                   => "REPLACE INTO `config` VALUES ('SITE_NAME', ?);",
+			'SITE_SLOGAN'                 => "REPLACE INTO `config` VALUES ('SITE_SLOGAN', ?);",
+			'MDS_RESIZE'                  => "REPLACE INTO `config` VALUES ('MDS_RESIZE', ?);",
+			'ADMIN_PASSWORD'              => "REPLACE INTO `config` VALUES ('ADMIN_PASSWORD', ?);",
+			'DATE_FORMAT'                 => "REPLACE INTO `config` VALUES ('DATE_FORMAT', ?);",
+			'GMT_DIF'                     => "REPLACE INTO `config` VALUES ('GMT_DIF', ?);",
+			'DATE_INPUT_SEQ'              => "REPLACE INTO `config` VALUES ('DATE_INPUT_SEQ', ?);",
+			'OUTPUT_JPEG'                 => "REPLACE INTO `config` VALUES ('OUTPUT_JPEG', ?);",
+			'INTERLACE_SWITCH'            => "REPLACE INTO `config` VALUES ('INTERLACE_SWITCH', ?);",
+			'BANNER_DIR'                  => "REPLACE INTO `config` VALUES ('BANNER_DIR', ?);",
+			'DISPLAY_PIXEL_BACKGROUND'    => "REPLACE INTO `config` VALUES ('DISPLAY_PIXEL_BACKGROUND', ?);",
+			'EMAIL_USER_ORDER_CONFIRMED'  => "REPLACE INTO `config` VALUES ('EMAIL_USER_ORDER_CONFIRMED', ?);",
+			'EMAIL_ADMIN_ORDER_CONFIRMED' => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_ORDER_CONFIRMED', ?);",
+			'EMAIL_USER_ORDER_COMPLETED'  => "REPLACE INTO `config` VALUES ('EMAIL_USER_ORDER_COMPLETED', ?);",
+			'EMAIL_ADMIN_ORDER_COMPLETED' => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_ORDER_COMPLETED', ?);",
+			'EMAIL_USER_ORDER_PENDED'     => "REPLACE INTO `config` VALUES ('EMAIL_USER_ORDER_PENDED', ?);",
+			'EMAIL_ADMIN_ORDER_PENDED'    => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_ORDER_PENDED', ?);",
+			'EMAIL_USER_ORDER_EXPIRED'    => "REPLACE INTO `config` VALUES ('EMAIL_USER_ORDER_EXPIRED', ?);",
+			'EMAIL_ADMIN_ORDER_EXPIRED'   => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_ORDER_EXPIRED', ?);",
+			'EM_NEEDS_ACTIVATION'         => "REPLACE INTO `config` VALUES ('EM_NEEDS_ACTIVATION', ?);",
+			'EMAIL_ADMIN_ACTIVATION'      => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_ACTIVATION', ?);",
+			'EMAIL_ADMIN_PUBLISH_NOTIFY'  => "REPLACE INTO `config` VALUES ('EMAIL_ADMIN_PUBLISH_NOTIFY', ?);",
+			'EMAIL_USER_EXPIRE_WARNING'   => "REPLACE INTO `config` VALUES ('EMAIL_USER_EXPIRE_WARNING', ?);",
+			'ENABLE_MOUSEOVER'            => "REPLACE INTO `config` VALUES ('ENABLE_MOUSEOVER', ?);",
+			'ENABLE_CLOAKING'             => "REPLACE INTO `config` VALUES ('ENABLE_CLOAKING', ?);",
+			'VALIDATE_LINK'               => "REPLACE INTO `config` VALUES ('VALIDATE_LINK', ?);",
+			'ADVANCED_CLICK_COUNT'        => "REPLACE INTO `config` VALUES ('ADVANCED_CLICK_COUNT', ?);",
+			'ADVANCED_VIEW_COUNT'         => "REPLACE INTO `config` VALUES ('ADVANCED_VIEW_COUNT', ?);",
+			'USE_SMTP'                    => "REPLACE INTO `config` VALUES ('USE_SMTP', ?);",
+			'EMAIL_SMTP_SERVER'           => "REPLACE INTO `config` VALUES ('EMAIL_SMTP_SERVER', ?);",
+			'EMAIL_SMTP_USER'             => "REPLACE INTO `config` VALUES ('EMAIL_SMTP_USER', ?);",
+			'EMAIL_SMTP_PASS'             => "REPLACE INTO `config` VALUES ('EMAIL_SMTP_PASS', ?);",
+			'EMAIL_SMTP_AUTH_HOST'        => "REPLACE INTO `config` VALUES ('EMAIL_SMTP_AUTH_HOST', ?);",
+			'EMAIL_POP_SERVER'            => "REPLACE INTO `config` VALUES ('EMAIL_POP_SERVER', ?);",
+			'EMAIL_POP_BEFORE_SMTP'       => "REPLACE INTO `config` VALUES ('EMAIL_POP_BEFORE_SMTP', ?);",
+			'EMAIL_DEBUG'                 => "REPLACE INTO `config` VALUES ('EMAIL_DEBUG', ?);",
+			'USE_AJAX'                    => "REPLACE INTO `config` VALUES ('USE_AJAX', ?);",
+			'MEMORY_LIMIT'                => "REPLACE INTO `config` VALUES ('MEMORY_LIMIT', ?);",
+			'ERROR_REPORTING'             => "REPLACE INTO `config` VALUES ('ERROR_REPORTING', ?);",
+			'REDIRECT_SWITCH'             => "REPLACE INTO `config` VALUES ('REDIRECT_SWITCH', ?);",
+			'REDIRECT_URL'                => "REPLACE INTO `config` VALUES ('REDIRECT_URL', ?);",
+			'MDS_AGRESSIVE_CACHE'         => "REPLACE INTO `config` VALUES ('MDS_AGRESSIVE_CACHE', ?);",
+			'BLOCK_SELECTION_MODE'        => "REPLACE INTO `config` VALUES ('BLOCK_SELECTION_MODE', ?);",
+			'STATS_DISPLAY_MODE'          => "REPLACE INTO `config` VALUES ('STATS_DISPLAY_MODE', ?);",
+			'DISPLAY_ORDER_HISTORY'       => "REPLACE INTO `config` VALUES ('DISPLAY_ORDER_HISTORY', ?);",
+			'WP_ENABLED'                  => "REPLACE INTO `config` VALUES ('WP_ENABLED', ?);",
+			'WP_URL'                      => "REPLACE INTO `config` VALUES ('WP_URL', ?);",
+			'WP_PATH'                     => "REPLACE INTO `config` VALUES ('WP_PATH', ?);",
+			'WP_USERS_ENABLED'            => "REPLACE INTO `config` VALUES ('WP_USERS_ENABLED', ?);",
+			'WP_ADMIN_ENABLED'            => "REPLACE INTO `config` VALUES ('WP_ADMIN_ENABLED', ?);",
+			'WP_USE_MAIL'                 => "REPLACE INTO `config` VALUES ('WP_USE_MAIL', ?);"
+		],
+
+		// integers
+		'i' => [
+			'DEBUG'               => "REPLACE INTO `config` VALUES ('DEBUG', ?);",
+			'MDS_LOG'             => "REPLACE INTO `config` VALUES ('MDS_LOG', ?);",
+			'JPEG_QUALITY'        => "REPLACE INTO `config` VALUES ('JPEG_QUALITY', ?);",
+			'EMAILS_DAYS_KEEP'    => "REPLACE INTO `config` VALUES ('EMAILS_DAYS_KEEP', ?);",
+			'DAYS_RENEW'          => "REPLACE INTO `config` VALUES ('DAYS_RENEW', ?);",
+			'DAYS_CONFIRMED'      => "REPLACE INTO `config` VALUES ('DAYS_CONFIRMED', ?);",
+			'MINUTES_UNCONFIRMED' => "REPLACE INTO `config` VALUES ('MINUTES_UNCONFIRMED', ?);",
+			'DAYS_CANCEL'         => "REPLACE INTO `config` VALUES ('DAYS_CANCEL', ?);",
+			'SMTP_PORT'           => "REPLACE INTO `config` VALUES ('SMTP_PORT', ?);",
+			'POP3_PORT'           => "REPLACE INTO `config` VALUES ('POP3_PORT', ?);",
+			'EMAIL_TLS'           => "REPLACE INTO `config` VALUES ('EMAIL_TLS', ?);",
+			'EMAILS_PER_BATCH'    => "REPLACE INTO `config` VALUES ('EMAILS_PER_BATCH', ?);",
+			'EMAILS_MAX_RETRY'    => "REPLACE INTO `config` VALUES ('EMAILS_MAX_RETRY', ?);",
+			'EMAILS_ERROR_WAIT'   => "REPLACE INTO `config` VALUES ('EMAILS_ERROR_WAIT', ?);",
+		]
+
+		// doubles
+
+		// blobs
+	];
+
+	$values = array_replace( MDSConfig::defaults(), $_REQUEST );
+
+	foreach ( $types as $type => $queries ) {
+		foreach ( $queries as $key => $query ) {
+			$stmt = mysqli_stmt_init( $GLOBALS['connection'] );
+			if ( ! mysqli_stmt_prepare( $stmt, $query ) ) {
+				die ( mds_sql_error( $query ) );
+			}
+
+			$var = $values[ $key ];
+			mysqli_stmt_bind_param( $stmt, $type, $var );
+
+			mysqli_stmt_execute( $stmt );
+			if ( function_exists( 'mysqli_stmt_get_result' ) ) {
+				$res = mysqli_stmt_get_result( $stmt );
+			} else {
+				$params = [];
+				$row    = [];
+				$c      = [];
+				$meta   = $stmt->result_metadata();
+				while ( $field = $meta->fetch_field() ) {
+					$params[] = &$row[ $field->name ];
+				}
+
+				call_user_func_array( array( $stmt, 'bind_result' ), $params );
+
+				while ( $stmt->fetch() ) {
+					foreach ( $row as $key => $val ) {
+						$c[ $key ] = $val;
+					}
+					$result[] = $c;
+				}
+			}
+
+			$error = mysqli_stmt_error( $stmt );
+			if ( ! empty( $error ) ) {
+				die ( mds_sql_error( $query ) );
+			}
+			mysqli_stmt_close( $stmt );
+		}
+	}
+
 	$config_str = "<?php
+/**
+ * Million Dollar Script Configuration
+ * Note: Please do not edit this file. Edit in MDS admin under Main Config.
+ */
 
-#########################################################################
-# CONFIGURATION
-# Note: Please do not edit this file. Edit the config from the admin section.
-#########################################################################
+error_reporting( " . $f2->slashes( $values['ERROR_REPORTING'] ) . " );
+@ini_set( 'display_errors', 0 );
 
-error_reporting( " . $values['ERROR_REPORTING'] . " );
-define( 'DEBUG', " . ( $values['DEBUG'] ? 'true' : 'false' ) . " );
-define( 'MDS_LOG', " . ( $values['MDS_LOG'] ? 'true' : 'false' ) . " );
-define( 'MDS_LOG_FILE', '" . $values['MDS_LOG_FILE'] . "' );
-define( 'VERSION_INFO', '" . $values['VERSION_INFO'] . "' );
-define( 'BASE_HTTP_PATH', '" . $values['BASE_HTTP_PATH'] . "' );
-define( 'BASE_PATH', '" . $values['BASE_PATH'] . "' );
-define( 'SERVER_PATH_TO_ADMIN', '" . $values['SERVER_PATH_TO_ADMIN'] . "' );
-define( 'UPLOAD_PATH', '" . $values['UPLOAD_PATH'] . "' );
-define( 'UPLOAD_HTTP_PATH', '" . $values['UPLOAD_HTTP_PATH'] . "' );
-define( 'SITE_CONTACT_EMAIL', '" . $values['SITE_CONTACT_EMAIL'] . "' );
-define( 'SITE_LOGO_URL', '" . $values['SITE_LOGO_URL'] . "' );
-define( 'SITE_NAME', '" . $values['SITE_NAME'] . "' );
-define( 'SITE_SLOGAN', '" . $values['SITE_SLOGAN'] . "' );
-define( 'MDS_RESIZE', '" . $values['MDS_RESIZE'] . "' );
-define( 'MYSQL_HOST', '" . $values['MYSQL_HOST'] . "' );
-define( 'MYSQL_USER', '" . $values['MYSQL_USER'] . "' );
-define( 'MYSQL_PASS', '" . $values['MYSQL_PASS'] . "' );
-define( 'MYSQL_DB', '" . $values['MYSQL_DB'] . "' );
-define( 'MYSQL_PORT', " . $values['MYSQL_PORT'] . " );
-define( 'MYSQL_SOCKET', '" . $values['MYSQL_SOCKET'] . "' );
-define( 'ADMIN_PASSWORD', '" . $values['ADMIN_PASSWORD'] . "' );
-define( 'DATE_FORMAT', '" . $values['DATE_FORMAT'] . "' );
-define( 'GMT_DIF', '" . $values['GMT_DIF'] . "' );
-define( 'DATE_INPUT_SEQ', '" . $values['DATE_INPUT_SEQ'] . "' );
-define( 'OUTPUT_JPEG', '" . $values['OUTPUT_JPEG'] . "' );
-define( 'JPEG_QUALITY', '" . $values['JPEG_QUALITY'] . "' );
-define( 'INTERLACE_SWITCH', '" . $values['INTERLACE_SWITCH'] . "' );
-define( 'BANNER_DIR', '" . $values['BANNER_DIR'] . "' );
-define( 'DISPLAY_PIXEL_BACKGROUND', '" . $values['DISPLAY_PIXEL_BACKGROUND'] . "' );
-define( 'EMAIL_USER_ORDER_CONFIRMED', '" . $values['EMAIL_USER_ORDER_CONFIRMED'] . "' );
-define( 'EMAIL_ADMIN_ORDER_CONFIRMED', '" . $values['EMAIL_ADMIN_ORDER_CONFIRMED'] . "' );
-define( 'EMAIL_USER_ORDER_COMPLETED', '" . $values['EMAIL_USER_ORDER_COMPLETED'] . "' );
-define( 'EMAIL_ADMIN_ORDER_COMPLETED', '" . $values['EMAIL_ADMIN_ORDER_COMPLETED'] . "' );
-define( 'EMAIL_USER_ORDER_PENDED', '" . $values['EMAIL_USER_ORDER_PENDED'] . "' );
-define( 'EMAIL_ADMIN_ORDER_PENDED', '" . $values['EMAIL_ADMIN_ORDER_PENDED'] . "' );
-define( 'EMAIL_USER_ORDER_EXPIRED', '" . $values['EMAIL_USER_ORDER_EXPIRED'] . "' );
-define( 'EMAIL_ADMIN_ORDER_EXPIRED', '" . $values['EMAIL_ADMIN_ORDER_EXPIRED'] . "' );
-define( 'EM_NEEDS_ACTIVATION', '" . $values['EM_NEEDS_ACTIVATION'] . "' );
-define( 'EMAIL_ADMIN_ACTIVATION', '" . $values['EMAIL_ADMIN_ACTIVATION'] . "' );
-define( 'EMAIL_ADMIN_PUBLISH_NOTIFY', '" . $values['EMAIL_ADMIN_PUBLISH_NOTIFY'] . "' );
-define( 'USE_PAYPAL_SUBSCR', '" . $values['USE_PAYPAL_SUBSCR'] . "' );
-define( 'EMAIL_USER_EXPIRE_WARNING', '" . $values['EMAIL_USER_EXPIRE_WARNING'] . "' );
-define( 'EMAILS_DAYS_KEEP', '" . $values['EMAILS_DAYS_KEEP'] . "' );
-define( 'DAYS_RENEW', '" . $values['DAYS_RENEW'] . "' );
-define( 'DAYS_CONFIRMED', '" . $values['DAYS_CONFIRMED'] . "' );
-define( 'HOURS_UNCONFIRMED', '" . $values['HOURS_UNCONFIRMED'] . "' );
-define( 'DAYS_CANCEL', '" . $values['DAYS_CANCEL'] . "' );
-define( 'ENABLE_MOUSEOVER', '" . $values['ENABLE_MOUSEOVER'] . "' );
-define( 'ENABLE_CLOAKING', '" . $values['ENABLE_CLOAKING'] . "' );
-define( 'VALIDATE_LINK', '" . $values['VALIDATE_LINK'] . "' );
-define( 'ADVANCED_CLICK_COUNT', '" . $values['ADVANCED_CLICK_COUNT'] . "' );
-define( 'USE_SMTP', '" . $values['USE_SMTP'] . "' );
-define( 'EMAIL_SMTP_SERVER', '" . $values['EMAIL_SMTP_SERVER'] . "' );
-define( 'EMAIL_SMTP_USER', '" . $values['EMAIL_SMTP_USER'] . "' );
-define( 'EMAIL_SMTP_PASS', '" . $values['EMAIL_SMTP_PASS'] . "' );
-define( 'EMAIL_SMTP_AUTH_HOST', '" . $values['EMAIL_SMTP_AUTH_HOST'] . "' );
-define( 'SMTP_PORT', '" . $values['SMTP_PORT'] . "' );
-define( 'POP3_PORT', '" . $values['POP3_PORT'] . "' );
-define( 'EMAIL_TLS', '" . $values['EMAIL_TLS'] . "' );
-define( 'EMAIL_POP_SERVER', '" . $values['EMAIL_POP_SERVER'] . "' );
-define( 'EMAIL_POP_BEFORE_SMTP', '" . $values['EMAIL_POP_BEFORE_SMTP'] . "' );
-define( 'EMAIL_DEBUG', '" . $values['EMAIL_DEBUG'] . "' );
-define( 'EMAILS_PER_BATCH', '" . $values['EMAILS_PER_BATCH'] . "' );
-define( 'EMAILS_MAX_RETRY', '" . $values['EMAILS_MAX_RETRY'] . "' );
-define( 'EMAILS_ERROR_WAIT', '" . $values['EMAILS_ERROR_WAIT'] . "' );
-define( 'USE_AJAX', '" . $values['USE_AJAX'] . "' );
-define( 'ANIMATION_SPEED', '" . $values['ANIMATION_SPEED'] . "' );
-define( 'MAX_BLOCKS', '" . $values['MAX_BLOCKS'] . "' );
-define( 'MEMORY_LIMIT', '" . $values['MEMORY_LIMIT'] . "' );
-define( 'REDIRECT_SWITCH', '" . $values['REDIRECT_SWITCH'] . "' );
-define( 'REDIRECT_URL', '" . $values['REDIRECT_URL'] . "' );
-define( 'HIDE_TIMEOUT', '" . $values['HIDE_TIMEOUT'] . "' );
-define( 'MDS_AGRESSIVE_CACHE', '" . $values['MDS_AGRESSIVE_CACHE'] . "' );
-define( 'ERROR_REPORTING', " . $values['ERROR_REPORTING'] . " );
-define( 'WP_ENABLED', '" . $values['WP_ENABLED'] . "' );
-define( 'WP_URL', '" . $values['WP_URL'] . "' );
+const MYSQL_HOST = '" . $f2->slashes( $values['MYSQL_HOST'] ) . "';
+const MYSQL_USER = '" . $f2->slashes( $values['MYSQL_USER'] ) . "';
+const MYSQL_PASS = '" . $f2->slashes( $values['MYSQL_PASS'] ) . "';
+const MYSQL_DB   = '" . $f2->slashes( $values['MYSQL_DB'] ) . "';
+const MYSQL_PORT = " . intval( $values['MYSQL_PORT'] ) . ";
+const MYSQL_SOCKET = '" . $f2->slashes( $values['MYSQL_SOCKET'] ) . "';
 ";
-	// write out the config..
 
+	// write out the config..
 	$file = fopen( "../config.php", "w" );
 	fwrite( $file, $config_str );
+	fclose( $file );
+
+	?>
+    <script>
+		$(function () {
+			$(document).scrollTop(0);
+			window.location.reload();
+		});
+    </script>
+	<?php
 }
 
 require_once __DIR__ . "/../include/init.php";
@@ -230,7 +216,7 @@ require_once __DIR__ . "/../include/init.php";
 	if ( is_writable( "../config.php" ) ) {
 		echo "- config.php is writeable.";
 	} else {
-		echo "- <font color='red'> Note: config.php is not writable. Give write permissions to config.php if you want to save the changes</font>";
+		echo "- <div style='color:red;'> Note: config.php is not writable. Give write permissions to config.php if you want to save the changes</div>";
 	}
 
 	require( __DIR__ . '/config_form.php' );

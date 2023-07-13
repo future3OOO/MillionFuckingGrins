@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -49,13 +49,14 @@ if ( ! defined( 'UPLOAD_PATH' ) ) {
 if ( ! defined( 'UPLOAD_HTTP_PATH' ) ) {
 
 	$host     = $_SERVER['SERVER_NAME']; // hostname
+	$protocol = ( ( ! empty( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
 	$http_url = $_SERVER['PHP_SELF']; // eg /ojo/admin/edit_config.php
 	$http_url = explode( "/", $http_url );
 	array_pop( $http_url ); // get rid of filename
 	array_pop( $http_url ); // get rid of /admin
 	$http_url = implode( "/", $http_url );
 
-	define( 'UPLOAD_HTTP_PATH', "http://" . $host . $http_url . "/upload_files/" );
+	define( 'UPLOAD_HTTP_PATH', $protocol . $host . $http_url . "/upload_files/" );
 }
 
 // Written for having magic quotes enabled
@@ -82,16 +83,13 @@ function expire_orders() {
 
 	// get the time of last run
 	$sql = "SELECT * FROM `config` where `key` = 'LAST_EXPIRE_RUN' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 	$t_row = @mysqli_fetch_array( $result );
-
-	if ( isset( $DB_ERROR ) && $DB_ERROR != '' ) {
-		return $DB_ERROR;
-	}
 
 	// Poor man's lock
 	$sql = "UPDATE `config` SET `val`='YES' WHERE `key`='EXPIRE_RUNNING' AND `val`='NO' ";
-	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+	$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
+
 	if ( @mysqli_affected_rows( $GLOBALS['connection'] ) == 0 ) {
 
 		// make sure it cannot be locked for more than 30 secs
@@ -102,11 +100,11 @@ function expire_orders() {
 			// release the lock
 
 			$sql = "UPDATE `config` SET `val`='NO' WHERE `key`='EXPIRE_RUNNING' ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			// update timestamp
 			$sql = "REPLACE INTO config (`key`, `val`) VALUES ('LAST_EXPIRE_RUN', '$unix_time')  ";
-			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or $DB_ERROR = mysqli_error( $GLOBALS['connection'] );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 		}
 
 		// this function is already executing in another process.
@@ -122,7 +120,7 @@ function expire_orders() {
 
 		$sql = "SELECT session_id, order_date FROM `temp_orders` WHERE  DATE_SUB('$now', INTERVAL $session_duration SECOND) >= temp_orders.order_date AND session_id <> '" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
 
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		while ( $row = @mysqli_fetch_array( $result ) ) {
 
@@ -131,8 +129,8 @@ function expire_orders() {
 
 		// COMPLETED Orders
 
-		$sql    = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
-		$result = mysqli_query( $GLOBALS['connection'], $sql );
+		$sql = "SELECT *, banners.banner_id as BID from orders, banners where status='completed' and orders.banner_id=banners.banner_id AND orders.days_expire <> 0 AND DATE_SUB('$now', INTERVAL orders.days_expire DAY) >= orders.date_published AND orders.date_published IS NOT NULL";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 		$affected_BIDs = array();
 
@@ -155,11 +153,11 @@ function expire_orders() {
 
 		// unconfirmed Orders
 
-		if ( HOURS_UNCONFIRMED != 0 ) {
+		if ( MINUTES_UNCONFIRMED != 0 ) {
 
-			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( HOURS_UNCONFIRMED ) . " HOUR) >= date_stamp AND date_stamp IS NOT NULL ";
+			$sql = "SELECT * from orders where (status='new') AND DATE_SUB('$now',INTERVAL " . intval( MINUTES_UNCONFIRMED ) . " MINUTE) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				delete_order( $row['order_id'] );
@@ -167,7 +165,7 @@ function expire_orders() {
 				// Now really delete the order.
 
 				$sql = "delete from orders where order_id='" . intval( $row['order_id'] ) . "'";
-				@mysqli_query( $GLOBALS['connection'], $sql );
+				@mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 				global $f2;
 				$f2->debug( "Deleted unconfirmed order - " . $sql );
 			}
@@ -177,7 +175,7 @@ function expire_orders() {
 		if ( DAYS_CONFIRMED != 0 ) {
 			$sql = "SELECT * from orders where (status='new' OR status='confirmed') AND DATE_SUB('$now',INTERVAL " . intval( DAYS_CONFIRMED ) . " DAY) >= date_stamp AND date_stamp IS NOT NULL ";
 
-			$result = @mysqli_query( $GLOBALS['connection'], $sql );
+			$result = @mysqli_query( $GLOBALS['connection'], $sql ) or die( mds_sql_error( $sql ) );
 
 			while ( $row = @mysqli_fetch_array( $result ) ) {
 				expire_order( $row['order_id'] );
@@ -236,7 +234,7 @@ function delete_temp_order( $sid, $delete_ad = true ) {
 	$sql = "DELETE FROM temp_orders WHERE session_id='" . $sid . "' ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 
-	if ( $delete_ad ) {
+	if ( $delete_ad && isset( $order_row['ad_id'] ) ) {
 		$sql = "DELETE FROM ads WHERE ad_id='" . intval( $order_row['ad_id'] ) . "' ";
 		mysqli_query( $GLOBALS['connection'], $sql );
 	}
@@ -272,7 +270,7 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 
 	$date = ( gmdate( "Y-m-d H:i:s" ) );
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='CREDIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='CREDIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
 	if ( mysqli_num_rows( $result ) != 0 ) {
 		return; // there already is a credit for this txn_id
@@ -280,11 +278,11 @@ function credit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $o
 
 	// check to make sure that there is a debit for this transaction
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='DEBIT' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $sql ) );
 	if ( mysqli_num_rows( $result ) > 0 ) {
 
-		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . intval( $txn_id ) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
+		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 	}
@@ -310,16 +308,18 @@ function debit_transaction( $order_id, $amount, $currency, $txn_id, $reason, $or
 	$date = ( gmdate( "Y-m-d H:i:s" ) );
 // check to make sure that there is no debit for this transaction already
 
-	$sql = "SELECT * FROM transactions where txn_id='" . intval( $txn_id ) . "' and `type`='DEBIT' ";
+	$sql = "SELECT * FROM transactions where txn_id='" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "' and `type`='DEBIT' AND order_id=" . intval($order_id);
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	if ( mysqli_fetch_array( $result ) == 0 ) {
-		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . intval( $txn_id ) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
+		$sql = "INSERT INTO transactions (`txn_id`, `date`, `order_id`, `type`, `amount`, `currency`, `reason`, `origin`) VALUES('" . mysqli_real_escape_string($GLOBALS['connection'], $txn_id) . "', '$date', '" . intval( $order_id ) . "', '$type', '" . floatval( $amount ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $currency ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $reason ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $origin ) . "')";
 
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	}
 }
 
 function complete_order( $user_id, $order_id ) {
+	confirm_order( $_SESSION['MDS_ID'], $order_id );
+
 	global $label;
 
 	$sql = "SELECT * from orders where order_id='" . intval( $order_id ) . "' ";
@@ -327,7 +327,6 @@ function complete_order( $user_id, $order_id ) {
 	$order_row = mysqli_fetch_array( $result );
 
 	if ( $order_row['status'] != 'completed' ) {
-
 		$now = ( gmdate( "Y-m-d H:i:s" ) );
 
 		$sql = "UPDATE orders set status='completed', date_published=NULL, date_stamp='$now' WHERE order_id='" . intval( $order_id ) . "'";
@@ -365,23 +364,33 @@ function complete_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $user_row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $user_row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $user_row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $order_row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_completed_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $user_row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $user_row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $user_row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $order_row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $user_row['Email'] );
 		$subject = $label['order_completed_email_subject'];
@@ -470,25 +479,35 @@ function confirm_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%DEADLINE%", intval( DAYS_CONFIRMED ), $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_confirmed_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%DEADLINE%", intval( DAYS_CONFIRMED ), $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_confirmed_email_subject'];
@@ -552,23 +571,33 @@ function pend_order( $user_id, $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_pending_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_pending_email_subject'];
@@ -652,23 +681,33 @@ function expire_order( $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $row['order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_expired_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $row['order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $row['Email'] );
 		$subject = $label['order_expired_email_subject'];
@@ -908,25 +947,35 @@ function complete_renew_order( $order_id ) {
 		$message = str_replace( "%SITE_NAME%", SITE_NAME, $message );
 		$message = str_replace( "%FNAME%", $user_row['FirstName'], $message );
 		$message = str_replace( "%LNAME%", $user_row['LastName'], $message );
+		$message = str_replace( "%MEMBERID%", $user_row['Username'], $message );
 		$message = str_replace( "%ORDER_ID%", $order_row['order_id'], $message );
 		$message = str_replace( "%ORIGINAL_ORDER_ID%", $order_row['original_order_id'], $message );
 		$message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $message );
 		$message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $message );
 		$message = str_replace( "%PRICE%", $price, $message );
 		$message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $message );
-		$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$message = str_replace( "%SITE_URL%", WP_URL, $message );
+		} else {
+			$message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $message );
+		}
 
 		$html_message = $label["order_completed_renewal_email_template_html"];
 		$html_message = str_replace( "%SITE_NAME%", SITE_NAME, $html_message );
 		$html_message = str_replace( "%FNAME%", $user_row['FirstName'], $html_message );
 		$html_message = str_replace( "%LNAME%", $user_row['LastName'], $html_message );
+		$html_message = str_replace( "%MEMBERID%", $user_row['Username'], $html_message );
 		$html_message = str_replace( "%ORDER_ID%", $order_row['order_id'], $html_message );
 		$html_message = str_replace( "%ORIGINAL_ORDER_ID%", $order_row['original_order_id'], $html_message );
 		$html_message = str_replace( "%PIXEL_COUNT%", $order_row['quantity'], $html_message );
 		$html_message = str_replace( "%PIXEL_DAYS%", $order_row['days_expire'], $html_message );
 		$html_message = str_replace( "%PRICE%", $price, $html_message );
 		$html_message = str_replace( "%SITE_CONTACT_EMAIL%", SITE_CONTACT_EMAIL, $html_message );
-		$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+			$html_message = str_replace( "%SITE_URL%", WP_URL, $html_message );
+		} else {
+			$html_message = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_message );
+		}
 
 		$to      = trim( $user_row['Email'] );
 		$subject = $label['order_completed_email_subject'];
@@ -984,6 +1033,7 @@ function send_confirmation_email( $email ) {
 	$message = $label["confirmation_email_templaltev2"];
 	$message = str_replace( "%FNAME%", $row['FirstName'], $message );
 	$message = str_replace( "%LNAME%", $row['LastName'], $message );
+	$message = str_replace( "%MEMBERID%", $row['Username'], $message );
 	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
 		$message = str_replace( "%SITE_URL%", WP_URL, $message );
 	} else {
@@ -996,7 +1046,12 @@ function send_confirmation_email( $email ) {
 	$html_msg = $label["confirmation_email_templaltev2_html"];
 	$html_msg = str_replace( "%FNAME%", $row['FirstName'], $html_msg );
 	$html_msg = str_replace( "%LNAME%", $row['LastName'], $html_msg );
-	$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH . "users/", $html_msg );
+	$html_msg = str_replace( "%MEMBERID%", $row['Username'], $html_msg );
+	if ( WP_ENABLED == "YES" && ! empty( WP_URL ) ) {
+		$html_msg = str_replace( "%SITE_URL%", WP_URL, $html_msg );
+	} else {
+		$html_msg = str_replace( "%SITE_URL%", BASE_HTTP_PATH, $html_msg );
+	}
 	$html_msg = str_replace( "%SITE_NAME%", SITE_NAME, $html_msg );
 	$html_msg = str_replace( "%VERIFY_URL%", $verify_url, $html_msg );
 	$html_msg = str_replace( "%VALIDATION_CODE%", $code, $html_msg );
@@ -1045,10 +1100,7 @@ function send_published_pixels_notification( $user_id, $BID ) {
 		$url_list .= $row['url'] . " - " . $row['alt_text'] . "\n";
 	}
 
-	$arr          = explode( "/", SERVER_PATH_TO_ADMIN );
-	$admin_folder = array_pop( $arr );
-
-	$view_url = BASE_HTTP_PATH . $admin_folder . "/remote_admin.php?key=" . substr( md5( ADMIN_PASSWORD ), 1, 15 ) . "&user_id=$user_id&BID=$BID";
+	$view_url = BASE_HTTP_PATH . "admin/#remote_admin.php?key=" . substr( md5( ADMIN_PASSWORD ), 1, 15 ) . "&user_id=$user_id&BID=$BID";
 
 	$msg = $label['publish_pixels_email_template'];
 	$msg = str_replace( "%SITE_NAME%", SITE_NAME, $msg );
@@ -1111,7 +1163,15 @@ function display_order( $order_id, $BID ) {
         </tr>
         <tr>
             <td><b><?php echo $label['advertiser_ord_quantity']; ?></b></td>
-            <td><?php echo $order_row['quantity']; ?><?php echo $label['advertiser_ord_pix']; ?></td>
+            <td><?php
+				if ( STATS_DISPLAY_MODE == "PIXELS" ) {
+					echo $order_row['quantity'];
+					echo " " . $label['advertiser_ord_pix'];
+				} else {
+					echo $order_row['quantity'] / ( $b_row['block_width'] * $b_row['block_height'] );
+					echo " " . $label['advertiser_ord_blocks'];
+				}
+				?></td>
         </tr>
         <td><b><?php echo $label['advertiser_ord_expired']; ?></b></td>
         <td><?php if ( $order_row['days_expire'] == 0 ) {
@@ -1460,7 +1520,7 @@ function render_nav_pages( &$nav_pages_struct, $LINKS, $q_string = '' ) {
 
 function select_block( $map_x, $map_y ) {
 
-	global $BID, $b_row, $label, $order_id, $banner_data;
+	global $BID, $label, $order_id, $banner_data;
 
 	// calculate clicked block from coords.
 
@@ -1472,7 +1532,7 @@ function select_block( $map_x, $map_y ) {
 	}
 
 	//Check if max_orders < order count
-	if ( ! can_user_order( $b_row, $_SESSION['MDS_ID'] ) ) {
+	if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'] ) ) {
 		return $label['advertiser_max_order_html']; // order count > max orders
 	}
 
@@ -1484,18 +1544,23 @@ function select_block( $map_x, $map_y ) {
 	$clicked_blocks = array();
 	$return_val     = "";
 
-	$sql = "SELECT status, user_id, ad_id FROM blocks where block_id=" . intval( $clicked_block ) . " AND banner_id=" . intval( $BID );
+	$sql = "SELECT status, user_id, ad_id FROM blocks WHERE block_id=" . intval( $clicked_block ) . " AND banner_id=" . intval( $BID );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-	$row = mysqli_fetch_array( $result );
+	$blocksrow = mysqli_fetch_array( $result );
 
-	if ( ( $row['status'] == '' ) || ( ( $row['status'] == 'reserved' ) && ( $row['user_id'] == $_SESSION['MDS_ID'] ) ) ) {
+	if ( ( $blocksrow == null || $blocksrow['status'] == '' ) || ( ( $blocksrow['status'] == 'reserved' ) && ( $blocksrow['user_id'] == $_SESSION['MDS_ID'] ) ) ) {
+
+		$orderid = 0;
+		if ( isset( $_SESSION['MDS_order_id'] ) ) {
+			$orderid = intval( $_SESSION['MDS_order_id'] );
+		}
 
 		// put block on order
-		$sql = "SELECT blocks,status,ad_id,order_id FROM orders where user_id=" . intval( $_SESSION['MDS_ID'] ) . " and order_id=" . intval( $_SESSION['MDS_order_id'] ) . " and banner_id=" . intval( $BID ) . " ";
+		$sql = "SELECT blocks,status,ad_id,order_id FROM orders WHERE user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND order_id=" . $orderid . " AND banner_id=" . intval( $BID ) . " AND status!='deleted'";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
-		$row = mysqli_fetch_array( $result );
-		if ( $row['blocks'] != '' ) {
-			$blocks = explode( ",", $row['blocks'] );
+		$ordersrow = mysqli_fetch_array( $result );
+		if ( isset( $ordersrow ) && $ordersrow['blocks'] != '' ) {
+			$blocks = explode( ",", $ordersrow['blocks'] );
 			array_walk( $blocks, 'intval' );
 		}
 
@@ -1717,12 +1782,12 @@ function select_block( $map_x, $map_y ) {
 
 		// check max blocks
 		$max_selected = false;
-        if ( $banner_data['G_MAX_BLOCKS'] > 0 ) {
-            if ( sizeof( $new_blocks ) > $banner_data['G_MAX_BLOCKS'] ) {
-                $max_selected = true;
-                $return_val   = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX_BLOCKS'], $label['max_blocks_selected'] );
-            }
-        }
+		if ( $banner_data['G_MAX_BLOCKS'] > 0 ) {
+			if ( sizeof( $new_blocks ) > $banner_data['G_MAX_BLOCKS'] ) {
+				$max_selected = true;
+				$return_val   = str_replace( '%MAX_BLOCKS%', $banner_data['G_MAX_BLOCKS'], $label['max_blocks_selected'] );
+			}
+		}
 
 		$order_blocks = implode( ",", $new_blocks );
 
@@ -1742,18 +1807,29 @@ function select_block( $map_x, $map_y ) {
 
 		// if conditions are met then select new blocks
 		if ( ! $max_selected && $is_adjacent && ! $existing_blocks ) {
-			$return_val = intval( $_SESSION['MDS_order_id'] );
 
 			$price      = $total = 0;
 			$num_blocks = sizeof( $new_blocks );
 			$quantity   = ( $banner_data['BLK_WIDTH'] * $banner_data['BLK_HEIGHT'] ) * $num_blocks;
 			$now        = gmdate( "Y-m-d H:i:s" );
 
-			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . intval( $row['order_id'] ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $b_row['days_expire'] ) . ", '$now', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
+			$orderid = 0;
+			if ( isset( $ordersrow['order_id'] ) ) {
+				$orderid = intval( $ordersrow['order_id'] );
+			}
+
+			$adid = 0;
+			if ( isset( $ordersrow['ad_id'] ) ) {
+				$adid = intval( $ordersrow['ad_id'] );
+			}
+
+			$sql = "REPLACE INTO orders (user_id, order_id, blocks, status, order_date, price, quantity, banner_id, currency, days_expire, date_stamp, ad_id, approved) VALUES (" . intval( $_SESSION['MDS_ID'] ) . ", " . $orderid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $order_blocks ) . "', 'new', NOW(), " . floatval( $price ) . ", " . intval( $quantity ) . ", " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . intval( $banner_data['DAYS_EXPIRE'] ) . ", '$now', " . $adid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "') ";
 
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 			$_SESSION['MDS_order_id'] = mysqli_insert_id( $GLOBALS['connection'] );
 			$order_id                 = $_SESSION['MDS_order_id'];
+
+			$return_val = intval( $_SESSION['MDS_order_id'] );
 
 			$sql = "delete from blocks where user_id=" . intval( $_SESSION['MDS_ID'] ) . " AND status = 'reserved' AND banner_id='" . intval( $BID ) . "' ";
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
@@ -1771,7 +1847,7 @@ function select_block( $map_x, $map_y ) {
 						$price = get_zone_price( $BID, $y, $x );
 
 						// reserve block
-						$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `click_count`) VALUES (" . intval( $cell ) . ",  " . intval( $_SESSION['MDS_ID'] ) . " , 'reserved' , " . intval( $x ) . " , " . intval( $y ) . " , '' , '' , '', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "', " . intval( $BID ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . floatval( $price ) . ", " . intval( $_SESSION['MDS_order_id'] ) . ", 0)";
+						$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `ad_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`) VALUES (" . intval( $cell ) . ",  " . intval( $_SESSION['MDS_ID'] ) . " , 'reserved' , " . intval( $x ) . " , " . intval( $y ) . " , '' , '' , '', '" . mysqli_real_escape_string( $GLOBALS['connection'], $banner_data['AUTO_APPROVE'] ) . "', " . intval( $BID ) . ", " . $adid . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', " . floatval( $price ) . ", " . intval( $_SESSION['MDS_order_id'] ) . ", 0, 0)";
 						mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 						$total += $price;
@@ -1788,7 +1864,7 @@ function select_block( $map_x, $map_y ) {
 			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 
 			// check that we have ad_id, if not then create an ad for this order.
-			if ( ! $row['ad_id'] ) {
+			if ( $adid == 0 ) {
 
 				$_REQUEST['order_id'] = $order_id;
 				$_REQUEST['BID']      = $BID;
@@ -1801,12 +1877,12 @@ function select_block( $map_x, $map_y ) {
 				$sql = "UPDATE blocks SET ad_id=" . intval( $ad_id ) . " WHERE order_id=" . intval( $order_id ) . " AND banner_id=" . intval( $BID );
 				$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-				$_REQUEST['ad_id'] = $ad_id;
+				$_REQUEST['aid'] = $ad_id;
 			}
 		}
 	} else {
 
-		if ( $row['status'] == 'nfs' ) {
+		if ( $blocksrow['status'] == 'nfs' ) {
 			$return_val = $label['advertiser_sel_nfs_error'];
 		} else {
 			$label['advertiser_sel_sold_error'] = str_replace( "%BLOCK_ID%", $clicked_block, $label['advertiser_sel_sold_error'] );
@@ -1831,8 +1907,10 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 
 	global $f2;
 
+	$banner_data = load_banner_constants( $temp_order_row['banner_id'] );
+
 	// check if the user can get the order
-	if ( ! can_user_order( load_banner_row( $temp_order_row['banner_id'] ), $_SESSION['MDS_ID'], $temp_order_row['package_id'] ) ) {
+	if ( ! can_user_order( $banner_data, $_SESSION['MDS_ID'], $temp_order_row['package_id'] ) ) {
 		echo 'can\'t touch this<br>';
 
 		return false;
@@ -1885,12 +1963,14 @@ function reserve_pixels_for_temp_order( $temp_order_row ) {
 	$url      = get_template_value( 'URL', 1 );
 	$alt_text = get_template_value( 'ALT_TEXT', 1 );
 
-	foreach ( $block_info as $key => $block ) {
-		$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0)";
+	if ( is_array( $block_info ) ) {
+		foreach ( $block_info as $key => $block ) {
+			$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `approved`, `banner_id`, `currency`, `price`, `order_id`, `ad_id`, `click_count`, `view_count`) VALUES ('" . intval( $key ) . "',  '" . intval( $_SESSION['MDS_ID'] ) . "' , 'reserved' , '" . intval( $block['map_x'] ) . "' , '" . intval( $block['map_y'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $url ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $alt_text ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $approved ) . "', '" . intval( $temp_order_row['banner_id'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], get_default_currency() ) . "', '" . floatval( $block['price'] ) . "', '" . intval( $order_id ) . "', '" . intval( $temp_order_row['ad_id'] ) . "', 0, 0)";
 
-		global $f2;
-		$f2->debug( "Updated block - " . $sql );
-		mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+			global $f2;
+			$f2->debug( "Updated block - " . $sql );
+			mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
+		}
 	}
 
 	delete_temp_order( session_id(), false );
@@ -1969,7 +2049,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 	}
 
 	#load block_from
-	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks where block_id=" . intval( $block_from ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
 
@@ -1994,7 +2074,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 		return false;
 	}
 
-	$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `file_name`, `mime_type`,  `approved`, `published`, `banner_id`, `currency`, `price`, `order_id`, `click_count`, `ad_id`) VALUES ('" . intval( $block_to ) . "',  '" . intval( $source_block['user_id'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['status'] ) . "' , '" . intval( $x ) . "' , '" . intval( $y ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['url'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['alt_text'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['file_name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['mime_type'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['approved'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['published'] ) . "', '" . intval( $banner_id ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['currency'] ) . "', '" . floatval( $source_block['price'] ) . "', '" . intval( $source_block['order_id'] ) . "', '" . intval( $source_block['click_count'] ) . "', '" . intval( $source_block['ad_id'] ) . "')";
+	$sql = "REPLACE INTO `blocks` ( `block_id` , `user_id` , `status` , `x` , `y` , `image_data` , `url` , `alt_text`, `file_name`, `mime_type`,  `approved`, `published`, `banner_id`, `currency`, `price`, `order_id`, `click_count`, `view_count`, `ad_id`) VALUES (" . intval( $block_to ) . ",  " . intval( $source_block['user_id'] ) . " , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['status'] ) . "' , " . intval( $x ) . " , " . intval( $y ) . " , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['image_data'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['url'] ) . "' , '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['alt_text'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['file_name'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['mime_type'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['approved'] ) . "', '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['published'] ) . "', " . intval( $banner_id ) . ", '" . mysqli_real_escape_string( $GLOBALS['connection'], $source_block['currency'] ) . "', " . floatval( $source_block['price'] ) . ", " . intval( $source_block['order_id'] ) . ", " . intval( $source_block['click_count'] ) . ", " . intval( $source_block['view_count'] ) . ", " . intval( $source_block['ad_id'] ) . ")";
 
 	global $f2;
 	$f2->debug( "Moved Block - " . $sql );
@@ -2023,7 +2103,7 @@ function move_block( $block_from, $block_to, $banner_id ) {
 
 	$sql_blocks = implode( ',', $new_blocks );
 
-	$sql = "UPDATE orders SET blocks='" . $sql_blocks . "' WHERE order_id='" . intval( $source_block['order_id'] ) . "' ";
+	$sql = "UPDATE orders SET blocks='" . $sql_blocks . "' WHERE order_id=" . intval( $source_block['order_id'] );
 	# update the customer's order
 	mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
@@ -2054,11 +2134,11 @@ function move_order( $block_from, $block_to, $banner_id ) {
 
 	// get the order
 
-	$sql = "SELECT * from blocks where block_id='" . intval( $block_from ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks where block_id=" . intval( $block_from ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$source_block = mysqli_fetch_array( $result );
 
-	$sql = "SELECT * from blocks WHERE order_id='" . intval( $source_block['order_id'] ) . "' AND banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * from blocks WHERE order_id=" . intval( $source_block['order_id'] ) . " AND banner_id=" . intval( $banner_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	$banner_data = load_banner_constants( $banner_id );
@@ -2103,13 +2183,15 @@ function get_required_size( $x, $y, $banner_data ) {
 
 	$mod = ( $x % $block_width );
 
-	if ( $mod > 0 ) { // width does not fit
+	if ( $mod > 0 ) {
+		// width does not fit
 		$size[0] = $x + ( $block_width - $mod );
 	}
 
 	$mod = ( $y % $block_height );
 
-	if ( $mod > 0 ) { // height does not fit
+	if ( $mod > 0 ) {
+		// height does not fit
 		$size[1] = $y + ( $block_height - $mod );
 	}
 
@@ -2125,6 +2207,10 @@ function get_clicks_for_today( $BID, $user_id = 0 ) {
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result );
 
+	if ( $row == null ) {
+		return 0;
+	}
+
 	return $row['clk'];
 }
 
@@ -2134,6 +2220,10 @@ function get_clicks_for_banner( $BID = '' ) {
 	$sql = "SELECT *, SUM(clicks) AS clk FROM `clicks` where banner_id='" . intval( $BID ) . "'  GROUP BY banner_id, block_id, user_id, date";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result );
+
+	if ( $row == null ) {
+		return 0;
+	}
 
 	return $row['clk'];
 }
@@ -2147,12 +2237,11 @@ then check how many orders the user had.
 function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 	// check rank
 
-	$sql = "select Rank from users where ID='" . intval( $user_id ) . "'";
+	$sql = "SELECT `Rank` FROM `users` WHERE `ID`=" . intval( $user_id );
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$u_row = mysqli_fetch_array( $result );
 
 	if ( $u_row['Rank'] == '2' ) {
-
 		return true;
 	}
 
@@ -2188,12 +2277,12 @@ function can_user_order( $banner_data, $user_id, $package_id = 0 ) {
 
 function get_blocks_min_max( $block_id, $banner_id ) {
 
-	$sql = "SELECT * FROM blocks where block_id='" . intval( $block_id ) . "' and banner_id='" . intval( $banner_id ) . "' ";
+	$sql = "SELECT * FROM blocks where block_id=" . intval( $block_id ) . " and banner_id=" . intval( $banner_id );
 
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 	$row = mysqli_fetch_array( $result );
 
-	$sql = "select * from blocks where order_id='" . intval( $row['order_id'] ) . "' ";
+	$sql = "select * from blocks where order_id=" . intval( $row['order_id'] );
 	$result3 = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 
 	// find high x, y & low x, y
@@ -2236,6 +2325,8 @@ function get_blocks_min_max( $block_id, $banner_id ) {
 }
 
 function get_definition( $field_type ) {
+	// compare MySQL version, versions newer than 5.6.5 require a different set of queries
+	$mysql_server_info = mysqli_get_server_info( $GLOBALS['connection'] );
 
 	switch ( $field_type ) {
 		case "TEXT":
@@ -2251,7 +2342,11 @@ function get_definition( $field_type ) {
 			break;
 		case "DATE":
 		case "DATE_CAL":
-			return "DATETIME NOT NULL ";
+			if ( version_compare( $mysql_server_info, '5.6.5' ) >= 0 ) {
+				return "DATETIME NOT NULL default '1000-01-01 00:00:00'";
+			} else {
+				return "DATETIME NOT NULL ";
+			}
 			break;
 		case "FILE":
 			return "VARCHAR( 255 ) NOT NULL ";
@@ -2309,7 +2404,7 @@ function saveImage( $field_id ) {
 
 	if ( $_SESSION['MDS_ID'] != '' ) {
 		$name = $_SESSION['MDS_ID'] . "_" . $name;
-	} else {
+//	} else {
 		//	$name = subssession_id().$name;
 
 	}
@@ -2387,7 +2482,7 @@ function saveImage( $field_id ) {
 		// Resize to max size
 		$image->resize( new Imagine\Image\Box( $final_width, $final_height ) );
 		$image->save( $uploadfile );
-	} else {
+//	} else {
 		//echo 'No need to resize.<br>';
 
 	}
@@ -2400,7 +2495,7 @@ function deleteImage( $table_name, $object_name, $object_id, $field_id ) {
 	$sql = "SELECT `" . mysqli_real_escape_string( $GLOBALS['connection'], $field_id ) . "` FROM `" . mysqli_real_escape_string( $GLOBALS['connection'], $table_name ) . "` WHERE `" . mysqli_real_escape_string( $GLOBALS['connection'], $object_name ) . "`='" . intval( $object_id ) . "'";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) . $sql );
 	$row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-	if ( $row[ $field_id ] != '' ) {
+	if ( isset( $row ) && $row[ $field_id ] != '' ) {
 		// delete the original
 		@unlink( UPLOAD_PATH . "images/" . $row[ $field_id ] );
 		// delete the thumb
@@ -2595,23 +2690,33 @@ function get_formatted_date( $date ) {
 	return date( DATE_FORMAT, $time );
 }
 
-function get_local_time( $gmdate ) {
+function get_local_datetime( $gmdate, $formatted = false ) {
 
-	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) { // gmt not found
+	if ( ( strpos( $gmdate, 'GMT' ) === false ) && ( ( strpos( $gmdate, 'UTC' ) === false ) ) && ( ( strpos( $gmdate, '+0000' ) === false ) ) ) {
+		// gmt not found
 		$gmdate = $gmdate . " GMT";
 	}
 	date_default_timezone_set( "GMT" );
 	$gmtime = strtotime( $gmdate );
 
-	if ( $gmtime == - 1 ) { // out of range
+	if ( $gmtime == - 1 ) {
+		// out of range
 		preg_match( "/(\d+-\d+-\d+).+/", $gmdate, $m );
 
 		return $m[1];
 	} else {
-		$dateTime = new DateTime();
-		$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
+		try {
+			$dateTime = new DateTime( $gmdate );
+			$dateTime->setTimeZone( new DateTimeZone( GMT_DIF ) );
 
-		return gmdate( "Y-m-d H:i:s", $gmtime + ( 3600 * $dateTime->getOffset() ) );
+			if ( ! $formatted ) {
+				return $dateTime->format( "Y-m-d H:i:s" );
+			} else {
+				return $dateTime->format( DATE_FORMAT . ' ' . TIME_FORMAT );
+			}
+		} catch ( Exception $e ) {
+			return gmdate( "Y-m-d H:i:s", $gmtime );
+		}
 	}
 }
 
@@ -2855,7 +2960,7 @@ function _GetMaxAllowedUploadSize() {
  *
  * @param array $Sizes
  *
- * @return array
+ * @return int
  */
 function convertMemoryToBytes( $Sizes ) {
 	for ( $x = 0; $x < count( $Sizes ); $x ++ ) {
@@ -2941,7 +3046,7 @@ function mds_header_cache() {
 
 	global $f2;
 
-	$BID = ( isset( $_REQUEST['BID'] ) && $f2->bid( $_REQUEST['BID'] ) != '' ) ? $f2->bid( $_REQUEST['BID'] ) : $BID = 1;
+	$BID = $f2->bid();
 
 	$banner_data = load_banner_constants( $BID );
 
@@ -2997,4 +3102,53 @@ function get_call_state() {
 	}
 
 	return $state;
+}
+
+/**
+ * Check available pixels
+ *
+ * @param $in_str
+ *
+ * @return bool
+ */
+function check_pixels( $in_str ) {
+
+	global $f2, $label;
+
+	// cannot reserve pixels if there is no session
+	if ( session_id() == '' ) {
+		return false;
+	}
+
+	$BID = $f2->bid();
+
+	// check if it is free
+	$available = true;
+
+	$sql = "SELECT block_id FROM blocks WHERE banner_id=" . intval( $BID ) . " AND block_id IN(" . mysqli_real_escape_string( $GLOBALS['connection'], $in_str ) . ")";
+
+	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( $sql . mysqli_error( $GLOBALS['connection'] ) );
+	if ( mysqli_num_rows( $result ) > 0 ) {
+		echo js_out_prep( $label['check_sel_notavailable'] . " (E432)" );
+		$available = false;
+	}
+
+	if ( $available ) {
+
+		// from temp_orders table
+		$sql = "SELECT blocks FROM temp_orders WHERE banner_id=" . intval( $BID ) . " AND session_id != '" . session_id() . "'";
+		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
+
+		$selected = explode( ",", $in_str );
+		while ( $row = mysqli_fetch_array( $result ) ) {
+			$entries = explode( ",", $row['blocks'] );
+			if ( ! empty( array_intersect( $entries, $selected ) ) ) {
+				echo js_out_prep( $label['check_sel_notavailable'] . " (E432)" );
+				$available = false;
+				break;
+			}
+		}
+	}
+
+	return $available;
 }

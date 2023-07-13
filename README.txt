@@ -86,13 +86,15 @@ INSTALLATION.
 	
 	The installation script will install the database for you.
 	Fill in the database details from step 1.
-	
+
+	Note the password given to you for your admin login.
+
 	Please delete the install.php file after successful installation.
 
 
 4. Edit your configuration.
 	
-	Go to http://yourwebsite.com/admin/ and use 'ok' as the default password.
+	Go to http://yourwebsite.com/admin/ and login using the password given during the install process.
 	
 	Here is what should be configured:
 	
@@ -238,7 +240,7 @@ and follow the recommendations
 2. Permission problems. This is a common problem. Please check your permission 
 settings.
 
-3. Your PHP is too old. Check to make sure you have at least 5.2.x
+3. Your PHP is too old. Check to make sure you have at least 7.3
 
 4. The files were not uploaded with the original directory structure in tact.
 
@@ -500,7 +502,6 @@ PHPMailer
 https://github.com/PHPMailer/PHPMailer
 
 AREA Map code contributed by Martin Diekhoff
-http://www.onecentads.com/
 
 Imagine - Image manipulation library for PHP 5.3 inspired by Python's PIL and other image libraries.
 https://github.com/avalanche123/Imagine
@@ -525,6 +526,12 @@ https://github.com/clarketm/image-map
 
 Image Scale - Scale images to fit or fill any target container via two simple properties: scale and align
 https://github.com/gestixi/image-scale
+
+BrowserStack - App & Browser Testing Made Easy
+https://www.browserstack.com/
+
+AJAX loader image
+https://loading.io/
 
 And of course anything else I might be missing.
 

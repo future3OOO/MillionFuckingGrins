@@ -1,8 +1,8 @@
 /*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -43,8 +43,9 @@ function defer(toWaitFor, method) {
 }
 
 function add_ajax_loader(container) {
-	let ajax_loader = $("<div class='ajax-loader'></div>");
-	$(container).append(ajax_loader)
+	let $ajax_loader = $("<div class='ajax-loader'></div>");
+	$(container).append($ajax_loader)
+	$ajax_loader.css('top', $(container).position().top).css('left', ($(container).width() / 2) - ($ajax_loader.width() / 2));
 }
 
 function remove_ajax_loader() {
@@ -56,7 +57,7 @@ function mds_grid(container, bid, width, height) {
 		return;
 	}
 
-	add_ajax_loader(container);
+	add_ajax_loader('.' + container);
 
 	let grid = $("<div class='grid-inner' id='" + container + "'></div>");
 	grid.css('width', width).css('height', height);
@@ -68,7 +69,7 @@ function mds_grid(container, bid, width, height) {
 	};
 
 	$(grid).load(window.mds_data.ajax, data, function () {
-		mds_init('#theimage', true, true);
+		mds_init('#theimage', true, window.mds_data.ENABLE_MOUSEOVER !== 'NO', false, true);
 	});
 }
 
@@ -87,7 +88,26 @@ function mds_stats(container, bid, width, height) {
 	};
 
 	$(stats).load(window.mds_data.ajax, data, function () {
-		mds_init('#' + container, false, false);
+		mds_init('#' + container, false, false, false, false);
+	});
+}
+
+function mds_list(container, bid, width, height) {
+	if ($('#' + container).length > 0) {
+		return;
+	}
+
+	let list = $("<div class='list-inner' id='" + container + "'></div>");
+	list.css('width', width).css('height', height);
+	$('.' + container).append(list);
+
+	const data = {
+		action: 'show_list',
+		BID: bid
+	};
+
+	$(list).load(window.mds_data.ajax, data, function () {
+		mds_init('#' + container, false, true, false, false);
 	});
 }
 
@@ -96,9 +116,8 @@ function receiveMessage(event, $el) {
 		return;
 	}
 
-	parent.postMessage('gridwidth', window.mds_data.wp);
-
 	if ($el && $el.length > 0 && $el.data('scalemap') === true) {
+		parent.postMessage('gridwidth', window.mds_data.wp);
 		rescale($el);
 	}
 
@@ -134,79 +153,84 @@ function receiveMessage(event, $el) {
 	}
 }
 
-function rescale($el) {
-	// https://github.com/GestiXi/image-scale
-	$el.imageScale({
-		scale: "best-fit",
-		align: "top",
-		rescaleOnResize: true
-	});
-}
-
 function add_tippy() {
-	const defaultContent = $('.tooltip-source').html();
+	const defaultContent = "<div class='ajax-loader'></div>";
+	const isIOS = /iPhone|iPad|iPod/.test(navigator.platform);
 
-	tippy('.mds-container area', {
+	window.tippy_instance = tippy('.mds-container area,.list-link', {
 		theme: 'light',
 		content: defaultContent,
 		duration: 50,
 		delay: 50,
 		trigger: 'click',
 		allowHTML: true,
-		followCursor: true,
+		followCursor: 'initial',
 		hideOnClick: true,
 		interactive: true,
 		maxWidth: 350,
 		placement: 'auto',
 		touch: true,
 		appendTo: 'parent',
+		popperOptions: {
+			strategy: 'fixed',
+			modifiers: [
+				{
+					name: 'flip',
+					options: {
+						fallbackPlacements: ['bottom', 'right'],
+					},
+				},
+				{
+					name: 'preventOverflow',
+					options: {
+						altAxis: true,
+						tether: false,
+						padding: 40,
+					},
+				},
+			],
+		},
 		onCreate(instance) {
 			instance._isFetching = false;
 			instance._content = null;
 			instance._error = null;
-
+			window.tippy_instance = instance;
 		},
 		onShow(instance) {
 			if (instance._isFetching || instance._content || instance._error) {
 				return;
 			}
 
-			instance._isFetching = true;
-
-			async function postData(url = '', data = {}) {
-				return await fetch(url, {
-					method: 'POST',
-					mode: 'cors',
-					cache: 'force-cache',
-					credentials: 'same-origin',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					redirect: 'follow',
-					referrerPolicy: 'no-referrer',
-					body: JSON.stringify(data)
-				});
+			if (isIOS) {
+				$(instance.reference).trigger('click');
 			}
+
+			instance._isFetching = true;
 
 			const data = $(instance.reference).data('data');
 
-			postData(window.mds_data.ajax, {
+			let ajax_data = {
 				aid: data.id,
 				bid: data.banner_id,
+				block_id: data.block_id,
 				action: 'ga'
-			})
-				.then((response) => response.text())
-				.then(function (text) {
-					instance.setContent(text);
-					instance._content = true;
-				})
-				.catch((error) => {
-					instance._error = error;
-					instance.setContent(`Request failed. ${error}`);
-				})
-				.finally(() => {
-					instance._isFetching = false;
-				});
+			};
+
+			$.ajax({
+				method: 'POST',
+				url: window.mds_data.ajax,
+				data: ajax_data,
+				dataType: 'html',
+				crossDomain: true,
+			}).done(function (data) {
+				instance.setContent(data);
+				instance._content = true;
+			}).fail(function (jqXHR, textStatus, errorThrown) {
+				instance._error = errorThrown;
+				instance.setContent(`Request failed. ${errorThrown}`);
+			}).always(function () {
+				instance._isFetching = false;
+			});
 
 		},
 		onHidden(instance) {
@@ -215,24 +239,84 @@ function add_tippy() {
 			instance._error = null;
 		}
 	});
+
+	window.is_touch = false;
+
+	$(document).on('touchstart', function () {
+		window.is_touch = true;
+	});
+
+	$(document).on('scroll', function () {
+		if (!window.is_touch && window.tippy_instance != null && typeof window.tippy_instance.hide === 'function') {
+			window.tippy_instance.hide();
+		}
+	});
+
+	$(document).on('click', '.list-link', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+	});
 }
 
-function mds_init(el, scalemap, tippy, type) {
-	let $el = $(el);
+let rescaling = false;
 
-	if ($el.length > 0) {
-		let origWidth = $el.width();
-		let origHeight = $el.height();
+function rescale($el) {
 
-		$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
+	if (rescaling) {
+		return;
 	}
 
-	// if (type === "iframe") {
-	// 	$('html').css('width', '100%').css('height', '100%');
-	// 	$('body').css('width', '100%').css('height', '100%').css('position', 'relative');
-	// }
+	rescaling = true;
 
-	if (scalemap) {
+	// https://github.com/GestiXi/image-scale
+	$el.imageScale({
+		scale: "best-fit",
+		align: "top",
+		rescaleOnResize: true,
+		didScale: function (firstTime, options) {
+			rescaling = false;
+		}
+	});
+}
+
+function mds_loaded_event(el, scalemap, tippy, iframe, isgrid) {
+	if (window.mds_loaded === true) {
+		return;
+	}
+	window.mds_loaded = true;
+
+	jQuery(document).trigger({
+		type: 'mds-loaded',
+		el: el,
+		scalemap: scalemap,
+		tippy: tippy,
+		iframe: iframe,
+		isgrid: isgrid
+	});
+}
+
+$(document).on('mds-loaded', function (el, scalemap, tippy, iframe, isgrid) {
+	setTimeout(function () {
+		window.dispatchEvent(new Event('resize'));
+	}, 100);
+});
+
+function mds_init(el, scalemap, tippy, type, isgrid) {
+	let $el = $(el);
+	window.mds_loaded = false;
+
+	if (isgrid && scalemap) {
+
+		let origWidth;
+		let origHeight;
+
+		if ($el.length > 0) {
+			origWidth = $el.width();
+			origHeight = $el.height();
+
+			$el.data('scalemap', scalemap).data('origWidth', origWidth).data('origHeight', origHeight);
+		}
+
 		let $elParent = $el;
 
 		// https://github.com/GestiXi/image-scale
@@ -241,20 +325,109 @@ function mds_init(el, scalemap, tippy, type) {
 			align: "top",
 			rescaleOnResize: true,
 			didScale: function (firstTime, options) {
-				if (firstTime) {
-					$elParent.height($el.height());
+				if (window.mds_data.wp !== "") {
+					if ($elParent.parent().parent().parent().parent().height() < origHeight) {
+						$elParent.parent().parent().parent().parent().width(origWidth);
+						$elParent.parent().parent().parent().parent().height(origHeight);
+					}
 				}
 
-				// https://github.com/clarketm/image-map
-				$el.imageMap();
+				if ($elParent.parent().height() < origHeight) {
+					$elParent.width(origWidth);
+					$elParent.height(origHeight);
+					$elParent.parent().width(origWidth);
+					$elParent.parent().height(origHeight);
+					rescale($el);
+				}
+
+				if (window.mds_data.wp !== "") {
+					$elParent.parent().parent().parent().parent().width($el.width());
+					$elParent.parent().parent().parent().parent().height($el.height());
+				}
+
+				$elParent.parent().width($el.width());
+				$elParent.parent().height($el.height());
+
+				rescaling = false;
+			}
+		});
+
+		rescale($el);
+
+		// https://github.com/clarketm/image-map
+		ImageMap('img[usemap]');
+		//$el.imageMap();
+
+		$(window).on('resize', function () {
+			rescale($el);
+		});
+	}
+
+	$el.on('load', function () {
+		if (isgrid) {
+			if (window.mds_data.wp !== "") {
+				$el.parent().parent().parent().parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+			} else {
+				$el.parent().css('border-bottom', '1px solid #D4D6D4').css('border-right', '1px solid #D4D6D4');
+			}
+
+			if (scalemap) {
+				rescale($el);
+			}
+		}
+
+		remove_ajax_loader();
+	});
+
+	if (isgrid) {
+		$('area').off('click').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			window.click_data = $(this).data('data');
+		});
+
+		$(document).off('click', '.pixel-url').on('click', '.pixel-url', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			const $link = $(this);
+
+			let ajax_data = {
+				aid: window.click_data.ad_id,
+				bid: window.click_data.banner_id,
+				block_id: window.click_data.block_id,
+				action: 'click'
+			};
+
+			$.ajax({
+				method: 'POST',
+				url: window.mds_data.ajax,
+				data: ajax_data,
+				dataType: 'html',
+				crossDomain: true,
+			}).done(function () {
+				window.open($link.attr('href'), '_self');
+			});
+		});
+
+		$(document).off('click', '#theimage').on('click', '#theimage', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			if (window.mds_data.REDIRECT_SWITCH === 'YES') {
+				window.open(window.mds_data.REDIRECT_URL);
+				return false;
 			}
 		});
 	}
 
-	if (tippy) {
+	let tooltips = false;
+	if (tippy && window.tippy_instance == undefined && window.mds_data.ENABLE_MOUSEOVER !== 'NO') {
+		tooltips = true;
 		defer('Popper', () => {
 			defer('tippy', () => {
 				add_tippy();
+				mds_loaded_event($el, scalemap, tippy, type, isgrid);
 			});
 		});
 	}
@@ -269,9 +442,48 @@ function mds_init(el, scalemap, tippy, type) {
 
 	initialized = true;
 
-	remove_ajax_loader();
+	if (!tooltips) {
+		mds_loaded_event($el, scalemap, tippy, type, isgrid);
+	}
 }
 
-// $(function () {
-// 	mds_init();
-// });
+$(function () {
+	$('.mds_upload_image').on('click', function (e) {
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Uploading...');
+		$el.parent('form').submit();
+	});
+
+	$('.mds_pointer_graphic').on('load', function (e) {
+		$('.mds_upload_image').prop('disabled', false);
+		$(this).attr('value', 'Upload');
+	});
+
+	$('.mds_save_ad_button').on('click', function () {
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Saving...');
+		$el.closest('form').submit();
+	});
+
+	$('#mds-complete-button').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Completing...');
+		window.location=window.mds_data.BASE_HTTP_PATH + 'users/publish.php?action=complete&order_id=' + $el.data('order-id') + '&BID=' + $el.data('grid');
+		return false;
+	});
+
+	$('#mds-confirm-button').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let $el = $(this);
+		$el.prop('disabled', true);
+		$el.attr('value', 'Confirming...');
+		window.location=window.mds_data.BASE_HTTP_PATH + 'users/payment.php?action=confirm&order_id=' + $el.data('order-id') + '&BID=' + $el.data('grid');
+		return false;
+	});
+});

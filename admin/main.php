@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -58,8 +58,9 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GL
 $waiting = mysqli_num_rows( $result );
 ?>
 
-    <p align="left"><h3>Main Summary</h3></p>
-    <font size='1'>Current GMT Time: <?php echo( gmdate( "Y-m-d H:i:s" ) ); ?></font>
+    <p><h3>Main Summary</h3></p>
+    <div class="mds-time mds-gmt">Current GMT Time: <?php echo gmdate( "Y-m-d H:i:s" ); ?></div>
+    <div class="mds-time mds-local">Current Local Time: <?php echo get_local_datetime( gmdate( "Y-m-d H:i:s" ), true ); ?></div>
     <table width="80%" border="0" cellpadding="5" style="border-collapse: collapse">
         <tr>
             <td style="border-bottom-style: solid; border-bottom-width: 1px"><?php echo $advertisers; ?></td>
@@ -103,7 +104,6 @@ if ( file_exists( $check_path ) ) {
     <hr>
 
 <?php
-
 $sql    = "show columns from blocks ";
 $result = mysqli_query( $GLOBALS['connection'], $sql );
 while ( $row = mysqli_fetch_array( $result ) ) {
@@ -124,12 +124,12 @@ while ( $row = mysqli_fetch_array( $result ) ) {
 
 	if ( $row['Field'] == 'status' ) {
 
-		if ( strpos( $row['Type'], 'expired' ) == 0 ) {
+//		if ( strpos( $row['Type'], 'expired' ) == 0 ) {
 
-			//	$sql = "ALTER TABLE `orders` CHANGE `status` `status`  set('pending','completed','cancelled','confirmed','new', 'expired') NOT NULL ";
-			//	 mysqli_query($GLOBALS['connection'], $sql) or die ("<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error($GLOBALS['connection']) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>".mysqli_error($GLOBALS['connection']));
+		//	$sql = "ALTER TABLE `orders` CHANGE `status` `status`  set('pending','completed','cancelled','confirmed','new', 'expired') NOT NULL ";
+		//	 mysqli_query($GLOBALS['connection'], $sql) or die ("<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error($GLOBALS['connection']) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>".mysqli_error($GLOBALS['connection']));
 
-		}
+//		}
 
 		if ( strpos( $row['Type'], 'deleted' ) == 0 ) {
 
@@ -213,7 +213,7 @@ if ( ! does_field_exist( "currencies", "code" ) ) {
 	$sql = "CREATE TABLE `currencies` (
 		  `code` char(3) NOT NULL default '',
 		  `name` varchar(50) NOT NULL default '',
-		  `rate` decimal(10,4) NOT NULL default '1.0000',
+		  `rate` decimal(20,10) NOT NULL default '1.0000000000',
 		  `is_default` set('Y','N') NOT NULL default 'N',
 		  `sign` varchar(8) NOT NULL default '',
 		  `decimal_places` smallint(6) NOT NULL default '0',
@@ -582,7 +582,7 @@ if ( ! does_field_exist( "form_fields", "field_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 	$sql = "INSERT INTO `form_fields` VALUES (1, 2, 1, 'url', 'URL', 'TEXT', 2, 'Y', '', '', 'is not valid.', 'http://', 80, 0, 0, 0, 'URL', '', '', '', 0, '', 0, '', '', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-	$sql = "INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed when a mouse pointer is placed over your ad)', 0, '', 0, '', '', '')";
+	$sql = "INSERT INTO `form_fields` VALUES (1, 3, 1, '', 'Additional Image', 'IMAGE', 3, '', '', '', '', '', 0, 0, 0, 0, 'IMAGE', '', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)', 0, '', 0, '', '', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 }
 if ( ! does_field_exist( "form_field_translations", "field_id" ) ) {
@@ -601,7 +601,7 @@ if ( ! does_field_exist( "form_field_translations", "field_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 	$sql = "INSERT INTO `form_field_translations` VALUES (2, 'EN', 'URL', 'is not valid.', '')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-	$sql = "INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed when a mouse pointer is placed over your ad)')";
+	$sql = "INSERT INTO `form_field_translations` VALUES (3, 'EN', 'Additional Image', '', '(This image will be displayed in a tooltip popup when your blocks are clicked)')";
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 
 	format_field_translation_table( 1 );
@@ -744,18 +744,6 @@ if ( ! does_field_exist( "blocks", "ad_id" ) ) {
 	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
 }
 
-if ( ! does_field_exist( "cat_name_translations", "category_id" ) ) {
-
-	$sql = "CREATE TABLE `cat_name_translations` (
-  `category_id` int(11) NOT NULL default '0',
-  `lang` char(2) NOT NULL default '',
-  `category_name` text NOT NULL,
-  PRIMARY KEY  (`category_id`,`lang`),
-  KEY `category_id` (`category_id`)
-)";
-	mysqli_query( $GLOBALS['connection'], $sql ) or die ( "<p><b>CANNOT UPGRADE YOUR DATABASE!<br>" . mysqli_error( $GLOBALS['connection'] ) . "<br>Please run the following query manually from PhpMyAdmin:</b><br><pre>$sql</pre><br>" );
-}
-
 if ( ! does_field_exist( "codes", "field_id" ) ) {
 
 	$sql = "CREATE TABLE `codes` (
@@ -895,7 +883,7 @@ if ( ! does_field_exist( "ads", "ad_id" ) ) {
 $sql = "SELECT * FROM `config` WHERE `key`='DELETE_CHECKED' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql ) or die( mysqli_error( $GLOBALS['connection'] ) );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql    = "SELECT * from orders where status='deleted' ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql );
 	while ( $order_row = mysqli_fetch_array( $result ) ) {
@@ -920,7 +908,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='EXPIRE_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('EXPIRE_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }
@@ -928,7 +916,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='SELECT_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('SELECT_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }
@@ -936,7 +924,7 @@ if ( $row['val'] == '' ) {
 $sql = "SELECT * FROM `config` WHERE `key`='MAIL_QUEUE_RUNNING' ";
 $res = mysqli_query( $GLOBALS['connection'], $sql );
 $row = mysqli_fetch_array( $res );
-if ( $row['val'] == '' ) {
+if ( isset( $row['val'] ) && $row['val'] == '' ) {
 	$sql = "REPLACE INTO `config` (`key`, `val`) VALUES ('MAIL_QUEUE_RUNNING', 'NO') ";
 	mysqli_query( $GLOBALS['connection'], $sql );
 }

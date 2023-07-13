@@ -1,9 +1,9 @@
 <?php
-/**
+/*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.08 18:25:54 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -30,19 +30,20 @@
  *
  */
 
-use Imagine\Filter\Basic\Autorotate;
-
 @set_time_limit( 260 );
-session_start();
+require_once __DIR__ . "/../include/login_functions.php";
+mds_start_session();
 require_once __DIR__ . "/../include/init.php";
-require_once BASE_PATH . "/include/login_functions.php";
-require_once( "../include/ads.inc.php" );
+require_once BASE_PATH . "/include/ads.inc.php";
 
 process_login();
 
 require_once BASE_PATH . "/html/header.php";
 
 $gd_info = gd_info();
+$gif_support = '';
+$jpeg_support = '';
+$png_support = '';
 if ( isset( $gd_info['GIF Read Support'] ) && ! empty( $gd_info['GIF Read Support'] ) ) {
 	$gif_support = "GIF";
 }
@@ -53,27 +54,9 @@ if ( isset( $gd_info['PNG Support'] ) && ! empty( $gd_info['PNG Support'] ) ) {
 	$png_support = "PNG";
 }
 
-// Work out the banner id...
-if ( $f2->bid( $_REQUEST['BID'] ) != '' ) {
-	$BID = $f2->bid( $_REQUEST['BID'] );
-} else if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-	$sql = "select banner_id from ads where ad_id='" . intval( $_REQUEST['ad_id'] ) . "'";
-	$res = mysqli_query( $GLOBALS['connection'], $sql );
-	$row = mysqli_fetch_array( $res );
-	$BID = $row['banner_id'];
-} else {
-	// get the banner_id of one if the blocks the customer owns
-	//$sql = "SELECT DISTINCT(blocks.banner_id) as banner_id, name FROM blocks, banners where blocks.banner_id=banners.banner_id AND user_id='".$_SESSION['MDS_ID']."' and (status='sold' or status='expired') LIMIT 1";
+global $f2, $label;
 
-	$sql = "select *, banners.banner_id AS BID FROM orders, banners where orders.banner_id=banners.banner_id  AND user_id=" . intval( $_SESSION['MDS_ID'] ) . " and (orders.status='completed' or status='expired') group by orders.banner_id order by orders.banner_id ";
-
-	$res = mysqli_query( $GLOBALS['connection'], $sql );
-	if ( $row = mysqli_fetch_array( $res ) ) {
-		$BID = $row['BID'];
-	} else {
-		$BID = 1; # this should not happen unless the above queries failed.
-	}
-}
+$BID = $f2->bid();
 
 $banner_data = load_banner_constants( $BID );
 
@@ -82,11 +65,11 @@ $result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $G
 $user_row = mysqli_fetch_array( $result );
 
 // Entry point for completion of orders which are made by super users or if the order was for free
-if ( $_REQUEST['action'] == 'complete' ) {
+if ( isset($_REQUEST['action']) && $_REQUEST['action'] == 'complete' ) {
 
 	// check if order is $0 & complete it
 
-	if ( $_REQUEST['order_id'] == 'temp' ) {
+	if ( isset($_REQUEST['order_id']) && $_REQUEST['order_id'] == 'temp' ) {
 		// convert the temp order to an order.
 
 		$sql = "select * from temp_orders where session_id='" . mysqli_real_escape_string( $GLOBALS['connection'], get_current_order_id() ) . "' ";
@@ -174,12 +157,12 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 	$blk_row = mysqli_fetch_array( $result );
 
 	if ( ! isset( $blk_row['ad_id'] ) || empty( $blk_row['ad_id'] ) ) { // no ad exists, create a new ad_id
-		$_REQUEST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
-		$_REQUEST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
+		$_POST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
+		$_POST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
 		$_REQUEST['order_id']                                    = $blk_row['order_id'];
 		$_REQUEST['BID']                                         = $BID;
 		$_REQUEST['user_id']                                     = $_SESSION['MDS_ID'];
-		$_REQUEST['ad_id']                                       = "";
+		$_REQUEST['aid']                                       = "";
 		$ad_id                                                   = insert_ad_data();
 
 		$sql = "UPDATE orders SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
@@ -187,7 +170,7 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		$sql = "UPDATE blocks SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
 		$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-		$_REQUEST['ad_id'] = $ad_id;
+		$_REQUEST['aid'] = $ad_id;
 	} else {
 		// initialize $_REQUEST['ad_id']
 
@@ -198,8 +181,8 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 		//echo $sql;
 		if ( mysqli_num_rows( $result ) == 0 ) {
 			echo "No ad exists..";
-			$_REQUEST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
-			$_REQUEST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
+			$_POST[ $ad_tag_to_field_id['URL']['field_id'] ]      = '';
+			$_POST[ $ad_tag_to_field_id['ALT_TEXT']['field_id'] ] = 'ad text';
 			$_REQUEST['order_id']                                    = $blk_row['order_id'];
 			$_REQUEST['BID']                                         = $BID;
 			$_REQUEST['user_id']                                     = $_SESSION['MDS_ID'];
@@ -210,10 +193,10 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 			$sql = "UPDATE blocks SET ad_id='" . intval( $ad_id ) . "' WHERE order_id='" . intval( $blk_row['order_id'] ) . "' ";
 			$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
-			$_REQUEST['ad_id'] = $ad_id;
+			$_REQUEST['aid'] = $ad_id;
 		} else {
 
-			$_REQUEST['ad_id'] = $blk_row['ad_id'];
+			$_REQUEST['aid'] = $blk_row['ad_id'];
 		}
 
 		// bug in previous versions resulted in saving the ad's user_id with a session_id
@@ -224,9 +207,9 @@ if ( isset( $_REQUEST['block_id'] ) && ! empty( $_REQUEST['block_id'] ) ) {
 }
 
 // Display ad editing forms if the ad was clicked, or 'Edit' button was pressed.
-if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
+if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
 
-	$sql = "SELECT * from ads as t1, orders as t2 where t1.ad_id=t2.ad_id AND t1.user_id=" . intval( $_SESSION['MDS_ID'] ) . " and t1.banner_id=" . intval( $BID ) . " and t1.ad_id=" . intval( $_REQUEST['ad_id'] ) . " AND t1.order_id=t2.order_id ";
+	$sql = "SELECT * from ads as t1, orders as t2 where t1.ad_id=t2.ad_id AND t1.user_id=" . intval( $_SESSION['MDS_ID'] ) . " and t1.banner_id=" . intval( $BID ) . " and t1.ad_id=" . intval( $_REQUEST['aid'] ) . " AND t1.order_id=t2.order_id ";
 	$result = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $GLOBALS['connection'] ) );
 
 	$row      = mysqli_fetch_array( $result );
@@ -235,7 +218,6 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 
 	$size   = get_pixel_image_size( $row['order_id'] );
 	$pixels = $size['x'] * $size['y'];
-
 	upload_changed_pixels( $order_id, $BID, $size, $banner_data );
 
 	// Ad forms:
@@ -248,8 +230,8 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
             <td valign="top"><b><?php echo $label['adv_pub_piximg']; ?></b><br>
                 <center>
 					<?php
-					if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
-						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['ad_id']; ?>" border=1><?php
+					if ( isset( $_REQUEST['aid'] ) && ! empty( $_REQUEST['aid'] ) ) {
+						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&aid=<?php echo $_REQUEST['aid']; ?>" border=1><?php
 					} else {
 						?><img src="get_order_image.php?BID=<?php echo $BID; ?>&block_id=<?php echo $_REQUEST['block_id']; ?>" border=1><?php
 					} ?>
@@ -269,13 +251,9 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 				?>
                 <form name="change" enctype="multipart/form-data" method="post">
                     <input type="file" name='pixels'><br>
-                    <input type="hidden" name="ad_id" value="<?php echo $_REQUEST['ad_id']; ?>">
+                    <input type="hidden" name="aid" value="<?php echo $_REQUEST['aid']; ?>">
                     <input type="submit" name="change_pixels" value="<?php echo $label['adv_pub_pixupload']; ?>">
                 </form>
-				<?php if ( $error ) {
-					echo "<font color='red'>" . $error . "</font>";
-					$error = '';
-				} ?>
                 <font size='1'><?php echo $label['advertiser_publish_supp_formats']; ?><?php echo "$gif_support $jpeg_support $png_support"; ?></font>
             </td>
         </tr>
@@ -327,10 +305,12 @@ if ( isset( $_REQUEST['ad_id'] ) && ! empty( $_REQUEST['ad_id'] ) ) {
 		}
 	} else {
 
-		$prams = load_ad_values( $_REQUEST['ad_id'] );
+		$prams = load_ad_values( $_REQUEST['aid'] );
 		display_ad_form( 1, 'user', $prams );
 	}
 } # end of ad forms
+
+$offset = isset($_REQUEST['offset']) ? intval($_REQUEST['offset']) : 0;
 
 # List Ads
 ob_start();
@@ -340,7 +320,7 @@ ob_end_clean();
 
 if ( $count > 0 ) {
 	?>
-    <div class="fancy_heading" width="85%"><?php echo $label['adv_pub_yourads']; ?></div>
+    <div class="fancy_heading"><?php echo $label['adv_pub_yourads']; ?></div>
 	<?php
 	echo $contents;
 	?>
@@ -348,7 +328,7 @@ if ( $count > 0 ) {
 }
 
 ?>
-    <div class="fancy_heading" width="85%"><?php echo $label['advertiser_publish_head']; ?></div>
+    <div class="fancy_heading"><?php echo $label['advertiser_publish_head']; ?></div>
 <?php echo $label['advertiser_publish_instructions2']; ?>
 
 <?php
@@ -360,7 +340,7 @@ $result4 = mysqli_query( $GLOBALS['connection'], $sql ) or die ( mysqli_error( $
 
 if ( mysqli_num_rows( $result4 ) > 0 ) {
 	?>
-    <div width='100%' style="border-color:#FF9797; border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_pixwait']; ?></div>
+    <div style="border-color:#FF9797; border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_pixwait']; ?></div>
 	<?php
 } else {
 
@@ -370,7 +350,7 @@ if ( mysqli_num_rows( $result4 ) > 0 ) {
 
 	if ( mysqli_num_rows( $result4 ) > 0 ) {
 		?>
-        <div width='100%' style="border-color:green;border-style:solid;padding:5px;margin:10px;"><?php echo $label['advertiser_publish_published']; ?></div>
+        <div style="border-color:green;border-style:solid;padding:5px;margin:10px;"><?php echo $label['advertiser_publish_published']; ?></div>
 		<?php
 	} else {
 
@@ -380,7 +360,7 @@ if ( mysqli_num_rows( $result4 ) > 0 ) {
 
 		if ( mysqli_num_rows( $result4 ) > 0 ) {
 			?>
-            <div width='100%' style="border-color:yellow;border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_waiting']; ?></div>
+            <div style="border-color:yellow;border-style:solid;padding:5px;"><?php echo $label['advertiser_publish_waiting']; ?></div>
 			<?php
 		}
 	}

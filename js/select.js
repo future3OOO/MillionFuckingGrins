@@ -1,8 +1,8 @@
 /*
  * @package       mds
- * @copyright     (C) Copyright 2020 Ryan Rhode, All rights reserved.
+ * @copyright     (C) Copyright 2022 Ryan Rhode, All rights reserved.
  * @author        Ryan Rhode, ryan@milliondollarscript.com
- * @version       2020.05.13 12:41:15 EDT
+ * @version       2022-02-28 15:54:43 EST
  * @license       This program is free software; you can redistribute it and/or modify
  *        it under the terms of the GNU General Public License as published by
  *        the Free Software Foundation; either version 3 of the License, or
@@ -65,7 +65,7 @@ let grid;
 let submit_button1;
 let submit_button2;
 let pointer;
-let pos;
+let pixel_container;
 
 const messageout = function (message) {
 	if (debug) {
@@ -102,6 +102,15 @@ $.fn.repositionStyles = function () {
 	return this;
 };
 
+function has_touch() {
+	try {
+		document.createEvent("TouchEvent");
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
 window.onload = function () {
 	grid = document.getElementById("pixelimg");
 	myblocks = document.getElementById('blocks');
@@ -109,13 +118,17 @@ window.onload = function () {
 	submit_button1 = document.getElementById('submit_button1');
 	submit_button2 = document.getElementById('submit_button2');
 	pointer = document.getElementById('block_pointer');
+	pixel_container = document.getElementById('pixel_container');
 
 	window.onresize = rescale_grid;
 
 	load_order();
 
-	handle_click_events();
-	handle_touch_events();
+	if (has_touch()) {
+		handle_touch_events();
+	} else {
+		handle_click_events();
+	}
 
 	rescale_grid();
 
@@ -252,9 +265,9 @@ function invert_blocks(block, OffsetX, OffsetY) {
 		y: y
 	});
 
-	// TODO: add option to disable these
 	// additional blocks if multiple selection radio buttons are selected
-	if (document.getElementById('sel4').checked) {
+	const sel4 = document.getElementById('sel4');
+	if (sel4 !== null && sel4.checked) {
 		// select 4 - 4x4
 
 		x = OffsetX + BLK_WIDTH;
@@ -284,7 +297,8 @@ function invert_blocks(block, OffsetX, OffsetY) {
 	} else {
 		// select 6 - 3x2
 
-		if (document.getElementById('sel6').checked) {
+		const sel6 = document.getElementById('sel6');
+		if (sel6 !== null && sel6.checked) {
 
 			x = OffsetX + BLK_WIDTH;
 			y = OffsetY;
@@ -445,7 +459,11 @@ function change_block_state(OffsetX, OffsetY) {
 			ajaxing = false;
 
 		}).fail(function (data) {
-			messageout("Error: " + data);
+			if (jQuery.isPlainObject(data)) {
+				messageout("Error: " + JSON.stringify(data));
+			} else {
+				messageout("Error: " + data);
+			}
 		});
 	}
 }
@@ -484,7 +502,7 @@ function getObjCoords(obj) {
 	return pos;
 }
 
-function getOffset(x, y) {
+function getOffset(x, y, touch) {
 	if (grid == null) {
 		// grid may not be loaded yet
 		return null;
@@ -494,9 +512,16 @@ function getOffset(x, y) {
 	let size = get_pointer_size();
 
 	let offset = {};
+	let scrollLeft = 0;
+	let scrollTop = 0;
 
-	offset.x = x - pos.x;
-	offset.y = y - pos.y;
+	if (touch) {
+		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	}
+
+	offset.x = x - pos.x + scrollLeft;
+	offset.y = y - pos.y + scrollTop;
 
 	// drop 1/10 from the OffsetX and OffsetY, eg 612 becomes 610
 	// expand to original scale first
@@ -517,13 +542,14 @@ function getOffset(x, y) {
 function get_pointer_size() {
 	let size = {};
 
-	// TODO: add option to disable these
-	if (document.getElementById('sel4').checked) {
+	const sel4 = document.getElementById('sel4');
+	if (sel4 !== null && sel4.checked) {
 		size.width = BLK_WIDTH * 2;
 		size.height = BLK_HEIGHT * 2;
 
 	} else {
-		if (document.getElementById('sel6').checked) {
+		const sel6 = document.getElementById('sel6');
+		if (sel6 !== null && sel6.checked) {
 			size.width = BLK_WIDTH * 3;
 			size.height = BLK_HEIGHT * 2;
 		} else {
@@ -601,12 +627,11 @@ function center_block(coords) {
 function handle_click_events() {
 	let click = false;
 
-	$([grid, pointer]).on('mousedown', function () {
+	$(pixel_container).on('mousedown', function () {
 		click = true;
 	});
 
-	$([grid, pointer]).on('mousemove', function (event) {
-
+	$(pixel_container).on('mousemove', function (event) {
 		let coords = center_block({
 			x: event.originalEvent.pageX,
 			y: event.originalEvent.pageY
@@ -620,8 +645,7 @@ function handle_click_events() {
 		click = false;
 	});
 
-	$([grid, pointer]).on('click', function (event) {
-
+	$(pixel_container).on('click', function (event) {
 		event.preventDefault();
 
 		if (click) {
@@ -645,45 +669,18 @@ function handle_click_events() {
 }
 
 function handle_touch_events() {
-	let tap = false;
-
-	$([grid, pointer]).on('touchstart', function () {
-		tap = true;
+	let manager = new Hammer.Manager(pixel_container);
+	let Tap = new Hammer.Tap({
+		taps: 1
 	});
-
-	$([grid, pointer]).on('touchmove', function (event) {
-		const {changedTouches} = event;
-		let coords = center_block({
-			x: changedTouches[0].pageX,
-			y: changedTouches[0].pageY
-		});
-		let offset = getOffset(coords.x, coords.y);
+	manager.add(Tap);
+	manager.on('tap', function (e) {
+		let offset = getOffset(e.center.x, e.center.y, true);
 		if (offset == null) {
-			return false;
+			return true;
 		}
 
 		show_pointer(offset);
-		tap = false;
-	});
-
-	$([grid, pointer]).on('touchend', function (event) {
-		if (tap) {
-			tap = false;
-
-			const {changedTouches} = event;
-			let coords = center_block({
-				x: changedTouches[0].pageX,
-				y: changedTouches[0].pageY
-			});
-			let offset = getOffset(coords.x, coords.y);
-			if (offset == null) {
-				return false;
-			}
-
-			show_pointer(offset);
-			select_pixels(offset);
-		}
-
-		return false;
+		select_pixels(offset);
 	});
 }
